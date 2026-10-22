@@ -20,8 +20,8 @@ type Side = 'top' | 'right' | 'bottom' | 'left';
 
 // Restart only visual animations: never remount the modal or replay a business action.
 function replayModal(button: HTMLButtonElement) {
-  const dialog = button.closest('.tod-dialog');
-  const overlay = dialog?.parentElement?.querySelector('.tod-overlay');
+  const dialog = button.closest('.rhine-dialog');
+  const overlay = dialog?.parentElement?.querySelector('.rhine-overlay');
   for (const element of [dialog, overlay]) {
     if (!element) continue;
     for (const animation of element.getAnimations()) { animation.currentTime = 0; animation.play(); }
@@ -70,7 +70,7 @@ function MotionCard({ recipe, slow, reduced }: { recipe: typeof recipes[number];
   const [generation, setGeneration] = useState(0), [active, setActive] = useState(false), [still, setStill] = useState(false), [side, setSide] = useState<Side>('bottom');
   const [kind, title, duration, flow, status] = recipe;
   const run = () => { setGeneration(value=>value+1); setActive(true); };
-  return <article className="tod-theme ds-motion-card" aria-label={title} data-kind={kind} data-slow={slow} data-tod-motion={reduced || still ? 'reduced' : 'system'}>
+  return <article className="rhine-theme ds-motion-card" aria-label={title} data-kind={kind} data-slow={slow} data-rhine-motion={reduced || still ? 'reduced' : 'system'}>
     <header><Text variant="code">{duration}</Text><Badge>{status}</Badge></header>
     <div className="ds-motion-stage"><Scene key={generation} kind={kind} active={active} side={side}/></div>
     <div className="ds-motion-description"><h3>{title}</h3><Text variant="caption" tone="muted">{flow}</Text></div>

@@ -2,14 +2,14 @@
 
 ## Supported baseline
 
-Rhine Design 0.2.0 ships TypeScript/TSX, CSS and SVG source for React 19 + Vite. Install `@linhey/rhine-design`; GitHub remains `linhay/rhine-design`. Check the installed package's engine and peer dependencies. Node 24 is the development baseline. Do not assume precompiled JavaScript, arbitrary SSR support or a complete dark theme.
+Rhine Design 0.3.0 ships TypeScript/TSX, CSS and SVG source for React 19 + Vite. Install `@linhey/rhine-design`; GitHub remains `linhay/rhine-design`. Check the installed package's engine and peer dependencies. Node 24 is the development baseline. Do not assume precompiled JavaScript, arbitrary SSR support or a complete dark theme.
 
 ```tsx
 import { Button, Surface, Text } from '@linhey/rhine-design';
 
 export function Example() {
   return (
-    <div className="tod-theme">
+    <div className="rhine-theme">
       <Surface>
         <Text as="h2" variant="section">工作空间</Text>
         <Button onClick={() => { /* host action */ }}>继续</Button>
@@ -22,10 +22,10 @@ export function Example() {
 ## Integration invariants
 
 - The entry imports CSS automatically. Keep the package's entry and CSS `sideEffects` declarations so production tree shaking retains styles.
-- Put `.tod-theme` at the page root. Do not transform, clip or apply containment to it: overlays portal to the nearest theme root and need its variables and reduced-motion settings.
+- Put `.rhine-theme` at the page root. Do not transform, clip or apply containment to it: overlays portal to the nearest theme root and need its variables and reduced-motion settings.
 - For a locally linked checkout, use Vite `resolve.dedupe: ['react', 'react-dom']`. Duplicate React can break hooks; do not patch component state to mask this.
 - Preserve SVG `?no-inline` handling. Logo uses a shared geometric master; missing symbols in production warrant checking the emitted SVG asset before replacing the logo.
-- Reuse tokens for layout and state styling. Full dark theme is not exported in 0.2.0; the logo's dark variant alone does not establish dark-mode support.
+- Reuse tokens for layout and state styling. Full dark theme is not exported in 0.3.0; the logo's dark variant alone does not establish dark-mode support.
 
 ## Host responsibilities
 

@@ -2,7 +2,7 @@
 name: rhine-design
 description: Use Rhine Design components and specifications to design, implement, or review React UI, typography, themes, and motion. Apply when a project uses Rhine Design or the user requests its visual language or component system.
 metadata:
-  version: "0.2.0"
+  version: "0.3.0"
 ---
 
 # Rhine Design · 莱茵设计
@@ -11,7 +11,7 @@ Use the installed version's components and contracts to build consistent interfa
 
 ## Locate the matching source
 
-Package: `@linhey/rhine-design`. GitHub: `linhay/rhine-design` (different account spelling). This skill targets 0.2.0.
+Package: `@linhey/rhine-design`. GitHub: `linhay/rhine-design` (different account spelling). This skill targets 0.3.0.
 
 Find the package in the host's dependencies, normally `node_modules/@linhey/rhine-design/`, or its registered source checkout. Verify `package.json` name/version before using the paths below. Paths in references are relative to that package root, not the copied skill directory. Read installed types and source when versions differ; do not infer a new API from this skill. If the package is unavailable, use the task's supplied design sources and identify the missing implementation evidence.
 
@@ -30,7 +30,7 @@ Find the package in the host's dependencies, normally `node_modules/@linhey/rhin
 
 ## Preserve these contracts
 
-- Use public exports, the `.tod-theme` root and existing tokens. `tod-` is a retained CSS API, not a required product name.
+- Use public exports, the `.rhine-theme` root and existing tokens. Use the `rhine-` namespace for CSS variables, classes, animation names and motion data attributes; do not introduce host-product prefixes.
 - Read the actual component signature before using it. Keep semantic headings separate from visual text variants.
 - Host state determines data, selection and operation outcomes. Search and pagination remain host/server responsibilities; busy indicators never imply success.
 - Motion explains a change. Respect reduced motion, cancellation and replay; startup decoration never blocks real readiness. Preview-only experiments are not exported components.

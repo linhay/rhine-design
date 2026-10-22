@@ -16,13 +16,13 @@ const paths = {
 } as const;
 export type IconName = keyof typeof paths;
 export function Icon({ name, size = 20 }: { name: IconName; size?: 16 | 20 }) {
-  return <svg className="tod-icon" width={size} height={size} viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d={paths[name]} /></svg>;
+  return <svg className="rhine-icon" width={size} height={size} viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d={paths[name]} /></svg>;
 }
 export const IconButton = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { label: string; icon: IconName }>(function IconButton({ label, icon, className = '', type = 'button', ...props }, ref) {
-  return <button {...props} ref={ref} type={type} aria-label={label} className={`tod-button tod-button--quiet tod-icon-button ${className}`}><Icon name={icon} /></button>;
+  return <button {...props} ref={ref} type={type} aria-label={label} className={`rhine-button rhine-button--quiet rhine-icon-button ${className}`}><Icon name={icon} /></button>;
 });
 export function Link({ children, className = '', target, rel, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
-  return <a {...props} target={target} rel={target === '_blank' ? `${rel || ''} noopener noreferrer`.trim() : rel} className={`tod-link ${className}`}>{children}{target === '_blank' && <><Icon name="external" size={16} /><span className="tod-sr-only">（新窗口打开）</span></>}</a>;
+  return <a {...props} target={target} rel={target === '_blank' ? `${rel || ''} noopener noreferrer`.trim() : rel} className={`rhine-link ${className}`}>{children}{target === '_blank' && <><Icon name="external" size={16} /><span className="rhine-sr-only">（新窗口打开）</span></>}</a>;
 }
 export function CopyButton({ value, label = '复制', copy = text => navigator.clipboard.writeText(text) }: { value: string; label?: string; copy?: (value: string) => Promise<void> }) {
   const [status, setStatus] = useState<'idle' | 'busy' | 'success' | 'error'>('idle');
@@ -36,5 +36,5 @@ export function CopyButton({ value, label = '复制', copy = text => navigator.c
     catch { if (request === epoch.current) setStatus('error'); }
     finally { if (request === epoch.current) pending.current = false; }
   };
-  return <span className="tod-copy"><Button variant="secondary" busy={status === 'busy'} busyLabel="正在复制" onClick={run}><Icon name="copy" size={16} /> {label}</Button><span role={status === 'error' ? 'alert' : 'status'} className={status === 'error' ? 'tod-text--error' : 'tod-text--muted'}>{status === 'success' ? '已复制' : status === 'error' ? '复制失败，请重试' : ''}</span></span>;
+  return <span className="rhine-copy"><Button variant="secondary" busy={status === 'busy'} busyLabel="正在复制" onClick={run}><Icon name="copy" size={16} /> {label}</Button><span role={status === 'error' ? 'alert' : 'status'} className={status === 'error' ? 'rhine-text--error' : 'rhine-text--muted'}>{status === 'success' ? '已复制' : status === 'error' ? '复制失败，请重试' : ''}</span></span>;
 }

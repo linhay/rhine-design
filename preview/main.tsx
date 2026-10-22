@@ -22,7 +22,7 @@ function Gallery() {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
   const simulate = () => { setBusy(true); timer.current = setTimeout(() => { setBusy(false); setNotice(true); }, 900); };
-  return <div className="tod-theme ds-gallery" data-tod-motion={motion}>
+  return <div className="rhine-theme ds-gallery" data-rhine-motion={motion}>
     <header className="ds-header"><a href="#top" className="ds-brand"><Logo variant="lockup" size={36} /><span>DESIGN SYSTEM</span></a><Badge>V1.4 / COMPONENTS</Badge></header>
     <main id="top">
       <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>40 个通用组件，共用一套视觉变量和动效规则。<br />这里运行的就是后续业务页面可直接导入的 React 组件。</p></div><div className="ds-motion-control"><span className="ds-caption">动效偏好 · 仅预览</span><SegmentedControl label="动效偏好" items={[{ value:'system', label:'跟随系统' },{ value:'reduced', label:'减少动态' }]} value={motion} onValueChange={setMotion} /><p>系统减少动态始终优先。<br />动画不延迟操作，也不代替业务结果。</p></div></div>

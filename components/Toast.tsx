@@ -16,8 +16,8 @@ export function Toast({ open, onOpenChange, title, description, tone = 'success'
     const started = Date.now(); const timer = setTimeout(() => close.current(false), Math.max(0, remaining.current));
     return () => { clearTimeout(timer); remaining.current = Math.max(0, remaining.current - (Date.now() - started)); };
   }, [open, hover, focus, hidden, tone, duration, title, description]);
-  return <div className="tod-toast-region" aria-label="通知">
-    <div role={tone === 'error' ? 'alert' : 'status'} aria-atomic="true" className={open ? `tod-toast tod-tone-${tone}` : 'tod-sr-only'}
+  return <div className="rhine-toast-region" aria-label="通知">
+    <div role={tone === 'error' ? 'alert' : 'status'} aria-atomic="true" className={open ? `rhine-toast rhine-tone-${tone}` : 'rhine-sr-only'}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onFocus={() => setFocus(true)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocus(false); }}>
       {open && <><div><strong>{title}</strong>{description && <p>{description}</p>}</div><IconButton label="关闭通知" icon="close" onClick={() => onOpenChange(false)} /></>}
     </div>

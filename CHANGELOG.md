@@ -1,5 +1,11 @@
 # 版本记录
 
+## 0.3.0
+
+- **破坏性变更：**统一使用莱茵设计的 `rhine-` 命名空间，无旧前缀别名。
+- 升级时将主题根 `.tod-theme` 改为 `.rhine-theme`，CSS 变量 `--tod-*` 改为 `--rhine-*`，类名及关键帧 `tod-*` 改为 `rhine-*`，减少动态属性 `data-tod-motion` 改为 `data-rhine-motion`。请同步更新自定义样式、DOM 查询和复制到项目中的 skill。
+- 组件、浮层主题挂载、动效展台、文档与测试一起迁移；React 导出与 props、视觉参数保持一致。
+
 ## 0.2.0
 
 - 定位为个人通用设计系统 linhay/rhine-design，独立迭代。

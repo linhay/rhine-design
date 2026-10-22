@@ -4,7 +4,7 @@ import { join } from 'node:path';
 const assets = new URL('../dist/assets/', import.meta.url);
 const files = await readdir(assets);
 const css = (await Promise.all(files.filter(file => file.endsWith('.css')).map(file => readFile(new URL(file, assets), 'utf8')))).join('\n');
-for (const required of ['--tod-bg:', '.tod-theme', '.tod-button', '.ds-startup']) {
+for (const required of ['--rhine-bg:', '.rhine-theme', '.rhine-button', '.ds-startup']) {
   if (!css.includes(required)) throw new Error(`Design kit build lost required stylesheet content: ${required}`);
 }
 if (!files.some(file => /^logo-.*\.svg$/.test(file))) throw new Error('Design kit build lost the SVG master asset');

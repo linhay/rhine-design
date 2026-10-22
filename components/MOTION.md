@@ -51,7 +51,7 @@
 ## 参数与中断约束
 
 - 继续使用[tokens.css](./tokens.css)：按下80ms、交互120ms、浮层160ms、面板180ms、通知/折叠200ms、进度/品牌240ms；Toast用面板180ms，Notice用通知200ms。正文与数值不做缩放或模糊。
-- `--tod-ease-standard`为`cubic-bezier(.2,0,0,1)`；Disclosure收起用现有exit曲线。`--tod-motion-distance`为3px；新增配方先复用这些变量，不新增逐组件硬编码时长。
+- `--rhine-ease-standard`为`cubic-bezier(.2,0,0,1)`；Disclosure收起用现有exit曲线。`--rhine-motion-distance`为3px；新增配方先复用这些变量，不新增逐组件硬编码时长。
 - 动画仅声明需要变化的属性，不用`transition: all`。一般用opacity/transform；高度测量仅用于必要的Disclosure布局变化，不用整页高度动画掩盖布局跳动。
 - 快速反向从当前画面续接，旧动画取消；卸载清理动画和计时器。初始渲染、窗口恢复或普通重渲染不重复播放操作成功效果。
 - 语义先于装饰：checked、aria-expanded、真实结果和焦点即时更新；内容淡入不延迟可读状态。不要为了动画同时保留两份可聚焦控件或重复live播报。

@@ -65,7 +65,7 @@ describe('common design components', () => {
   });
   it('keeps a failed confirmation open and closes only after successful retry', async () => {
     const confirm=vi.fn().mockRejectedValueOnce(new Error('demo')).mockResolvedValue(undefined);
-    render(<div className="tod-theme"><ConfirmDialog trigger={<button>打开</button>} title="确认任务" description="演示" onConfirm={confirm}/></div>);
+    render(<div className="rhine-theme"><ConfirmDialog trigger={<button>打开</button>} title="确认任务" description="演示" onConfirm={confirm}/></div>);
     fireEvent.click(screen.getByRole('button',{name:'打开'}));expect(await screen.findByRole('alertdialog')).toBeVisible();expect(screen.getByRole('button',{name:'取消'})).toHaveFocus();fireEvent.click(screen.getByRole('button',{name:'确认操作'}));expect(await screen.findByRole('alert')).toHaveTextContent('操作未完成');fireEvent.click(screen.getByRole('button',{name:'确认操作'}));await waitFor(()=>expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
   });
 });

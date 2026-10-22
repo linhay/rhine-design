@@ -44,11 +44,11 @@ it('keeps the same brand node when readiness arrives and makes the login preview
   vi.useFakeTimers();
   const { container } = render(<StartupGallery reduced={false} />);
   fireEvent.click(screen.getByRole('button', { name: '播放启动动画' }));
-  const logo = container.querySelector('.ds-startup-logo-anchor .tod-logo');
+  const logo = container.querySelector('.ds-startup-logo-anchor .rhine-logo');
   act(() => vi.advanceTimersByTime(300));
   fireEvent.click(screen.getByRole('button', { name: '模拟就绪 · 立即进入' }));
-  expect(container.querySelector('.ds-startup-logo-anchor .tod-logo')).toBe(logo);
-  expect(container.querySelectorAll('.ds-startup-stage .tod-logo')).toHaveLength(1);
+  expect(container.querySelector('.ds-startup-logo-anchor .rhine-logo')).toBe(logo);
+  expect(container.querySelectorAll('.ds-startup-stage .rhine-logo')).toHaveLength(1);
   fireEvent.click(screen.getByRole('button', { name: '在浏览器中登录' }));
   expect(screen.getByText('仅演示登录入口，不会打开授权页面。')).toBeInTheDocument();
   expect(vi.getTimerCount()).toBe(0);

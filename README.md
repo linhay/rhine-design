@@ -34,7 +34,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install @linhey/rhine-design@0.2.0
+npm install @linhey/rhine-design@0.3.0
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
@@ -44,7 +44,7 @@ import { Button, Stack, Surface, Text } from '@linhey/rhine-design';
 
 export function Welcome() {
   return (
-    <div className="tod-theme">
+    <div className="rhine-theme">
       <Surface>
         <Stack gap={4}>
           <Text as="h1" variant="title">开始新的工作</Text>
@@ -57,12 +57,14 @@ export function Welcome() {
 }
 ```
 
-入口自动加载样式，用 `.tod-theme` 包裹页面即可使用默认主题。布局和颜色变量使用 `--tod-*` 前缀；完整定义见 [tokens.css](components/tokens.css)。
+入口自动加载样式，用 `.rhine-theme` 包裹页面即可使用默认主题。布局和颜色变量使用 `--rhine-*` 前缀；完整定义见 [tokens.css](components/tokens.css)。
+
+类名、CSS 变量、动画名称与动态设置统一使用 `rhine-` 命名空间。升级到 0.3.0 时请同步迁移主题根、自定义样式与动效属性，具体见 [迁移说明](CHANGELOG.md#030)。
 
 ### 兼容范围
 
 - 包导出 TS/TSX、CSS 和 SVG 源码，构建器需支持 CSS 导入与 Vite 的 SVG `?no-inline` 引用；目前未验证其他构建器和 SSR。
-- 浮层挂载到最近的 `.tod-theme`。请将主题根放在页面根部，避免对它使用 `transform`、裁剪或 `contain`。
+- 浮层挂载到最近的 `.rhine-theme`。请将主题根放在页面根部，避免对它使用 `transform`、裁剪或 `contain`。
 - 组件提供呈现与交互，应用负责数据请求、搜索、分页和操作结果。
 - 当前提供默认暖白主题；Logo 支持独立的深浅配色，完整组件深色主题尚未提供。
 

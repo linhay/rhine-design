@@ -9,5 +9,5 @@ export interface TextProps extends HTMLAttributes<HTMLElement> {
 }
 
 export function Text({ as: Element = 'p', variant = 'body', tone = 'default', numeric = false, className = '', ...props }: TextProps) {
-  return <Element {...props} className={`tod-text tod-text--${variant} tod-text--${tone}${numeric ? ' tod-text--numeric' : ''} ${className}`} />;
+  return <Element {...props} className={`rhine-text rhine-text--${variant} rhine-text--${tone}${numeric ? ' rhine-text--numeric' : ''} ${className}`} />;
 }

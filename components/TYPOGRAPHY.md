@@ -8,7 +8,7 @@
 - 代码与路径：`ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace`。模型 ID、路径、协议值用等宽；普通英文说明仍用界面字体。
 - 常规400、标签500、标题600。避免轻字重、小字号粗细堆叠、650等中间字重和浏览器伪斜体；不全局使用700。Logo字标遵循品牌组件，不作为业务文字模板。
 - 系统字体选择与语义字号层级参考 [Fluent Typography](https://fluent2.microsoft.design/typography)；具体尺寸和中文规则是本项目的设计决策，不复制其全部字号。
-- `.tod-theme` 禁止字体伪造；不同系统的字面宽度可能不同，不能用固定字符串宽度或固定容器高度实现布局。
+- `.rhine-theme` 禁止字体伪造；不同系统的字面宽度可能不同，不能用固定字符串宽度或固定容器高度实现布局。
 
 ## 文字层级
 

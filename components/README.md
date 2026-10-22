@@ -1,6 +1,6 @@
 # 莱茵设计 · 通用组件 V1.4
 
-本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`tod-`命名空间。
+本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
 共40个组件。已有16个基础组件，新增24个数据、表单、操作、浮层和布局组件，见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
@@ -15,7 +15,7 @@ import { Button, Notice, Progress, Surface } from '@linhey/rhine-design';
 
 export function Example() {
   return (
-    <div className="tod-theme">
+    <div className="rhine-theme">
       <Surface>
         <Notice tone="warning" title="需要处理">请检查后重试。</Notice>
         <Progress label="任务进度" value={null} />
@@ -26,10 +26,10 @@ export function Example() {
 }
 ```
 
-入口 `index.ts` 自动导入组件 CSS。使用一个 `.tod-theme` 包裹组件树，获得字体、盒模型、焦点和动效降级规则。主题根放在页面根部，不加transform、裁剪或contain；浮层Portal挂在最近的主题根以继承变量和减少动态偏好。独立运行与跨项目导入方式见[套件入口](../README.md)；跨仓复用核对React19与套件package.json中的5个Radix依赖，不导入展台。
+入口 `index.ts` 自动导入组件 CSS。使用一个 `.rhine-theme` 包裹组件树，获得字体、盒模型、焦点和动效降级规则。主题根放在页面根部，不加transform、裁剪或contain；浮层Portal挂在最近的主题根以继承变量和减少动态偏好。独立运行与跨项目导入方式见[套件入口](../README.md)；跨仓复用核对React19与套件package.json中的5个Radix依赖，不导入展台。
 
 - `tokens.css`：唯一色彩、尺寸与动画变量来源。
-- `styles.css`：`tod-` 前缀组件样式，业务页面可组合布局但不覆盖组件状态。
+- `styles.css`：`rhine-` 前缀组件样式，业务页面可组合布局但不覆盖组件状态。
 - `components.tsx`：原有基础组件；`Actions/Data/Forms/Layout/Overlays/Toast.tsx`承载新增组件。表单与业务数据由调用方控制，浮层开关、通知计时及复制结果只管理局部交互。
 - `../preview/`：使用同一组件实现的开发预览，独立 HTML 入口，无业务客户端依赖。
 - [index.html](../index.html)：Vite 开发入口，在套件根运行 `npm run dev` 后访问 `http://127.0.0.1:18309/`。
@@ -113,11 +113,11 @@ export function Example() {
 | Dialog / ConfirmDialog / Popover / Menu / Tooltip / Combobox | 160ms / standard | opacity，非模态最多3px位移 | 关闭立即归还焦点；Tooltip悬停延迟300ms，键盘无延迟 |
 | Toast | 180ms / standard | opacity + translateY(3px→0) | 成功默认5秒；hover/focus/页面隐藏暂停；错误持久；计时不依赖动画 |
 
-缓动变量：`--tod-ease-standard: cubic-bezier(.2,0,0,1)`；`--tod-ease-exit: cubic-bezier(.4,0,1,1)`。
+缓动变量：`--rhine-ease-standard: cubic-bezier(.2,0,0,1)`；`--rhine-ease-exit: cubic-bezier(.4,0,1,1)`。
 
 ### 降级与中断
 
-- 系统 `prefers-reduced-motion: reduce` 始终优先；组件容器也可用 `data-tod-motion="reduced"` 显式减少动态。
+- 系统 `prefers-reduced-motion: reduce` 始终优先；组件容器也可用 `data-rhine-motion="reduced"` 显式减少动态。
 - 减少动态时过渡与循环动画全部关闭，直接到达最终状态。未知进度保留静态轨迹与「处理中」文字，骨架保留静态结构。
 - Disclosure 的在途 Web Animation 在系统偏好变化或预览切换减少动态时取消并完成当前意图。没有 Web Animations 支持时立即展开/收起。
 - 原生 details 保证完全关闭后隐藏内容不再接收 Tab。收起时把内部焦点送回 summary；卸载取消未完成动画。

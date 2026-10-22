@@ -40,7 +40,7 @@
 
 ## 接入契约
 
-统一从 套件的`components/index.ts` 导入，并在页面根部使用 `.tod-theme`。主题根不要放在带transform、overflow裁剪或contain的局部面板；浮层挂到最近主题根，保持token和减少动态偏好。Dialog、Popover、Menu的trigger与Tooltip的children必须是单个可聚焦、可接收ref和事件的元素；使用Button/IconButton即可。Dialog受控时必须同时传open与onOpenChange。
+统一从 套件的`components/index.ts` 导入，并在页面根部使用 `.rhine-theme`。主题根不要放在带transform、overflow裁剪或contain的局部面板；浮层挂到最近主题根，保持token和减少动态偏好。Dialog、Popover、Menu的trigger与Tooltip的children必须是单个可聚焦、可接收ref和事件的元素；使用Button/IconButton即可。Dialog受控时必须同时传open与onOpenChange。
 
 ```tsx
 <Stack gap={4}>

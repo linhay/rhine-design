@@ -34,7 +34,7 @@ export function StartupGallery({ reduced }: { reduced: boolean }) {
   const play = () => { setLoginPreview(false); setGeneration(value => value + 1); setState('playing'); };
   const reset = () => { setLoginPreview(false); setGeneration(value => value + 1); setState('cover'); };
 
-  return <section id="startup" className="ds-startup" aria-labelledby="startup-title" data-tod-motion={reduce ? 'reduced' : 'system'} style={{ '--startup-speed': slow ? 4 : 1, '--ds-brand-speed': slow ? 4 : 1, '--ds-brand-offset': '180ms' } as CSSProperties}>
+  return <section id="startup" className="ds-startup" aria-labelledby="startup-title" data-rhine-motion={reduce ? 'reduced' : 'system'} style={{ '--startup-speed': slow ? 4 : 1, '--ds-brand-speed': slow ? 4 : 1, '--ds-brand-offset': '180ms' } as CSSProperties}>
     <div className="ds-section-title"><span>START / 01</span><h2 id="startup-title">构架归位，品牌留下。</h2></div>
     <p className="ds-caption">启动动画设计候选 · 品牌分镜 1.6 秒，560ms 连续收拢到登录页。就绪即刻可操作，减少动态时直接呈现。</p>
     <div className="ds-startup-layout">
