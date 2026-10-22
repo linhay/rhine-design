@@ -1,6 +1,6 @@
-# 主流设计系统对照与补齐顺序
+# 莱茵设计 · 主流系统对照与补齐顺序
 
-调研日期：2026-10-22。对照当前 `design-kit/components/` 与 ToD-AI 的登录、凭证同步、今日用量场景。以下优先级是本项目判断；引用用于说明参考系统的原则，不代表它们要求采用我们的尺寸、配色或组件清单。
+调研日期：2026-10-22。对照[莱茵设计](../README.md)的`components/`与首个消费产品ToD-AI的登录、凭证同步、今日用量场景。以下优先级是本项目判断；引用用于说明参考系统的原则，不代表它们要求采用我们的尺寸、配色或组件清单。独立展台使用18309的`/#…`入口；客户端18308保留`/design/components/#…`兼容入口。
 
 ## 参考与取舍
 
@@ -15,7 +15,7 @@
 
 ## 当前已经落地
 
-2026-10-22追加用户指定的[Transitions.dev](https://transitions.dev/)参考，具体UX、动效映射和已实现/候选边界见[MOTION.md](../components/MOTION.md)。随后按用户授权在`/design/components/#motion`实现10组可播放/重播、4倍慢放及减少动态对照；新动画限定在展台，组件数量仍为40，未迁移App。
+2026-10-22追加用户指定的[Transitions.dev](https://transitions.dev/)参考，具体UX、动效映射和已实现/候选边界见[MOTION.md](../components/MOTION.md)。随后按用户授权在`/#motion`实现10组可播放/重播、4倍慢放及减少动态对照；新动画限定在展台，组件数量仍为40，未迁移App。
 
 V1.4共40个React组件。原16项为Button、Badge、Surface、SelectionCard、TextField、Tabs、SegmentedControl、Notice、Progress、Skeleton、Disclosure、EmptyState、Logo、Text、Select、Toolbar；用户进一步授权补齐常用组件，新增24项见[组件契约](../components/COMMON_COMPONENTS.md)。
 

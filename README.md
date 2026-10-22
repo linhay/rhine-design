@@ -10,9 +10,9 @@ git clone git@github.com:linhay/rhine-design.git
 cd rhine-design
 
 # 在其他项目登记（需有本仓库读取权限）
-git submodule add -b main git@github.com:linhay/rhine-design.git vendor/tod-design-kit
+git submodule add -b main git@github.com:linhay/rhine-design.git vendor/rhine-design
 # 后续按父项目固定的提交初始化，不自动追随最新main
-git submodule update --init -- vendor/tod-design-kit
+git submodule update --init -- vendor/rhine-design
 ```
 
 先在套件仓提交、验证并推送，再更新消费项目的gitlink。不要只提交父项目指针却遗漏子仓提交。`branch=main`是分支约定，不改变gitlink固定版本；`npm ci`、预览和验证仍在本目录执行。
@@ -32,7 +32,7 @@ design-kit/
   package.json  独立依赖、源码exports和运行命令
 ```
 
-- [产品规范](docs/DESIGN_SYSTEM.md)与[设计稿索引](design/README.md)：产品方向、页面与历史材料。
+- [ToD-AI产品规范](docs/DESIGN_SYSTEM.md)与[设计稿索引](design/README.md)：消费产品的页面、品牌与历史材料，不作为其他产品的业务要求。
 - [组件API](components/README.md)、[40组件契约](components/COMMON_COMPONENTS.md)、[字体](components/TYPOGRAPHY.md)：跨项目接入前必读。
 - [动效](components/MOTION.md)、[启动动画](components/STARTUP.md)：通用能力与设计候选分开。启动动画未接入正式App；就绪不等待装饰播放完成。
 
@@ -55,10 +55,10 @@ npm run check
 
 ## 其他项目使用组件
 
-优先整体复制本目录到目标React/Vite项目的`vendor/tod-design-kit/`，然后在目标项目安装本套件package.json声明的5个Radix运行依赖（版本照抄依赖清单），React/React DOM复用目标项目的React19。源码消费示例：
+优先按上文登记为`vendor/rhine-design/`子模块，固定已验证提交；不要使用`update --remote`自动跟随主线。在套件目录执行`npm ci`准备其依赖，再于目标React/Vite项目根目录执行`npm install ./vendor/rhine-design`；React/React DOM使用目标项目的React19，并按下文去重。这是本地源码包接入，不是从公共npm下载。安装后的导入示例：
 
 ```tsx
-import { Button, Surface, Text } from './vendor/tod-design-kit/components';
+import { Button, Surface, Text } from '@tod-ai/design-kit';
 
 export function Example() {
   return <div className="tod-theme">
@@ -70,11 +70,11 @@ export function Example() {
 }
 ```
 
-也可在目标项目通过本地路径安装本套件：`npm install ./vendor/tod-design-kit`，然后从`@tod-ai/design-kit`导入。exports指向TS/TSX源码，目标构建器必须支持源码转换、CSS导入及Vite的SVG `?no-inline`引用；不宣称可直接用于Node、原生移动端或任意SSR框架。使用本地链接时保证只有一份React，Vite可配置`resolve.dedupe: ['react', 'react-dom']`。
+也可直接从`./vendor/rhine-design/components`导入源码，此时目标项目需要安装本套件package.json声明的5个Radix运行依赖。无法使用子模块时，可整体复制目录作为固定快照，同时记录来源提交并保留package-lock.json。exports指向TS/TSX源码，目标构建器必须支持源码转换、CSS导入及Vite的SVG `?no-inline`引用；不宣称可直接用于Node、原生移动端或任意SSR框架。使用本地链接时保证只有一份React，Vite可配置`resolve.dedupe: ['react', 'react-dom']`。仓库更名未改变兼容包名`@tod-ai/design-kit`，不要将仓库名误当作已发布npm包名。
 
 组件入口自动加载CSS；tokens使用`--tod-`前缀，`.tod-theme`提供字体、焦点与减少动态。项目主题可在自己的`.tod-theme`根覆盖tokens。浮层Portal挂最近主题根，根节点不要设置transform、裁剪或contain。业务逻辑、后端搜索/分页、认证与真实状态仍由宿主负责。
 
-只导入`components/`；不要把`preview/`中的合成等待、示例身份或启动演示当成业务实现。品牌Logo是ToD-AI资产，其他产品替换品牌时单独评审，不修改通用组件来嵌入产品逻辑。源码复用范围以团队已有授权为准，本目录未新增开源许可或对外发布承诺。
+只导入`components/`；不要把`preview/`中的合成等待、示例身份或启动演示当成业务实现。品牌Logo是ToD-AI资产，其他产品替换品牌时单独评审，不修改通用组件来嵌入产品逻辑。源码复用范围以仓库所有者授权为准，本目录未新增开源许可或对外发布承诺。
 
 ## 后续维护
 

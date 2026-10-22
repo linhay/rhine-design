@@ -1,6 +1,6 @@
-# 字体与文字规范 · V1.3
+# 莱茵设计 · 字体与文字规范 V1.3
 
-2026-10-22。适用于 ToD-AI 的中文界面与中英文混排。变量定义在 [tokens.css](./tokens.css)，样式与 React 入口分别为 [typography.css](./typography.css)、[Typography.tsx](./Typography.tsx)。
+2026-10-22。适用于使用莱茵设计的中文界面与中英文混排，ToD-AI文案作为产品示例。变量定义在 [tokens.css](./tokens.css)，样式与 React 入口分别为 [typography.css](./typography.css)、[Typography.tsx](./Typography.tsx)。归属与接入见[套件入口](../README.md)。
 
 ## 字体与字重
 

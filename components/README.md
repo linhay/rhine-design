@@ -1,6 +1,6 @@
-# ToD-AI 通用设计组件 · V1.4
+# 莱茵设计 · 通用组件 V1.4
 
-本目录是可复用的 React 组件与视觉变量源。组件不读取 Gateway、Tauri、凭据、文件或业务状态；由调用者传入结果和动作。当前已用于独立组件预览，尚未迁移正式业务页面。
+本目录是[莱茵设计 · Rhine Design](../README.md)的 React 组件与视觉变量源，归属个人仓库[linhay/rhine-design](https://github.com/linhay/rhine-design)。组件不读取 Gateway、Tauri、凭据、文件或业务状态；由调用者传入结果和动作。ToD-AI是当前消费产品及品牌示例，尚未迁移其正式业务页面；现有包名、`tod-`变量和类名保留兼容。
 
 共40个组件。已有16个基础组件，新增24个数据、表单、操作、浮层和布局组件，见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
@@ -8,8 +8,10 @@
 
 ## 使用
 
+先按[套件接入说明](../README.md#其他项目使用组件)安装本地源码包，再导入：
+
 ```tsx
-import { Button, Notice, Progress, Surface } from './design-kit/components';
+import { Button, Notice, Progress, Surface } from '@tod-ai/design-kit';
 
 export function Example() {
   return (
@@ -55,15 +57,17 @@ export function Example() {
 | Disclosure | title；children；defaultOpen | 非受控原生 details；挂载后 defaultOpen 不作远程控制；支持开合中断与反向，关闭内容退出键盘顺序 |
 | EmptyState | title；description；action | 说明当前状态并可给一个下一步动作；不将错误伪装成空数据 |
 
-新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，ToD-AI提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
+新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
 
 业务示例中保持这些区分：浏览面板不等于当前配置，配置模式不等于自动同步运行中；页面使用 Rust 返回状态决定 selected/busy/notice。视觉反馈不能越过这个边界。
 
 ## 动效规范
 
-启动动画候选见[三角构架归位](./STARTUP.md)与`/design/components/#startup`。专属分镜不改变通用Logo入场参数，也不作为真实初始化等待门槛。
+本节`/#…`相对独立展台服务根（默认18309）；客户端18308仍可使用`/design/components/#…`兼容入口。
 
-用户指定的Transitions.dev参考与ToD-AI取舍见[UX与动效补充](./MOTION.md)。`/design/components/#motion`已提供10组播放、重播、复位与4倍慢放示例，可逐例切换减少动态。方向展开、内容淡入与结果反馈仅在实验室作为候选实现；通用默认实现仍以下表和实际组件为准。
+启动动画候选见[三角构架归位](./STARTUP.md)与`/#startup`。专属分镜不改变通用Logo入场参数，也不作为真实初始化等待门槛。
+
+用户指定的Transitions.dev参考与莱茵设计取舍见[UX与动效补充](./MOTION.md)。`/#motion`已提供10组播放、重播、复位与4倍慢放示例，可逐例切换减少动态。方向展开、内容淡入与结果反馈仅在实验室作为候选实现；通用默认实现仍以下表和实际组件为准。
 
 ### 品牌标志
 
