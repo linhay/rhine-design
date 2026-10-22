@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" fill="currentColor">
+  <path id="left" d="M406.5 120.5 476.5 242.5 307.5 535.5H158.5Z"/>
+  <path id="right" d="M486.5 275.5 716.5 660.5H567.5L415.5 397.5Z"/>
+  <path id="base" d="M159.5 559.5H475.5L544.5 679.5H83.5Z"/>
+</svg>

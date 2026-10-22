@@ -1,0 +1,18 @@
+/* Brand-only preview recipe; the canonical SVG and generic Logo entry stay unchanged. */
+.tod-logo.ds-brand-assembly .tod-logo__symbol { overflow:visible; }
+.tod-logo.ds-brand-assembly[data-animate=true] .tod-logo__plate {
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:ds-brand-assemble calc(720ms * var(--ds-brand-speed,1)) var(--tod-ease-standard) both;
+  animation-delay:calc((var(--ds-brand-offset,0ms) + var(--ds-brand-stagger)) * var(--ds-brand-speed,1));
+}
+.ds-brand-assembly .tod-logo__plate--left { --ds-brand-stagger:0ms; --ds-brand-turn:-120deg; }
+.ds-brand-assembly .tod-logo__plate--right { --ds-brand-stagger:80ms; --ds-brand-turn:120deg; }
+.ds-brand-assembly .tod-logo__plate--base { --ds-brand-stagger:160ms; --ds-brand-turn:60deg; }
+@keyframes ds-brand-assemble {
+  0% { opacity:0; transform:translate(calc(var(--tod-logo-x) * 6),calc(var(--tod-logo-y) * 6)) rotate(var(--ds-brand-turn)) scale(.22,1.08); }
+  24% { opacity:1; }
+  70% { opacity:1; transform:translate(0,0) rotate(calc(var(--ds-brand-turn) * .06)) scale(.94,1); }
+  100% { opacity:1; transform:translate(0,0) rotate(0deg) scale(1); }
+}
+@media(prefers-reduced-motion:reduce) { .tod-logo.ds-brand-assembly[data-animate=true] .tod-logo__plate { animation:none; } }
