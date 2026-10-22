@@ -1,0 +1,41 @@
+.ds-shell { display:grid; grid-template-columns:232px minmax(0,1fr); height:100dvh; background:var(--rhine-bg); }
+.ds-skip { position:fixed; top:8px; left:16px; z-index:100; padding:12px; background:var(--rhine-ink); color:var(--rhine-surface); transform:translateY(-160%); }
+.ds-skip:focus { transform:none; }
+.ds-sidebar { display:flex; flex-direction:column; min-height:0; border-right:1px solid var(--rhine-line); background:var(--rhine-surface); }
+.ds-sidebar-brand { padding:28px 24px 24px; }
+.ds-sidebar-brand>a { display:flex; gap:12px; align-items:center; color:var(--rhine-ink); text-decoration:none; font-size:18px; font-weight:600; }
+.ds-sidebar-brand small { display:block; margin-top:2px; font:10px/16px var(--rhine-mono); letter-spacing:.08em; color:var(--rhine-muted); }
+.ds-sidebar-nav { flex:1; min-height:0; overflow:auto; padding:0 16px 20px; scrollbar-width:thin; }
+.ds-nav-group { margin-top:16px; }
+.ds-nav-group>p { margin:0 12px 6px; font-size:12px; color:var(--rhine-muted); }
+.ds-nav-group>a { min-height:44px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; border-left:2px solid transparent; text-decoration:none; color:var(--rhine-ink); transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.ds-nav-group>a>span { opacity:0; color:var(--rhine-green); }
+.ds-nav-group>a:hover { background:var(--rhine-bg); }
+.ds-nav-group>a[aria-current=page] { background:var(--rhine-selected); border-color:var(--rhine-green); color:var(--rhine-green); font-weight:600; }
+.ds-nav-group>a[aria-current=page]>span { opacity:1; }
+.ds-sidebar-foot { display:grid; gap:6px; padding:20px 28px; border-top:1px solid var(--rhine-line); color:var(--rhine-muted); font:12px/18px var(--rhine-font); }
+.ds-sidebar-foot>span:first-child { font:10px/16px var(--rhine-mono); letter-spacing:.06em; }
+.ds-menu-toggle { display:none; }
+.ds-workspace { min-width:0; min-height:0; overflow:auto; scrollbar-gutter:stable; }
+.ds-workspace:focus { outline:none; }
+.ds-workspace-head { min-height:80px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px 32px; border-bottom:1px solid var(--rhine-line); }
+.ds-workspace-head>div:first-child { font-size:12px; }.ds-workspace-head>div:first-child>span { color:var(--rhine-muted); }
+.ds-page { max-width:1200px; margin:0 auto; padding:0 32px; animation:rhine-enter var(--rhine-duration-panel) var(--rhine-ease-standard); }
+.ds-overview-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; padding-bottom:40px; }
+.ds-overview-links>a { display:grid; grid-template-columns:1fr auto; gap:12px; padding:24px; color:var(--rhine-ink); text-decoration:none; background:var(--rhine-surface); border:1px solid var(--rhine-line); transition:border-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.ds-overview-links>a:hover { border-color:var(--rhine-green); }.ds-overview-links strong { font-size:18px; }.ds-overview-links p { grid-column:1/-1; margin:0; color:var(--rhine-muted); }
+@media(min-width:761px) and (max-width:1100px) {
+  .ds-shell { grid-template-columns:200px minmax(0,1fr); }.ds-page { padding:0 24px; }
+  .ds-page .ds-grid,.ds-page .ds-startup-layout,.ds-page .ds-motion-grid { grid-template-columns:1fr; }
+  .ds-page .ds-hero { grid-template-columns:1fr; gap:24px; }.ds-page .ds-hero h1 { font-size:36px; }
+  .ds-page .ds-type-row { grid-template-columns:130px minmax(0,1fr); }
+}
+@media(max-width:760px) {
+  .ds-shell { grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); }
+  .ds-sidebar { border-right:0; border-bottom:1px solid var(--rhine-line); }
+  .ds-sidebar-brand { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 20px; }
+  .ds-menu-toggle { display:inline-flex; }.ds-sidebar-foot { display:none; }
+  .ds-sidebar-nav { display:none; flex:none; max-height:45dvh; }.ds-sidebar[data-open=true] .ds-sidebar-nav { display:block; }
+  .ds-workspace-head { min-height:0; padding:16px 20px; flex-wrap:wrap; gap:12px; }
+  .ds-page { padding:0 20px; }.ds-overview-links { grid-template-columns:1fr; }
+}

@@ -100,7 +100,9 @@ export function Welcome() {
 | 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | [启动动画](https://linhay.github.io/rhine-design/#startup) |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |
 
-展台包含组件状态、键盘操作、长文本、加载与错误示例。动效可播放、重播、复位和慢放，并支持减少动态模式。在线版本跟随 `main` 更新；如需本地运行：
+展台采用左侧分组目录、右侧单章节工作区；目录与内容独立滚动，当前章节高亮，原有锚点可直接分享并支持浏览器前进/后退。窄屏使用可展开目录，选择章节后自动收起。动效偏好跨章节保留。
+
+展台包含组件状态、键盘操作、长文本、加载与错误示例。动效可播放、重播、复位和慢放，并支持减少动态模式。离开章节会卸载其演示，返回后重新开始。在线版本跟随 `main` 更新；如需本地运行：
 
 ```sh
 git clone https://github.com/linhay/rhine-design.git
