@@ -35,6 +35,15 @@ export function GalleryShell({ motion, onMotionChange, children }: {
     if (!first.current) main.current?.focus({ preventScroll: true });
     first.current = false;
   }, [section, label]);
+  useEffect(() => {
+    const nav = document.getElementById('gallery-navigation');
+    const current = nav?.querySelector<HTMLElement>('[aria-current=page]');
+    if (!nav || !current || !nav.clientHeight) return;
+    const bounds = nav.getBoundingClientRect(), item = current.getBoundingClientRect();
+    // Reveal deep-linked chapters inside the directory without scrolling the workspace.
+    if (item.top < bounds.top) nav.scrollTop += item.top - bounds.top;
+    else if (item.bottom > bounds.bottom) nav.scrollTop += item.bottom - bounds.bottom;
+  }, [section, menuOpen]);
   return <div className="rhine-theme ds-shell" data-rhine-motion={motion}>
     <a className="ds-skip" href="#gallery-content" onClick={event => { event.preventDefault(); main.current?.focus(); }}>跳到内容</a>
     <aside className="ds-sidebar" data-open={menuOpen} onKeyDown={event => {
