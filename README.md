@@ -1,23 +1,23 @@
-# ToD-AI Design Kit
+# 莱茵设计 · Rhine Design
 
-可整体复制的设计与组件套件。40个React组件、字体与动效规范、页面样稿、10组动效实验和启动动画集中于此；不依赖父目录App、Tauri、网关API或凭证配置。独立私有仓库：[dxy-cn/tod-ai-design-kit](https://github.com/dxy-cn/tod-ai-design-kit)，默认分支main；客户端通过`design-kit/`子模块固定版本。未发布公共npm包。
+归属个人账号linhay、可跨项目复用的设计与组件套件。40个React组件、字体与动效规范、页面样稿、10组动效实验和启动动画集中于此；不依赖父目录App、Tauri、网关API或凭证配置。独立私有仓库：[linhay/rhine-design](https://github.com/linhay/rhine-design)，默认分支main；客户端通过`design-kit/`子模块固定版本。未发布公共npm包。套件名称为“莱茵设计”，ToD-AI仍是产品与品牌示例名；现有包名`@tod-ai/design-kit`及CSS前缀保留兼容。
 
 ## Git与接入登记
 
 ```sh
 # 单独使用
-git clone git@github.com:dxy-cn/tod-ai-design-kit.git
-cd tod-ai-design-kit
+git clone git@github.com:linhay/rhine-design.git
+cd rhine-design
 
 # 在其他项目登记（需有本仓库读取权限）
-git submodule add -b main git@github.com:dxy-cn/tod-ai-design-kit.git vendor/tod-design-kit
+git submodule add -b main git@github.com:linhay/rhine-design.git vendor/tod-design-kit
 # 后续按父项目固定的提交初始化，不自动追随最新main
 git submodule update --init -- vendor/tod-design-kit
 ```
 
 先在套件仓提交、验证并推送，再更新消费项目的gitlink。不要只提交父项目指针却遗漏子仓提交。`branch=main`是分支约定，不改变gitlink固定版本；`npm ci`、预览和验证仍在本目录执行。
 
-拆分来源为客户端`a820ab9`下的`design-kit/`；初始过滤提交`fecfce8`与原子目录tree完全一致，未重写客户端历史。仓库内CI独立运行30项组件测试、类型检查与展台构建。客户端CI按gitlink检出本仓；组织禁止部署密钥，需在客户端Actions Secrets设置`TOD_DESIGN_KIT_READ_TOKEN`（仅此仓Contents: read），缺少时明确失败。不可把个人全权限凭据复制为CI凭据。
+拆分来源为客户端`a820ab9`下的`design-kit/`；初始过滤提交`fecfce8`与原子目录tree完全一致，未重写客户端历史。2026-10-22由原组织地址转移至个人账号并更名，历史与私有可见性保留。已有客户端检出更新`.gitmodules`后执行`git submodule sync -- design-kit`再初始化。仓库内CI独立运行30项组件测试、类型检查与展台构建。客户端CI按gitlink检出本仓；需在客户端Actions Secrets设置`TOD_DESIGN_KIT_READ_TOKEN`（资源所有者linhay，仅rhine-design的Contents: read），缺少时明确失败。个人归属不使默认GITHUB_TOKEN获得跨私有仓权限；不可把个人全权限凭据复制为CI凭据。
 
 ## 目录与边界
 
