@@ -17,7 +17,7 @@ git submodule update --init -- vendor/tod-design-kit
 
 先在套件仓提交、验证并推送，再更新消费项目的gitlink。不要只提交父项目指针却遗漏子仓提交。`branch=main`是分支约定，不改变gitlink固定版本；`npm ci`、预览和验证仍在本目录执行。
 
-拆分来源为客户端`a820ab9`下的`design-kit/`；初始过滤提交`fecfce8`与原子目录tree完全一致，未重写客户端历史。仓库内CI独立运行30项组件测试、类型检查与展台构建。客户端CI用只读部署密钥按gitlink检出本仓；不使用跨项目写权限。
+拆分来源为客户端`a820ab9`下的`design-kit/`；初始过滤提交`fecfce8`与原子目录tree完全一致，未重写客户端历史。仓库内CI独立运行30项组件测试、类型检查与展台构建。客户端CI按gitlink检出本仓；组织禁止部署密钥，需在客户端Actions Secrets设置`TOD_DESIGN_KIT_READ_TOKEN`（仅此仓Contents: read），缺少时明确失败。不可把个人全权限凭据复制为CI凭据。
 
 ## 目录与边界
 
