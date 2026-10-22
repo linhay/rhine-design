@@ -1,7 +1,11 @@
 {
-  "name": "@linhay/rhine-design",
+  "name": "@linhey/rhine-design",
   "version": "0.2.0",
-  "private": true,
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "description": "Rhine Design — independent design system, React components and motion patterns",
   "repository": { "type": "git", "url": "git+https://github.com/linhay/rhine-design.git" },
@@ -32,14 +36,16 @@
     "vite.config.ts",
     "vitest.config.ts",
     "package-lock.json",
-    "scripts"
+    "scripts",
+    "skills"
   ],
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 18309 --strictPort",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "npm run typecheck && vite build && node scripts/check-build.mjs",
-    "check": "npm run test && npm run build"
+    "check": "npm run test && npm run build",
+    "prepublishOnly": "npm run check"
   },
   "peerDependencies": {
     "react": "^19.0.0",

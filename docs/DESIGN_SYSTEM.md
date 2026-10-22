@@ -1,6 +1,6 @@
 # 莱茵设计 · 通用设计规范
 
-本规范是个人项目 linhay/rhine-design 的长期设计基线，覆盖跨产品视觉、文字、组件状态、布局和动画。配套实现为 @linhay/rhine-design；版本演进见[CHANGELOG](../CHANGELOG.md)，组件契约见[组件入口](../components/README.md)。
+本规范是个人项目 linhay/rhine-design 的长期设计基线，覆盖跨产品视觉、文字、组件状态、布局和动画。配套实现为 @linhey/rhine-design；版本演进见[CHANGELOG](../CHANGELOG.md)，组件契约见[组件入口](../components/README.md)。
 
 ## 1. 设计语言
 

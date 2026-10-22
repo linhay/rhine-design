@@ -1,0 +1,20 @@
+# Task map
+
+Resolve the matching package root as described in SKILL.md. Open the first relevant source; expand only when the task crosses domains.
+
+| Task | First reference (relative to package root) | Implementation / example |
+| --- | --- | --- |
+| Visual direction, colors, spacing, layout | `docs/DESIGN_SYSTEM.md` | `components/tokens.css`, `components/Layout.tsx` |
+| Text hierarchy, Chinese/Latin text, metrics | `components/TYPOGRAPHY.md` | `components/Typography.tsx` |
+| Logo, light/dark variants, wordmark | `components/README.md` → 品牌标志 | `components/Logo.tsx`, `components/assets/logo.svg` |
+| Buttons, navigation, basic states | `components/README.md` → 组件契约 | `components/components.tsx` |
+| Forms, selection, combobox, data tables | `components/COMMON_COMPONENTS.md` | Use API_MAP for the source file |
+| Modal, menu, popover, tooltip, feedback | `components/COMMON_COMPONENTS.md` | `components/Overlays.tsx`, `components/Toast.tsx` |
+| Transition, replay, cancellation, reduced motion | `components/MOTION.md` | `preview/`, `components/styles.css` |
+| Startup sequence, logo assembly, ready handoff | `components/STARTUP.md` | Search `startup` in `preview/`; not a public Startup component |
+| Missing capability or system coverage | `docs/DESIGN_SYSTEM_AUDIT.md` | Verify status against `components/index.ts` |
+| Version upgrade | `CHANGELOG.md` | Installed `package.json`, current types |
+
+Run the library showcase with `npm ci && npm run dev` in a source checkout. Default port is 18309; sections include `/#foundation`, `/#typography`, `/#brand`, `/#motion` and `/#startup`. Do not assume another project's server or local filesystem layout.
+
+For host pages, keep product-specific drafts in the host project. The library's `preview/` demonstrates reusable behavior, not business APIs. Labels such as “candidate” or “preview” in motion docs identify experiments; check whether the behavior is actually exported before integrating it.

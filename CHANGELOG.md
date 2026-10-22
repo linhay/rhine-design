@@ -3,10 +3,11 @@
 ## 0.2.0
 
 - 定位为个人通用设计系统 linhay/rhine-design，独立迭代。
-- 包名由 @tod-ai/design-kit 改为 @linhay/rhine-design；更新安装记录、导入语句与固定版本，不提供旧名别名。
+- 包名由 @tod-ai/design-kit 改为 @linhey/rhine-design；更新安装记录、导入语句与固定版本，不提供旧名别名。
 - 通用规范与演示移除特定产品定位；原产品页面、历史图稿和专属规范移回消费项目，Git历史保留。
 - Logo默认字标与可访问名称改为Rhine Design，新增wordmark配置；自定义文字须显式传入。
-- 保留三角几何、动画配方与tod-样式命名空间；未发布公共npm包。
+- 保留三角几何、动画配方与tod-样式命名空间。
+- 配置公开 npm 分发，随包提供 rhine-design skill、任务/API 索引与接入指引；发布状态以 registry 为准。
 
 ## 0.1.0
 
