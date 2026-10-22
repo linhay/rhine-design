@@ -1,6 +1,6 @@
 # npm 发布
 
-包名为 `@linhey/rhine-design`，发布到 `https://registry.npmjs.org/`，access 固定 public。GitHub 仓库可保持私有。普通消费项目安装 npm 版本，不需要仓库读取凭据。
+包名为 `@linhey/rhine-design`，发布到 `https://registry.npmjs.org/`，access 固定 public。GitHub 仓库 `linhay/rhine-design` 已公开；HTTPS 克隆与 npm 安装均不需要专用仓库读取凭据。推送和发布仍需维护者权限。
 
 ## 候选准备
 

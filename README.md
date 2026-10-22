@@ -85,7 +85,7 @@ export function Welcome() {
 展台使用同一份组件源码，提供键盘、长文本、加载、错误及减少动态示例。运行后访问 `http://127.0.0.1:18309/`；暂无独立线上展台。
 
 ```sh
-git clone git@github.com:linhay/rhine-design.git
+git clone https://github.com/linhay/rhine-design.git
 cd rhine-design
 npm ci
 npm run dev
@@ -134,4 +134,4 @@ npm run check
 
 需要共同修改源码时可使用 Git 子模块，安装本地包；Vite 配置 `resolve.dedupe: ['react', 'react-dom']`，避免链接依赖引入第二份 React。保留入口与 CSS 的 `sideEffects`，确保主题不被裁剪。
 
-GitHub 仓库保持私有，源码协作需要读取权限；公开 npm 安装无需 GitHub 凭据。当前许可为 `UNLICENSED`，使用授权由所有者提供。
+GitHub 仓库已公开，可通过 HTTPS 读取和克隆，无需专用读取凭据；公开 npm 安装也无需 GitHub 凭据。当前许可为 `UNLICENSED`，使用授权由所有者提供，仓库可见性不改变许可。
