@@ -1,7 +1,7 @@
 {
   "name": "@linhey/rhine-design",
   "version": "0.2.0",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -32,6 +32,9 @@
     "index.html",
     "README.md",
     "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "NOTICE",
     "tsconfig.json",
     "vite.config.ts",
     "vitest.config.ts",

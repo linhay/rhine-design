@@ -11,26 +11,32 @@
   <a href="#components">组件</a> ·
   <a href="#documentation">设计规范</a> ·
   <a href="#ai-skills">AI Skills</a> ·
+  <a href="CONTRIBUTING.md">参与贡献</a> ·
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是 linhay 独立维护的通用设计系统。设计规范、React 组件、交互展台和 AI skill 同版本交付，供不同项目复用与持续迭代。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、40 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
 - **40 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：10 组播放 / 重播 / 复位演示，以及三角构架启动编排。
-- **组件优先，设计先行**：先在样稿或真实组件展台验证，再接入产品页面。
+- **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
-GitHub 仓库：[`linhay/rhine-design`](https://github.com/linhay/rhine-design) · npm 包：[`@linhey/rhine-design`](https://www.npmjs.com/package/@linhey/rhine-design)。两者账号拼写不同，安装和导入使用 **linhey**。
+基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
 <a id="quick-start"></a>
+
 ## 快速接入
 
-适用于 **React 19 + Vite** 项目；本包导出 TS/TSX 源码，构建器需要支持 CSS 导入与 SVG `?no-inline` 引用。开发建议使用 Node 24。
+需要 **React 19**。当前已验证的构建环境为 **Vite**，开发建议使用 **Node 24**。
+
+首次 npm 发布尚未完成，目前可在你的 React 项目中通过公开仓库安装：
 
 ```sh
-npm install @linhey/rhine-design@0.2.0
+npm install git+https://github.com/linhay/rhine-design.git
 ```
+
+包的导入名称为 `@linhey/rhine-design`。正式项目建议在 Git URL 后附加 `#<commit>` 固定源码版本，并提交 lockfile。
 
 ```tsx
 import { Button, Stack, Surface, Text } from '@linhey/rhine-design';
@@ -42,7 +48,7 @@ export function Welcome() {
         <Stack gap={4}>
           <Text as="h1" variant="title">开始新的工作</Text>
           <Text tone="muted">用统一的组件，构建属于你的工作空间。</Text>
-          <Button onClick={() => { /* 宿主动作 */ }}>继续</Button>
+          <Button onClick={() => { /* 在这里处理点击 */ }}>继续</Button>
         </Stack>
       </Surface>
     </div>
@@ -50,11 +56,17 @@ export function Welcome() {
 }
 ```
 
-入口自动加载样式。`.tod-theme` 和 `--tod-*` 是保留的样式 API 命名空间；在页面根部包裹主题，不为主题根添加 `transform`、裁剪或 `contain`，以便浮层正确定位和继承变量。
+入口自动加载样式，用 `.tod-theme` 包裹页面即可使用默认主题。布局和颜色变量使用 `--tod-*` 前缀；完整定义见 [tokens.css](components/tokens.css)。
 
-组件负责呈现和交互；宿主负责数据、认证、搜索分页、请求取消及真实操作结果。只消费公开组件入口，不导入展台模拟状态。Logo 可通过 `wordmark` 和 `label` 配置品牌文字。
+### 兼容范围
+
+- 包导出 TS/TSX、CSS 和 SVG 源码，构建器需支持 CSS 导入与 Vite 的 SVG `?no-inline` 引用；目前未验证其他构建器和 SSR。
+- 浮层挂载到最近的 `.tod-theme`。请将主题根放在页面根部，避免对它使用 `transform`、裁剪或 `contain`。
+- 组件提供呈现与交互，应用负责数据请求、搜索、分页和操作结果。
+- 当前提供默认暖白主题；Logo 支持独立的深浅配色，完整组件深色主题尚未提供。
 
 <a id="components"></a>
+
 ## 组件
 
 | 类别 | 组件 |
@@ -68,9 +80,10 @@ export function Welcome() {
 | 浮层 | Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
 
-具体参数与状态边界见[组件 API](components/README.md)和[常用组件契约](components/COMMON_COMPONENTS.md)。完整深色主题仍在规划中；当前 Logo 的深浅模式不代表全组件主题支持。
+参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 
 <a id="documentation"></a>
+
 ## 设计规范与展台
 
 | 主题 | 文档 | 本地展台锚点 |
@@ -82,7 +95,7 @@ export function Welcome() {
 | 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | `/#startup` |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |
 
-展台使用同一份组件源码，提供键盘、长文本、加载、错误及减少动态示例。运行后访问 `http://127.0.0.1:18309/`；暂无独立线上展台。
+本地展台包含组件状态、键盘操作、长文本、加载与错误示例。动效可播放、重播、复位和慢放，并支持减少动态模式。
 
 ```sh
 git clone https://github.com/linhay/rhine-design.git
@@ -91,14 +104,26 @@ npm ci
 npm run dev
 ```
 
+打开 `http://127.0.0.1:18309/`，使用上表中的锚点访问对应章节。
+
 <a id="ai-skills"></a>
+
 ## AI Skills
 
-参考 SectionKit 的分层检索方式，提供可复制到项目的 [`rhine-design` skill](skills/rhine-design/SKILL.md)。支持读取 `SKILL.md` 的 agent；Codex 可通过 `$rhine-design` 显式调用。
+[`rhine-design` skill](skills/rhine-design/SKILL.md) 帮助 AI 编程助手查找组件 API、遵循字体与动效规范，并优先复用已有组件。它适用于支持 `SKILL.md` 的工具；Codex 可通过 `$rhine-design` 调用。
 
-```text
-SKILL.md → TASK_MAP / API_MAP → 相关契约与源码 → 设计稿 / 展台 → 产品接入
+安装组件包后，在你的项目根目录执行：
+
+```sh
+mkdir -p .agents/skills
+cp -R node_modules/@linhey/rhine-design/skills/rhine-design .agents/skills/
 ```
+
+然后向助手提出具体任务，例如：
+
+> 使用 $rhine-design 设计一个设置页面，包含搜索、选项开关和保存反馈；复用现有组件，并提供键盘操作与减少动态效果。
+
+skill 中提供以下参考入口：
 
 | 文件 | 用途 |
 | --- | --- |
@@ -107,31 +132,14 @@ SKILL.md → TASK_MAP / API_MAP → 相关契约与源码 → 设计稿 / 展台
 | [API_MAP.md](skills/rhine-design/references/API_MAP.md) | 按组件名定位真实实现和公开入口 |
 | [integration.md](skills/rhine-design/references/integration.md) | 主题、构建、数据所有权与迁移注意事项 |
 
-在已安装 npm 包的项目中安装 skill：
+升级组件时请同步更新 skill；如果已做本地定制，先比较差异再合并。其他工具请将同一 skill 目录放入其支持的技能路径。
 
-```sh
-mkdir -p .agents/skills
-cp -R node_modules/@linhey/rhine-design/skills/rhine-design .agents/skills/
-```
+## 参与贡献
 
-源码开发者也可从本仓根目录执行 `cp -R skills/rhine-design <项目>/.agents/skills/`。目标目录已有自定义内容时先比较再更新。skill 随包发版，升级组件后同步更新 skill；其 frontmatter 记录适用版本。规范和实现留在已安装的包或源码仓中，skill 按需定位，不维护另一份 API 副本。
+欢迎提交问题、文档改进和组件提案。遇到问题时，请在 [Issues](https://github.com/linhay/rhine-design/issues) 提供组件名、版本、预期行为及最小复现。
 
-示例请求：
+开发环境、验证命令和 PR 说明见 [贡献指南](CONTRIBUTING.md)。版本变化和升级说明见 [CHANGELOG](CHANGELOG.md)。
 
-> 使用 $rhine-design 设计设置页面，优先复用已有组件。先在设计稿中补齐加载、错误和键盘状态，验证后按本次授权接入应用。
+## 许可证
 
-skill 只指导当前任务，不自动发布包、修改其他项目或创建远端 Issue。反馈请提供组件名、版本、最小复现和相关规范路径。
-
-## 独立开发与版本管理
-
-```sh
-npm run check
-```
-
-检查包含组件测试、类型检查、展台构建和 CSS / SVG 保留验证。视觉变化另验 400 / 520 / 880 宽度、200% 缩放、焦点和减少动态；包发布另验仓库外安装。`dist/` 是展台产物，不是组件包入口。
-
-新增通用能力先更新规范、组件与展台，再迁移消费页面。版本与迁移记录见 [CHANGELOG](CHANGELOG.md)，维护者发布流程见 [RELEASING](docs/RELEASING.md)。消费项目固定版本、自行验收升级。
-
-需要共同修改源码时可使用 Git 子模块，安装本地包；Vite 配置 `resolve.dedupe: ['react', 'react-dom']`，避免链接依赖引入第二份 React。保留入口与 CSS 的 `sideEffects`，确保主题不被裁剪。
-
-GitHub 仓库已公开，可通过 HTTPS 读取和克隆，无需专用读取凭据；公开 npm 安装也无需 GitHub 凭据。当前许可为 `UNLICENSED`，使用授权由所有者提供，仓库可见性不改变许可。
+[Apache License 2.0](LICENSE)。版权声明见 [NOTICE](NOTICE)。第三方依赖遵循各自的许可证。

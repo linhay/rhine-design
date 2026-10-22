@@ -9,6 +9,7 @@
 - 保留三角几何、动画配方与tod-样式命名空间。
 - 配置公开 npm 分发，随包提供 rhine-design skill、任务/API 索引与接入指引；发布状态以 registry 为准。
 - GitHub 仓库公开，安装文档改用无需认证的 HTTPS 克隆方式。
+- 采用 Apache-2.0 许可证，补齐 LICENSE、NOTICE 和贡献指南；README 面向外部开发者组织接入文档。
 
 ## 0.1.0
 

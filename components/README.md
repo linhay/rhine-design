@@ -1,6 +1,6 @@
 # 莱茵设计 · 通用组件 V1.4
 
-本目录是[莱茵设计 · Rhine Design](../README.md)的 React 组件与视觉变量源，归属个人仓库[linhay/rhine-design](https://github.com/linhay/rhine-design)，独立规划与迭代。组件不读取 Gateway、宿主原生平台、凭据、文件或业务状态；由调用者传入结果和动作。包名为`@linhey/rhine-design`；现有`tod-`变量和类名仅作为样式接口命名空间。
+本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`tod-`命名空间。
 
 共40个组件。已有16个基础组件，新增24个数据、表单、操作、浮层和布局组件，见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 

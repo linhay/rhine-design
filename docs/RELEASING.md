@@ -24,4 +24,4 @@ npm view @linhey/rhine-design@<版本> version dist.integrity dist.tarball --reg
 
 失败版本优先发布修复版本。需要撤回推荐时恢复 prior dist-tag 或标记 deprecate，不能假定公开包可随时删除；相关远端修改需明确授权。首次发布没有 prior 版本，发布前验证尤其重要。
 
-当前包导出 TS/TSX/CSS 源码，支持范围是已验证的 React19/Vite 消费；未将 npm 发布外推为任意 SSR、Node-only 或原生平台兼容。license 仍为 UNLICENSED，公开下载不自动授予开源许可。
+当前包导出 TS/TSX/CSS 源码，支持范围是已验证的 React19/Vite 消费；未将 npm 发布外推为任意 SSR、Node-only 或原生平台兼容。项目采用 Apache-2.0，发布包必须包含 LICENSE 与 NOTICE，并保持 package.json 中的许可标识一致。
