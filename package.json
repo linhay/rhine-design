@@ -1,9 +1,11 @@
 {
-  "name": "@tod-ai/design-kit",
-  "version": "0.1.0",
+  "name": "@linhay/rhine-design",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Portable ToD-AI React components, design specifications and motion previews",
+  "description": "Rhine Design — independent design system, React components and motion patterns",
+  "repository": { "type": "git", "url": "git+https://github.com/linhay/rhine-design.git" },
+  "homepage": "https://github.com/linhay/rhine-design#readme",
   "engines": {
     "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
   },
@@ -25,6 +27,7 @@
     "tests",
     "index.html",
     "README.md",
+    "CHANGELOG.md",
     "tsconfig.json",
     "vite.config.ts",
     "vitest.config.ts",

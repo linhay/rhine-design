@@ -1,6 +1,6 @@
 # 莱茵设计 · 通用组件 V1.4
 
-本目录是[莱茵设计 · Rhine Design](../README.md)的 React 组件与视觉变量源，归属个人仓库[linhay/rhine-design](https://github.com/linhay/rhine-design)。组件不读取 Gateway、Tauri、凭据、文件或业务状态；由调用者传入结果和动作。ToD-AI是当前消费产品及品牌示例，尚未迁移其正式业务页面；现有包名、`tod-`变量和类名保留兼容。
+本目录是[莱茵设计 · Rhine Design](../README.md)的 React 组件与视觉变量源，归属个人仓库[linhay/rhine-design](https://github.com/linhay/rhine-design)，独立规划与迭代。组件不读取 Gateway、宿主原生平台、凭据、文件或业务状态；由调用者传入结果和动作。包名为`@linhay/rhine-design`；现有`tod-`变量和类名仅作为样式接口命名空间。
 
 共40个组件。已有16个基础组件，新增24个数据、表单、操作、浮层和布局组件，见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
@@ -11,7 +11,7 @@
 先按[套件接入说明](../README.md#其他项目使用组件)安装本地源码包，再导入：
 
 ```tsx
-import { Button, Notice, Progress, Surface } from '@tod-ai/design-kit';
+import { Button, Notice, Progress, Surface } from '@linhay/rhine-design';
 
 export function Example() {
   return (
@@ -41,7 +41,7 @@ export function Example() {
 | 组件 | 关键输入 | 状态与边界 |
 | --- | --- | --- |
 | Button | variant=primary/secondary/quiet/danger；busy；busyLabel；原生按钮属性 | 默认 type=button；busy 保留焦点并拦截再次 click，不自动把业务标记成功；disabled 使用原生禁用 |
-| Logo | variant=mark/icon/lockup；theme=light/dark/auto；size；animate；decorative；label | 第三版三角构架；默认静态、48px、浅色单标志；最小16px；无点击/业务状态 |
+| Logo | variant=mark/icon/lockup；theme=light/dark/auto；size；animate；decorative；label；wordmark | 第三版三角构架；默认静态、48px、浅色单标志；最小16px；无点击/业务状态 |
 | Text | variant；as；tone；numeric；HTML属性 | 默认p/body；视觉层级不决定HTML语义；长文本可换行；不转换数值或截断文本 |
 | Select | label；hint；error；原生单选select属性；option子节点 | 标签与描述自动关联；原生菜单和键盘；受控或defaultValue；不支持multiple/size列表模式；箭头装饰性且不接收点击 |
 | Toolbar | title；description；children；HTML div属性 | 自适应控件组合，role=group与普通Tab顺序；不伪装为需要方向键导航的ARIA toolbar；不含业务状态 |
@@ -59,11 +59,11 @@ export function Example() {
 
 新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
 
-业务示例中保持这些区分：浏览面板不等于当前配置，配置模式不等于自动同步运行中；页面使用 Rust 返回状态决定 selected/busy/notice。视觉反馈不能越过这个边界。
+浏览状态不等于执行结果；页面使用宿主的真实状态决定selected/busy/notice，视觉反馈不能提前宣称业务完成。
 
 ## 动效规范
 
-本节`/#…`相对独立展台服务根（默认18309）；客户端18308仍可使用`/design/components/#…`兼容入口。
+本节`/#…`相对独立展台服务根（默认18309）。
 
 启动动画候选见[三角构架归位](./STARTUP.md)与`/#startup`。专属分镜不改变通用Logo入场参数，也不作为真实初始化等待门槛。
 
@@ -81,7 +81,7 @@ export function Example() {
 <Logo size={24} decorative />
 ```
 
-`mark` 为透明单标志，`icon` 为圆角底板，`lockup` 为标志与 ToD-AI 字标。浅色为苔绿标志/暖白底；深色为暖白标志/苔绿底。`auto` 跟随系统配色，只有 Logo 改色，不代表组件库已有完整深色主题；透明形态的背景由调用者负责提供。标志画布外建议保留至少宽度的 1/8 安全间距，不拉伸、不旋转。小于24px只用单标志，不加字标。
+`mark` 为透明单标志，`icon` 为圆角底板，`lockup` 为标志与可配置字标（默认 Rhine Design）；`wordmark`同时提供默认可访问名称，`label`可单独覆盖。浅色为苔绿标志/暖白底；深色为暖白标志/苔绿底。`auto` 跟随系统配色，只有 Logo 改色，不代表组件库已有完整深色主题；透明形态的背景由调用者负责提供。标志画布外建议保留至少宽度的 1/8 安全间距，不拉伸、不旋转。小于24px只用单标志，不加字标。
 
 默认没有动画。`animate` 在挂载时播放一次240ms三块归位，位移最大3 CSS px并淡入，使用 standard 缓动。普通重渲染不会重播；需要显式重播时更换 key。减少动态时直接呈现；动画不承载加载或成功状态。原生安装/托盘保持静态，当前尚未替换打包资产。
 
@@ -132,21 +132,6 @@ export function Example() {
 
 ## 验证入口与边界
 
-拆分前客户端验证：49项前端与8项脚本测试、类型/生产构建和独立展台构建通过；10组动效及焦点、重播、窄窗和减少动态的浏览器证据见[MOTION.md](./MOTION.md#后续验收)。下面V1.3/V1.4记录保留各阶段证据，测试数量以此处最新结果为准。
+在仓库根执行npm run check。浏览器核对400/520/880/1200宽度、200%缩放、键盘/焦点、展开反向、减少动态中断与加载宽度。JSDOM不代替视觉或原生辅助技术验收。
 
-```sh
-npm run dev
-# 在design-kit根执行，浏览器访问 http://127.0.0.1:18309/
-npx vitest run tests/DesignSystem.test.tsx tests/CommonComponents.test.tsx
-npm run check
-```
-
-自动化覆盖：重复动作抑制、按钮默认类型、受控取消选择、Tab 键盘与面板保留、多组 ARIA 独立、字段错误关联、未知进度、无动画支持的 Disclosure。
-
-浏览器需核对 400/520/880/1200 宽度、鼠标/键盘、展开快速反向、减少动态中断、按钮加载宽度、页面焦点和控制台错误。动画不以 JSDOM 通过作为视觉证据。正式 Tauri/macOS/Windows 原生验收需在业务迁移后单独执行。
-
-独立入口不在默认 Vite 生产构建中。生产检查额外拒绝组件展台的 `ds-gallery` 标记；后续导入通用组件不会引入展台。
-
-V1.3验证：31项前端测试、8项脚本测试与类型/构建通过；静态样稿72组页面/场景布局、箭头居中与留白、9档字号行高、200%缩放、Tab顺序、减少动态和强制颜色回退经Chrome验证。原生Select的方向键选项切换在本轮自动化中未确认，不算通过；需在真实系统菜单及Tauri入口补验。
-
-V1.4验证：Node24下44项前端、8项脚本测试及类型/生产构建通过；独立组件展台也单独生产构建通过。Chrome验证400/520/880/1200宽度、520px下200%缩放无页面横向溢出，表格局部滚动；分页边界与刷新保留数据、原生radio方向键、Combobox禁用项跳过/加载/Escape、复制成功失败、Menu键盘与焦点归还、Tooltip、Dialog焦点限制/嵌套Popover、确认失败保留、错误Toast持久、Portal减少动态继承及400px浮层避让通过。IME组合与通知计时另有单测；不将模拟事件等同于实体输入法或屏幕阅读器验收。正式App、Tauri平台剪贴板与完整深色主题仍未迁移/验收。
+本仓构建产物是独立展台；消费项目只导入组件入口，避免把preview中的模拟流程打入业务产物。版本变化和迁移见[CHANGELOG](../CHANGELOG.md)。

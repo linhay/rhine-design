@@ -39,21 +39,21 @@ export function StartupGallery({ reduced }: { reduced: boolean }) {
     <p className="ds-caption">启动动画设计候选 · 品牌分镜 1.6 秒，560ms 连续收拢到登录页。就绪即刻可操作，减少动态时直接呈现。</p>
     <div className="ds-startup-layout">
       <div className="ds-startup-window">
-        <div className="ds-startup-chrome"><span>ToD-AI</span><span>启动设计预览</span></div>
+        <div className="ds-startup-chrome"><span>Rhine Design</span><span>启动设计预览</span></div>
         <div key={generation} className="ds-startup-stage" data-state={state}>
             <div className="ds-startup-emblem" aria-hidden="true">
               <svg className="ds-startup-construction" viewBox="0 0 240 240" fill="none"><path className="ds-startup-guide" pathLength="1" d="M120 20 225 202H15Z" /><path className="ds-startup-ticks" d="M120 8v8M120 218v14M0 120h12M228 120h12" /><circle className="ds-startup-signal" cx="120" cy="20" r="3" /></svg>
               <div className="ds-startup-logo-anchor"><Logo size={176} decorative animate={state === 'playing' || state === 'ready'} className="ds-brand-assembly" /></div>
-              <div className="ds-startup-wordmark">ToD-AI</div>
+              <div className="ds-startup-wordmark">Rhine Design</div>
             </div>
             {state === 'ready' ? <div className="ds-startup-destination">
               <Text as="h3" variant="section">连接你的工作空间</Text>
-              <Text tone="muted">使用浏览器登录，安全连接 ToD-AI。</Text>
+              <Text tone="muted">登录后继续你的工作。</Text>
               <Button onClick={() => setLoginPreview(true)}>在浏览器中登录</Button>
               <Text variant="caption" tone="muted" role="status">{loginPreview ? '仅演示登录入口，不会打开授权页面。' : '设计预览，不发起授权。'}</Text>
             </div> : <div className="ds-startup-status" role="status">{state === 'cover' ? '准备播放' : state === 'error' ? '初始化未完成' : '正在准备工作空间'}</div>}
             {state === 'error' && <Notice tone="error" title="暂时无法恢复会话">这是失败场景演示。可使用下方重播再次查看。</Notice>}
-            <div className="ds-startup-footnote" aria-hidden="true"><span>STRUCTURE / CONNECTION</span><span>ToD-AI</span></div>
+            <div className="ds-startup-footnote" aria-hidden="true"><span>STRUCTURE / CONNECTION</span><span>Rhine Design</span></div>
         </div>
       </div>
       <aside className="ds-startup-score" aria-label="启动分镜">

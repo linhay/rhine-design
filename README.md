@@ -1,92 +1,80 @@
 # 莱茵设计 · Rhine Design
 
-归属个人账号linhay、可跨项目复用的设计与组件套件。40个React组件、字体与动效规范、页面样稿、10组动效实验和启动动画集中于此；不依赖父目录App、Tauri、网关API或凭证配置。独立私有仓库：[linhay/rhine-design](https://github.com/linhay/rhine-design)，默认分支main；客户端通过`design-kit/`子模块固定版本。未发布公共npm包。套件名称为“莱茵设计”，ToD-AI仍是产品与品牌示例名；现有包名`@tod-ai/design-kit`及CSS前缀保留兼容。
+linhay 的通用设计规范与 React 组件系统，独立规划、验证和迭代。以暖白、苔绿、三角几何、精密细线和克制动效建立跨产品的界面语言。
 
-## Git与接入登记
+- 仓库：[linhay/rhine-design](https://github.com/linhay/rhine-design)，个人私有仓库，主分支 main。
+- npm 包名与导入标识：**`@linhay/rhine-design`**，当前版本 **0.2.0**；尚未发布公共 npm 包。
+- 当前能力：40 个 React 组件、字体与文字规范、10 组可重播动效、启动编排演示。不依赖消费产品的 API、认证、文件或业务状态。
+
+## 规范与源码
+
+| 内容 | 入口 |
+| --- | --- |
+| 通用设计规范 | [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) |
+| 组件 API 与组合 | [组件说明](components/README.md)、[常用组件契约](components/COMMON_COMPONENTS.md) |
+| 字体与文字 | [TYPOGRAPHY.md](components/TYPOGRAPHY.md) |
+| 动效与启动 | [MOTION.md](components/MOTION.md)、[STARTUP.md](components/STARTUP.md) |
+| 设计模式与演示 | [设计索引](design/README.md)、preview/ |
+| 系统对照与缺口 | [DESIGN_SYSTEM_AUDIT.md](docs/DESIGN_SYSTEM_AUDIT.md) |
+| 版本与迁移 | [CHANGELOG.md](CHANGELOG.md) |
+
+components/ 是可消费源码，preview/ 使用同一组件演示交互，tests/ 验证组件及演示行为。具体产品的页面、接口、品牌应用与发布资料由消费项目维护。
+
+## 独立开发
+
+使用 Node 24：
 
 ```sh
-# 单独使用
 git clone git@github.com:linhay/rhine-design.git
 cd rhine-design
-
-# 在其他项目登记（需有本仓库读取权限）
-git submodule add -b main git@github.com:linhay/rhine-design.git vendor/rhine-design
-# 后续按父项目固定的提交初始化，不自动追随最新main
-git submodule update --init -- vendor/rhine-design
-```
-
-先在套件仓提交、验证并推送，再更新消费项目的gitlink。不要只提交父项目指针却遗漏子仓提交。`branch=main`是分支约定，不改变gitlink固定版本；`npm ci`、预览和验证仍在本目录执行。
-
-拆分来源为客户端`a820ab9`下的`design-kit/`；初始过滤提交`fecfce8`与原子目录tree完全一致，未重写客户端历史。2026-10-22由原组织地址转移至个人账号并更名，历史与私有可见性保留。已有客户端检出更新`.gitmodules`后执行`git submodule sync -- design-kit`再初始化。仓库内CI独立运行30项组件测试、类型检查与展台构建。客户端CI按gitlink检出本仓；需在客户端Actions Secrets设置`TOD_DESIGN_KIT_READ_TOKEN`（资源所有者linhay，仅rhine-design的Contents: read），缺少时明确失败。个人归属不使默认GITHUB_TOKEN获得跨私有仓权限；不可把个人全权限凭据复制为CI凭据。
-
-## 目录与边界
-
-```text
-design-kit/
-  components/   通用组件、tokens、SVG母版与组件契约
-  design/       页面样稿、品牌探索及历史PDF
-  docs/         产品设计规范、组件系统对照
-  preview/      真实组件展台、启动/动效候选（不导出给业务）
-  tests/        组件与展台行为回归
-  index.html    独立展台入口
-  package.json  独立依赖、源码exports和运行命令
-```
-
-- [ToD-AI产品规范](docs/DESIGN_SYSTEM.md)与[设计稿索引](design/README.md)：消费产品的页面、品牌与历史材料，不作为其他产品的业务要求。
-- [组件API](components/README.md)、[40组件契约](components/COMMON_COMPONENTS.md)、[字体](components/TYPOGRAPHY.md)：跨项目接入前必读。
-- [动效](components/MOTION.md)、[启动动画](components/STARTUP.md)：通用能力与设计候选分开。启动动画未接入正式App；就绪不等待装饰播放完成。
-
-## 独立运行
-
-使用Node24（其他支持版本见engines）。在本目录执行，不需要启动父项目：
-
-```sh
 npm ci
 npm run dev
-# http://127.0.0.1:18309/#startup
-# http://127.0.0.1:18309/#motion
-# http://127.0.0.1:18309/design/refactor/review.html
+# http://127.0.0.1:18309/#foundation
+# /#typography /#motion /#startup
 npm run check
 ```
 
-`check`运行组件/展台测试、类型检查与展台生产构建，并检查主题CSS和SVG未被打包优化删除；`dist/`是可部署的展台，不是预编译组件包。静态页面设计稿在开发服务中单独查看。可复制整个目录到别处，再执行相同命令；保留package-lock.json。不要复制node_modules、dist或父项目秘密文件。
+check 运行测试、类型检查、展台构建，以及主题 CSS/SVG 保留检查。dist/ 是展台产物；本包导出 TS/TSX 源码。开发与验证无需消费项目 checkout。
 
-现有客户端入口`http://127.0.0.1:18308/design/components/#startup`继续运行同一份展台；旧`/design/refactor/review.html`转向本目录样稿。父项目的`design/`与根设计Markdown只作兼容入口，不再维护第二份正文。
+## 项目接入
 
-## 其他项目使用组件
+在目标 React/Vite 项目登记并提交固定版本的子模块：
 
-优先按上文登记为`vendor/rhine-design/`子模块，固定已验证提交；不要使用`update --remote`自动跟随主线。在套件目录执行`npm ci`准备其依赖，再于目标React/Vite项目根目录执行`npm install ./vendor/rhine-design`；React/React DOM使用目标项目的React19，并按下文去重。这是本地源码包接入，不是从公共npm下载。安装后的导入示例：
+```sh
+git submodule add -b main git@github.com:linhay/rhine-design.git vendor/rhine-design
+git submodule update --init -- vendor/rhine-design
+cd vendor/rhine-design
+npm ci
+cd ../..
+npm install ./vendor/rhine-design
+```
 
 ```tsx
-import { Button, Surface, Text } from '@tod-ai/design-kit';
+import { Button, Surface, Text } from '@linhay/rhine-design';
 
 export function Example() {
   return <div className="tod-theme">
     <Surface>
-      <Text as="h2" variant="section">连接工作空间</Text>
-      <Button onClick={() => { /* 接入目标项目的动作 */ }}>继续</Button>
+      <Text as="h2" variant="section">开始新的工作</Text>
+      <Button onClick={() => { /* 宿主动作 */ }}>继续</Button>
     </Surface>
   </div>;
 }
 ```
 
-也可直接从`./vendor/rhine-design/components`导入源码，此时目标项目需要安装本套件package.json声明的5个Radix运行依赖。无法使用子模块时，可整体复制目录作为固定快照，同时记录来源提交并保留package-lock.json。exports指向TS/TSX源码，目标构建器必须支持源码转换、CSS导入及Vite的SVG `?no-inline`引用；不宣称可直接用于Node、原生移动端或任意SSR框架。使用本地链接时保证只有一份React，Vite可配置`resolve.dedupe: ['react', 'react-dom']`。仓库更名未改变兼容包名`@tod-ai/design-kit`，不要将仓库名误当作已发布npm包名。
+要求 React 19；运行依赖见 package.json。目标构建器须支持 TS/TSX、CSS 导入及 Vite SVG `?no-inline` 引用。本地链接配置 `resolve.dedupe: ['react', 'react-dom']`，保证只有一份 React。未验证任意 SSR 或原生移动端。
 
-组件入口自动加载CSS；tokens使用`--tod-`前缀，`.tod-theme`提供字体、焦点与减少动态。项目主题可在自己的`.tod-theme`根覆盖tokens。浮层Portal挂最近主题根，根节点不要设置transform、裁剪或contain。业务逻辑、后端搜索/分页、认证与真实状态仍由宿主负责。
+入口自动加载样式。现有 tod- CSS/变量命名空间暂保留，避免在包身份迁移中附带无必要的样式 API 破坏；它不定义产品归属。使用 .tod-theme 主题根，浮层继承最近主题根；根上不设置 transform、裁剪或 contain。
 
-只导入`components/`；不要把`preview/`中的合成等待、示例身份或启动演示当成业务实现。品牌Logo是ToD-AI资产，其他产品替换品牌时单独评审，不修改通用组件来嵌入产品逻辑。源码复用范围以仓库所有者授权为准，本目录未新增开源许可或对外发布承诺。
+只消费组件公开入口，不导入演示模拟状态。Logo 默认字标为 Rhine Design，可用 wordmark 和 label 配置文字；宿主负责数据、认证、搜索分页、请求取消及真实操作结果。
 
-## 后续维护
+私有仓的消费项目 CI 需要独立获得本仓只读权限，默认 GITHUB_TOKEN 不自动获得跨仓读取权限；凭据名称和配置由消费项目维护，不构成库 API。源码使用遵循所有者授权，当前未授予开源许可。
 
-先复用 → 先改本目录中的设计稿/展台并验证 → 再按授权迁移App。变更组件时同时更新契约与相关行为测试；变更动效须在浏览器验证中间帧、快速重播、减少动态、窄窗和200%缩放。使用独立package-lock锁定工具链；升级依赖时同步核对父项目兼容性。
+## 独立迭代与验收
 
-套件的测试和构建不代替Tauri原生、真实登录/同步、实体输入法或屏幕阅读器验收。
+1. 先更新通用规范和组件契约，再修改组件与真实展台。
+2. 验证默认、禁用、加载、错误、长文本、键盘、焦点、减少动态及中断/重播。
+3. 运行 npm run check；视觉变化验证400/520/880宽度与200%缩放，仓库外消费验证导入和CSS/SVG。
+4. 在本仓提交并更新版本与CHANGELOG；消费项目自行选择、验收版本，不随main自动升级。破坏性API变化提供迁移说明。
 
-## 本次验证 · 2026-10-22
-
-- 整个套件复制到仓库外，独立`npm ci`、30项测试、类型与构建通过。
-- 另建最小React/Vite消费项目，通过本地安装`@tod-ai/design-kit`导入Button/Surface/Logo，构建保留主题CSS及SVG。
-- 父项目49项前端测试、8项脚本测试及正式构建通过；迁移前后正式产物文件名/内容hash保持一致。
-- Chrome验证旧入口、独立开发入口和独立构建产物：主题、启动播放与连续衔接、登录本地反馈、400/520/880宽度；旧页面样稿重定向和独立样稿可加载。启动时序、200%缩放与减少动态的既有验证见[启动规范](components/STARTUP.md)。
-
-构建约束：package.json的`sideEffects`必须保留`components/index.ts`和CSS。只把CSS标为副作用会使某些打包路径跳过入口的CSS导入，组件仍能渲染但主题丢失；`scripts/check-build.mjs`检查这一回归。
+本库由通用能力需求驱动，不由某个产品的开发或发布时间表定义完成条件。组件测试不代替消费产品业务或原生验收。保留 components/index.ts 与 CSS 的 sideEffects，防止打包丢失主题。

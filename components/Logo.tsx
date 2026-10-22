@@ -8,11 +8,12 @@ export interface LogoProps {
   animate?: boolean;
   decorative?: boolean;
   label?: string;
+  wordmark?: string;
   className?: string;
 }
 
 /** All variants share the same SVG geometry and centered square viewport. */
-export function Logo({ size = 48, variant = 'mark', theme = 'light', animate = false, decorative = false, label = 'ToD-AI', className = '' }: LogoProps) {
+export function Logo({ size = 48, variant = 'mark', theme = 'light', animate = false, decorative = false, wordmark = 'Rhine Design', label = wordmark, className = '' }: LogoProps) {
   const dimension = Number.isFinite(size) ? Math.max(16, size) : 48;
   return <span
     className={`tod-logo tod-logo--${variant} ${className}`}
@@ -28,6 +29,6 @@ export function Logo({ size = 48, variant = 'mark', theme = 'light', animate = f
       <use className="tod-logo__plate tod-logo__plate--right" href={`${markUrl}#right`} />
       <use className="tod-logo__plate tod-logo__plate--base" href={`${markUrl}#base`} />
     </svg>
-    {variant === 'lockup' && <span className="tod-logo__wordmark" aria-hidden="true">ToD-AI</span>}
+    {variant === 'lockup' && <span className="tod-logo__wordmark" aria-hidden="true">{wordmark}</span>}
   </span>;
 }

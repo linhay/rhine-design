@@ -1,9 +1,17 @@
 import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { Button, Disclosure, Progress, SegmentedControl, Select, SelectionCard, Tabs, TextField } from '../components';
+import { Button, Disclosure, Logo, Progress, SegmentedControl, Select, SelectionCard, Tabs, TextField } from '../components';
 
 describe('reusable design components', () => {
+  it('uses the independent library identity and accepts a host wordmark', () => {
+    const { rerender } = render(<Logo variant="lockup" />);
+    expect(screen.getByRole('img', { name: 'Rhine Design' })).toHaveTextContent('Rhine Design');
+    rerender(<Logo variant="lockup" wordmark="Studio" />);
+    expect(screen.getByRole('img', { name: 'Studio' })).toHaveTextContent('Studio');
+    rerender(<Logo variant="lockup" wordmark="Studio" label="Studio home" decorative />);
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
   it('associates native selects with unique labels, hints, errors and caller descriptions', () => {
     render(<><span id="context">当前工作区</span><Select label="页面" hint="请选择" error="页面不可用" aria-describedby="context"><option>用量</option></Select><Select label="场景" disabled><option>正常</option></Select></>);
     const page = screen.getByRole('combobox', {name:'页面'});

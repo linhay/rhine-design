@@ -30,13 +30,13 @@ function Gallery() {
 
       <StartupGallery reduced={motion==='reduced'} />
       <MotionGallery reduced={motion==='reduced'} />
-      <section id="brand"><div className="ds-section-title"><span>00</span><h2>三角构架 · ToD-AI</h2></div>
+      <section id="brand"><div className="ds-section-title"><span>00</span><h2>三角构架 · Rhine Design</h2></div>
         <div className="ds-logo-pair">
           <div className="ds-logo-stage"><Logo variant="icon" size={192} theme="light" /><span>浅色 / LIGHT</span></div>
           <div className="ds-logo-stage ds-logo-stage--dark"><Logo variant="icon" size={192} theme="dark" /><span>深色 / DARK</span></div>
         </div>
         <p className="ds-caption">浅色与深色共用同一份矢量母版，图形在方形画布内水平、垂直居中。</p>
-        <div className="ds-grid"><Surface><div className="ds-component-title"><h3>Logo · 尺寸与组合</h3><span>16 / 24 / 32 / 48 / 64px</span></div><div className="ds-row">{[16,24,32,48,64].map(size=><Logo key={size} size={size} label={`ToD-AI ${size}px`} />)}</div><div className="ds-gap-top"><Logo variant="lockup" size={48} /></div></Surface>
+        <div className="ds-grid"><Surface><div className="ds-component-title"><h3>Logo · 尺寸与组合</h3><span>16 / 24 / 32 / 48 / 64px</span></div><div className="ds-row">{[16,24,32,48,64].map(size=><Logo key={size} size={size} label={`Rhine Design ${size}px`} />)}</div><div className="ds-gap-top"><Logo variant="lockup" size={48} /></div></Surface>
           <Surface><div className="ds-component-title"><h3>Logo · 三块归位</h3><span>240ms / 单次入场</span></div><div className="ds-row"><Logo key={logoReplay} size={80} animate /><Button variant="secondary" onClick={()=>setLogoReplay(value=>value+1)}>重播标志动画</Button></div><p className="ds-caption">默认静态；减少动态时直接呈现。标志不表示同步进度。</p></Surface></div>
       </section>
 
@@ -49,9 +49,9 @@ function Gallery() {
         <p className="ds-caption">系统无衬线用于中英文正文；等宽字体用于路径、模型标识和代码。业务字号不低于 12px，中文不增加装饰字距。</p>
         <Surface><div className="ds-type-scale">{([
           ['title','30 / 38 · 600','连接你的工作空间'],
-          ['section','18 / 26 · 600','今日用量'],
+          ['section','18 / 26 · 600','数据概览'],
           ['heading','16 / 24 · 600','研究账号 A'],
-          ['body','14 / 22 · 400','选择 OAuth 账号后，ToD-AI 将开启自动同步。'],
+          ['body','14 / 22 · 400','选择一个项目后，继续你的工作。'],
           ['label','14 / 22 · 500','在浏览器中登录'],
           ['caption','12 / 18 · 400','最近检查 14:32 · 上海时区'],
           ['overline','12 / 18 · 500','连接方式'],
@@ -60,11 +60,11 @@ function Gallery() {
         ] satisfies [TextVariant,string,string][]).map(([variant,spec,sample])=><div className="ds-type-row" key={variant}><div><Text variant="code">{variant}</Text><Text variant="caption" tone="muted">{spec}</Text></div><Text variant={variant}>{sample}</Text></div>)}</div></Surface>
         <div className="ds-grid ds-gap-top"><Surface><Text as="h3" variant="heading">中英文与数字</Text><div className="ds-type-copy"><Text>已完成 128 次请求，共使用 1.4M Token。</Text><Text numeric>预估费用 $5.44 · 平均耗时 2.4 s</Text><Text tone="muted" variant="caption">2026-10-22 14:32 · 上海（UTC+8）</Text><Text variant="overline" lang="en">Usage / Today</Text><Text>未采集的数据显示「—」，不替换为 0。小数位按指标语义固定，原始值保持可查。</Text></div></Surface>
         <Surface><Text as="h3" variant="heading">换行与状态文案</Text><div className="ds-type-copy"><Text>长标题、错误原因和下一步操作允许自然换行。</Text><Text variant="code">example-very-long-model-identifier-for-wrapping-preview-2026-10-22</Text><Text tone="error">暂时无法读取列表。请检查连接后重试。</Text><Text variant="caption" tone="muted">文字不缩放、不跑马灯、不逐字播放；复制或展开应能获取完整内容。</Text></div></Surface></div>
-        <div className="ds-gap-top"><Toolbar title="ToD-AI / 设计评审" description="工具栏与静态页面样稿共用一套样式。">
-          <Select label="页面示例" value={previewPage} onChange={event=>setPreviewPage(event.target.value)}><option value="oauth">凭证同步 · OAuth</option><option value="usage">今日用量</option></Select>
+        <div className="ds-gap-top"><Toolbar title="Rhine Design / 设计评审" description="工具栏与静态页面样稿共用一套样式。">
+          <Select label="页面示例" value={previewPage} onChange={event=>setPreviewPage(event.target.value)}><option value="oauth">项目列表</option><option value="usage">数据概览</option></Select>
           <Select label="场景示例" defaultValue="normal"><option value="normal">正常</option><option value="loading">读取中 / 等待授权</option></Select>
         </Toolbar></div>
-        <div className="ds-grid ds-gap-top"><Select label="错误状态" defaultValue="" error="请选择一个页面后继续。"><option value="" disabled>请选择</option><option value="usage">今日用量</option></Select><Select label="禁用状态" disabled defaultValue="fixed" hint="原生菜单保留键盘操作，箭头不接收点击。"><option value="fixed">暂不可更改</option></Select></div>
+        <div className="ds-grid ds-gap-top"><Select label="错误状态" defaultValue="" error="请选择一个页面后继续。"><option value="" disabled>请选择</option><option value="usage">数据概览</option></Select><Select label="禁用状态" disabled defaultValue="fixed" hint="原生菜单保留键盘操作，箭头不接收点击。"><option value="fixed">暂不可更改</option></Select></div>
       </section>
 
       <section id="actions"><div className="ds-section-title"><span>02</span><h2>操作有分量，反馈不打断</h2></div>
@@ -92,7 +92,7 @@ function Gallery() {
         <EmptyState title="暂无记录" description="用一句话说明当前状态，按业务需要提供一个下一步操作。" action={<Button variant="secondary" onClick={()=>setNotice(true)}>演示下一步</Button>} /></div>
       </section>
       <CommonGallery />
-      <footer className="ds-footer"><span>ToD-AI · 通用设计组件 V1.4</span><span>合成数据；复制示例仅在点击时写入演示文字。</span></footer>
+      <footer className="ds-footer"><span>Rhine Design · 通用设计组件 V1.4</span><span>合成数据；复制示例仅在点击时写入演示文字。</span></footer>
     </main>
   </div>;
 }

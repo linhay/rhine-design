@@ -1,6 +1,6 @@
 # 莱茵设计 · 常用组件契约 V1.4
 
-本文件定义[莱茵设计](../README.md)的常用组件契约。先固定契约和组件展台，再验证；默认优先复用本目录，页面先改设计稿，再按授权接入App。ToD-AI业务示例不构成其他产品必须采用的业务流程；正式App迁移单独验收。
+本文件定义[莱茵设计](../README.md)的常用组件契约。先固定契约和组件展台，再验证；默认优先复用本目录，页面先改设计稿，再按授权接入App。具体业务由宿主定义，不进入通用契约。
 
 ## 范围与契约
 
@@ -26,7 +26,7 @@
 | Menu | 操作项/禁用/危险项；方向键/Home/End/输入字符跳转；不是表单选择器 |
 | Divider / Stack / Inline / Grid | 语义分隔线、纵排、可换行横排、自适应网格；只消费间距tokens |
 
-共24个新增组件，与已有16个合计40个。复杂浮层使用Radix无样式基础，避免维护重复焦点/菜单/碰撞实现；样式由ToD-AI定义。原生表单、数据与布局不引入额外框架。
+共24个新增组件，与已有16个合计40个。复杂浮层使用Radix无样式基础，避免维护重复焦点/菜单/碰撞实现；样式由Rhine Design定义。原生表单、数据与布局不引入额外框架。
 
 ## 动效与状态
 
@@ -60,11 +60,11 @@
 
 - SearchField传`value/onValueChange/onSearch`；Enter或搜索按钮提交，清空回传空查询。Combobox传`query/onQueryChange/value/onValueChange/options`；options为`{value,label,disabled?}`，查询输入与选中ID分开管理。业务层负责服务端搜索、防抖、取消与过期结果保护，组件不拉全量过滤。
 - Checkbox接受原生input属性及indeterminate；混合状态在点击后应由调用方重算，不使用readOnly模拟锁定（原生checkbox无只读行为）。RadioGroup与Switch都是受控，Textarea沿用原生readOnly和disabled语义。
-- CopyButton接受`value/label/copy?`，copy适配器返回Promise。等待成功后提示；value变化后忽略旧请求结果，错误不暴露异常正文。Tauri接入应提供平台适配器并做真实剪贴板验收。
+- CopyButton接受`value/label/copy?`，copy适配器返回Promise。等待成功后提示；value变化后忽略旧请求结果，错误不暴露异常正文。宿主原生平台接入应提供平台适配器并做真实剪贴板验收。
 - ConfirmDialog的`onConfirm`返回void或Promise；等待时阻止再次确认、取消和Escape，成功后关闭，失败保留内容供重试。任务超时/取消能力由业务回调负责，不让Promise无限悬挂。默认焦点在取消按钮。
 - Toast由`open/onOpenChange/title/description/tone/duration`控制；默认5秒，duration≤0常驻，warning/error始终常驻。重复打开同一条已打开通知不会重置计时；要作为新通知应更换key或先关闭。不要把凭证、异常正文等敏感数据放进通知。
 - Stack/Inline/Grid的gap取`1/2/3/4/6/8/12`，对应间距token；Grid的minWidth以px计，窄容器自动收缩。Icon的name使用导出IconName类型，不以自由文本插入SVG。
 
 ## 设计展台验收
 
-展示40组件的真实实现；新增数据、表单、操作/布局、反馈/浮层四组。合成数据只演示事件与状态；Clipboard仅复制明确的演示字符串。测试覆盖分页边界、请求状态、异步复制失败、IME、候选列表、通知计时、浮层焦点/Escape与窄窗；原生Tauri和屏幕阅读器仍需App接入后单独验收。
+展示40组件的真实实现；新增数据、表单、操作/布局、反馈/浮层四组。合成数据只演示事件与状态；Clipboard仅复制明确的演示字符串。测试覆盖分页边界、请求状态、异步复制失败、IME、候选列表、通知计时、浮层焦点/Escape与窄窗；原生宿主原生平台和屏幕阅读器仍需App接入后单独验收。
