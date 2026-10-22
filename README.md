@@ -7,6 +7,7 @@
 <p align="center">暖白与苔绿，三角与细线。让界面拥有清晰的秩序与克制的节奏。</p>
 
 <p align="center">
+  <a href="https://linhay.github.io/rhine-design/">在线预览</a> ·
   <a href="#quick-start">快速接入</a> ·
   <a href="#components">组件</a> ·
   <a href="#documentation">设计规范</a> ·
@@ -30,13 +31,13 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 需要 **React 19**。当前已验证的构建环境为 **Vite**，开发建议使用 **Node 24**。
 
-首次 npm 发布尚未完成，目前可在你的 React 项目中通过公开仓库安装：
+在你的 React 项目中安装：
 
 ```sh
-npm install git+https://github.com/linhay/rhine-design.git
+npm install @linhey/rhine-design@0.2.0
 ```
 
-包的导入名称为 `@linhey/rhine-design`。正式项目建议在 Git URL 后附加 `#<commit>` 固定源码版本，并提交 lockfile。
+包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
 
 ```tsx
 import { Button, Stack, Surface, Text } from '@linhey/rhine-design';
@@ -86,16 +87,18 @@ export function Welcome() {
 
 ## 设计规范与展台
 
-| 主题 | 文档 | 本地展台锚点 |
+无需安装即可打开 **[在线组件展台](https://linhay.github.io/rhine-design/)**，体验组件与动效。
+
+| 主题 | 文档 | 在线预览 |
 | --- | --- | --- |
-| 视觉基础与组合原则 | [设计规范](docs/DESIGN_SYSTEM.md) | `/#foundation` |
-| 字体、文字层级与数值 | [Typography](components/TYPOGRAPHY.md) | `/#typography` |
-| 品牌几何与 Logo | [Logo 契约](components/README.md#品牌标志) | `/#brand` |
-| 动效、交互与减少动态 | [Motion](components/MOTION.md) | `/#motion` |
-| 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | `/#startup` |
+| 视觉基础与组合原则 | [设计规范](docs/DESIGN_SYSTEM.md) | [视觉基础](https://linhay.github.io/rhine-design/#foundation) |
+| 字体、文字层级与数值 | [Typography](components/TYPOGRAPHY.md) | [字体与文字](https://linhay.github.io/rhine-design/#typography) |
+| 品牌几何与 Logo | [Logo 契约](components/README.md#品牌标志) | [品牌标志](https://linhay.github.io/rhine-design/#brand) |
+| 动效、交互与减少动态 | [Motion](components/MOTION.md) | [动效实验室](https://linhay.github.io/rhine-design/#motion) |
+| 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | [启动动画](https://linhay.github.io/rhine-design/#startup) |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |
 
-本地展台包含组件状态、键盘操作、长文本、加载与错误示例。动效可播放、重播、复位和慢放，并支持减少动态模式。
+展台包含组件状态、键盘操作、长文本、加载与错误示例。动效可播放、重播、复位和慢放，并支持减少动态模式。在线版本跟随 `main` 更新；如需本地运行：
 
 ```sh
 git clone https://github.com/linhay/rhine-design.git
@@ -104,7 +107,7 @@ npm ci
 npm run dev
 ```
 
-打开 `http://127.0.0.1:18309/`，使用上表中的锚点访问对应章节。
+打开 `http://127.0.0.1:18309/`，使用相同的 `#foundation`、`#motion` 等锚点访问对应章节。
 
 <a id="ai-skills"></a>
 

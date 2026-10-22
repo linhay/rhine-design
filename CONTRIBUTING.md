@@ -42,3 +42,9 @@ README 面向首次接触项目的开发者，优先解释用途、安装、示�
 问题反馈请提供包版本、组件名、预期与实际行为、最小复现。删除复现中的私人数据和凭据。
 
 维护者发布步骤见 [RELEASING](docs/RELEASING.md)。项目采用 [Apache-2.0](LICENSE) 许可证。
+
+## 在线展台
+
+[GitHub Pages](https://linhay.github.io/rhine-design/) 展示 `main` 的组件与演示。现有 CI 先执行 `npm run check`，成功后只上传 `dist/` 并部署；Pull Request 运行检查，不发布站点。工作流也支持在 `main` 手动重跑。
+
+Vite 使用相对资源路径，兼容 `/rhine-design/` 子路径。调整构建或静态资源时，检查在线页面、CSS、JS 和 Logo SVG 均能正常加载，以及 `#motion`、`#startup` 直接访问和重播。
