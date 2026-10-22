@@ -16,9 +16,13 @@ export { Metric, KeyValue, DataTable, Pagination } from './Data';
 export type { DataColumn, DataTableProps, TableSort } from './Data';
 export { Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox } from './Forms';
 export type { ComboboxProps } from './Forms';
-export { Dialog, ConfirmDialog, Popover, Menu, Tooltip } from './Overlays';
+export { Dialog, Drawer, ConfirmDialog, Popover, Menu, Tooltip } from './Overlays';
 export type { DialogProps, MenuItem } from './Overlays';
 export { Toast } from './Toast';
+export { SideNav, Breadcrumbs, Steps } from './Navigation';
+export type { NavItem, NavGroup, SideNavProps, BreadcrumbItem, BreadcrumbsProps, StepItem, StepsProps } from './Navigation';
+export { Fieldset, ErrorSummary } from './FormWorkflow';
+export type { FieldsetProps, FieldError, ErrorSummaryProps } from './FormWorkflow';
 
 export { Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState } from './components';
 export type { ButtonProps, Tone, Choice, TabItem } from './components';

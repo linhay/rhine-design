@@ -1,8 +1,8 @@
-# 莱茵设计 · 通用组件 V1.4
+# 莱茵设计 · 通用组件
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-共40个组件。已有16个基础组件，新增24个数据、表单、操作、浮层和布局组件，见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+main 共46个组件；已发布0.3.0为40个。新增6个导航与表单流程组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 页面改动遵循：优先复用组件 → 先在设计稿/展台修改并验证 → 再按任务授权实现到App。缺组件先补组件与展台，不在业务页另写同用途样式；同一任务已授权设计和实现时连续推进，无需重复确认。
 
@@ -67,7 +67,7 @@ export function Example() {
 
 启动动画候选见[三角构架归位](./STARTUP.md)与`/#startup`。专属分镜不改变通用Logo入场参数，也不作为真实初始化等待门槛。
 
-用户指定的Transitions.dev参考与莱茵设计取舍见[UX与动效补充](./MOTION.md)。`/#motion`已提供10组播放、重播、复位与4倍慢放示例，可逐例切换减少动态。方向展开、内容淡入与结果反馈仅在实验室作为候选实现；通用默认实现仍以下表和实际组件为准。
+用户指定的Transitions.dev参考与莱茵设计取舍见[UX与动效补充](./MOTION.md)。`/#motion`已提供12组播放、重播、复位与4倍慢放示例，可逐例切换减少动态。方向展开、内容淡入与结果反馈仅在实验室作为候选实现；通用默认实现仍以下表和实际组件为准。
 
 ### 品牌标志
 

@@ -16,12 +16,14 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、40 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、46 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **40 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
-- **可验证的动效**：10 组播放 / 重播 / 复位演示，以及三角构架启动编排。
+- **46 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
+
+**main 新增能力：**六个导航/表单流程组件及场景规范尚未发布到 npm 0.3.0；在线展台跟随 main，安装前请核对[版本记录](CHANGELOG.md)。新增组件及选型见[交互规范](docs/INTERACTION_PATTERNS.md)，参考项目见[GitHub 调研](docs/REFERENCE_RESEARCH.md)。
 
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
@@ -77,11 +79,13 @@ export function Welcome() {
 | 品牌与文字 | Logo · Text |
 | 操作 | Button · Icon · IconButton · Link · CopyButton |
 | 布局 | Surface · Toolbar · Divider · Stack · Inline · Grid |
-| 表单与选择 | TextField · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard |
-| 导航与展开 | Tabs · SegmentedControl · Disclosure |
+| 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard |
+| 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
 | 数据 | Metric · KeyValue · DataTable · Pagination |
-| 浮层 | Dialog · ConfirmDialog · Popover · Menu · Tooltip |
+| 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
+
+¹ main 新增，尚未包含在 npm 0.3.0。
 
 参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 
@@ -98,6 +102,8 @@ export function Welcome() {
 | 品牌几何与 Logo | [Logo 契约](components/README.md#品牌标志) | [品牌标志](https://linhay.github.io/rhine-design/#brand) |
 | 动效、交互与减少动态 | [Motion](components/MOTION.md) | [动效实验室](https://linhay.github.io/rhine-design/#motion) |
 | 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | [启动动画](https://linhay.github.io/rhine-design/#startup) |
+| 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
+| 导航与表单流程 | [组件契约](docs/INTERACTION_PATTERNS.md#新组件契约) | [导航](https://linhay.github.io/rhine-design/#navigation) · [表单](https://linhay.github.io/rhine-design/#form-workflow) |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |
 
 展台采用左侧分组目录、右侧单章节工作区；目录与内容独立滚动，当前章节高亮，原有锚点可直接分享并支持浏览器前进/后退。窄屏使用可展开目录，选择章节后自动收起。动效偏好跨章节保留。

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button, Checkbox, Dialog, Disclosure, Icon, Logo, Menu, Popover, SegmentedControl, Select, Skeleton, Stack, Switch, Tabs, Text, Toast, Tooltip } from '../components/index';
+import { Badge, Button, Checkbox, Dialog, Drawer, Disclosure, Icon, Logo, Menu, Popover, SegmentedControl, Select, Skeleton, Stack, Steps, Switch, Tabs, Text, TextField, Toast, Tooltip } from '../components/index';
 import './motion.css';
 import './brand-assembly.css';
 
@@ -13,6 +13,8 @@ const recipes = [
   ['selection', '切换 · 稳定的位置', '120 / 180ms', '默认选项 → 指示与滑块切换 → 保留内容', '现有组件'],
   ['toast', '通知 · 轻量回应', '180ms', '静态占位 → 通知进入 → 手动关闭', '现有组件'],
   ['tooltip', '提示 · 即看即走', '160ms', '播放或悬停 → 提示出现 → Escape关闭', '现有组件'],
+  ['drawer', '抽屉 · 保留上下文', '160ms / 3px', '入口 → 右侧详情 → Escape 返回入口', '现有组件'],
+  ['steps', '步骤 · 验证后推进', '180ms / 3px', '模拟本步完成 → 下一步进入 → 保持静止', '现有组件'],
   ['brand', '品牌 · 旋转变形归位', '880ms / 三块错峰', '三块旋转压缩 → 展开闭合 → 定稿标志静止', '品牌候选'],
 ] as const;
 type Kind = typeof recipes[number][0];
@@ -58,6 +60,8 @@ function Scene({ kind, active, side }: { kind: Kind; active: boolean; side: Side
   if (kind === 'result') return <div className="ds-result-demo"><Button disabled={!started || done} busy={started && !done} busyLabel="演示处理中">保存示例</Button><div className="ds-result-slot" role="status">{done ? <span className="ds-result-reveal"><Icon name="check" /> 已完成 · 演示</span> : <Text variant="caption" tone="muted">{started ? '等待合成结果…' : '等待播放'}</Text>}</div></div>;
   if (kind === 'popover') return <Popover open={open} onOpenChange={setOpen} side={preferredSide} title="方向感知气泡" trigger={<Button variant="secondary">查看气泡</Button>}><Text>方向跟随实际位置。窄窗左右方向改为上下展开。</Text></Popover>;
   if (kind === 'menu') return <Menu open={open} onOpenChange={setOpen} side={preferredSide} label="动效菜单" trigger={<Button variant="secondary">打开动效菜单</Button>} items={[{id:'view',label:'查看示例',onSelect:()=>{}},{id:'disabled',label:'暂不可用',disabled:true,onSelect:()=>{}},{id:'close',label:'结束演示',onSelect:()=>{}}]} />;
+  if (kind === 'steps') return <Steps current={started ? 1 : 0} items={[{id:'input',label:'输入信息'},{id:'verify',label:'核对配置'},{id:'done',label:'完成任务'}]}/>;
+  if (kind === 'drawer') return <Drawer open={open} onOpenChange={setOpen} title="抽屉动效示例" description="详情由右侧轻入；重播只重启动画，输入和焦点不变。" trigger={<Button variant="secondary">打开动效抽屉</Button>}><Stack><Text>按 Escape 关闭后回到入口。</Text><TextField label="重播保留输入" placeholder="输入演示文字后重播"/><Button variant="secondary" onClick={event=>replayModal(event.currentTarget)}>重播抽屉入场</Button></Stack></Drawer>;
   if (kind === 'dialog') return <Dialog open={open} onOpenChange={setOpen} title="弹窗动效示例" description="文字保持原尺寸；重播仅重新播放淡入，不重建弹窗或移动焦点。" trigger={<Button variant="secondary">打开动效弹窗</Button>}><Stack><Text>按 Escape 关闭，焦点回到入口。</Text><Button variant="secondary" onClick={event=>replayModal(event.currentTarget)}>重播弹窗入场</Button></Stack></Dialog>;
   if (kind === 'disclosure') return <div ref={disclosure} className="ds-motion-fill"><Disclosure title="展开动效说明"><Text>内容沿高度展开，文字保持原尺寸。</Text><Text tone="muted" variant="caption">反复点击标题可观察中途反向。</Text></Disclosure></div>;
   if (kind === 'selection') return <Stack className="ds-motion-fill"><Switch label="显示辅助信息" checked={enabled} onCheckedChange={setEnabled}/><Tabs label="动效切换示例" value={selected} onValueChange={setSelected} items={[{value:'before',label:'概览',content:<Text>默认阅读内容。</Text>},{value:'after',label:'详情',content:<Text>选中状态即时更新，内容轻轻进入。</Text>}]} /></Stack>;
@@ -83,7 +87,7 @@ function MotionCard({ recipe, slow, reduced }: { recipe: typeof recipes[number];
 export function MotionGallery({ reduced }: { reduced: boolean }) {
   const [speed, setSpeed] = useState('normal');
   return <section id="motion" className="ds-motion-lab"><div className="ds-section-title"><span>MOTION LAB</span><h2>按下播放，感受变化。</h2></div>
-    <div className="ds-motion-toolbar"><div><Text>10 组可重播示例 · 现有组件与新动效候选</Text><Text variant="caption" tone="muted">播放只改变本地合成状态。浮层按 Escape 关闭；慢放只延长视觉过渡，减少动态始终优先。</Text></div><SegmentedControl label="动效播放速度" value={speed} onValueChange={setSpeed} items={[{value:'normal',label:'原速'},{value:'slow',label:'4 倍慢放'}]}/></div>
+    <div className="ds-motion-toolbar"><div><Text>12 组可重播示例 · 现有组件与新动效候选</Text><Text variant="caption" tone="muted">播放只改变本地合成状态。浮层按 Escape 关闭；慢放只延长视觉过渡，减少动态始终优先。</Text></div><SegmentedControl label="动效播放速度" value={speed} onValueChange={setSpeed} items={[{value:'normal',label:'原速'},{value:'slow',label:'4 倍慢放'}]}/></div>
     <div className="ds-motion-grid">{recipes.map(recipe=><MotionCard key={recipe[0]} recipe={recipe} slow={speed==='slow'} reduced={reduced}/>)}</div>
   </section>;
 }

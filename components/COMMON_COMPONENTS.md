@@ -2,6 +2,10 @@
 
 本文件定义[莱茵设计](../README.md)的常用组件契约。先固定契约和组件展台，再验证；默认优先复用本目录，页面先改设计稿，再按授权接入App。具体业务由宿主定义，不进入通用契约。
 
+## 新增导航与流程能力（main，未发布）
+
+SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary 的 API、键盘与场景契约见[交互选型](../docs/INTERACTION_PATTERNS.md)。main 共46个导出组件；下表保留原24个扩展组件的契约。
+
 ## 范围与契约
 
 | 组件 | 最小职责与边界 |

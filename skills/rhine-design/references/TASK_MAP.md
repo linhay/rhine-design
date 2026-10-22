@@ -4,6 +4,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 
 | Task | First reference (relative to package root) | Implementation / example |
 | --- | --- | --- |
+| Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (main; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
 | Visual direction, colors, spacing, layout | `docs/DESIGN_SYSTEM.md` | `components/tokens.css`, `components/Layout.tsx` |
 | Text hierarchy, Chinese/Latin text, metrics | `components/TYPOGRAPHY.md` | `components/Typography.tsx` |
 | Logo, light/dark variants, wordmark | `components/README.md` → 品牌标志 | `components/Logo.tsx`, `components/assets/logo.svg` |

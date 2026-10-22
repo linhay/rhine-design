@@ -6,13 +6,6 @@
 .ds-sidebar-brand>a { display:flex; gap:12px; align-items:center; color:var(--rhine-ink); text-decoration:none; font-size:18px; font-weight:600; }
 .ds-sidebar-brand small { display:block; margin-top:2px; font:10px/16px var(--rhine-mono); letter-spacing:.08em; color:var(--rhine-muted); }
 .ds-sidebar-nav { flex:1; min-height:0; overflow:auto; padding:0 16px 20px; scrollbar-width:thin; }
-.ds-nav-group { margin-top:16px; }
-.ds-nav-group>p { margin:0 12px 6px; font-size:12px; color:var(--rhine-muted); }
-.ds-nav-group>a { min-height:44px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; border-left:2px solid transparent; text-decoration:none; color:var(--rhine-ink); transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
-.ds-nav-group>a>span { opacity:0; color:var(--rhine-green); }
-.ds-nav-group>a:hover { background:var(--rhine-bg); }
-.ds-nav-group>a[aria-current=page] { background:var(--rhine-selected); border-color:var(--rhine-green); color:var(--rhine-green); font-weight:600; }
-.ds-nav-group>a[aria-current=page]>span { opacity:1; }
 .ds-sidebar-foot { display:grid; gap:6px; padding:20px 28px; border-top:1px solid var(--rhine-line); color:var(--rhine-muted); font:12px/18px var(--rhine-font); }
 .ds-sidebar-foot>span:first-child { font:10px/16px var(--rhine-mono); letter-spacing:.06em; }
 .ds-menu-toggle { display:none; }

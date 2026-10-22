@@ -5,6 +5,7 @@ import './preview.css';
 import { CommonGallery } from './CommonGallery';
 import { MotionGallery } from './MotionGallery';
 import { StartupGallery } from './StartupGallery';
+import { PatternGallery } from './PatternGallery';
 import { GalleryShell } from './GalleryShell';
 
 function Gallery() {
@@ -25,16 +26,17 @@ function Gallery() {
   const simulate = () => { setBusy(true); timer.current = setTimeout(() => { setBusy(false); setNotice(true); }, 900); };
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => <>
     {section === 'top' && <>
-      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>40 个通用组件，共用一套视觉变量和动效规则。<br />这里运行的就是后续业务页面可直接导入的 React 组件。</p></div></div>
+      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>46 个通用组件，共用一套视觉变量和动效规则。<br />这里运行的就是后续业务页面可直接导入的 React 组件。</p></div></div>
       <div className="ds-overview-links">{[
         ['foundation','视觉基础','从色彩、间距与材质开始。'],
         ['typography','字体与文字','清晰的层级，稳定的阅读节奏。'],
-        ['actions','通用组件','查看可直接复用的操作与状态。'],
+        ['patterns','场景与交互指南','先明确任务，再选择组件和动效。'],
         ['motion','动效实验室','播放、重播，观察交互的连续性。'],
       ].map(([id,title,description]) => <a key={id} href={`#${id}`}><strong>{title}</strong><span aria-hidden="true">↗</span><p>{description}</p></a>)}</div>
     </>}
 
 
+      {['navigation','form-workflow','patterns'].includes(section) && <PatternGallery section={section} />}
       {section === 'startup' && <StartupGallery reduced={motion==='reduced'} />}
       {section === 'motion' && <MotionGallery reduced={motion==='reduced'} />}
       {section === 'brand' && <section id="brand"><div className="ds-section-title"><span>00</span><h2>三角构架 · Rhine Design</h2></div>
