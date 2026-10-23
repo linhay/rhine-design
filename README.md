@@ -67,7 +67,9 @@ export function Welcome() {
 
 ### 背景组件（未发布）
 
-main 新增 Background 与 AppShell，源码共 50 个组件。npm 0.4.0 不含这两项能力；等待下一 npm 发布窗口。背景层级、最小接入及兼容范围见[背景与应用外壳契约](docs/APPLICATION_COMPONENTS.md)，真实展台见 [场景背景](https://linhay.github.io/rhine-design/#backgrounds) 和 [背景与侧栏](https://linhay.github.io/rhine-design/#app-shell)。
+源码新增 Background、AppShell 与 OrbitBackdrop，共 51 个组件。npm 0.4.0 不含这三项能力；等待下一 npm 发布窗口。背景层级、最小接入及兼容范围见[背景与应用外壳契约](docs/APPLICATION_COMPONENTS.md)，真实展台见 [场景背景](https://linhay.github.io/rhine-design/#backgrounds) 和 [背景与侧栏](https://linhay.github.io/rhine-design/#app-shell)。
+
+OrbitBackdrop 承接授权移交的轨道动画，保留环节点、曲线、箭头、光晕与透视，并提供暂停、减少动态和离屏停帧。它是纯装饰，不表示加载或业务进度。契约与接入见[轨道背景](docs/ORBIT_BACKDROP.md)，源码展台入口为 `/#orbit`。
 
 ### 一键切换主题（0.4.0）
 
@@ -137,6 +139,7 @@ export function App() {
 | 品牌几何与 Logo | [Logo 契约](components/README.md#品牌标志) | [品牌标志](https://linhay.github.io/rhine-design/#brand) |
 | 动效、交互与减少动态 | [Motion](components/MOTION.md) | [动效实验室](https://linhay.github.io/rhine-design/#motion) |
 | 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | [启动动画](https://linhay.github.io/rhine-design/#startup) |
+| 轨道装饰、暂停与静态降级（未发布） | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | 源码展台 `/#orbit` |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
 | 导航与表单流程 | [组件契约](docs/INTERACTION_PATTERNS.md#新组件契约) | [导航](https://linhay.github.io/rhine-design/#navigation) · [表单](https://linhay.github.io/rhine-design/#form-workflow) |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |
