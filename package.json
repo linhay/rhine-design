@@ -18,6 +18,7 @@
     "./tokens.css": "./components/tokens.css",
     "./styles.css": "./components/styles.css",
     "./theme-arknights.css": "./components/theme-arknights.css",
+    "./theme-neo-brutalism.css": "./components/theme-neo-brutalism.css",
     "./logo.svg": "./components/assets/logo.svg"
   },
   "sideEffects": [

@@ -1,0 +1,95 @@
+/* Opt-in after styles.css. Keep semantic success distinct from the orange action color. */
+.rhine-theme[data-rhine-theme="neo-brutalism"] {
+  color-scheme: light;
+  --rhine-bg: #eaf0f4;
+  --rhine-surface: #fffdf5;
+  --rhine-ink: #202323;
+  --rhine-muted: #59616a;
+  --rhine-line: #b9c1c7;
+  --rhine-control: #202323;
+  --rhine-selected: #fce4cc;
+  --rhine-green: #286043;
+  --rhine-signal: #ff8b3d;
+  --rhine-warning: #854216;
+  --rhine-warning-bg: #fce4cc;
+  --rhine-error: #a02e36;
+  --rhine-error-bg: #fbe1df;
+  --rhine-radius-card: 22px;
+  --rhine-radius-control: 12px;
+  --rhine-weight-heading: 750;
+  --rhine-weight-label: 600;
+  --rhine-text-metric: 36px;
+  --rhine-leading-metric: 44px;
+  --rhine-hard-shadow: 5px 5px 0 var(--rhine-ink);
+  --rhine-tag-green: #dcebd7;
+  --rhine-tag-orange: #fce0c4;
+  --rhine-tag-violet: #e3e0f7;
+  background: radial-gradient(circle, #b7c2cc .8px, transparent .9px) 0 0 / 14px 14px, var(--rhine-bg);
+}
+
+.rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-surface, .rhine-selection, .rhine-empty, .rhine-fieldset) {
+  border: 2px solid var(--rhine-ink);
+  border-radius: var(--rhine-radius-card);
+  box-shadow: var(--rhine-hard-shadow);
+}
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button {
+  border: 2px solid var(--rhine-ink);
+  background: var(--rhine-signal);
+  color: var(--rhine-ink);
+  box-shadow: 3px 3px 0 var(--rhine-ink);
+  font-weight: 700;
+  transition: background-color 120ms, transform 80ms, box-shadow 80ms;
+}
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--secondary { background: #fff; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--quiet { background: transparent; border-color: transparent; box-shadow: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--danger { background: var(--rhine-error); color: #fff; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:hover:not(:disabled):not([aria-disabled=true]) { background: #ffb16e; border-color: var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-button--secondary, .rhine-button--quiet):hover:not(:disabled):not([aria-disabled=true]) { background: var(--rhine-selected); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #81262d; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: translate(3px, 3px); box-shadow: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:disabled { background: #e1e5e8; color: var(--rhine-muted); border-color: #89929a; box-shadow: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button[aria-busy=true] { box-shadow: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] :is(button, input, select, textarea, summary, a, [tabindex]):focus-visible { outline: 3px solid var(--rhine-ink); outline-offset: 4px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-tone-success { --rhine-tone-bg: var(--rhine-tag-green); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-tone-neutral { --rhine-tone-bg: #e7ebee; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-badge { border: 1px solid currentColor; border-radius: 8px; padding: 3px 9px; font-weight: 600; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-type-tag { display: inline-flex; padding: 4px 10px; border: 1.5px solid var(--rhine-ink); border-radius: 8px; color: var(--rhine-ink); font-size: 12px; line-height: 20px; font-weight: 700; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-type-tag[data-color=green] { background: var(--rhine-tag-green); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-type-tag[data-color=orange] { background: var(--rhine-tag-orange); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-type-tag[data-color=violet] { background: var(--rhine-tag-violet); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-field input, .rhine-field textarea, .rhine-select select, .rhine-segmented) { border-width: 2px; background: #fff; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-field input, .rhine-field textarea, .rhine-select select):disabled { background: #e1e5e8; border-color: #89929a; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-segmented__option span { border-radius: 8px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-segmented input:checked+span { background: var(--rhine-selected); color: var(--rhine-ink); box-shadow: inset 0 0 0 1px var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-selection:hover:not([data-disabled=true]) { background: #fff4e8; border-color: var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-selection[data-selected=true] { background: var(--rhine-selected); border-color: var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-selection[data-disabled=true] { box-shadow: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-dialog, .rhine-popover, .rhine-menu, .rhine-combobox__list) { border: 2px solid var(--rhine-ink); border-radius: 18px; box-shadow: var(--rhine-hard-shadow); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-dialog { border-radius: 24px; box-shadow: 8px 8px 0 var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-drawer { border-radius: 24px 0 0 24px; box-shadow: -5px 0 0 var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-overlay { background: #20232360; backdrop-filter: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-menu__item { border-radius: 10px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-menu__item[data-highlighted] { box-shadow: inset 0 0 0 2px var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-tooltip { border-radius: 8px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-notice, .rhine-toast, .rhine-error-summary) { border: 2px solid var(--rhine-tone, var(--rhine-error)); border-radius: 14px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-table th { color: var(--rhine-ink); background: #edf0e9; font-weight: 700; border-bottom: 2px solid var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-table :is(th, td) { padding: 16px 12px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-table td { font-size: 14px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-progress__track { height: 10px; border: 1.5px solid var(--rhine-ink); border-radius: 6px; background: #e7ebee; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-progress__track>span { background: var(--rhine-signal); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-side-nav a[aria-current=page] { color: var(--rhine-ink); border: 2px solid var(--rhine-ink); background: var(--rhine-selected); font-weight: 700; }
+
+/* Gallery chrome uses the same theme; application layout stays with its host. */
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-sidebar { border-right-width: 2px; border-color: var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-workspace-head { background: var(--rhine-surface); border-bottom: 2px solid var(--rhine-ink); flex-wrap: wrap; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-overview-links>a { border: 2px solid var(--rhine-ink); border-radius: 22px; box-shadow: var(--rhine-hard-shadow); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-hero h1 { font-weight: 800; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-hero h1>span { color: var(--rhine-ink); text-decoration: underline; text-decoration-color: var(--rhine-signal); text-decoration-thickness: 6px; text-underline-offset: 8px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-logo-stage { border: 2px solid var(--rhine-ink); border-radius: 22px; }
+@media(max-width:760px) {
+  .rhine-theme[data-rhine-theme="neo-brutalism"] .ds-sidebar { border-right: 0; border-bottom: 2px solid var(--rhine-ink); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: none; }
+}
+.rhine-theme[data-rhine-theme="neo-brutalism"][data-rhine-motion=reduced] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: none; }

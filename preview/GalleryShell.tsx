@@ -2,9 +2,10 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Breadcrumbs, Button, Logo, SegmentedControl, Select, SideNav } from '../components';
 import './shell.css';
 import '../components/theme-arknights.css';
+import '../components/theme-neo-brutalism.css';
 
 export const galleryGroups = [
-  { label: '开始', items: [['top', '设计总览']] },
+  { label: '开始', items: [['top', '设计总览'], ['subscriptions', '订阅管理示例']] },
   { label: '设计语言', items: [['foundation', '视觉基础'], ['spacing', '间距与组合'], ['typography', '字体与文字'], ['brand', '品牌标志']] },
   { label: '通用组件', items: [['actions', '按钮与输入'], ['selection', '选择与切换'], ['feedback', '状态与加载'], ['disclosure', '展开与组合'], ['data', '数据与分页'], ['forms', '表单与选择'], ['utilities', '操作与布局'], ['overlays', '浮层与反馈'], ['navigation', '导航与步骤'], ['form-workflow', '表单流程']] },
   { label: '交互与动效', items: [['patterns', '场景与交互指南'], ['motion', '动效实验室'], ['startup', '启动动画']] },
@@ -22,7 +23,10 @@ export function GalleryShell({ motion, onMotionChange, children }: {
 }) {
   const [section, setSection] = useState(currentSection);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState(() => window.localStorage.getItem('rhine-preview-theme') ?? 'rhine');
+  const [theme, setTheme] = useState(() => {
+    const value = new URLSearchParams(window.location.search).get('theme') ?? window.localStorage.getItem('rhine-preview-theme');
+    return value === 'arknights' || value === 'neo-brutalism' ? value : 'rhine';
+  });
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
   const label = entries.find(([id]) => id === section)![1];
@@ -72,7 +76,12 @@ export function GalleryShell({ motion, onMotionChange, children }: {
       <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>46 个组件 · 持续演进</span><span className="ak-readout">{readout}</span></div>
     </aside>
     <main className="ds-workspace" id="gallery-content" ref={main} tabIndex={-1} aria-label={label}>
-      <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" value={theme} onChange={event => setTheme(event.target.value)}><option value="rhine">莱茵 · 纸面</option><option value="arknights">明日方舟 · 战术终端</option></Select></div></header>
+      <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" value={theme} onChange={event => {
+        setTheme(event.target.value);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('theme');
+        window.history.replaceState(null, '', url);
+      }}><option value="rhine">莱茵 · 纸面</option><option value="arknights">明日方舟 · 战术终端</option><option value="neo-brutalism">橙趣 · 粗描边</option></Select></div></header>
       <div className="ds-gallery ds-page" key={section}>{children(section)}<footer className="ds-footer"><span>Rhine Design · 通用设计组件</span><span>演示数据，不执行业务操作。</span></footer></div>
     </main>
   </div>;

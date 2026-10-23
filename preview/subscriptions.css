@@ -1,0 +1,27 @@
+.ds-subscription-heading { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+.ds-subscription-heading h1 { font-size: clamp(28px, 3vw, 40px); line-height: 1.3; font-weight: 800; letter-spacing: -1px; margin: 12px 0; }
+.ds-subscription-heading h1>span { color: var(--rhine-signal); }
+.ds-subscription-notice { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 24px; font-size: 12px; color: var(--rhine-muted); }
+.ds-subscription-status { color: var(--rhine-green); font-size: 12px; }
+.ds-subscription-status:not(:empty) { margin-top: 16px; }
+.ds-subscription-summary { margin-top: 24px; }
+.ds-subscription-section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin: 32px 0 20px; }
+.ds-subscription-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 24px; }
+.ds-subscription-cards>.rhine-overlay-anchor { display: block; min-width: 0; }
+.ds-subscription-card { display: flex; flex-direction: column; width: 100%; height: 100%; text-align: left; font: inherit; color: var(--rhine-ink); cursor: pointer; transition: background-color 120ms; }
+.ds-subscription-card:hover { background: var(--rhine-selected); }
+.ds-subscription-card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.ds-subscription-arrow { font-size: 24px; }
+.ds-subscription-count { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; font-size: 52px; font-weight: 800; line-height: 1.2; margin: 24px 0 8px; font-variant-numeric: tabular-nums; }
+.ds-subscription-count small, .ds-subscription-card-bottom small { font-size: 12px; color: var(--rhine-muted); font-weight: 400; }
+.ds-subscription-description { font-size: 12px; color: var(--rhine-muted); margin-bottom: 24px; }
+.ds-subscription-card-bottom { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--rhine-line); }
+.ds-subscription-running { color: var(--rhine-green); font-size: 12px; }
+.ds-subscription-card-bottom strong { font-size: 16px; font-variant-numeric: tabular-nums; }
+.ds-subscription-table { margin-top: 32px; }
+.ds-subscription-total { display: flex; justify-content: space-between; gap: 16px; padding-top: 20px; }
+.ds-subscriptions .rhine-type-tag { font-size: 12px; font-weight: 700; }
+@media(max-width:480px) {
+  .ds-subscription-heading h1 { font-size: 28px; }
+  .ds-subscription-summary .rhine-grid { grid-template-columns: 1fr; }
+}
