@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- 新增间距规范与`#spacing`真实组合展台：24/8/16卡片配方，默认/加载/错误/长文案；复用Stack/Inline/Grid，公共API和组件数量不变。Surface内边距改为消费既有space-6 token，默认外观不变。
+
 - 新增 SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary，main 公共组件增至46个；展台自身复用导航组件。
 - 新增导航与步骤、表单流程、14类场景与交互选型章节，动效实验室增加抽屉与步骤播放/重播，总计12组。
 - 参考 GitHub 高星项目与 skills，沉淀组件选择、错误恢复、监控告警、动效与无障碍契约；不增加运行时依赖。

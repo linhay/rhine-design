@@ -4,7 +4,7 @@ import './shell.css';
 
 export const galleryGroups = [
   { label: '开始', items: [['top', '设计总览']] },
-  { label: '设计语言', items: [['foundation', '视觉基础'], ['typography', '字体与文字'], ['brand', '品牌标志']] },
+  { label: '设计语言', items: [['foundation', '视觉基础'], ['spacing', '间距与组合'], ['typography', '字体与文字'], ['brand', '品牌标志']] },
   { label: '通用组件', items: [['actions', '按钮与输入'], ['selection', '选择与切换'], ['feedback', '状态与加载'], ['disclosure', '展开与组合'], ['data', '数据与分页'], ['forms', '表单与选择'], ['utilities', '操作与布局'], ['overlays', '浮层与反馈'], ['navigation', '导航与步骤'], ['form-workflow', '表单流程']] },
   { label: '交互与动效', items: [['patterns', '场景与交互指南'], ['motion', '动效实验室'], ['startup', '启动动画']] },
 ] as const;

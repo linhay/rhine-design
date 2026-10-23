@@ -42,16 +42,20 @@ npm install @linhey/rhine-design@0.3.0
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
 
 ```tsx
-import { Button, Stack, Surface, Text } from '@linhey/rhine-design';
+import { Button, Inline, Stack, Surface, Text } from '@linhey/rhine-design';
 
 export function Welcome() {
   return (
     <div className="rhine-theme">
       <Surface>
         <Stack gap={4}>
-          <Text as="h1" variant="title">开始新的工作</Text>
-          <Text tone="muted">用统一的组件，构建属于你的工作空间。</Text>
-          <Button onClick={() => { /* 在这里处理点击 */ }}>继续</Button>
+          <Stack gap={2}>
+            <Text as="h1" variant="title">开始新的工作</Text>
+            <Text tone="muted">用统一的组件，构建属于你的工作空间。</Text>
+          </Stack>
+          <Inline gap={2}>
+            <Button onClick={() => { /* 在这里处理点击 */ }}>继续</Button>
+          </Inline>
         </Stack>
       </Surface>
     </div>
@@ -98,6 +102,7 @@ export function Welcome() {
 | 主题 | 文档 | 在线预览 |
 | --- | --- | --- |
 | 视觉基础与组合原则 | [设计规范](docs/DESIGN_SYSTEM.md) | [视觉基础](https://linhay.github.io/rhine-design/#foundation) |
+| 间距、分组与卡片组合 | [Spacing](components/SPACING.md) | [间距与组合](https://linhay.github.io/rhine-design/#spacing) |
 | 字体、文字层级与数值 | [Typography](components/TYPOGRAPHY.md) | [字体与文字](https://linhay.github.io/rhine-design/#typography) |
 | 品牌几何与 Logo | [Logo 契约](components/README.md#品牌标志) | [品牌标志](https://linhay.github.io/rhine-design/#brand) |
 | 动效、交互与减少动态 | [Motion](components/MOTION.md) | [动效实验室](https://linhay.github.io/rhine-design/#motion) |

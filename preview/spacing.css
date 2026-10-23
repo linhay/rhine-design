@@ -1,0 +1,2 @@
+.ds-spacing-scale { display:grid; grid-template-columns:88px 48px minmax(0,1fr); align-items:center; gap:var(--rhine-space-4); }
+.ds-spacing-bar { display:block; height:var(--rhine-space-3); background:var(--rhine-green); }

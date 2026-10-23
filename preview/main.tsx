@@ -7,6 +7,7 @@ import { MotionGallery } from './MotionGallery';
 import { StartupGallery } from './StartupGallery';
 import { PatternGallery } from './PatternGallery';
 import { GalleryShell } from './GalleryShell';
+import { SpacingGallery } from './SpacingGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -37,6 +38,7 @@ function Gallery() {
 
 
       {['navigation','form-workflow','patterns'].includes(section) && <PatternGallery section={section} />}
+      {section === 'spacing' && <SpacingGallery />}
       {section === 'startup' && <StartupGallery reduced={motion==='reduced'} />}
       {section === 'motion' && <MotionGallery reduced={motion==='reduced'} />}
       {section === 'brand' && <section id="brand"><div className="ds-section-title"><span>00</span><h2>三角构架 · Rhine Design</h2></div>

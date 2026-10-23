@@ -6,20 +6,26 @@ main 共46个组件；已发布0.3.0为40个。新增6个导航与表单流程�
 
 页面改动遵循：优先复用组件 → 先在设计稿/展台修改并验证 → 再按任务授权实现到App。缺组件先补组件与展台，不在业务页另写同用途样式；同一任务已授权设计和实现时连续推进，无需重复确认。
 
+## 间距组合
+
+[间距规范](SPACING.md)定义尺度、分组与卡片配方：Surface负责24px内边距，嵌套Stack提供8px标题/说明和16px内容/操作间隔，Inline提供8px按钮间隔；Surface不自动给子元素加间距。展台`#spacing`可检查默认、加载、错误和长文案。
+
 ## 使用
 
 先按[套件接入说明](../README.md#quick-start)安装组件包，再导入：
 
 ```tsx
-import { Button, Notice, Progress, Surface } from '@linhey/rhine-design';
+import { Button, Inline, Notice, Progress, Stack, Surface } from '@linhey/rhine-design';
 
 export function Example() {
   return (
     <div className="rhine-theme">
       <Surface>
+        <Stack gap={4}>
         <Notice tone="warning" title="需要处理">请检查后重试。</Notice>
         <Progress label="任务进度" value={null} />
-        <Button variant="secondary" onClick={() => { /* 业务动作 */ }}>重试</Button>
+        <Inline gap={2}><Button variant="secondary" onClick={() => { /* 业务动作 */ }}>重试</Button></Inline>
+        </Stack>
       </Surface>
     </div>
   );
