@@ -4,9 +4,21 @@ import { Breadcrumbs, Drawer, ErrorSummary, Fieldset, SideNav, Steps, TextField 
 import { PatternGallery } from '../preview/PatternGallery';
 
 describe('navigation and form workflow contracts', () => {
+  it('keeps split dialog selection and preview in one accessible modal', async () => {
+    render(<PatternGallery section="patterns"/>);
+    fireEvent.change(screen.getByRole('combobox',{name:'我正在设计什么场景'}),{target:{value:'monitor'}});
+    fireEvent.click(screen.getByRole('button',{name:'左右分栏预览'}));
+    const dialog=await screen.findByRole('dialog',{name:'选择范围'});
+    expect(dialog).toHaveClass('rhine-dialog--split');
+    fireEvent.change(within(dialog).getByRole('combobox',{name:'范围'}),{target:{value:'backup'}});
+    expect(within(dialog).getByRole('heading',{name:'备用资源 · 健康记录'})).toBeVisible();
+    expect(within(dialog).getByRole('slider')).toHaveAttribute('aria-valuetext','时段 96 · 未知 / 无数据');
+    fireEvent.keyDown(document.activeElement!,{key:'Escape'});
+    await waitFor(()=>expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  });
   it('preserves real navigation links and identifies the current location', () => {
     const navigate = vi.fn();
-    render(<><SideNav groups={[{label:'工作区',items:[{id:'a',label:'概览',href:'/overview'},{id:'b',label:'记录',href:'/records'}]}]} currentId="b" onNavigate={(item,event)=>{event.preventDefault();navigate(item.id);}}/><Breadcrumbs items={[{label:'首页',href:'/'},{label:'记录'}]}/></>);
+    render(<><SideNav groups={[{label:'工作区',items:[{id:'a',label:'概览',href:'/overview',icon:'chart'},{id:'b',label:'记录',href:'/records'}]}]} currentId="b" onNavigate={(item,event)=>{event.preventDefault();navigate(item.id);}}/><Breadcrumbs items={[{label:'首页',href:'/'},{label:'记录'}]}/></>);
     expect(screen.getByRole('link',{name:'记录'})).toHaveAttribute('href','/records');
     expect(screen.getByRole('link',{name:'记录'})).toHaveAttribute('aria-current','page');
     fireEvent.click(screen.getByRole('link',{name:'概览'})); expect(navigate).toHaveBeenCalledWith('a');

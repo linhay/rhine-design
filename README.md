@@ -16,10 +16,10 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、46 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、48 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **46 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **48 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
@@ -85,7 +85,7 @@ export function Welcome() {
 | 布局 | Surface · Toolbar · Divider · Stack · Inline · Grid |
 | 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard |
 | 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
-| 数据 | Metric · KeyValue · DataTable · Pagination |
+| 数据 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · TimelineLegend¹ |
 | 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
 

@@ -13,6 +13,8 @@ const paths = {
   external: 'M11 3h6v6M17 3 9 11M7 3H3v14h14v-4',
   check: 'm4 10 4 4 8-8',
   more: 'M4 10h.1M10 10h.1M16 10h.1',
+  connection: 'M7 2v4M13 2v4M5 6h10v3a5 5 0 0 1-10 0V6M10 14v4',
+  chart: 'M3 3v14h14M7 13V9M11 13V5M15 13V7',
 } as const;
 export type IconName = keyof typeof paths;
 export function Icon({ name, size = 20 }: { name: IconName; size?: 16 | 20 }) {

@@ -13,6 +13,7 @@ All paths are relative to the matching package root. `components/index.ts` is th
 | Metric, KeyValue, DataTable, Pagination | `components/Data.tsx` |
 | Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx` |
 | Dialog, Drawer (main), ConfirmDialog, Popover, Menu, Tooltip | `components/Overlays.tsx` |
+| StatusTimeline, TimelineLegend (main, 未发布) | `components/StatusTimeline.tsx`；历史证据，不计算健康评分 |
 | SideNav, Breadcrumbs, Steps (main; not in npm 0.3.0) | `components/Navigation.tsx` |
 | Fieldset, ErrorSummary (main; not in npm 0.3.0) | `components/FormWorkflow.tsx` |
 | Toast | `components/Toast.tsx` |

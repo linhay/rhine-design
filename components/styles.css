@@ -2,6 +2,7 @@
 @import './typography.css';
 @import './common.css';
 @import './patterns.css';
+@import './timeline.css';
 
 .rhine-theme { color:var(--rhine-ink); background:var(--rhine-bg); font:var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); font-synthesis:none; }
 .rhine-theme *, .rhine-theme *::before, .rhine-theme *::after { box-sizing:border-box; }

@@ -11,6 +11,11 @@
   --rhine-signal: #c65c34;
   --rhine-warning: #8a472c;
   --rhine-error: #a13e35;
+  --rhine-health-healthy: #19b88a;
+  --rhine-health-recovered: #42b8c8;
+  --rhine-health-degraded: #efa629;
+  --rhine-health-failed: #ef6464;
+  --rhine-health-unknown: #c5ccd3;
   --rhine-warning-bg: #f4e8dc;
   --rhine-error-bg: #f6e9e4;
   --rhine-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;

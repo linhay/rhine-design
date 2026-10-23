@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-main 共46个组件；已发布0.3.0为40个。新增6个导航与表单流程组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+main 共48个组件；已发布0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 页面改动遵循：优先复用组件 → 先在设计稿/展台修改并验证 → 再按任务授权实现到App。缺组件先补组件与展台，不在业务页另写同用途样式；同一任务已授权设计和实现时连续推进，无需重复确认。
 

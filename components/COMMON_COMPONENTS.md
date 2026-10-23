@@ -4,7 +4,7 @@
 
 ## 新增导航与流程能力（main，未发布）
 
-SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary 的 API、键盘与场景契约见[交互选型](../docs/INTERACTION_PATTERNS.md)。main 共46个导出组件；下表保留原24个扩展组件的契约。
+SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimeline、TimelineLegend 的 API、键盘与场景契约见[交互选型](../docs/INTERACTION_PATTERNS.md)。main 共48个导出组件；下表保留原24个扩展组件的契约。
 
 ## 范围与契约
 
@@ -44,7 +44,7 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary 的 API、键�
 
 ## 接入契约
 
-统一从 套件的`components/index.ts` 导入，并在页面根部使用 `.rhine-theme`。主题根不要放在带transform、overflow裁剪或contain的局部面板；浮层挂到最近主题根，保持token和减少动态偏好。Dialog、Popover、Menu的trigger与Tooltip的children必须是单个可聚焦、可接收ref和事件的元素；使用Button/IconButton即可。Dialog受控时必须同时传open与onOpenChange。
+统一从 套件的`components/index.ts` 导入，并在页面根部使用 `.rhine-theme`。主题根不要放在带transform、overflow裁剪或contain的局部面板；浮层挂到最近主题根，保持token和减少动态偏好。Dialog、Popover、Menu的trigger与Tooltip的children必须是单个可聚焦、可接收ref和事件的元素；使用Button/IconButton即可。Dialog受控时必须同时传open与onOpenChange。分栏的sidePanel可传ReactNode，或传`closeButton => ReactNode`将关闭按钮放进侧栏导航；函数模式必须展示传入按钮，不能复制第二个关闭入口。
 
 ```tsx
 <Stack gap={4}>

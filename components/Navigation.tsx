@@ -1,6 +1,7 @@
 import type { HTMLAttributes, MouseEvent } from 'react';
+import { Icon, type IconName } from './Actions';
 
-export interface NavItem { id: string; label: string; href: string }
+export interface NavItem { id: string; label: string; href: string; icon?: IconName }
 export interface NavGroup { label: string; items: readonly NavItem[] }
 export interface SideNavProps extends HTMLAttributes<HTMLElement> {
   groups: readonly NavGroup[]; currentId: string;
@@ -9,7 +10,7 @@ export interface SideNavProps extends HTMLAttributes<HTMLElement> {
 export function SideNav({ groups, currentId, onNavigate, className = '', 'aria-label': label = '主导航', ...props }: SideNavProps) {
   return <nav {...props} aria-label={label} className={`rhine-side-nav ${className}`}>
     {groups.map(group => <div className="rhine-side-nav__group" key={group.label}><p>{group.label}</p><ul>
-      {group.items.map(item => <li key={item.id}><a href={item.href} aria-current={currentId === item.id ? 'page' : undefined} onClick={event => onNavigate?.(item, event)}>{item.label}<span aria-hidden="true">↗</span></a></li>)}
+      {group.items.map(item => <li key={item.id}><a href={item.href} aria-current={currentId === item.id ? 'page' : undefined} onClick={event => onNavigate?.(item, event)}>{item.icon && <Icon name={item.icon} size={20}/>}<span className="rhine-side-nav__label">{item.label}</span></a></li>)}
     </ul></div>)}
   </nav>;
 }

@@ -1,4 +1,6 @@
 import './styles.css';
+export { StatusTimeline, TimelineLegend } from './StatusTimeline';
+export type { TimelineSegment, TimelineStatus } from './StatusTimeline';
 
 export { Logo } from './Logo';
 export type { LogoProps } from './Logo';

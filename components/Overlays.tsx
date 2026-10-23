@@ -14,15 +14,17 @@ function useScope() {
   useLayoutEffect(() => { setContainer((ref.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
   return { ref, container };
 }
-export interface DialogProps { trigger: ReactElement; title: string; description: string; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }
-export function Dialog({ trigger, title, description, children, open, onOpenChange }: DialogProps) {
-  return <DialogFrame trigger={trigger} title={title} description={description} open={open} onOpenChange={onOpenChange}>{children}</DialogFrame>;
+export interface DialogProps { trigger: ReactElement; title: string; description: string; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; sidePanel?: ReactNode | ((closeButton: ReactElement) => ReactNode) }
+export function Dialog(props: DialogProps) {
+  return <DialogFrame {...props}/>;
 }
-export function Drawer(props: DialogProps) { return <DialogFrame {...props} drawer />; }
-function DialogFrame({ trigger, title, description, children, open, onOpenChange, drawer = false }: DialogProps & { drawer?: boolean }) {
+export function Drawer(props: Omit<DialogProps, 'sidePanel'>) { return <DialogFrame {...props} drawer />; }
+function DialogFrame({ trigger, title, description, children, open, onOpenChange, sidePanel, drawer = false }: DialogProps & { drawer?: boolean }) {
   const { ref, container } = useScope();
+  const sideNavigation = typeof sidePanel === 'function';
+  const closeButton = <DialogBase.Close asChild><IconButton label={drawer ? '关闭抽屉' : '关闭对话框'} icon="close" /></DialogBase.Close>;
   return <span className="rhine-overlay-anchor" ref={ref}><DialogBase.Root open={open} onOpenChange={onOpenChange}><DialogBase.Trigger asChild>{trigger}</DialogBase.Trigger><DialogBase.Portal container={container}>
-    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}`}><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title><DialogBase.Close asChild><IconButton label={drawer ? '关闭抽屉' : '关闭对话框'} icon="close" /></DialogBase.Close></div><DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description><div className="rhine-dialog__body">{children}</div></DialogBase.Content>
+    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}`}><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div><DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description><div className="rhine-dialog__body">{children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</DialogBase.Content>
   </DialogBase.Portal></DialogBase.Root></span>;
 }
 export function ConfirmDialog({ trigger, title, description, confirmLabel = '确认操作', danger = false, onConfirm }: { trigger: ReactElement; title: string; description: string; confirmLabel?: string; danger?: boolean; onConfirm: () => Promise<void> | void }) {
