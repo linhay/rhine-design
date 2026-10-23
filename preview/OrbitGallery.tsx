@@ -4,6 +4,8 @@ import { Badge, Button, Inline, Logo, OrbitBackdrop, Stack, Surface, Switch, Tex
 export function OrbitGallery() {
   const [replay, setReplay] = useState(0);
   const [reduced, setReduced] = useState(false);
+  const [artworkName, setArtworkName] = useState('Orbit workspace');
+  const [workspaceName, setWorkspaceName] = useState('Rhine Studio');
   return <section id="orbit">
     <div className="ds-section-title"><span>ORBIT</span><h2>轨道星空 · 品牌艺术背景</h2></div>
     <p className="ds-caption">420 个环节点、185 条空间曲线与发射箭头组成同一幅画面。用于入口和品牌叙事，内容可立即阅读，不表示加载或业务进度。</p>
@@ -17,7 +19,7 @@ export function OrbitGallery() {
       <Stack gap={3}>
         <Text as="h3" variant="title">连接彼此，探索更多。</Text>
         <Text tone="muted">在有序的轨迹中，留下新的可能。<br />艺术背景不阻挡内容与操作。</Text>
-        <TextField label="直接叠加的输入框" defaultValue="Orbit workspace" hint="提示文字随当前内容前景保持可读。" />
+        <TextField label="直接叠加的输入框" value={artworkName} onChange={event => setArtworkName(event.target.value)} hint="提示文字随当前内容前景保持可读。" />
         <Inline gap={2}>
           <Button>开始探索</Button>
           <Button variant="secondary">查看轨道</Button>
@@ -30,7 +32,7 @@ export function OrbitGallery() {
         <Stack gap={3}>
           <Text as="h3" variant="heading">带底色的内容保持宿主主题</Text>
           <Text tone="muted">也可组合到 Surface，保留完整的前景、背景与状态配色。</Text>
-          <TextField label="工作空间名称" defaultValue="Rhine Studio" hint="这是可编辑的本地展台示例。" />
+          <TextField label="工作空间名称" value={workspaceName} onChange={event => setWorkspaceName(event.target.value)} hint="这是可编辑的本地展台示例。" />
           <Inline gap={2}>
             <Button>继续探索</Button>
             <Button variant="secondary">查看介绍</Button>

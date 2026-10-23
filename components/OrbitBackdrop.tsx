@@ -28,6 +28,6 @@ export function OrbitBackdrop({ reducedMotion = false, children, className = '',
   return <div {...props} className={`rhine-orbit ${className}`} data-rhine-orbit-state={state}>
     <canvas ref={canvas} className="rhine-orbit-canvas" aria-hidden="true" />
     <div className="rhine-orbit-content">{children}</div>
-    <div className="rhine-orbit-controls"><Button variant="secondary" disabled={!canControl} aria-pressed={paused} onClick={() => setPaused(value => !value)}>{label}</Button></div>
+    <div className="rhine-orbit-controls"><Button variant="secondary" disabled={!canControl} onClick={() => setPaused(value => !value)}>{label}</Button></div>
   </div>;
 }

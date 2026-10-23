@@ -74,9 +74,12 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     const canvas = container.querySelector('canvas'); expect(canvas).toHaveAttribute('aria-hidden', 'true');
     const input = screen.getByLabelText('草稿'); fireEvent.change(input, { target: { value: '已经输入' } });
     fireEvent.click(screen.getByRole('button', { name: '暂停动效' }));
-    expect(frames.size).toBe(0); expect(screen.getByRole('button', { name: '继续动效' })).toHaveAttribute('aria-pressed', 'true');
+    expect(frames.size).toBe(0); expect(screen.getByRole('button', { name: '继续动效' })).not.toHaveAttribute('aria-pressed');
+    expect(container.querySelector('.rhine-orbit')).toHaveAttribute('data-rhine-orbit-state', 'paused');
     fireEvent.click(screen.getByRole('button', { name: '继续动效' }));
     expect(frames.size).toBe(1); expect(container.querySelector('canvas')).toBe(canvas); expect(input).toHaveValue('已经输入');
+    expect(screen.getByRole('button', { name: '暂停动效' })).not.toHaveAttribute('aria-pressed');
+    expect(container.querySelector('.rhine-orbit')).toHaveAttribute('data-rhine-orbit-state', 'playing');
   });
 
   it('keeps geometry and stroke proportions stable when CSS zoom changes before a pause or resize', () => {
@@ -151,10 +154,14 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     expect(screen.getByRole('button', { name: '静态画面' })).toBeDisabled(); expect(frames.size).toBe(0);
   });
 
-  it('replays only the gallery artwork and preserves the external replay focus', () => {
+  it('replays the gallery artwork while preserving entered content and external replay focus', () => {
     const { container } = render(<OrbitGallery />); const canvas = container.querySelector('canvas');
+    fireEvent.change(screen.getByRole('textbox', { name: '直接叠加的输入框' }), { target: { value: '新的轨道名称' } });
+    fireEvent.change(screen.getByRole('textbox', { name: '工作空间名称' }), { target: { value: '新的工作空间' } });
     const replay = screen.getByRole('button', { name: '重播轨道' }); replay.focus(); fireEvent.click(replay);
     expect(container.querySelector('canvas')).not.toBe(canvas); expect(replay).toHaveFocus(); expect(frames.size).toBe(1);
+    expect(screen.getByRole('textbox', { name: '直接叠加的输入框' })).toHaveValue('新的轨道名称');
+    expect(screen.getByRole('textbox', { name: '工作空间名称' })).toHaveValue('新的工作空间');
     fireEvent.click(screen.getByRole('switch', { name: '减少轨道动态' })); expect(frames.size).toBe(0);
   });
 });
