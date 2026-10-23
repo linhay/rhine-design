@@ -27,6 +27,10 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
+**0.5.0 新增能力**：新增背景与多侧栏、复杂表单、受控数据表、媒体与监控图表，共 59 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
+
+本轮新增 API 与交互已逐项核对 Ant Design / MUI，修复及明确保留的差异见[对标清单](docs/ANTD_MUI_AUDIT.md)。
+
 <a id="quick-start"></a>
 
 ## 快速接入
@@ -36,7 +40,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install @linhey/rhine-design@0.4.0
+npm install --save-exact @linhey/rhine-design@0.5.0
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
@@ -65,11 +69,13 @@ export function Welcome() {
 
 入口自动加载样式，用 `.rhine-theme` 包裹页面即可使用默认主题。布局和颜色变量使用 `--rhine-*` 前缀；完整定义见 [tokens.css](components/tokens.css)。
 
-### 背景组件（未发布）
+### 背景组件（0.5.0）
 
-源码新增 Background、AppShell 与 OrbitBackdrop，共 51 个组件。npm 0.4.0 不含这三项能力；等待下一 npm 发布窗口。背景层级、最小接入及兼容范围见[背景与应用外壳契约](docs/APPLICATION_COMPONENTS.md)，真实展台见 [场景背景](https://linhay.github.io/rhine-design/#backgrounds) 和 [背景与侧栏](https://linhay.github.io/rhine-design/#app-shell)。
+0.5.0 提供 Background 与 AppShell，npm 0.4.0 不含这两项能力。背景层级、最小接入及兼容范围见[背景与应用外壳契约](docs/APPLICATION_COMPONENTS.md)，真实展台见 [场景背景](https://linhay.github.io/rhine-design/#backgrounds) 和 [背景与侧栏](https://linhay.github.io/rhine-design/#app-shell)。
 
-OrbitBackdrop 承接授权移交的轨道动画，保留环节点、曲线、箭头、光晕与透视，并提供暂停、减少动态和离屏停帧。它是纯装饰，不表示加载或业务进度。契约与接入见[轨道背景](docs/ORBIT_BACKDROP.md)，源码展台入口为 `/#orbit`。
+### 轨道背景（0.6.0）
+
+OrbitBackdrop 承接授权移交的轨道动画，保留环节点、曲线、箭头、光晕与透视，并提供暂停、减少动态和离屏停帧。它是纯装饰，不表示加载或业务进度。契约与接入见[轨道背景](docs/ORBIT_BACKDROP.md)，真实展台见[轨道星空](https://linhay.github.io/rhine-design/#orbit)。
 
 ### 一键切换主题（0.4.0）
 
@@ -96,6 +102,8 @@ export function App() {
 受控模式、主题列表、存储职责、浮层继承和迁移方式见 [主题 API 接入](docs/THEMING.md)。第一版支持并列 Provider，不支持嵌套覆盖；偏好由宿主管理，库不读写本地存储。此 API 自 0.4.0 提供。
 
 完整变量、类型标签、交互与减少动态规则见 [橙趣主题规范](docs/THEME_NEO_BRUTALISM.md)。现有 CSS-only 用法仍支持；展台装饰独立放在 `preview/theme-*.css`。
+
+0.5.0 新增六类[场景背景配置](docs/THEMING.md#场景背景050)：画布、正文、侧栏、卡片表单、浮层和媒体。正文默认无纹理，支持局部配色与纹理覆盖；本地展台 `http://127.0.0.1:18309/#backgrounds` 可查看当前主题的六类场景，并通过主题选择器切换。
 
 类名、CSS 变量、动画名称与动态设置统一使用 `rhine-` 命名空间。升级到 0.3.0 时请同步迁移主题根、自定义样式与动效属性，具体见 [迁移说明](CHANGELOG.md#030)。
 

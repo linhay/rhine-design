@@ -4,6 +4,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 
 | Task | First reference (relative to package root) | Implementation / example |
 | --- | --- | --- |
+| Application shell, backgrounds, media, advanced inputs, controlled tables | `docs/APPLICATION_COMPONENTS.md` (0.5.0) | `preview/ExtensionsGallery.tsx`; `/#app-shell`, `/#advanced-forms`, `/#advanced-data`, `/#media` |
 | Theme integration, switching, controlled preferences | `docs/THEMING.md` (0.4.0) | `components/theme.tsx`, `preview/GalleryShell.tsx` |
 | Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (0.4.0; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
 | Visual direction, colors, spacing, layout | `docs/DESIGN_SYSTEM.md` | `components/tokens.css`, `components/Layout.tsx` |

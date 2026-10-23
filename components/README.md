@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-0.4.0 共48个组件；0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+0.5.0 共59个组件；0.4.0为48个，0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 页面改动遵循：优先复用组件 → 先在设计稿/展台修改并验证 → 再按任务授权实现到App。缺组件先补组件与展台，不在业务页另写同用途样式；同一任务已授权设计和实现时连续推进，无需重复确认。
 
@@ -46,6 +46,8 @@ export function Example() {
 
 ## 组件契约
 
+0.5.0 的 Background、AppShell、MediaCard、MediaViewer、DateField、DateRangePicker、NumberField、TreeSelect、RemoteMultiSelect、TrendChart、StackedBar，以及 DataTable/Pagination 和 StatusTimeline 详情扩展见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。新增 11 个，总数 59；npm 0.4.0 为 48 个。
+
 | 组件 | 关键输入 | 状态与边界 |
 | --- | --- | --- |
 | Button | variant=primary/secondary/quiet/danger；busy；busyLabel；原生按钮属性 | 默认 type=button；busy 保留焦点并拦截再次 click，不自动把业务标记成功；disabled 使用原生禁用 |
@@ -55,6 +57,7 @@ export function Example() {
 | Toolbar | title；description；children；HTML div属性 | 自适应控件组合，role=group与普通Tab顺序；不伪装为需要方向键导航的ARIA toolbar；不含业务状态 |
 | Badge | tone=neutral/success/warning/error；children | 只读短状态，颜色必须配文字，不做可点击按钮 |
 | Surface | HTML div 属性 | 静态分区，无点击语义；不是弹窗或导航 |
+| Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
 | SelectionCard | label；selected；onSelectedChange；disabled；children | 原生 checkbox 可取消；是否单选由上层控制；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
 | Tabs | label；items[{value,label,content,disabled?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树 |
@@ -144,8 +147,10 @@ export function Example() {
 
 本仓构建产物是独立展台；消费项目只导入组件入口，避免把preview中的模拟流程打入业务产物。版本变化和迁移见[CHANGELOG](../CHANGELOG.md)。
 
-## 背景与外壳（未发布）
+## 背景与外壳（0.5.0）
 
-新增 `Background`、`AppShell` 与 `OrbitBackdrop`，源码共 51 个组件；npm 0.4.0 仍为 48 个。Background 支持六类 roleTone、auto/theme/none 装饰策略及 appearance 局部覆盖；AppShell 提供组合展台使用的固定顶部操作区与响应式侧栏。完整 API、最小接入、背景滚动及 Portal 边界见[背景与应用外壳契约](../docs/APPLICATION_COMPONENTS.md)。
+新增 `Background` 与 `AppShell`，0.5.0 共 59 个组件；npm 0.4.0 仍为 48 个。Background 支持六类 roleTone、auto/theme/none 装饰策略及 appearance 局部覆盖；AppShell 提供组合展台使用的固定顶部操作区与响应式侧栏。完整 API、最小接入、背景滚动及 Portal 边界见[背景与应用外壳契约](../docs/APPLICATION_COMPONENTS.md)。
 
-`OrbitBackdrop` 接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。它提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。
+## 轨道背景（0.6.0）
+
+`OrbitBackdrop` 接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。它提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
