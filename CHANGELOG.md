@@ -8,8 +8,6 @@
 - StatusTimeline 增加开始/结束、原因、计数及统计口径的结构化详情，使用可避让视口的 Popover；新增柱形趋势、缺失断线和堆叠占比，未知值不补零，配套文字替代与空/陈旧/错误状态。
 - 本节 API 尚不包含在 npm 0.4.0，发布版本以 registry 回读为准。
 
-## 未发布
-
 - 补齐 Background 六类场景的底色、文字与纹理配置，新增局部 `appearance` 覆盖。`decoration` 默认 `auto`，仅画布使用主题纹理；正文与 AppShell 默认纯色，原有显式 `theme` / `none` 保留。Surface / Fieldset 与主要浮层接入语义底色，遮罩独立配置。新增展台 `#backgrounds`，包含实际弹窗、局部覆盖与纹理切换，仅展示当前主题的场景效果，跟随主题选择器更新。已有正文需要纹理时显式传 `decoration="theme"`。
 
 ## 0.4.0
