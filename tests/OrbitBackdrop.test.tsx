@@ -107,6 +107,22 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     act(() => reduced.set(true)); expect(frames.size).toBe(0);
   });
 
+  it('synchronizes a media change observed by a frame before the change event arrives', () => {
+    const { container } = render(<OrbitBackdrop />);
+    advance(100); advance(200); const frozen = [...firstPoint];
+    reduced.matches = true;
+    advance(300);
+    expect(container.querySelector('.rhine-orbit')).toHaveAttribute('data-rhine-orbit-state', 'reduced');
+    expect(screen.getByRole('button', { name: '已减少动态' })).toBeDisabled();
+    expect(frames.size).toBe(0); expect(firstPoint).toEqual(frozen);
+    const stoppedDraws = draws; advance(9000); expect(draws).toBe(stoppedDraws);
+    act(() => reduced.set(false));
+    expect(container.querySelector('.rhine-orbit')).toHaveAttribute('data-rhine-orbit-state', 'playing');
+    expect(screen.getByRole('button', { name: '暂停动效' })).toBeEnabled();
+    advance(10000); expect(firstPoint).toEqual(frozen);
+    advance(10100); expect(firstPoint).not.toEqual(frozen);
+  });
+
   it('observes ancestor motion changes even through a local system preference', async () => {
     render(<div data-rhine-motion="system"><OrbitBackdrop /></div>);
     expect(frames.size).toBe(1);

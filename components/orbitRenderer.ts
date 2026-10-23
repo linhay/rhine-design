@@ -167,7 +167,9 @@ export function mountOrbit(canvas: HTMLCanvasElement, onState: (state: OrbitStat
   }
   function animate(now: number) {
     frame = 0;
-    if (disposed || state() !== 'playing') return;
+    if (disposed) return;
+    // A frame can observe a media change before its change event is delivered.
+    if (state() !== 'playing') { sync(); return; }
     const dt = last === null ? 0 : Math.min((now - last) / 1e3, 0.1);
     last = now;
     time += dt;
