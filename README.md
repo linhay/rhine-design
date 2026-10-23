@@ -27,6 +27,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
+**0.5.0 候选（未发布）**：新增背景与多侧栏、复杂表单、受控数据表和媒体组件；源码共 57 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
+
 <a id="quick-start"></a>
 
 ## 快速接入
@@ -90,6 +92,8 @@ export function App() {
 受控模式、主题列表、存储职责、浮层继承和迁移方式见 [主题 API 接入](docs/THEMING.md)。第一版支持并列 Provider，不支持嵌套覆盖；偏好由宿主管理，库不读写本地存储。此 API 自 0.4.0 提供。
 
 完整变量、类型标签、交互与减少动态规则见 [橙趣主题规范](docs/THEME_NEO_BRUTALISM.md)。现有 CSS-only 用法仍支持；展台装饰独立放在 `preview/theme-*.css`。
+
+源码新增六类[场景背景配置](docs/THEMING.md#场景背景未发布)（尚未发布到 npm）：画布、正文、侧栏、卡片表单、浮层和媒体。正文默认无纹理，支持局部配色与纹理覆盖；本地展台 `http://127.0.0.1:18309/#backgrounds` 可查看当前主题的六类场景，并通过主题选择器切换。
 
 类名、CSS 变量、动画名称与动态设置统一使用 `rhine-` 命名空间。升级到 0.3.0 时请同步迁移主题根、自定义样式与动效属性，具体见 [迁移说明](CHANGELOG.md#030)。
 

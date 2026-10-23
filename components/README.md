@@ -46,6 +46,8 @@ export function Example() {
 
 ## 组件契约
 
+待发布 0.5.0 的 Background、AppShell、MediaCard、MediaViewer、DateField、DateRangePicker、NumberField、TreeSelect、RemoteMultiSelect，以及 DataTable/Pagination 扩展见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。新增 9 个，源码总数 57；npm 0.4.0 仍为 48 个。
+
 | 组件 | 关键输入 | 状态与边界 |
 | --- | --- | --- |
 | Button | variant=primary/secondary/quiet/danger；busy；busyLabel；原生按钮属性 | 默认 type=button；busy 保留焦点并拦截再次 click，不自动把业务标记成功；disabled 使用原生禁用 |
@@ -55,6 +57,7 @@ export function Example() {
 | Toolbar | title；description；children；HTML div属性 | 自适应控件组合，role=group与普通Tab顺序；不伪装为需要方向键导航的ARIA toolbar；不含业务状态 |
 | Badge | tone=neutral/success/warning/error；children | 只读短状态，颜色必须配文字，不做可点击按钮 |
 | Surface | HTML div 属性 | 静态分区，无点击语义；不是弹窗或导航 |
+| Background（未发布） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景未发布) |
 | SelectionCard | label；selected；onSelectedChange；disabled；children | 原生 checkbox 可取消；是否单选由上层控制；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
 | Tabs | label；items[{value,label,content,disabled?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树 |

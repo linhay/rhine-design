@@ -4,6 +4,9 @@ All paths are relative to the matching package root. `package.json` exports, `co
 
 | Exports | Source |
 | --- | --- |
+| Background, AppShell（0.5.0 候选，未发布） | `components/Background.tsx`、`components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md` |
+| MediaCard, MediaViewer（0.5.0 候选，未发布） | `components/Media.tsx`；中性画布，不嵌套主题 |
+| DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0 候选，未发布） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责 |
 | ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
 | Logo | `components/Logo.tsx` |
 | Text | `components/Typography.tsx` |

@@ -1,4 +1,12 @@
 import './styles.css';
+export { Background } from './Background';
+export type { BackgroundProps, BackgroundRole, BackgroundDecoration, BackgroundAppearance } from './Background';
+export { AppShell } from './AppShell';
+export type { AppShellProps, ShellPanel } from './AppShell';
+export { MediaCard, MediaViewer } from './Media';
+export type { MediaCardProps, MediaViewerProps } from './Media';
+export { DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect } from './AdvancedForms';
+export type { DateFieldProps, DateRange, DateRangePickerProps, NumberFieldProps, RemoteMultiSelectProps, TreeNode, TreeSelectProps } from './AdvancedForms';
 export { StatusTimeline, TimelineLegend } from './StatusTimeline';
 export type { TimelineSegment, TimelineStatus } from './StatusTimeline';
 

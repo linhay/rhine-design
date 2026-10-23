@@ -26,7 +26,7 @@
 .rhine-steps li[data-state=current]>div { background:var(--rhine-selected); color:var(--rhine-green); animation:rhine-pattern-enter var(--rhine-duration-panel) var(--rhine-ease-standard); }
 .rhine-steps li[data-state=error] { border-color:var(--rhine-error); }
 .rhine-steps li[data-state=error]>div { color:var(--rhine-error); background:var(--rhine-error-bg); }
-.rhine-fieldset { min-width:0; margin:0; padding:20px; border:1px solid var(--rhine-line); border-radius:var(--rhine-radius-card); }
+.rhine-fieldset { background:var(--rhine-surface-bg); color:var(--rhine-surface-text); min-width:0; margin:0; padding:20px; border:1px solid var(--rhine-line); border-radius:var(--rhine-radius-card); }
 .rhine-fieldset legend { padding:0 8px; font-weight:600; }
 .rhine-fieldset>p { margin:0 0 20px; color:var(--rhine-muted); font-size:12px; }
 .rhine-fieldset__body { display:grid; gap:16px; }

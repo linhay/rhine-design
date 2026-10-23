@@ -1,5 +1,16 @@
 # 版本记录
 
+## 未发布（0.5.0 候选）
+
+- 对应 #1–#5：新增 Background/AppShell、MediaCard/MediaViewer、DateField/DateRangePicker/NumberField/TreeSelect/RemoteMultiSelect，共 9 个公共组件。
+- DataTable 增加受控跨页选择、禁选/混合态、层级展开与详情、密度和固定表头/列；Pagination 增加页大小意图。
+- 新增三主题背景、表单、数据与中性媒体 tokens；提供四组真实 React 展台及[应用组件契约](docs/APPLICATION_COMPONENTS.md)。宿主继续负责请求、时区、导出、下载、虚拟列表和持久化。
+- 本节 API 尚不包含在 npm 0.4.0，发布版本以 registry 回读为准。
+
+## 未发布
+
+- 补齐 Background 六类场景的底色、文字与纹理配置，新增局部 `appearance` 覆盖。`decoration` 默认 `auto`，仅画布使用主题纹理；正文与 AppShell 默认纯色，原有显式 `theme` / `none` 保留。Surface / Fieldset 与主要浮层接入语义底色，遮罩独立配置。新增展台 `#backgrounds`，包含实际弹窗、局部覆盖与纹理切换，仅展示当前主题的场景效果，跟随主题选择器更新。已有正文需要纹理时显式传 `decoration="theme"`。
+
 ## 0.4.0
 
 - 新增 `@linhey/rhine-design/theme`：`ThemeProvider`、`useTheme`、`themes`、`ThemeName` 与 `ThemeProviderProps`，自动加载三套内置主题，支持受控/非受控切换及并列 Provider；嵌套覆盖暂不支持。切换保留组件、表单与浮层状态，偏好存储由宿主管理。展台复用公共 API；主题 CSS 中的展台布局和 HUD/扫描/开机装饰移至 `preview/theme-*.css`。补齐接入文档及 API/展台回归测试。
