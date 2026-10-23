@@ -16,10 +16,10 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、48 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、60 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **48 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **60 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
@@ -28,6 +28,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
 **0.5.0 新增能力**：新增背景与多侧栏、复杂表单、受控数据表、媒体与监控图表，共 59 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
+
+**0.6.0 新增能力**：新增 `OrbitBackdrop` 轨道艺术组件，提供暂停、减少动态与静态降级，总数增至 60。安装前核对[版本记录](CHANGELOG.md)与 registry；在线展台跟随 main。
 
 本轮新增 API 与交互已逐项核对 Ant Design / MUI，修复及明确保留的差异见[对标清单](docs/ANTD_MUI_AUDIT.md)。
 
@@ -40,7 +42,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install --save-exact @linhey/rhine-design@0.5.0
+npm install --save-exact @linhey/rhine-design@0.6.0
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
@@ -122,14 +124,14 @@ export function App() {
 | --- | --- |
 | 品牌与文字 | Logo · Text |
 | 操作 | Button · Icon · IconButton · Link · CopyButton |
-| 布局 | Surface · Toolbar · Divider · Stack · Inline · Grid |
-| 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard |
+| 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · OrbitBackdrop³ |
+| 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² |
 | 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
-| 数据 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · TimelineLegend¹ |
+| 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
 | 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
 
-¹ 自 0.4.0 提供。
+¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。
 
 参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 
@@ -147,7 +149,7 @@ export function App() {
 | 品牌几何与 Logo | [Logo 契约](components/README.md#品牌标志) | [品牌标志](https://linhay.github.io/rhine-design/#brand) |
 | 动效、交互与减少动态 | [Motion](components/MOTION.md) | [动效实验室](https://linhay.github.io/rhine-design/#motion) |
 | 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | [启动动画](https://linhay.github.io/rhine-design/#startup) |
-| 轨道装饰、暂停与静态降级（未发布） | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | 源码展台 `/#orbit` |
+| 轨道装饰、暂停与静态降级 | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | [轨道星空](https://linhay.github.io/rhine-design/#orbit) |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
 | 导航与表单流程 | [组件契约](docs/INTERACTION_PATTERNS.md#新组件契约) | [导航](https://linhay.github.io/rhine-design/#navigation) · [表单](https://linhay.github.io/rhine-design/#form-workflow) |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |

@@ -25,13 +25,14 @@
     linear-gradient(125deg, transparent 40%, #6295d109 49%, transparent 58%);
 }
 .rhine-orbit-canvas { position:absolute; inset:0; display:block; width:100%; height:100%; pointer-events:none; }
-/* Artwork has a fixed dark palette; content contrast does not create a nested theme. */
+/* Keep host control tokens intact; only unpainted content inherits the artwork foreground. */
 .rhine-orbit-content {
-  --rhine-ink:#f2f7ff; --rhine-muted:#bfcee3; --rhine-green:#a8d4fb;
   position:relative; z-index:1; flex:1; min-width:0;
   display:flex; flex-direction:column; justify-content:space-between; gap:var(--rhine-space-6);
   padding:var(--rhine-space-6); padding-bottom:calc(44px + var(--rhine-space-6) * 2);
-  color:var(--rhine-ink); text-shadow:0 2px 18px #03070f, 0 1px 5px #03070f;
+  color:#f2f7ff;
 }
+.rhine-orbit-content .rhine-text--muted { color:inherit; opacity:.8; }
+.rhine-orbit-content .rhine-logo:not(.rhine-logo--icon) { color:inherit; }
 .rhine-orbit-controls { position:absolute; right:var(--rhine-space-4); bottom:var(--rhine-space-4); z-index:2; max-width:calc(100% - var(--rhine-space-4) * 2); }
 .rhine-orbit-controls .rhine-button { max-width:100%; }

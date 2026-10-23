@@ -16,7 +16,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Modal, menu, popover, tooltip, feedback | `components/COMMON_COMPONENTS.md` | `components/Overlays.tsx`, `components/Toast.tsx` |
 | Transition, replay, cancellation, reduced motion | `components/MOTION.md` | `preview/`, `components/styles.css` |
 | Startup sequence, logo assembly, ready handoff | `components/STARTUP.md` | Search `startup` in `preview/`; not a public Startup component |
-| Orbit artwork, decorative Canvas, pause / resume, reduced motion | `docs/ORBIT_BACKDROP.md` (unreleased; not in npm 0.4.0) | `components/OrbitBackdrop.tsx`, internal `components/orbitRenderer.ts`; `/#orbit` |
+| Orbit artwork, decorative Canvas, pause / resume, reduced motion | `docs/ORBIT_BACKDROP.md` (0.6.0) | `components/OrbitBackdrop.tsx`, internal `components/orbitRenderer.ts`; `/#orbit` |
 | Missing capability or system coverage | `docs/DESIGN_SYSTEM_AUDIT.md` | Verify status against `components/index.ts` |
 | Version upgrade | `CHANGELOG.md` | Installed `package.json`, current types |
 

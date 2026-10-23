@@ -1,15 +1,15 @@
-# OrbitBackdrop · 轨道背景（未发布）
+# OrbitBackdrop · 轨道背景（0.6.0）
 
 `OrbitBackdrop` 将授权移交的轨道动画作为通用装饰组件维护：固定深色星空衬底、420 个环节点、185 条曲线、80 个深度桶，以及发射箭头、光晕和透视关系。它适合登录、欢迎等入口区域；不包含产品文案、账号逻辑或网络请求。需求与移交记录见 [Issue #8](https://github.com/linhay/rhine-design/issues/8)。
 
-**版本边界：**这是未发布的源码候选，npm `@linhey/rhine-design@0.4.0` 不包含此组件。采用前核对安装版本与 `components/index.ts`；使用未发布源码时固定 Git commit 并提交 lockfile。组件源于 [OrbitBackdrop.tsx](../components/OrbitBackdrop.tsx)，绘制实现在 [orbitRenderer.ts](../components/orbitRenderer.ts)；后者是内部实现，不作为公共 API 导入。
+**版本边界：**此组件自 `@linhey/rhine-design@0.6.0` 提供，0.5.0 及以前不包含它。采用前核对安装版本与 `components/index.ts`，固定精确版本并提交 lockfile。组件源于 [OrbitBackdrop.tsx](../components/OrbitBackdrop.tsx)，绘制实现在 [orbitRenderer.ts](../components/orbitRenderer.ts)；后者是内部实现，不作为公共 API 导入。
 
 ## 使用与契约
 
 ```tsx
 import { Logo, OrbitBackdrop, Text } from '@linhey/rhine-design';
 
-// 此示例要求包含 OrbitBackdrop 的源码版本，并放在现有主题根内。
+// 此示例要求 0.6.0 或以上，并放在现有主题根内。
 export function WelcomeArtwork() {
   return (
     <OrbitBackdrop className="welcome-artwork" style={{ minHeight: 360 }}>
@@ -25,11 +25,11 @@ export function WelcomeArtwork() {
 | --- | --- |
 | `HTMLAttributes<HTMLDivElement>` | 接收容器原生属性，如 `className`、`style`、`id`；宿主负责尺寸、位置和相邻内容布局 |
 | `reducedMotion?: boolean` | `true` 加强减少动态偏好；`false` 或省略均不能覆盖系统、祖先或环境的停帧条件 |
-| `children` | 放入 `.rhine-orbit-content` 内容层，可组合 Logo、标题、正文和页脚；宿主 class 控制内容布局，避免遮挡主要艺术或暂停控件 |
+| `children` | 放入 `.rhine-orbit-content` 内容层，可组合 Logo、标题、正文和页脚；表单与动作使用 Surface 分组；宿主 class 控制内容布局，避免遮挡主要艺术或暂停控件 |
 
 组件持有绘制配方、内部类名、样式与暂停状态。宿主不复制 Canvas 实现，不另写同用途动画，不通过覆盖内部样式重建其视觉。没有速度、节点数量、业务进度或主题配色参数；需要新能力时先在设计系统中补契约与展台。
 
-Canvas 绝对定位在内容层下方。内容层继承组件提供的局部浅色 tokens，使文字与深色星空衬底保持可读；不新建或嵌套 `ThemeProvider`。默认内置 Rhine `Button`，在独立控件区域提供“暂停 / 继续”的明确操作。Canvas 为 `aria-hidden` 纯装饰，不接收键盘焦点，不提供进度或业务状态。有效信息仍由普通 HTML 内容表达；动画暂停、减少动态或 Canvas 不可用均不影响内容与业务操作。
+Canvas 绝对定位在内容层下方。内容层为直接置于星空上的文字提供浅色前景，普通 Text 与非 icon Logo 继承当前前景，muted Text 沿当前前景降低透明度；不修改宿主颜色 tokens，也不新建或嵌套 `ThemeProvider`。Surface、Notice 等有底色的组件继续使用自己的语义前景，表单与按钮保留宿主主题的前景 / 背景组合。默认内置 Rhine `Button`，在独立控件区域提供“暂停 / 继续”的明确操作。Canvas 为 `aria-hidden` 纯装饰，不接收键盘焦点，不提供进度或业务状态。有效信息仍由普通 HTML 内容表达；动画暂停、减少动态或 Canvas 不可用均不影响内容与业务操作。
 
 ## 动效生命周期
 
@@ -47,7 +47,7 @@ Canvas 不可用时保留静态艺术 fallback 与 `children`。此降级不表�
 
 ## 主题与可读性
 
-轨道采用同一固定深色美术配方；切换 Rhine、Arknights 或 Neo Brutalism 时保留动画构图。内容层使用局部浅色 tokens，独立操作区与外框使用外部主题 tokens，保持控件文字、边界和焦点可读，不用改变艺术本身的颜色来模拟整页主题。宿主应提供足够的布局空间，避免正文与主要曲线重叠，也不能遮住暂停入口。
+轨道采用同一固定深色美术配方；切换 Rhine、Arknights 或 Neo Brutalism 时保留动画构图。艺术文字采用浅色前景，控件、语义容器、独立操作区与外框继续使用完整宿主主题 tokens；不能只改控件的前景而保留白色背景。表单与动作放入 Surface，以使标签、提示、校验、控件和焦点在复杂背景上保持一致。宿主应提供足够的布局空间，避免正文与主要曲线重叠，也不能遮住暂停入口。
 
 轨道动画不替代 `Progress`、`Skeleton` 或 `Logo`。登录提交、校验失败、数据刷新不重播动画；动画时间不决定业务何时就绪。仅为重播装饰而更换 key 时，将 key 限于 `OrbitBackdrop`，不能重建表单或其他业务内容。
 
@@ -60,18 +60,20 @@ Canvas 不可用时保留静态艺术 fallback 与 `children`。此降级不表�
 1. 原动画的环节点、曲线、箭头、光晕与透视仍可辨识；采样不同时间的中间帧，不能只检查单张截图。
 2. 鼠标与键盘可暂停 / 继续；暂停时画面冻结，恢复不跳过冻结期间的时间。
 3. 系统、显式 prop、祖先偏好均可中断动画；将 `reducedMotion` 设为 `false` 不能覆盖系统减少动态。
-4. 检查 400 / 520 / 880 宽度、200% 缩放和三套主题，确认窄窗静态呈现、控件可见、焦点可读且无横向溢出。
+4. 检查 400 / 520 / 880 宽度、200% 缩放和三套主题，确认窄窗静态呈现、控件可见、焦点可读且无横向溢出。组合 TextField、主 / 次按钮及 Surface，检查输入文字、placeholder、默认 / hover / disabled 状态和容器内 Text 的前景与背景。
 5. 页面隐藏、离屏、零尺寸时停帧，恢复及 resize 行为一致；卸载无残留调度或监听。
 6. Canvas 不可用时仍显示静态艺术和内容；业务表单、请求与路由不依赖动画。
 
 宿主接入后仍需验证自己的页面布局与业务交互；单元测试、展台检查不等于宿主原生平台或完整辅助技术验收。
 
-### 2026-10-24 源码候选验证
+### 2026-10-24 初始源码候选验证
 
 `npm ci`、`npm run check` 通过：65 项测试（轨道新增 10 项）、TypeScript 类型检查、展台生产构建及 CSS / SVG 产物检查。轨道测试覆盖完整节点绘制、DPR 上限、暂停时间冻结、系统 / prop / 祖先偏好、隐藏 / 离屏 / 窄窗 / 零尺寸、resize、Strict Mode 清理、Canvas 失败降级和重播保焦点。逻辑绘制尺寸使用 CSS client size，避免 CSS zoom 后暂停或 resize 改变线宽；真实浏览器验证固定画幅在 zoom 1→2→1 及 resize 后静态像素保持一致。
 
 本地 Chromium 真实展台通过 19 项检查：跨时间像素采样可见轨道运动；Space 键暂停 / 继续；系统、显式及祖先减少动态与恢复；三主题 × 400 / 520 / 880 宽度的静态 / 播放和无横向溢出；200% CSS 缩放与局部重播。另验证真实滚动离屏后像素冻结，返回可见区域后继续。页面错误为 0。页面隐藏与卸载由单元测试覆盖，不宣称已验证真实业务入口或原生平台。
 
-内容层的 Logo 使用默认配色，继承艺术区的浅色 `--rhine-green`；不要设 `theme="dark"`，该选项读取外层 `--rhine-bg`，深色主题的背景色在艺术区上缺少对比度。
+0.6.0 发布审阅发现初始候选的局部前景 tokens 会污染嵌入控件；现已移除这组覆盖。非 icon Logo 使用默认写法并继承所在内容的前景，无需按艺术底色另设 `theme="dark"`。上述初始截图与 19 项浏览器证据不代替修正后的组合控件验证。
+
+合并 0.5.0 应用能力并准备 0.6.0 后，重新执行 `npm ci` 与 `npm run check`：16 个测试文件、136 项测试、TypeScript、展台构建及 CSS / SVG 产物检查全部通过。真实展台已加入 Surface 内的正文、提示、TextField 与主 / 次按钮，供发布时单独验证三主题可读性。
 
 ![真实组件展台](assets/orbit-backdrop.png)
