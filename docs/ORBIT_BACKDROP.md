@@ -25,7 +25,7 @@ export function WelcomeArtwork() {
 | --- | --- |
 | `HTMLAttributes<HTMLDivElement>` | 接收容器原生属性，如 `className`、`style`、`id`；宿主负责尺寸、位置和相邻内容布局 |
 | `reducedMotion?: boolean` | `true` 加强减少动态偏好；`false` 或省略均不能覆盖系统、祖先或环境的停帧条件 |
-| `children` | 放入 `.rhine-orbit-content` 内容层，可组合 Logo、标题、正文和页脚；表单与动作使用 Surface 分组；宿主 class 控制内容布局，避免遮挡主要艺术或暂停控件 |
+| `children` | 放入 `.rhine-orbit-content` 内容层，可组合 Logo、标题、正文、表单、动作和页脚，也可用 Surface 分组；宿主 class 控制内容布局，避免遮挡主要艺术或暂停控件 |
 
 组件持有绘制配方、内部类名、样式与暂停状态。宿主不复制 Canvas 实现，不另写同用途动画，不通过覆盖内部样式重建其视觉。没有速度、节点数量、业务进度或主题配色参数；需要新能力时先在设计系统中补契约与展台。
 
@@ -47,7 +47,7 @@ Canvas 不可用时保留静态艺术 fallback 与 `children`。此降级不表�
 
 ## 主题与可读性
 
-轨道采用同一固定深色美术配方；切换 Rhine、Arknights 或 Neo Brutalism 时保留动画构图。艺术文字采用浅色前景，控件、语义容器、独立操作区与外框继续使用完整宿主主题 tokens；不能只改控件的前景而保留白色背景。表单与动作放入 Surface，以使标签、提示、校验、控件和焦点在复杂背景上保持一致。宿主应提供足够的布局空间，避免正文与主要曲线重叠，也不能遮住暂停入口。
+轨道采用同一固定深色美术配方；切换 Rhine、Arknights 或 Neo Brutalism 时保留动画构图。艺术文字采用浅色前景，控件、语义容器、独立操作区与外框继续使用完整宿主主题 tokens；不能只改控件的前景而保留白色背景。直接叠加的提示和透明 quiet 操作继承当前内容前景；quiet 的有底色 hover / disabled 状态保持宿主配色，键盘焦点使用当前文字颜色的内描边。可按产品分组需要使用 Surface，不以它作为控件可读性的前提。宿主应提供足够的布局空间，避免正文与主要曲线重叠，也不能遮住暂停入口。
 
 轨道动画不替代 `Progress`、`Skeleton` 或 `Logo`。登录提交、校验失败、数据刷新不重播动画；动画时间不决定业务何时就绪。仅为重播装饰而更换 key 时，将 key 限于 `OrbitBackdrop`，不能重建表单或其他业务内容。
 

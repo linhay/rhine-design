@@ -32,7 +32,11 @@
   padding:var(--rhine-space-6); padding-bottom:calc(44px + var(--rhine-space-6) * 2);
   color:#f2f7ff;
 }
-.rhine-orbit-content .rhine-text--muted { color:inherit; opacity:.8; }
+.rhine-orbit-content :is(.rhine-text--muted, .rhine-field__hint) { color:inherit; opacity:.8; }
 .rhine-orbit-content .rhine-logo:not(.rhine-logo--icon) { color:inherit; }
+/* Transparent actions follow their backdrop; painted hover/disabled states retain the host palette. */
+.rhine-orbit-content .rhine-button--quiet:not(:disabled):not(:hover),
+.rhine-orbit-content .rhine-button--quiet[aria-disabled=true]:not(:disabled) { color:inherit; }
+.rhine-orbit .rhine-orbit-content .rhine-button--quiet:focus-visible { outline:none; box-shadow:inset 0 0 0 2px currentColor; }
 .rhine-orbit-controls { position:absolute; right:var(--rhine-space-4); bottom:var(--rhine-space-4); z-index:2; max-width:calc(100% - var(--rhine-space-4) * 2); }
 .rhine-orbit-controls .rhine-button { max-width:100%; }

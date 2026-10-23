@@ -17,15 +17,24 @@ export function OrbitGallery() {
       <Stack gap={3}>
         <Text as="h3" variant="title">连接彼此，探索更多。</Text>
         <Text tone="muted">在有序的轨迹中，留下新的可能。<br />艺术背景不阻挡内容与操作。</Text>
+        <TextField label="直接叠加的输入框" defaultValue="Orbit workspace" hint="提示文字随当前内容前景保持可读。" />
+        <Inline gap={2}>
+          <Button>开始探索</Button>
+          <Button variant="secondary">查看轨道</Button>
+          <Button variant="quiet">了解更多</Button>
+          <Button variant="quiet" busy busyLabel="示例处理中">示例处理中</Button>
+          <Button variant="quiet" disabled>暂不可用</Button>
+        </Inline>
       </Stack>
       <Surface>
         <Stack gap={3}>
           <Text as="h3" variant="heading">带底色的内容保持宿主主题</Text>
-          <Text tone="muted">表单和操作组合到 Surface，保留完整的前景、背景与状态配色。</Text>
+          <Text tone="muted">也可组合到 Surface，保留完整的前景、背景与状态配色。</Text>
           <TextField label="工作空间名称" defaultValue="Rhine Studio" hint="这是可编辑的本地展台示例。" />
           <Inline gap={2}>
             <Button>继续探索</Button>
             <Button variant="secondary">查看介绍</Button>
+            <Button variant="quiet">更多介绍</Button>
           </Inline>
         </Stack>
       </Surface>
