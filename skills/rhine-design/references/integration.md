@@ -39,4 +39,4 @@ Await actual copy/confirm outcomes. Errors remain actionable; busy state preserv
 
 Check the installed version against this skill's metadata, then consult `CHANGELOG.md`. Refresh the copied skill together with the package; keep local customizations when comparing versions. If types and docs disagree, use source for the immediate API and repair the stale reference when in scope.
 
-For reproducible feedback record package version, component/API, relevant source or reference path, expected and actual behavior, and the smallest reproduction. Public reports need no private host payloads or credentials. Filing an external issue remains a user-directed action.
+For reproducible feedback record package version, component/API, relevant source or reference path, expected and actual behavior, and the smallest reproduction. Public reports must exclude private host payloads and credentials. For missing components, styles or states, follow [Report missing components and styles](../SKILL.md#report-missing-components-and-styles): check for duplicates and directly file or supplement an issue in `linhay/rhine-design`, without asking for confirmation each time.
