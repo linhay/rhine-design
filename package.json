@@ -17,6 +17,7 @@
     ".": "./components/index.ts",
     "./tokens.css": "./components/tokens.css",
     "./styles.css": "./components/styles.css",
+    "./theme-arknights.css": "./components/theme-arknights.css",
     "./logo.svg": "./components/assets/logo.svg"
   },
   "sideEffects": [

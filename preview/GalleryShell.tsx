@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Breadcrumbs, Button, Logo, SegmentedControl, SideNav } from '../components';
+import { Breadcrumbs, Button, Logo, SegmentedControl, Select, SideNav } from '../components';
 import './shell.css';
+import '../components/theme-arknights.css';
 
 export const galleryGroups = [
   { label: '开始', items: [['top', '设计总览']] },
@@ -21,6 +22,7 @@ export function GalleryShell({ motion, onMotionChange, children }: {
 }) {
   const [section, setSection] = useState(currentSection);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(() => window.localStorage.getItem('rhine-preview-theme') ?? 'rhine');
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
   const label = entries.find(([id]) => id === section)![1];
@@ -44,8 +46,20 @@ export function GalleryShell({ motion, onMotionChange, children }: {
     if (item.top < bounds.top) nav.scrollTop += item.top - bounds.top;
     else if (item.bottom > bounds.bottom) nav.scrollTop += item.bottom - bounds.bottom;
   }, [section, menuOpen]);
-  return <div className="rhine-theme ds-shell" data-rhine-motion={motion}>
+  useEffect(() => {
+    window.localStorage.setItem('rhine-preview-theme', theme);
+  }, [theme]);
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    if (theme !== 'arknights') return;
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, [theme]);
+  const utcOffset = -now.getTimezoneOffset() / 60;
+  const readout = `LOCAL ${now.toLocaleTimeString('zh-CN', { hour12: false })} // UTC${utcOffset >= 0 ? '+' : ''}${utcOffset}`;
+  return <div className="rhine-theme ds-shell" data-rhine-motion={motion} data-rhine-theme={theme}>
     <a className="ds-skip" href="#gallery-content" onClick={event => { event.preventDefault(); main.current?.focus(); }}>跳到内容</a>
+    <div className="ak-hud" aria-hidden="true"><i /><i /><i /><i /></div>
     <aside className="ds-sidebar" data-open={menuOpen} onKeyDown={event => {
       if (event.key === 'Escape' && menuOpen) { setMenuOpen(false); event.currentTarget.querySelector<HTMLButtonElement>('.ds-menu-toggle')?.focus(); }
     }}>
@@ -55,10 +69,10 @@ export function GalleryShell({ motion, onMotionChange, children }: {
       <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={section} groups={galleryGroups.map(group=>({label:group.label,items:group.items.map(([id,label])=>({id,label,href:`#${id}`}))}))} onNavigate={item=>{
         setMenuOpen(false); if(section===item.id) main.current?.focus({preventScroll:true});
       }}/>
-      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>46 个组件 · 持续演进</span></div>
+      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>46 个组件 · 持续演进</span><span className="ak-readout">{readout}</span></div>
     </aside>
     <main className="ds-workspace" id="gallery-content" ref={main} tabIndex={-1} aria-label={label}>
-      <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},{label}]} /><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /></header>
+      <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" value={theme} onChange={event => setTheme(event.target.value)}><option value="rhine">莱茵 · 纸面</option><option value="arknights">明日方舟 · 战术终端</option></Select></div></header>
       <div className="ds-gallery ds-page" key={section}>{children(section)}<footer className="ds-footer"><span>Rhine Design · 通用设计组件</span><span>演示数据，不执行业务操作。</span></footer></div>
     </main>
   </div>;

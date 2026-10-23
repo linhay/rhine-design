@@ -12,6 +12,7 @@
 .ds-workspace { min-width:0; min-height:0; overflow:auto; scrollbar-gutter:stable; }
 .ds-workspace:focus { outline:none; }
 .ds-workspace-head { min-height:80px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px 32px; border-bottom:1px solid var(--rhine-line); }
+.ds-head-controls { display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; }
 .ds-workspace-head>div:first-child { font-size:12px; }.ds-workspace-head>div:first-child>span { color:var(--rhine-muted); }
 .ds-page { max-width:1200px; margin:0 auto; padding:0 32px; animation:rhine-enter var(--rhine-duration-panel) var(--rhine-ease-standard); }
 .ds-overview-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; padding-bottom:40px; }
