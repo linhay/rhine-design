@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- 补充文字行高、段落与控件规则及可切换行框辅助线的多行展台。沿用现有字号/行高token，按钮、Tab和单行输入同步消费body行高，默认尺寸不变。
+
 - 新增间距规范与`#spacing`真实组合展台：24/8/16卡片配方，默认/加载/错误/长文案；复用Stack/Inline/Grid，公共API和组件数量不变。Surface内边距改为消费既有space-6 token，默认外观不变。
 
 - 新增 SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary，main 公共组件增至46个；展台自身复用导航组件。

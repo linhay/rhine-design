@@ -8,6 +8,7 @@ import { StartupGallery } from './StartupGallery';
 import { PatternGallery } from './PatternGallery';
 import { GalleryShell } from './GalleryShell';
 import { SpacingGallery } from './SpacingGallery';
+import { LineHeightGallery } from './LineHeightGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -69,6 +70,7 @@ function Gallery() {
           ['metric','26 / 32 · 600','1,280.00'],
           ['code','12 / 20 · 400','~/.codex/auth.json'],
         ] satisfies [TextVariant,string,string][]).map(([variant,spec,sample])=><div className="ds-type-row" key={variant}><div><Text variant="code">{variant}</Text><Text variant="caption" tone="muted">{spec}</Text></div><Text variant={variant}>{sample}</Text></div>)}</div></Surface>
+        <LineHeightGallery />
         <div className="ds-grid ds-gap-top"><Surface><Text as="h3" variant="heading">中英文与数字</Text><div className="ds-type-copy"><Text>已完成 128 次请求，共使用 1.4M Token。</Text><Text numeric>预估费用 $5.44 · 平均耗时 2.4 s</Text><Text tone="muted" variant="caption">2026-10-22 14:32 · 上海（UTC+8）</Text><Text variant="overline" lang="en">Usage / Today</Text><Text>未采集的数据显示「—」，不替换为 0。小数位按指标语义固定，原始值保持可查。</Text></div></Surface>
         <Surface><Text as="h3" variant="heading">换行与状态文案</Text><div className="ds-type-copy"><Text>长标题、错误原因和下一步操作允许自然换行。</Text><Text variant="code">example-very-long-model-identifier-for-wrapping-preview-2026-10-22</Text><Text tone="error">暂时无法读取列表。请检查连接后重试。</Text><Text variant="caption" tone="muted">文字不缩放、不跑马灯、不逐字播放；复制或展开应能获取完整内容。</Text></div></Surface></div>
         <div className="ds-gap-top"><Toolbar title="Rhine Design / 设计评审" description="工具栏与静态页面样稿共用一套样式。">

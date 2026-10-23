@@ -1,6 +1,6 @@
-# 莱茵设计 · 字体与文字规范 V1.3
+# 莱茵设计 · 字体与文字规范 V1.4
 
-2026-10-22。适用于使用莱茵设计的中文界面与中英文混排。变量定义在 [tokens.css](./tokens.css)，样式与 React 入口分别为 [typography.css](./typography.css)、[Typography.tsx](./Typography.tsx)。归属与接入见[套件入口](../README.md)。
+2026-10-23。适用于使用莱茵设计的中文界面与中英文混排。变量定义在 [tokens.css](./tokens.css)，样式与 React 入口分别为 [typography.css](./typography.css)、[Typography.tsx](./Typography.tsx)。归属与接入见[套件入口](../README.md)。
 
 ## 字体与字重
 
@@ -33,6 +33,38 @@
 <Text as="span" variant="metric" numeric>1,280</Text>
 <Text as="code" variant="code">gpt-6.1-sol</Text>
 ```
+
+## 行高、段落与控件
+
+字号与行高成对使用，`Text`按variant同时设置两者；不在业务页单改字号而继承父级行高，不使用`normal`或固定容器高度猜测文本尺寸。上表是100%缩放的CSS尺寸，缩放后保持比例与自然换行，不以压低行高塞回原高度。
+
+| 内容 | 字号 / 行高 | Token | 多行规则 |
+| --- | --- | --- | --- |
+| 大标题 | 30 / 38px | `--rhine-leading-title` | 换行仍为38px，不压成单行 |
+| 分区标题 | 18 / 26px | `--rhine-leading-section` | 行距保持，标题之后的间隔另计 |
+| 卡片标题 | 16 / 24px | `--rhine-leading-heading` | 中英文混排同一行高 |
+| 正文、表单标签、按钮 | 14 / 22px | `--rhine-leading-body` | 两行正文占44px，三行占66px |
+| 时间、来源、辅助说明 | 12 / 18px | `--rhine-leading-caption` | 两行36px；重要正文不要降为辅助字号 |
+| 代码、路径 | 12 / 20px | `--rhine-leading-code` | 长标识可换行，行距不随字体回退变化 |
+| 指标 | 26 / 32px；紧凑20 / 26px | `--rhine-leading-metric` / `--rhine-leading-metric-compact` | 字号与行高一起切换，单位不得把整行撑乱 |
+
+- 行高是行框高度，包含字形上下留白，不等于两行字形之间的空白；不能把行高22px理解为额外22px的gap。
+- 一个段落自然换行时不增加margin；两个独立段落默认用`Stack gap={3}`（12px）。标题与说明仍为8px，正文组与操作为16px，遵循[间距规范](SPACING.md)。标题/段落默认无浏览器自带margin。
+- 按钮文字采用14/22，最小操作目标44px通过padding与min-height保证；不要把line-height设置为44px来垂直居中。长按钮文案可换行并增高，禁止固定height裁切。
+- 现有紧凑组件的例外：Badge与Notice说明为12/20px，数据表普通文本为12/22px；这些是组件内部的既有密度，不用后代CSS临时覆盖。数据表中的技术标识仍使用Text code的12/20px。Logo字标是单行品牌几何，line-height=1仅限该品牌组件，不用于正文。
+- 在行内混用不同字号时，行框可能由最大的子元素决定；需要固定对齐的指标、单位和标签使用组件既有组合，不承诺所有混排整行都等于单个Text的行高。
+- 行高、字距与字号不做动画；状态文字立即更新，减少动态不改变排版。
+
+展台`#typography`的「多行行高与段落」使用真实Text和Stack，可显示行框辅助线；辅助线只标注每行区域，不模拟字体基线，也不进入产品。
+
+```tsx
+<Stack gap={3}>
+  <Text>第一段说明自然换行，每行22px；段内不添加额外gap。</Text>
+  <Text>第二段由Stack与前一段保持12px距离。</Text>
+</Stack>
+```
+
+验收：400/520/880px与200%等效重排下检查标题、长正文、路径、操作按钮；计算样式与token一致，文字不裁切，长文增高不挤压操作。系统纯文本放大和原生辅助技术另行验收。此补充随main更新，不代表新npm版本已发布。
 
 ## 混排、数字与单位
 

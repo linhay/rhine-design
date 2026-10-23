@@ -7,7 +7,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (main; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
 | Visual direction, colors, spacing, layout | `docs/DESIGN_SYSTEM.md` | `components/tokens.css`, `components/Layout.tsx` |
 | Spacing, grouping, card composition | `components/SPACING.md` (main; existing gap API works in 0.3.0) | `components/Layout.tsx`, `preview/SpacingGallery.tsx`; `/#spacing` |
-| Text hierarchy, Chinese/Latin text, metrics | `components/TYPOGRAPHY.md` | `components/Typography.tsx` |
+| Text hierarchy, line height, paragraphs, Chinese/Latin text, metrics | `components/TYPOGRAPHY.md` | `components/Typography.tsx`, `preview/LineHeightGallery.tsx`; `/#typography` |
 | Logo, light/dark variants, wordmark | `components/README.md` → 品牌标志 | `components/Logo.tsx`, `components/assets/logo.svg` |
 | Buttons, navigation, basic states | `components/README.md` → 组件契约 | `components/components.tsx` |
 | Forms, selection, combobox, data tables | `components/COMMON_COMPONENTS.md` | Use API_MAP for the source file |

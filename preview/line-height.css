@@ -1,0 +1,2 @@
+.ds-leading-sample[data-guides=true] { background-image:repeating-linear-gradient(to bottom,var(--rhine-selected) 0,var(--rhine-selected) calc(var(--ds-leading) - 1px),var(--rhine-line) calc(var(--ds-leading) - 1px),var(--rhine-line) var(--ds-leading)); }
+.ds-leading-paragraphs { max-width:44ch; }
