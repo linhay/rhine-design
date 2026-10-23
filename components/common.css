@@ -14,11 +14,11 @@
 .rhine-metric__unit { font-size:var(--rhine-text-caption); font-weight:400; color:var(--rhine-muted); }
 .rhine-key-value { margin:0; display:grid; gap:12px; }
 .rhine-key-value>div { display:grid; grid-template-columns:minmax(80px,1fr) minmax(0,2fr); gap:16px; }
-.rhine-key-value dt { color:var(--rhine-muted); font-size:12px; }.rhine-key-value dd { margin:0; overflow-wrap:anywhere; }
+.rhine-key-value dt { color:var(--rhine-muted); font-size:var(--rhine-text-caption); line-height:var(--rhine-leading-caption); }.rhine-key-value dd { margin:0; overflow-wrap:anywhere; }
 .rhine-data { display:grid; gap:12px; min-width:0; }
 .rhine-table-scroll { overflow:auto; max-width:100%; }
 .rhine-table { width:100%; min-width:500px; border-collapse:collapse; text-align:left; font-size:12px; }
-.rhine-table caption { text-align:left; font-size:16px; font-weight:600; margin-bottom:16px; }
+.rhine-table caption { text-align:left; font-size:var(--rhine-text-heading); line-height:var(--rhine-leading-heading); font-weight:var(--rhine-weight-heading); margin-bottom:var(--rhine-space-4); }
 .rhine-table th,.rhine-table td { padding:12px; border-bottom:1px solid var(--rhine-line); max-width:240px; overflow-wrap:anywhere; }
 .rhine-table th { color:var(--rhine-muted); font-weight:500; }.rhine-table td { font-variant-numeric:tabular-nums; }
 .rhine-table [data-align=right] { text-align:right; }.rhine-table tbody tr:hover { background:var(--rhine-selected); }

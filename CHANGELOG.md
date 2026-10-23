@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- SelectionCard统一24px内边距、16/24标题、600字重与8px标题/内容间隔；DataTable标题显式16/24。SideNav分组、Breadcrumbs、Progress标签及KeyValue标签明确12/18，侧栏分组标题后8px。既有真实展台同步展示，不再继承正文行高。
+
 - 补充文字行高、段落与控件规则及可切换行框辅助线的多行展台。沿用现有字号/行高token，按钮、Tab和单行输入同步消费body行高，默认尺寸不变。
 
 - 新增间距规范与`#spacing`真实组合展台：24/8/16卡片配方，默认/加载/错误/长文案；复用Stack/Inline/Grid，公共API和组件数量不变。Surface内边距改为消费既有space-6 token，默认外观不变。
