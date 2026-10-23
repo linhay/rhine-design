@@ -13,7 +13,7 @@ import { Logo, OrbitBackdrop, Text } from '@linhey/rhine-design';
 export function WelcomeArtwork() {
   return (
     <OrbitBackdrop className="welcome-artwork" style={{ minHeight: 360 }}>
-      <Logo theme="dark" decorative />
+      <Logo decorative />
       <Text as="h1" variant="title">开始新的工作</Text>
       <Text>从这里进入你的工作空间。</Text>
     </OrbitBackdrop>
@@ -68,6 +68,10 @@ Canvas 不可用时保留静态艺术 fallback 与 `children`。此降级不表�
 
 ### 2026-10-24 源码候选验证
 
-`npm ci`、`npm run check` 通过：64 项测试（轨道新增 9 项）、TypeScript 类型检查、展台生产构建及 CSS / SVG 产物检查。轨道测试覆盖完整节点绘制、DPR 上限、暂停时间冻结、系统 / prop / 祖先偏好、隐藏 / 离屏 / 窄窗 / 零尺寸、resize、Strict Mode 清理、Canvas 失败降级和重播保焦点。
+`npm ci`、`npm run check` 通过：65 项测试（轨道新增 10 项）、TypeScript 类型检查、展台生产构建及 CSS / SVG 产物检查。轨道测试覆盖完整节点绘制、DPR 上限、暂停时间冻结、系统 / prop / 祖先偏好、隐藏 / 离屏 / 窄窗 / 零尺寸、resize、Strict Mode 清理、Canvas 失败降级和重播保焦点。逻辑绘制尺寸使用 CSS client size，避免 CSS zoom 后暂停或 resize 改变线宽；真实浏览器验证固定画幅在 zoom 1→2→1 及 resize 后静态像素保持一致。
 
-本地 Chromium 真实展台通过 19 项检查：跨时间像素采样可见轨道运动；Space 键暂停 / 继续；系统、显式及祖先减少动态与恢复；三主题 × 400 / 520 / 880 宽度的静态 / 播放和无横向溢出；200% CSS 缩放与局部重播。页面错误为 0。该记录为本地组件展台证据，页面隐藏和离屏此轮先由单元测试覆盖，不宣称已验证真实业务入口或原生平台。
+本地 Chromium 真实展台通过 19 项检查：跨时间像素采样可见轨道运动；Space 键暂停 / 继续；系统、显式及祖先减少动态与恢复；三主题 × 400 / 520 / 880 宽度的静态 / 播放和无横向溢出；200% CSS 缩放与局部重播。另验证真实滚动离屏后像素冻结，返回可见区域后继续。页面错误为 0。页面隐藏与卸载由单元测试覆盖，不宣称已验证真实业务入口或原生平台。
+
+内容层的 Logo 使用默认配色，继承艺术区的浅色 `--rhine-green`；不要设 `theme="dark"`，该选项读取外层 `--rhine-bg`，深色主题的背景色在艺术区上缺少对比度。
+
+![真实组件展台](assets/orbit-backdrop.png)

@@ -13,7 +13,7 @@ export function OrbitGallery() {
       <Switch label="减少轨道动态" checked={reduced} onCheckedChange={setReduced} />
     </Inline>
     <OrbitBackdrop key={replay} className="ds-gap-top" reducedMotion={reduced} style={{ minHeight: 560 }}>
-      <Logo variant="lockup" theme="dark" size={40} />
+      <Logo variant="lockup" size={40} />
       <Stack gap={3}>
         <Text as="h3" variant="title">连接彼此，探索更多。</Text>
         <Text tone="muted">在有序的轨迹中，留下新的可能。<br />艺术背景不阻挡内容与操作。</Text>
