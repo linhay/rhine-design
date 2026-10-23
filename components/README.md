@@ -146,3 +146,7 @@ export function Example() {
 在仓库根执行npm run check。浏览器核对400/520/880/1200宽度、200%缩放、键盘/焦点、展开反向、减少动态中断与加载宽度。JSDOM不代替视觉或原生辅助技术验收。
 
 本仓构建产物是独立展台；消费项目只导入组件入口，避免把preview中的模拟流程打入业务产物。版本变化和迁移见[CHANGELOG](../CHANGELOG.md)。
+
+## 背景与外壳（未发布）
+
+新增 `Background` 与 `AppShell`，本分支 0.5.0 候选源码共 59 个组件；npm 0.4.0 仍为 48 个。Background 支持六类 roleTone、auto/theme/none 装饰策略及 appearance 局部覆盖；AppShell 提供组合展台使用的固定顶部操作区与响应式侧栏。完整 API、最小接入、背景滚动及 Portal 边界见[背景与应用外壳契约](../docs/APPLICATION_COMPONENTS.md)。

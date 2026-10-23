@@ -69,6 +69,10 @@ export function Welcome() {
 
 入口自动加载样式，用 `.rhine-theme` 包裹页面即可使用默认主题。布局和颜色变量使用 `--rhine-*` 前缀；完整定义见 [tokens.css](components/tokens.css)。
 
+### 背景组件（未发布）
+
+Background 与 AppShell 已进入 main；本分支 0.5.0 候选源码共 59 个组件。npm 0.4.0 不含这两项能力；等待下一 npm 发布窗口。背景层级、最小接入及兼容范围见[背景与应用外壳契约](docs/APPLICATION_COMPONENTS.md)，真实展台见 [场景背景](https://linhay.github.io/rhine-design/#backgrounds) 和 [背景与侧栏](https://linhay.github.io/rhine-design/#app-shell)。
+
 ### 一键切换主题（0.4.0）
 
 展台右上角可切换并记忆主题。新增 **橙趣 · 粗描边**：浅灰蓝点阵背景、米白圆角卡片、黑色粗边、向右下偏移的硬阴影与亮橙主按钮。打开 [在线订阅管理示例](https://linhay.github.io/rhine-design/?theme=neo-brutalism#subscriptions)，体验卡片详情、管理菜单与演示表单；本地开发访问 `http://127.0.0.1:18309/?theme=neo-brutalism#subscriptions`。
