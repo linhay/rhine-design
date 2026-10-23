@@ -1,0 +1,6 @@
+.rhine-data .rhine-table tbody th[scope=row] { position:static; top:auto; z-index:auto; color:var(--rhine-ink); background:var(--rhine-surface); font-weight:var(--rhine-weight-label); }
+.rhine-data .rhine-table tbody th[scope=row][data-sticky] { position:sticky; z-index:1; }
+.rhine-data .rhine-table tr[data-selected=true] th[scope=row] { background:var(--rhine-table-selected-bg); }
+.rhine-table__radio { display:flex; align-items:center; gap:8px; min-height:44px; cursor:pointer; }
+.rhine-table__radio input { flex:none; width:18px; height:18px; accent-color:var(--rhine-green); }
+.rhine-table__radio:has(input:disabled) { color:var(--rhine-muted); cursor:default; }

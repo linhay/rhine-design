@@ -8,7 +8,7 @@ export type { MediaCardProps, MediaViewerProps } from './Media';
 export { DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect } from './AdvancedForms';
 export type { DateFieldProps, DateRange, DateRangePickerProps, NumberFieldProps, RemoteMultiSelectProps, TreeNode, TreeSelectProps } from './AdvancedForms';
 export { StatusTimeline, TimelineLegend } from './StatusTimeline';
-export type { TimelineSegment, TimelineStatus, TimelineDetail } from './StatusTimeline';
+export type { TimelineSegment, TimelineStatus, TimelineDetail, StatusTimelineProps } from './StatusTimeline';
 export { TrendChart, StackedBar } from './Charts';
 export type { ChartPoint, ChartPart, TrendChartProps, StackedBarProps } from './Charts';
 
@@ -25,7 +25,7 @@ export type { IconName } from './Actions';
 export { Divider, Stack, Inline, Grid } from './Layout';
 export type { Spacing } from './Layout';
 export { Metric, KeyValue, DataTable, Pagination } from './Data';
-export type { DataColumn, DataTableProps, TableSort } from './Data';
+export type { DataColumn, DataTableProps, TableSort, PaginationProps } from './Data';
 export { Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox } from './Forms';
 export type { ComboboxProps } from './Forms';
 export { Dialog, Drawer, ConfirmDialog, Popover, Menu, Tooltip } from './Overlays';

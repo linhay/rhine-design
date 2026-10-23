@@ -2,6 +2,8 @@
 
 ## 未发布（0.5.0 候选）
 
+- 完成 [Ant Design / MUI 逐项对标](docs/ANTD_MUI_AUDIT.md)：补齐表单只读/校验/键盘、连续多选、树字符导航、数据表单选/排序清除/自动固定列、分页首末页/边界焦点、受控左右抽屉、媒体方向键/首尾焦点、图表受控逐点查看与格式化、健康历史稳定 ID 与受控详情。RemoteMultiSelect 默认连续选择，`closeOnSelect=true` 可恢复选完关闭；原单选 Combobox 默认不变。无新增运行时依赖。
+
 - 对应 #1–#6：新增 Background/AppShell、MediaCard/MediaViewer、DateField/DateRangePicker/NumberField/TreeSelect/RemoteMultiSelect，加上 TrendChart/StackedBar，共 11 个公共组件。
 - DataTable 增加受控跨页选择、禁选/混合态、层级展开与详情、密度和固定表头/列；Pagination 增加页大小意图。
 - 新增三主题背景、表单、数据与中性媒体 tokens；提供六组真实 React 展台及[应用组件契约](docs/APPLICATION_COMPONENTS.md)。宿主继续负责请求、时区、导出、下载、虚拟列表和持久化。

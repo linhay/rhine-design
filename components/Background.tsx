@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { ComponentPropsWithRef, CSSProperties } from 'react';
 
 export type BackgroundRole = 'canvas' | 'content' | 'sidebar' | 'surface' | 'overlay' | 'media';
 export type BackgroundDecoration = 'auto' | 'theme' | 'none';
@@ -10,7 +10,7 @@ export interface BackgroundAppearance {
   textureSize?: CSSProperties['backgroundSize'];
 }
 
-export interface BackgroundProps extends HTMLAttributes<HTMLDivElement> {
+export interface BackgroundProps extends ComponentPropsWithRef<'div'> {
   roleTone?: BackgroundRole;
   decoration?: BackgroundDecoration;
   appearance?: BackgroundAppearance;

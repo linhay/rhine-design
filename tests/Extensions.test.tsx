@@ -103,7 +103,7 @@ describe('server-owned data', () => {
 describe('layout and media', () => {
   it('returns focus to a surviving shell control when the focused secondary panel is removed', () => {
     vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
-    const bounds = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ width: 1200 } as DOMRect);
+    const bounds = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1200);
     const props = { navigation: { label: '导航', content: <button>导航条目</button>, open: true, onOpenChange: () => {} }, secondary: { label: '详情', content: <button>详情操作</button>, open: true, onOpenChange: () => {} }, children: <p>正文</p> };
     try {
       const { rerender } = render(<AppShell {...props} layout="left-right" />); screen.getByRole('button', { name: '详情操作' }).focus();
@@ -116,7 +116,7 @@ describe('layout and media', () => {
   });
   it('retains body input through layout, panel and theme changes', () => {
     vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
-    const bounds = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ width: 1200 } as DOMRect);
+    const bounds = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1200);
     function Demo() {
       const [layout, setLayout] = useState<'single' | 'left-right'>('single'), [open, setOpen] = useState(true), [dark, setDark] = useState(false);
       return <ThemeProvider theme={dark ? 'arknights' : 'rhine'}><button onClick={() => { setLayout('left-right'); setDark(true); }}>切换</button><AppShell layout={layout} navigation={{ label: '导航', open, onOpenChange: setOpen, content: <p>导航内容</p> }}><input aria-label="草稿" defaultValue="保留" /></AppShell></ThemeProvider>;

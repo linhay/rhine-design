@@ -3,6 +3,7 @@ import { Select, Stack, StackedBar, StatusTimeline, Surface, TimelineLegend, Tre
 
 export function MonitoringGallery() {
   const [state, setState] = useState('ready');
+  const [activePoint, setActivePoint] = useState<string | null>(null);
   const points: ChartPoint[] = state === 'empty' ? [] : [12, 18, null, 0, 24, 16].map((value, index) => ({ id: String(index), label: `10:${String(index * 10).padStart(2, '0')}`, value }));
   const segments: TimelineSegment[] = state === 'empty' ? [] : ['healthy', 'failed', 'unknown', 'recovered'].map((status, index) => ({
     id: String(index), label: `时段 ${index + 1}`, status: status as TimelineSegment['status'], detail: {
@@ -18,8 +19,8 @@ export function MonitoringGallery() {
     <Select label="监控演示状态" value={state} onChange={event => setState(event.target.value)}><option value="ready">默认 / 含缺失采样</option><option value="empty">空数据</option><option value="stale">陈旧数据</option><option value="error">错误 / 保留旧数据</option><option value="unknown">占比总量未知</option></Select>
     <Surface className="ds-gap-top"><Stack gap={4}><h3>结构化时段详情</h3><StatusTimeline label="结构化健康历史" startLabel="10:00 UTC+8" endLabel="10:40 UTC+8" segments={segments} /><TimelineLegend /><p>方向键与 Home/End 切换时段；轻触健康条查看同一份完整详情。</p><StatusTimeline compact label="紧凑结构化历史" startLabel="10:00" endLabel="10:40" segments={segments} /></Stack></Surface>
     <div className="ds-extension-grid">
-      <Surface><TrendChart label="请求量趋势" unit="次" rangeLabel="2026-10-23 10:00–11:00 UTC+8" description="每 10 分钟一个桶；10:20 未采集，10:30 已确认是零。" points={points} {...feedback} /></Surface>
-      <Surface><TrendChart kind="line" label="资源使用历史" unit="%" rangeLabel="2026-10-23 10:00–11:00 UTC+8" description="宿主采集的资源占用；不插值，不跨越缺失点连线。" points={points} {...feedback} /></Surface>
+      <Surface><TrendChart label="请求量趋势" unit="次" rangeLabel="2026-10-23 10:00–11:00 UTC+8" description="每 10 分钟一个桶；10:20 未采集，10:30 已确认是零。左右键或轻触可查看，并同步右侧图表时段。" points={points} activePointId={activePoint} onActivePointChange={setActivePoint} valueFormatter={value => value === null ? '未知' : value.toLocaleString('zh-CN')} {...feedback} /></Surface>
+      <Surface><TrendChart kind="line" label="资源使用历史" unit="%" rangeLabel="2026-10-23 10:00–11:00 UTC+8" description="宿主采集的资源占用；不插值，不跨越缺失点连线。两个图表按时段 ID 同步查看。" points={points} activePointId={activePoint} onActivePointChange={setActivePoint} {...feedback} /></Surface>
       <Surface><StackedBar label="请求结果分布" unit="次" rangeLabel="2026-10-23 10:00–11:00 UTC+8" description="按宿主互斥分类的计数绘图；包含未知计数时不归一化。" parts={state === 'empty' ? [] : [{ id: 'complete', label: '已完成', value: 32, tone: 1 }, { id: 'retry', label: '重试恢复', value: 8, tone: 3 }, { id: 'failed', label: '最终失败', value: state === 'unknown' ? null : 4, tone: 2 }]} {...feedback} /></Surface>
     </div>
   </section>;

@@ -29,6 +29,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 **0.5.0 候选（未发布）**：新增背景与多侧栏、复杂表单、受控数据表、媒体与监控图表；源码共 59 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
 
+本轮新增 API 与交互已逐项核对 Ant Design / MUI，修复及明确保留的差异见[对标清单](docs/ANTD_MUI_AUDIT.md)。
+
 <a id="quick-start"></a>
 
 ## 快速接入
