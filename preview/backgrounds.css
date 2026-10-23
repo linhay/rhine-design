@@ -1,0 +1,10 @@
+.ds-background-controls { display:flex; flex-wrap:wrap; align-items:end; gap:16px; margin:24px 0; }
+.ds-background-controls .rhine-select { width:min(100%,260px); }
+.ds-background-scenes { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:24px; }
+.ds-background-example { min-width:0; }
+.ds-background-label { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.ds-background-label code { font:12px/20px var(--rhine-mono); color:var(--rhine-muted); }
+.ds-background-sample { display:grid; align-content:center; gap:8px; min-height:136px; padding:24px; border:1px solid var(--rhine-line); border-radius:var(--rhine-radius-card); overflow-wrap:anywhere; }
+.ds-background-backdrop { padding:16px; background:var(--rhine-backdrop-bg); border-radius:var(--rhine-radius-card); }
+.ds-background-backdrop .ds-background-sample { min-height:104px; padding:16px; }
+.ds-background-local { margin-top:24px; }

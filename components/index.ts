@@ -1,4 +1,8 @@
 import './styles.css';
+export { Background } from './Background';
+export type { BackgroundProps, BackgroundRole, BackgroundDecoration, BackgroundAppearance } from './Background';
+export { AppShell } from './AppShell';
+export type { AppShellProps, ShellPanel } from './AppShell';
 export { StatusTimeline, TimelineLegend } from './StatusTimeline';
 export type { TimelineSegment, TimelineStatus } from './StatusTimeline';
 

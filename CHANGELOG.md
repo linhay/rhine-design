@@ -1,5 +1,10 @@
 # 版本记录
 
+## 未发布
+
+- 为 #4 新增 Background、语义背景 tokens、三主题纹理和纯色降级，以及组合展台所需的 AppShell。
+- 提供背景层级、滚动/裁剪/Portal 契约、最小接入和真实 React 展台。npm 0.4.0 不含这些能力，发布留到下次窗口。
+
 ## 0.4.0
 
 - 新增 `@linhey/rhine-design/theme`：`ThemeProvider`、`useTheme`、`themes`、`ThemeName` 与 `ThemeProviderProps`，自动加载三套内置主题，支持受控/非受控切换及并列 Provider；嵌套覆盖暂不支持。切换保留组件、表单与浮层状态，偏好存储由宿主管理。展台复用公共 API；主题 CSS 中的展台布局和 HUD/扫描/开机装饰移至 `preview/theme-*.css`。补齐接入文档及 API/展台回归测试。

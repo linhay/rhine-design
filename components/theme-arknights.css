@@ -2,6 +2,11 @@
 .rhine-theme[data-rhine-theme="arknights"] {
   /* ---- 色彩：暗舱底 + 信号黄 + 警戒橙 ---- */
   --rhine-bg: #0b0d10;
+  --rhine-overlay-bg: #1a1d23;
+  --rhine-backdrop-bg: rgba(4, 5, 7, .72);
+  --rhine-background-mark: #20242a;
+  --rhine-background-texture: linear-gradient(var(--rhine-background-mark) 1px, transparent 1px), linear-gradient(90deg, var(--rhine-background-mark) 1px, transparent 1px);
+  --rhine-background-scale: 32px 32px;
   --rhine-surface: #14161b;
   --rhine-ink: #eef0ec;
   --rhine-muted: #878f96;
@@ -77,7 +82,7 @@
 .rhine-theme[data-rhine-theme="arknights"] .rhine-surface,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-empty,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-fieldset {
-  background: var(--ak-panel);
+  background: var(--rhine-surface-bg);
   clip-path: polygon(0 0, calc(100% - var(--ak-cut)) 0, 100% var(--ak-cut), 100% 100%, 0 100%);
 }
 /* 左下角小角标点缀 */
@@ -173,7 +178,7 @@
 .rhine-theme[data-rhine-theme="arknights"] .rhine-combobox__list,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-popover,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-menu {
-  background: var(--ak-panel-hi);
+  background: var(--rhine-overlay-bg);
   border-color: var(--rhine-control);
   border-radius: 0;
   box-shadow: 0 12px 32px rgba(0, 0, 0, .55);
@@ -240,9 +245,9 @@
 .rhine-theme[data-rhine-theme="arknights"] .rhine-disclosure summary>span { color: var(--ak-accent); }
 
 /* ================= 浮层 / 对话框 ================= */
-.rhine-theme[data-rhine-theme="arknights"] .rhine-overlay { background: rgba(4, 5, 7, .72); }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-overlay { background: var(--rhine-backdrop-bg); }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-dialog {
-  background: var(--ak-panel);
+  background: var(--rhine-overlay-bg);
   border-color: var(--rhine-control);
   border-radius: 0;
   box-shadow: 0 24px 64px rgba(0, 0, 0, .6);

@@ -1,0 +1,43 @@
+/* Each container resets its paint so local overrides never leak into nested scenes.
+   Background paint does not create a containing block or intercept pointer events. */
+.rhine-background {
+  --rhine-background-color: var(--rhine-content-bg);
+  --rhine-background-foreground: var(--rhine-content-text);
+  --rhine-background-image: var(--rhine-content-texture);
+  --rhine-background-size: var(--rhine-background-scale);
+  min-width: 0;
+  color: var(--rhine-background-foreground);
+  background-color: var(--rhine-background-color);
+  background-image: var(--rhine-background-image);
+  background-size: var(--rhine-background-size);
+  background-position: 0 0;
+  background-attachment: scroll;
+}
+.rhine-background[data-tone=canvas] {
+  --rhine-background-color: var(--rhine-canvas-bg);
+  --rhine-background-foreground: var(--rhine-canvas-text);
+  --rhine-background-image: var(--rhine-canvas-texture);
+}
+.rhine-background[data-tone=sidebar] {
+  --rhine-background-color: var(--rhine-sidebar-bg);
+  --rhine-background-foreground: var(--rhine-sidebar-text);
+  --rhine-background-image: var(--rhine-sidebar-texture);
+}
+.rhine-background[data-tone=surface] {
+  --rhine-background-color: var(--rhine-surface-bg);
+  --rhine-background-foreground: var(--rhine-surface-text);
+  --rhine-background-image: var(--rhine-surface-texture);
+}
+.rhine-background[data-tone=overlay] {
+  --rhine-background-color: var(--rhine-overlay-bg);
+  --rhine-background-foreground: var(--rhine-overlay-text);
+  --rhine-background-image: var(--rhine-overlay-texture);
+}
+.rhine-background[data-tone=media] {
+  --rhine-background-color: var(--rhine-media-bg);
+  --rhine-background-foreground: var(--rhine-media-text);
+  --rhine-background-image: var(--rhine-media-texture);
+  color-scheme: dark;
+}
+.rhine-background[data-decoration=theme] { --rhine-background-image: var(--rhine-background-texture); }
+.rhine-background[data-decoration=none] { background-image: none; }

@@ -5,6 +5,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | Exports | Source |
 | --- | --- |
 | ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
+| Background, AppShell (未发布；npm 0.4.0 不含) | `components/Background.tsx`、`components/AppShell.tsx`；契约 `docs/APPLICATION_COMPONENTS.md` |
 | Logo | `components/Logo.tsx` |
 | Text | `components/Typography.tsx` |
 | Select | `components/Select.tsx` |
