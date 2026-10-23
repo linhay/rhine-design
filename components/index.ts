@@ -1,4 +1,6 @@
 import './styles.css';
+export { OrbitBackdrop } from './OrbitBackdrop';
+export type { OrbitBackdropProps } from './OrbitBackdrop';
 export { Background } from './Background';
 export type { BackgroundProps, BackgroundRole, BackgroundDecoration, BackgroundAppearance } from './Background';
 export { AppShell } from './AppShell';

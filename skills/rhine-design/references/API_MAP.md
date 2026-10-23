@@ -9,6 +9,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | MediaCard, MediaViewer（0.5.0） | `components/Media.tsx`；中性画布，不嵌套主题 |
 | DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
 | ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
+| OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
 | Logo | `components/Logo.tsx` |
 | Text | `components/Typography.tsx` |
 | Select | `components/Select.tsx` |
@@ -38,5 +39,6 @@ API decisions that commonly matter:
 - `SelectionCard` uses checkbox semantics; the host determines single-selection policy. Do not nest other interactive controls in it.
 - `Text`'s `as` chooses semantics; `variant` chooses visual hierarchy.
 - `Logo` accepts `wordmark` and `label`; its `theme` affects the logo, not the full component library.
+- `OrbitBackdrop` is decorative artwork with built-in pause / resume. Its `reducedMotion` prop can strengthen but never override system reduction; see `docs/ORBIT_BACKDROP.md` for visibility, narrow-window and fallback behavior. It does not express loading or business progress.
 - `Toast` presents one notification, not a global queue. `DataTable` is not a query or table-state engine.
 - Components in `preview/` are demonstrations. Public API must resolve through a `package.json` export; theme APIs use the separate `/theme` entry.
