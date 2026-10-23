@@ -42,6 +42,23 @@ it('preserves active identity through chart reorder and handles removal', () => 
   expect(screen.getByRole('img')).toHaveAccessibleDescription('10:00：1200 次');
 });
 
+it('only offers chart inspection while at least one finite sample can be plotted', () => {
+  const { container, rerender } = render(<TrendChart {...context} points={[]} />);
+  expect(screen.getByText('暂无采样')).toBeVisible();
+  expect(container.querySelector('.rhine-chart__inspection')).not.toBeInTheDocument();
+  rerender(<TrendChart {...context} points={[points[1]]} activePointId="b" />);
+  expect(screen.getByText('所有采样值均未知')).toBeVisible();
+  expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  expect(container.querySelector('.rhine-chart__inspection')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText('查看请求数据表'));
+  expect(screen.getByRole('cell', { name: '10:10' })).toBeVisible();
+  expect(screen.getByRole('cell', { name: '未知' })).toBeVisible();
+  rerender(<TrendChart {...context} points={points} activePointId="b" />);
+  expect(screen.getByRole('img')).toHaveAccessibleDescription('10:10：未知');
+  rerender(<TrendChart {...context} points={[{ ...points[0], value: Infinity }, points[1]]} activePointId="b" />);
+  expect(container.querySelector('.rhine-chart__inspection')).not.toBeInTheDocument();
+});
+
 it('keeps finite chart coordinates at large finite magnitudes and zero shares invisible', () => {
   const { container, rerender } = render(<TrendChart {...context} kind="line" points={[{ id: 'a', label: 'A', value: -Number.MAX_VALUE }, { id: 'b', label: 'B', value: Number.MAX_VALUE }]} />);
   expect(container.querySelector('.rhine-chart__line')?.getAttribute('d')).not.toMatch(/NaN|Infinity/);
@@ -84,7 +101,12 @@ it('reports timeline controlled selection and open intent without overriding hos
 it('lets keyboard users enter and dismiss timeline details without reopening on focus return', async () => {
   render(<StatusTimeline label="历史" startLabel="开始" endLabel="结束" segments={segments} />);
   const slider = screen.getByRole('slider');
-  act(() => slider.focus()); await screen.findByRole('dialog');
+  expect(slider).not.toHaveAttribute('aria-expanded');
+  expect(slider).toHaveAttribute('aria-haspopup', 'dialog');
+  act(() => slider.focus()); const detail = await screen.findByRole('dialog');
+  expect(slider).not.toHaveAttribute('aria-expanded');
+  expect(slider).toHaveAttribute('aria-controls', detail.id);
+  expect(slider).toHaveAttribute('aria-details', detail.id);
   fireEvent.keyDown(slider, { key: 'Enter' });
   expect(screen.getByRole('button', { name: '关闭时段详情' })).toHaveFocus();
   fireEvent.click(screen.getByRole('button', { name: '关闭时段详情' }));

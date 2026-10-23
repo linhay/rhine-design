@@ -1,19 +1,7 @@
 /* Canonical tokens for the component library and design previews. */
 :root, :where(.rhine-theme[data-rhine-theme]) {
   --rhine-bg: #f2f1e9;
-  --rhine-canvas-bg: var(--rhine-bg);
-  --rhine-content-bg: var(--rhine-bg);
-  --rhine-sidebar-bg: var(--rhine-surface);
-  --rhine-surface-bg: var(--rhine-surface);
-  --rhine-overlay-bg: var(--rhine-surface);
   --rhine-backdrop-bg: #242b2870;
-  --rhine-media-bg: var(--rhine-media-canvas);
-  --rhine-canvas-text: var(--rhine-ink);
-  --rhine-content-text: var(--rhine-ink);
-  --rhine-sidebar-text: var(--rhine-ink);
-  --rhine-surface-text: var(--rhine-ink);
-  --rhine-overlay-text: var(--rhine-ink);
-  --rhine-canvas-texture: var(--rhine-background-texture);
   --rhine-content-texture: none;
   --rhine-sidebar-texture: none;
   --rhine-surface-texture: none;
@@ -22,17 +10,10 @@
   --rhine-background-texture: none;
   --rhine-background-scale: 24px 24px;
   --rhine-background-mark: #c5ccc1;
-  --rhine-table-header-bg: var(--rhine-surface);
-  --rhine-table-selected-bg: var(--rhine-selected);
   --rhine-table-cell-padding: 12px 16px;
-  --rhine-field-group-bg: var(--rhine-surface);
   --rhine-tree-indent: 20px;
-  --rhine-chart-series-1: var(--rhine-green);
-  --rhine-chart-series-2: var(--rhine-signal);
   --rhine-chart-series-3: #477aa8;
   --rhine-chart-series-4: #8763a7;
-  --rhine-chart-grid: var(--rhine-line);
-  --rhine-chart-missing: var(--rhine-muted);
   --rhine-media-canvas: #101214;
   --rhine-media-overlay: #202428;
   --rhine-media-text: #f6f7f8;
@@ -98,4 +79,28 @@
   --rhine-ease-standard: cubic-bezier(.2, 0, 0, 1);
   --rhine-ease-exit: cubic-bezier(.4, 0, 1, 1);
   --rhine-motion-distance: 3px;
+}
+
+/* Resolve palette aliases at CSS-only roots as well as ThemeProvider roots. */
+:root, :where(.rhine-theme) {
+  --rhine-canvas-bg: var(--rhine-bg);
+  --rhine-content-bg: var(--rhine-bg);
+  --rhine-sidebar-bg: var(--rhine-surface);
+  --rhine-surface-bg: var(--rhine-surface);
+  --rhine-overlay-bg: var(--rhine-surface);
+  --rhine-media-bg: var(--rhine-media-canvas);
+  --rhine-canvas-text: var(--rhine-ink);
+  --rhine-content-text: var(--rhine-ink);
+  --rhine-sidebar-text: var(--rhine-ink);
+  --rhine-surface-text: var(--rhine-ink);
+  --rhine-overlay-text: var(--rhine-ink);
+  --rhine-canvas-texture: var(--rhine-background-texture);
+  --rhine-table-header-bg: var(--rhine-surface);
+  --rhine-table-hover-bg: var(--rhine-selected);
+  --rhine-table-selected-bg: var(--rhine-selected);
+  --rhine-field-group-bg: var(--rhine-surface);
+  --rhine-chart-series-1: var(--rhine-green);
+  --rhine-chart-series-2: var(--rhine-signal);
+  --rhine-chart-grid: var(--rhine-line);
+  --rhine-chart-missing: var(--rhine-muted);
 }

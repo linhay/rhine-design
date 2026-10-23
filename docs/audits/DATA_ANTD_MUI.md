@@ -1,6 +1,6 @@
 # DataTable / Pagination 对标核对
 
-核对日期：2026-10-24。范围：issues #1–#6 候选中的 DataTable 与 Pagination 扩展。以下是 API 与行为核对，不是 Ant Design 或 MUI 的兼容实现；源码能力尚未发布到 npm。
+核对日期：2026-10-24。范围：issues #1–#6 的 DataTable 与 Pagination 扩展。以下是 API 与行为核对，不是 Ant Design 或 MUI 的兼容实现；本页扩展自 0.5.0 提供。
 
 ## 官方依据
 

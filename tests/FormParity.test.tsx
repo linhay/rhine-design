@@ -47,6 +47,40 @@ describe('date field parity', () => {
 });
 
 describe('number field parity', () => {
+  it('does not report unchanged numeric or empty values when committing the draft', () => {
+    const change = vi.fn(); const props = { label: '数量', value: 4, onValueChange: change };
+    const { rerender } = render(<NumberField {...props} />); const input = screen.getByRole('spinbutton');
+    fireEvent.focus(input); fireEvent.blur(input); fireEvent.keyDown(input, { key: 'Enter' });
+    fireEvent.change(input, { target: { value: '4.00' } }); fireEvent.blur(input);
+    expect(input).toHaveValue('4'); expect(change).not.toHaveBeenCalled();
+    rerender(<NumberField {...props} value={null} />);
+    fireEvent.blur(input); fireEvent.keyDown(input, { key: 'Enter' });
+    expect(change).not.toHaveBeenCalled();
+  });
+
+  it('reports each changed controlled value once across Enter and subsequent blur', () => {
+    const change = vi.fn();
+    function Demo() {
+      const [value, setValue] = useState<number | null>(4);
+      return <NumberField label="数量" value={value} precision={1} onValueChange={next => { change(next); setValue(next); }} />;
+    }
+    render(<Demo />); const input = screen.getByRole('spinbutton');
+    fireEvent.change(input, { target: { value: '4.24' } }); fireEvent.keyDown(input, { key: 'Enter' }); fireEvent.blur(input);
+    expect(input).toHaveValue('4.2'); expect(change.mock.calls).toEqual([[4.2]]);
+    fireEvent.change(input, { target: { value: '' } }); fireEvent.blur(input); fireEvent.blur(input);
+    expect(change.mock.calls).toEqual([[4.2], [null]]);
+  });
+
+  it('preserves parsed precision on ordinary commits unless precision was explicitly supplied', () => {
+    const change = vi.fn(); const props = { label: '小数', value: 1e-13, onValueChange: change };
+    const { rerender } = render(<NumberField {...props} />); const input = screen.getByRole('spinbutton');
+    fireEvent.blur(input); expect(input).toHaveValue('1e-13'); expect(change).not.toHaveBeenCalled();
+    fireEvent.change(input, { target: { value: '1.23456789012345' } }); fireEvent.keyDown(input, { key: 'Enter' });
+    expect(change).toHaveBeenLastCalledWith(1.23456789012345);
+    rerender(<NumberField {...props} value={0.1} step={0.2} />);
+    fireEvent.keyDown(input, { key: 'ArrowUp' }); expect(change).toHaveBeenLastCalledWith(0.3);
+  });
+
   it('keeps readonly values selectable without accepting keyboard, pointer or blur changes', () => {
     const change = vi.fn(); render(<NumberField label="数量" value={4} onValueChange={change} readOnly name="quantity" hint="审核中" />);
     const input = screen.getByRole('spinbutton'); expect(input).not.toBeDisabled(); expect(input).toHaveAttribute('readonly');

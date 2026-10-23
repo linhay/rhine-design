@@ -1,6 +1,6 @@
 # 表单组件：Ant Design / MUI API 与交互核对
 
-查阅日期：**2026-10-24**。范围为 issues #1–#6 本次新增的 DateField、DateRangePicker、NumberField、RemoteMultiSelect、TreeSelect，以及它们复用的 Combobox。实现位置为 `components/AdvancedForms.tsx` / `components/Forms.tsx`；这些仍属于未发布候选 API。
+查阅日期：**2026-10-24**。范围为 issues #1–#6 本次新增的 DateField、DateRangePicker、NumberField、RemoteMultiSelect、TreeSelect，以及它们复用的 Combobox。实现位置为 `components/AdvancedForms.tsx` / `components/Forms.tsx`；这些 API 自 0.5.0 提供。
 
 官方页面当次标注 Ant Design **6.6.7**、Material UI **9.5.0**、MUI X Date Pickers **9.15.0**、Tree View **9.16.0**。版本仅标识这次查阅内容，不表示安装或运行过这些框架。此核对是官方 API/交互文档对照与 Rhine 自身验证，没有声称完成上游源码或跨库像素比较。
 

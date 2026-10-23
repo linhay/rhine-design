@@ -1,6 +1,6 @@
 # Background、AppShell 与媒体组件对标
 
-查阅日期：**2026-10-24（Asia/Shanghai）**。对照对象为 Ant Design 与 MUI 官方在线文档；查阅时页面分别标示 Ant Design 6.6.7、Material UI 9.5.0。本记录核对 Rhine Design 0.5.0 未发布候选的 API 与交互，不表示 npm 0.4.0 已有这些能力，也不宣称与两套组件库完全兼容。
+查阅日期：**2026-10-24（Asia/Shanghai）**。对照对象为 Ant Design 与 MUI 官方在线文档；查阅时页面分别标示 Ant Design 6.6.7、Material UI 9.5.0。本记录核对 Rhine Design 0.5.0 的 API 与交互，不表示 npm 0.4.0 已有这些能力，也不宣称与两套组件库完全兼容。
 
 ## 官方依据与对应关系
 

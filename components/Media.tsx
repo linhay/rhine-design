@@ -14,7 +14,8 @@ export function MediaCard({ title, date, kind, preview, state = preview != null 
   return <article {...props} className={`rhine-media-card ${className}`} data-selected={selected}>
     <button type="button" className="rhine-media-card__open" onClick={event => { event.currentTarget.focus({ preventScroll: true }); onOpen(); }} disabled={disabled} aria-label={`打开${title}`} aria-describedby={statusId}>
       <span className="rhine-media-card__preview" style={{ aspectRatio }} aria-busy={state === 'loading'}>
-        {state === 'ready' ? preview : <span>{state === 'loading' ? '正在加载预览…' : state === 'error' ? '预览无法解码' : '暂无预览'}</span>}
+        {(state === 'ready' || state === 'loading') && <span className="rhine-media-card__asset" hidden={state === 'loading'}>{preview}</span>}
+        {state !== 'ready' && <span>{state === 'loading' ? '正在加载预览…' : state === 'error' ? '预览无法解码' : '暂无预览'}</span>}
         <span className="rhine-media-card__kind">{kind === 'photo' ? '照片' : kind === 'video' ? '视频' : kind}</span>
       </span><span className="rhine-media-card__caption"><strong>{title}</strong><span>{date || '日期未知'}</span></span>
     </button>

@@ -1,4 +1,4 @@
-import { createRef } from 'react';
+import { createRef, useState } from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppShell, Background, Dialog, Drawer, MediaCard, MediaViewer } from '../components';
@@ -73,6 +73,19 @@ describe('Ant Design / MUI shell and background contracts', () => {
     expect(pane).toBeVisible();
   });
 
+  it('restores focus when the secondary prop is removed without stealing focus from outside the shell', () => {
+    shellWidth(1200);
+    const navigation = { label: '导航', content: <button>导航项目</button>, open: true, onOpenChange: vi.fn() };
+    const secondary = { ...navigation, label: '详情', content: <button>详情操作</button> };
+    const demo = (show: boolean) => <><button>外部操作</button><AppShell layout="left-right" navigation={navigation} secondary={show ? secondary : undefined}>正文</AppShell></>;
+    const { rerender } = render(demo(true));
+    screen.getByRole('button', { name: '详情操作' }).focus();
+    rerender(demo(false)); expect(screen.getByRole('button', { name: '收起导航' })).toHaveFocus();
+    rerender(demo(true)); screen.getByRole('button', { name: '详情操作' }).focus();
+    screen.getByRole('button', { name: '外部操作' }).focus();
+    rerender(demo(false)); expect(screen.getByRole('button', { name: '外部操作' })).toHaveFocus();
+  });
+
   it('keeps the existing Drawer default on the right and supports an explicit left side', () => {
     const props = { trigger: <button>打开</button>, title: '抽屉', description: '描述', open: true, children: <p>内容</p> };
     const { rerender } = render(<Drawer {...props} />);
@@ -83,6 +96,21 @@ describe('Ant Design / MUI shell and background contracts', () => {
 });
 
 describe('Ant Design / MUI media contracts', () => {
+  it.each(['load', 'error'] as const)('mounts a hidden loading preview so its %s event can complete the host state', event => {
+    const completed = vi.fn();
+    function Demo() {
+      const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+      return <MediaCard title="预览" kind="photo" state={state} onOpen={() => {}} preview={<img alt="缩略图" src="/preview.png" onLoad={() => { completed(); setState('ready'); }} onError={() => { completed(); setState('error'); }} />} />;
+    }
+    render(<Demo />); const preview = screen.getByAltText('缩略图');
+    expect(preview).toBeInTheDocument(); expect(preview).not.toBeVisible();
+    expect(screen.getByText('正在加载预览…')).toBeVisible();
+    fireEvent[event](preview); expect(completed).toHaveBeenCalledOnce();
+    expect(screen.queryByText('正在加载预览…')).not.toBeInTheDocument();
+    if (event === 'load') { expect(screen.getByAltText('缩略图')).toBe(preview); expect(preview).toBeVisible(); }
+    else expect(screen.getByText('预览无法解码')).toBeVisible();
+  });
+
   it('keeps card actions separate from selection and opening, including an error retry', () => {
     const onOpen = vi.fn(), onSelectedChange = vi.fn(), retry = vi.fn(), ref = createRef<HTMLElement>();
     const { rerender } = render(<MediaCard ref={ref} title="照片" kind="photo" state="error" onOpen={onOpen} onSelectedChange={onSelectedChange} className="custom-card" style={{ maxWidth: 320 }} actions={<button onClick={retry}>重新加载</button>} />);

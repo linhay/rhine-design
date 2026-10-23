@@ -28,6 +28,7 @@
 .rhine-data .rhine-table :is(th,td) { padding:var(--rhine-table-cell-padding); overflow-wrap:anywhere; font-size:14px; }
 .rhine-table th { background:var(--rhine-table-header-bg); }
 .rhine-table td { background:var(--rhine-surface); }
+.rhine-table tbody tr:hover:not([data-selected=true]) > :is(td,th[scope=row]) { background:var(--rhine-table-hover-bg); }
 .rhine-table tr[data-selected=true] td { background:var(--rhine-table-selected-bg); }
 .rhine-table[data-sticky-header=true] th { position:sticky; top:0; z-index:2; }
 .rhine-table :is(th,td)[data-sticky] { position:sticky; z-index:1; box-shadow:0 0 0 1px var(--rhine-line); }

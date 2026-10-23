@@ -1,6 +1,14 @@
-# Issues #1–#6 候选验证
+# Issues #1–#6 验证记录
 
-2026-10-24 更新，0.5.0 候选源码。本记录不表示 npm 已发布、GitHub Pages 已更新或消费应用已迁移。包版本仍为已发布基线 0.4.0，正式发布时再更新版本并创建独立制品。
+2026-10-24 更新，0.5.0 源码与发布前验证。下方保留历史候选证据及其精确提交；正式版本、制品身份与 registry 回读见 [v0.5.0 发布记录](https://github.com/linhay/rhine-design/releases/tag/v0.5.0)。组件库发布不代表消费应用已迁移。
+
+## 0.5.0 发布复核（2026-10-24）
+
+- 完成 PR #7 全部有效审阅：数字重复提交与未指定精度的数据损失、加载媒体挂载、空图表提示、slider ARIA、表格主题/密度/悬停及 CSS-only 根派生变量。AppShell 移除辅助栏焦点已有修复，本轮补充清除面板与外部焦点保护回归。
+- Node 24 `npm run check`：**126 项测试、15 个文件通过**；类型、生产构建及 CSS/SVG 检查通过。本轮发布审阅新增 7 项测试。最终 JS/CSS 为 `index-ZdseTmxg.js` / `index-DenpVIW5.css`。
+- Chrome 155 原生“网页缩放”设为 **200%**，设置控件显示选中200%；相同窗口下 innerWidth 从1040变为520，devicePixelRatio从1变为2，HTML/body CSS zoom仍为1。最终产物三主题×六展台×有效400/520px共 **36组布局**、**15组跨组件交互+12组背景/外壳交互**全部通过，意外横向溢出0、运行时错误0。验后恢复100%。这补齐 issue #4 预留的浏览器实际缩放验收。
+- 浏览器补验媒体隐藏节点发起请求并在 onLoad 后显示原节点、长小数/极小数保留且不重复提交；CSS 修前41个断言失败，修后三主题×两密度、主题根 palette 继承/显式场景覆盖与不透明固定单元格底色全部通过。
+- 证据保存在忽略目录 `output/playwright/release-browser-zoom-*`、`release-css-review*`。原生缩放下 Playwright 截图裁剪异常，验收依据设置文本、DPR/尺寸、DOM几何及实际交互，不以截图外观替代行为证据。系统日历、读屏软件、移动WebView和真实媒体解码仍属宿主验收边界。
 
 ## Ant Design / MUI 对标补齐（2026-10-24）
 
@@ -41,4 +49,4 @@
 - 表格使用原生 table 加层级展开按钮，未实现可编辑 ARIA treegrid。大数据虚拟化、导出和服务端请求需要宿主保留。
 - 本地截图在被 Git 忽略的 `output/playwright/`：`shell-desktop.png`、`media-400.png`、`forms-400.png`。页面可从 `npm run dev` 的 `#app-shell`、`#advanced-forms`、`#advanced-data`、`#media`、`#backgrounds` 复查。
 - 可审阅截图：[桌面多栏](assets/application-shell.png)、[400px 媒体查看器](assets/media-viewer-mobile.png)。截图只作布局参考，交互证据来自上述真实 React 展台和浏览器检查。
-- issues 的发布验收仍待正式版本；按 [RELEASING](RELEASING.md) 从干净提交打包、固定版本安装并回读 registry，不能将候选源码等同于 npm 能力。
+- issues 的发布验收按 [RELEASING](RELEASING.md) 从干净提交打包、固定版本安装并回读 registry，不能将候选源码等同于 npm 能力；实际结果以对应版本发布记录为准。

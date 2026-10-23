@@ -38,7 +38,7 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
       <div className="rhine-timeline__bars" aria-hidden="true">{segments.map((item, i) => <span key={item.id} data-status={item.status} data-selected={i === selected} />)}</div>
       <input ref={slider} type="range" min={0} max={Math.max(0, segments.length - 1)} value={Math.max(0, selected)} disabled={disabled || !segments.length}
         aria-label={label} aria-valuetext={segment ? `${segment.label} · ${timelineLabels[segment.status]}` : '暂无记录'} aria-describedby={detailId}
-        aria-details={open && hasPopup ? `${detailId}-popup` : undefined} aria-controls={open && hasPopup ? `${detailId}-popup` : undefined} aria-haspopup={hasPopup ? 'dialog' : undefined} aria-expanded={hasPopup ? open : undefined}
+        aria-details={open && hasPopup ? `${detailId}-popup` : undefined} aria-controls={open && hasPopup ? `${detailId}-popup` : undefined} aria-haspopup={hasPopup ? 'dialog' : undefined}
         onFocus={() => { if (!returning.current) setOpen(true); returning.current = false; }}
         onKeyDown={event => {
           if (event.key === 'Escape' && open && hasPopup) { event.preventDefault(); event.stopPropagation(); setOpen(false); }

@@ -69,11 +69,11 @@ export function NumberField({ label, value, onValueChange, min, max, step = 1, p
   const normalize = (n: number) => Math.min(max ?? Infinity, Math.max(min ?? -Infinity, Number(n.toFixed(Math.max(0, Math.min(15, precision ?? 12))))));
   const commit = () => {
     if (composing.current || blocked) return;
-    if (!draft.trim()) { setLocalError(''); onValueChange(null); return; }
+    if (!draft.trim()) { setLocalError(''); if (value !== null) onValueChange(null); return; }
     const n = Number(draft);
     if (!Number.isFinite(n)) { setLocalError('请输入有效数字。'); return; }
     if ((min !== undefined && n < min) || (max !== undefined && n > max)) { setLocalError(`请输入 ${min ?? '−∞'} 至 ${max ?? '+∞'} 之间的数字。`); return; }
-    const next = normalize(n); setDraft(String(next)); setLocalError(''); onValueChange(next);
+    const next = precision === undefined ? n : normalize(n); setDraft(String(next)); setLocalError(''); if (next !== value) onValueChange(next);
   };
   const move = (direction: number) => {
     if (blocked || composing.current) return;

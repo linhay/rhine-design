@@ -2,7 +2,7 @@
 
 本页对应 GitHub issues [#1](https://github.com/linhay/rhine-design/issues/1)、[#2](https://github.com/linhay/rhine-design/issues/2)、[#3](https://github.com/linhay/rhine-design/issues/3)、[#4](https://github.com/linhay/rhine-design/issues/4)、[#5](https://github.com/linhay/rhine-design/issues/5)、[#6](https://github.com/linhay/rhine-design/issues/6)。新增 11 个组件，公共组件总数为 59。
 
-**版本边界：以下为待发布的 0.5.0 候选 API，npm 0.4.0 不含这些能力。** 本次不改变现有组件必填参数；DataTable/Pagination 的参数均为新增可选项。发布前可以固定包含本改动的 Git 提交，发布后使用 `npm install --save-exact @linhey/rhine-design@0.5.0` 并提交 lockfile。不要在版本尚未发布时按此 npm 命令升级。候选预览不代表 registry 或消费应用已经升级。
+**版本边界：以下 API 自 0.5.0 提供，npm 0.4.0 不含这些能力。** 本次不改变现有组件必填参数；DataTable/Pagination 的参数均为新增可选项。使用 `npm install --save-exact @linhey/rhine-design@0.5.0` 并提交 lockfile。组件库升级不代表消费应用已经迁移。
 
 公开类型从包主入口导出，真实实现是 API 权威：`Background.tsx`、`AppShell.tsx`、`AdvancedForms.tsx`、`Media.tsx`、`Data.tsx`。兼容范围沿用 React 19 + Vite；native WebView、其他构建器、SSR 和屏幕阅读器组合需消费项目另行验证。无需新增依赖。
 
@@ -19,9 +19,9 @@
 | 弹窗 / 浮层 | `--rhine-overlay-bg`，`roleTone="overlay"` | 默认无纹理，遮罩独立使用 `--rhine-backdrop-bg` |
 | 图片 / 视频 | `--rhine-media-bg`，`roleTone="media"` | 中性深色底与配套浅色文字，默认无纹理 |
 
-纸面默认无纹理；战术终端使用 32px 低对比网格；橙趣使用 14px 点阵。主题统一提供 `--rhine-background-texture`、`--rhine-background-scale`、`--rhine-background-mark`，无需消费者复制渐变。`decoration="auto"` 为默认值，仅 canvas 使用主题纹理，正文和 AppShell 默认纯色。`theme` 显式启用主题纹理，`none` 关闭本区域装饰，主题切换不会重新启用它。Background 另提供 surface/overlay/media 场景及局部 appearance 覆盖，完整六场景配置见[主题契约](THEMING.md#场景背景未发布)。
+纸面默认无纹理；战术终端使用 32px 低对比网格；橙趣使用 14px 点阵。主题统一提供 `--rhine-background-texture`、`--rhine-background-scale`、`--rhine-background-mark`，无需消费者复制渐变。`decoration="auto"` 为默认值，仅 canvas 使用主题纹理，正文和 AppShell 默认纯色。`theme` 显式启用主题纹理，`none` 关闭本区域装饰，主题切换不会重新启用它。Background 另提供 surface/overlay/media 场景及局部 appearance 覆盖，完整六场景配置见[主题契约](THEMING.md#场景背景050)。
 
-`decoration` 默认 `auto`，仅画布默认跟随主题纹理，AppShell 正文默认纯色。`appearance` 支持局部底色、文字色、纹理与尺寸覆盖，完整变量及优先级见[场景背景配置](THEMING.md#场景背景未发布)。展台 `#backgrounds` 仅展示当前主题，随右上角选择器同步切换。
+`decoration` 默认 `auto`，仅画布默认跟随主题纹理，AppShell 正文默认纯色。`appearance` 支持局部底色、文字色、纹理与尺寸覆盖，完整变量及优先级见[场景背景配置](THEMING.md#场景背景050)。展台 `#backgrounds` 仅展示当前主题，随右上角选择器同步切换。
 
 ```tsx
 import { Background, Surface } from '@linhey/rhine-design';
@@ -85,7 +85,7 @@ SideNav 继续负责当前项、长名称和 aria-current；Drawer 继续负责 
 
 DateField 新增 `readOnly/required/id/name/hint/onValidationChange`；外部日期或 min/max 改变会更新格式/范围错误，不自动回写值。DateRangePicker 同样支持 readOnly/required/hint/onValidationChange，另有 `clearable`（默认 true）、`startLabel/endLabel/startName/endName`。预设含非法日期、反向区间或任一端越界时禁用。onValidationChange 回传格式/范围/显式 error，required 仍走提交时的原生表单校验。只读时保留浏览与聚焦，预设、清空、步进和选择不能更改值。
 
-NumberField 支持小数步进（默认 1）；precision 限制为 0–15 位，未指定时步进清除至 12 位的浮点尾差；IEEE-754 数值精度不适用于高精度货币账本。`-`、`1.` 等草稿在编辑时不改写；外部 value 真正变化时覆盖草稿。输入法组词时不提交或步进。
+NumberField 支持小数步进（默认 1）；precision 限制为 0–15 位，未指定时普通提交保留解析后的 JS 数值，步进清除至 12 位的浮点尾差；IEEE-754 数值精度不适用于高精度货币账本。`-`、`1.` 等草稿在编辑时不改写；外部 value 真正变化时覆盖草稿。未改变值的失焦/Enter 不触发 onValueChange；输入法组词时不提交或步进。
 
 NumberField 另有 `readOnly/required/id/name/hint/controls`（按钮默认显示）；Escape 取消未提交草稿并恢复受控值，第二次 Escape 可交给外层浮层。min/max 变化会直接标明当前越界，不伪造用户输入或自动修改宿主值。空值步进按有效范围处理，不再把空字符串当成已达到零边界。
 
@@ -105,7 +105,7 @@ RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误�
 - `expansion={keys,onChange,getChildren?,renderDetail?,canExpand?}`：子行按宿主顺序展开，层级有文字说明；renderDetail 为独立 region，可与子行共存。keys 由宿主管理，折叠不清空选择；不请求子数据、不更改导出范围。大树的加载与虚拟化由宿主决定，本组件不内置虚拟表格。
 - `rowLabel` 默认 rowKey，建议传业务可读名称，供选择/展开按钮命名。所有层级 rowKey 必须全局唯一稳定。
 - `stickyHeader/maxHeight`：提供明确局部滚动区；列可设 `width/sticky/stickyOffset`。多列固定默认按实测 CSS 布局宽度自动累计 offset，显式 stickyOffset 优先；需为正文至少保留一个可读列，不将多列固定到遮满窄屏。展台固定右侧两个窄列。
-- `density="comfortable" | "compact"`：单元格内距为 12/16px 或 6/12px，业务文字 14px、层级说明 12px，操作仍为 44px。tokens：`--rhine-table-cell-padding`、`--rhine-table-header-bg`、`--rhine-table-selected-bg`。
+- `density="comfortable" | "compact"`：默认单元格内距为 12/16px 或 6/12px；橙趣 comfortable 为 16/12px，compact 同为 6/12px。业务文字 14px、层级说明 12px，操作仍为 44px。tokens：`--rhine-table-cell-padding`、`--rhine-table-header-bg`、`--rhine-table-hover-bg`、`--rhine-table-selected-bg`；选中底色优先于悬停，固定列使用不透明底色。
 - `Pagination.onPageSizeChange` 和 `pageSizeOptions`：仅回传页大小意图，宿主决定是否回到第一页、是否取消请求。total 已知时推导页数；未知时依赖 hasNext。库不筛选、排序、请求或切割全量 rows。
 
 ```tsx
@@ -126,7 +126,7 @@ Pagination 新增 `disabled/label/showFirstButton/showLastButton`；首末页按
 
 ## 媒体
 
-`MediaCard` 接收 title、date、kind（photo/video/RAW/Live）、preview、state（ready/loading/error/empty）、aspectRatio（默认 4/3）、onOpen；可选 selected/onSelectedChange/disabled。preview 内的 img/video 使用 contain 保持原比例；媒体类型及失败均有文字。打开按钮与选择 checkbox 为兄弟元素，选择不会触发打开；卡片没有内置网络、轮播、虚拟列表或滚轮监听。preview 应为非交互缩略图，不在打开按钮里嵌套视频控制器。宿主在 img.onError/onLoad 后设置 state，缺预览默认 empty，日期为空显示未知。
+`MediaCard` 接收 title、date、kind（photo/video/RAW/Live）、preview、state（ready/loading/error/empty）、aspectRatio（默认 4/3）、onOpen；可选 selected/onSelectedChange/disabled。preview 内的 img/video 使用 contain 保持原比例；媒体类型及失败均有文字。打开按钮与选择 checkbox 为兄弟元素，选择不会触发打开；卡片没有内置网络、轮播、虚拟列表或滚轮监听。preview 应为非交互缩略图，不在打开按钮里嵌套视频控制器。loading 时预览保持隐藏挂载，宿主可在 img.onError/onLoad 后设置 state；缺预览默认 empty，日期为空显示未知。
 
 `MediaViewer` 接收 trigger/title/description/children、受控 open/onOpenChange、onPrevious/onNext、actions、metadata/metadataOpen/onMetadataOpenChange。复用 Radix Dialog 的焦点范围与 Escape，关闭归还实际打开它的卡片/触发器；宿主若卸载或虚拟化掉触发器，应在 onOpenChange 中安排替代焦点。
 
@@ -150,7 +150,7 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 两类图表新增 `valueFormatter(value:number|null)`；非有限值以 null 传入。TrendChart 刻度与逐点文字采用格式化，原始数据表保留原数值；StackedBar 格式化图例但不改变比例算法，零分段不占色带空间。TrendChart 可聚焦图形后用左右/Home/End，或悬停/轻触查看同一时段。`activePointId/defaultActivePointId/onActivePointChange` 支持受控高亮与多图联动；null 清除高亮，丢失 ID 不替代为别的样本。高亮值以 HTML 文字播报，缺失桶仍可查看。
 
-图表 `stale` 显示采集陈旧说明，`error` 显示错误并保留旧数据，loading 同样保留旧数据；空数组与全未知区分。图例逐项提供名称与数值，不只靠颜色。`--rhine-chart-series-1/2/3/4`、`--rhine-chart-grid`、`--rhine-chart-missing` 是语义 tokens；前两色跟随主题主色/信号色，后两色供独立分类使用。图形不闪烁、不扫光、不内置告警阈值。相关 API 自待发布 0.5.0 提供，npm 0.4.0 尚不包含。
+图表 `stale` 显示采集陈旧说明，`error` 显示错误并保留旧数据，loading 同样保留旧数据；空数组与全未知区分。图例逐项提供名称与数值，不只靠颜色。`--rhine-chart-series-1/2/3/4`、`--rhine-chart-grid`、`--rhine-chart-missing` 是语义 tokens；前两色跟随主题主色/信号色，后两色供独立分类使用。图形不闪烁、不扫光、不内置告警阈值。相关 API 自 0.5.0 提供，npm 0.4.0 不包含。
 
 ```tsx
 <StatusTimeline label="请求历史" segments={segmentsWithDetail}
@@ -172,4 +172,4 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 - `/#media`：默认、长标题、加载、错误、缺预览，媒体查看器中的版本/下载与分层 Escape。
 - `/#monitoring`：结构化时段详情与紧凑条、柱形趋势、缺失点折线、已知/未知占比、文本替代及空/陈旧/错误状态。
 
-页首切换三主题及减少动态不重建当前展台；切换章节会卸载演示。自动测试验证受控行为，浏览器验收单独记录于 [候选验证](ISSUE_VALIDATION.md)。发布验收通过后按 [发布流程](RELEASING.md)发布精确版本；在发布前 issues 仍保留版本交付待办。
+页首切换三主题及减少动态不重建当前展台；切换章节会卸载演示。自动测试验证受控行为，浏览器与版本验收单独记录于 [验证记录](ISSUE_VALIDATION.md)。精确版本的制品校验和与消费验证按 [发布流程](RELEASING.md)保留。

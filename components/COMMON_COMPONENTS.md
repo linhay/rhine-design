@@ -4,7 +4,7 @@
 
 ## 导航与流程能力（0.4.0）
 
-SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimeline、TimelineLegend 的 API、键盘与场景契约见[交互选型](../docs/INTERACTION_PATTERNS.md)。0.4.0 共48个导出组件；下表保留原24个扩展组件的契约。0.5.0 候选新增11个组件及DataTable/Pagination扩展，见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)，尚未发布。
+SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimeline、TimelineLegend 的 API、键盘与场景契约见[交互选型](../docs/INTERACTION_PATTERNS.md)。0.4.0 共48个导出组件；下表保留原24个扩展组件的契约。0.5.0 新增11个组件及DataTable/Pagination扩展，见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。
 
 ## 范围与契约
 

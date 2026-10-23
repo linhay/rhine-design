@@ -103,7 +103,7 @@ export function App() {
 
 旧的 CSS-only 用法继续支持：先导入基础组件样式，再导入 `theme-arknights.css` 或 `theme-neo-brutalism.css`，在根节点设置属性。两种用法选择一种即可，不要为迁移再包一层主题根。
 
-## 场景背景（未发布）
+## 场景背景（0.5.0）
 
 `Background` 从组件主入口导出，复用当前主题，不生成主题根。使用 `roleTone` 选择场景；默认是 `content`。主题定义颜色和纹理，业务无需判断当前主题名称。展台 `#backgrounds` 只展示当前选中主题的六类场景；使用右上角主题选择器切换三套内置主题，背景随之同步更新。
 
@@ -142,4 +142,4 @@ import { Background, Surface } from '@linhey/rhine-design';
 
 若需全主题配置，在**主题根**通过 CSS 变量覆盖对应场景的底色、文字与纹理；局部调整优先用 `appearance`。局部背景不会传递给挂在主题根的 Portal，浮层仍使用主题的浮层变量。
 
-兼容已有源码调用：`roleTone` 的原有三种值与显式 `theme` / `none` 均保留；省略 `decoration` 的正文及 `AppShell` 改为 `auto`，默认纯色。需要旧版正文纹理的调用方显式传入 `decoration="theme"`。侧栏显式传入 `theme` 现在也会开启纹理；默认仍关闭。以上为源码能力，不属于已发布的 npm 0.4.0。
+兼容已有源码调用：`roleTone` 的原有三种值与显式 `theme` / `none` 均保留；省略 `decoration` 的正文及 `AppShell` 改为 `auto`，默认纯色。需要旧版正文纹理的调用方显式传入 `decoration="theme"`。侧栏显式传入 `theme` 现在也会开启纹理；默认仍关闭。以上能力自 0.5.0 提供，不属于 npm 0.4.0。
