@@ -11,6 +11,8 @@
 - 400px 三主题真实键盘：数字中间态/错误/提交/步进，日期自定义与清空，远程候选方向键选择及标签保留，树父子独立勾选，加载禁止选择旧候选、禁用输入，候选浮层不超出视口。
 - 三主题 × 五展台共 15 组：1040px 视口下 CSS `zoom:2` 无横向溢出，主要输入/关闭操作可达；另验 520px 有效宽度的媒体查询重排和系统减少动态。此为缩放与重排证据，不冒充浏览器菜单 200% 或原生 WebView 结果。
 - `git diff --check` 通过。包清单检查确认包含新增源码/CSS/文档，未包含工作区私有目录或浏览器产物。
+- 从干净提交 `7bf45ef` 导出源码并 `npm pack`，在仓库外的 React 19/Vite 8 项目安装该 tarball；9 个新增组件及 DataTable/Pagination、主题子入口、CSS、Logo SVG 的生产构建通过。测试包仍标记 0.4.0，仅为本地制品，未上传 registry。tarball SHA-256：`2658d2b8ef5da85b922380b4ecbf8afa0e9d2f95bbaedec5284373aa840a9499`。
+  消费产物的真实浏览器中媒体查看器可打开/关闭，数字输入、唯一主题根和点阵正常；Logo SVG 返回 200。临时消费壳仅有未配置 favicon 的 404，没有组件运行时错误。
 
 真实浏览器验收等待 Radix 完成挂载、可点击性和异步焦点归还后判断；仅等待 `dialog` 可见并立即检查 `pointer-events` 会读到过渡状态。JSDOM 不验证叠层和裁剪，不能替代这部分浏览器证据。
 
@@ -19,4 +21,5 @@
 - 日期输入复用浏览器原生日历；操作系统日历 UI、读屏软件、移动 WebView、触屏实机和完整视频解码/播放尚未验收。没有增加自绘日期日历或媒体播放引擎。
 - 表格使用原生 table 加层级展开按钮，未实现可编辑 ARIA treegrid。大数据虚拟化、导出和服务端请求需要宿主保留。
 - 本地截图在被 Git 忽略的 `output/playwright/`：`shell-desktop.png`、`media-400.png`、`forms-400.png`。页面可从 `npm run dev` 的 `#app-shell`、`#advanced-forms`、`#advanced-data`、`#media`、`#backgrounds` 复查。
+- 可审阅截图：[桌面多栏](assets/application-shell.png)、[400px 媒体查看器](assets/media-viewer-mobile.png)。截图只作布局参考，交互证据来自上述真实 React 展台和浏览器检查。
 - issues 的发布验收仍待正式版本；按 [RELEASING](RELEASING.md) 从干净提交打包、固定版本安装并回读 registry，不能将候选源码等同于 npm 能力。
