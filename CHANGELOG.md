@@ -1,9 +1,17 @@
 # 版本记录
 
-## 未发布
+## 0.5.0（2026-10-24）
 
-- 为 #4 新增 Background、语义背景 tokens、三主题纹理和纯色降级，以及组合展台所需的 AppShell。
-- 提供背景层级、滚动/裁剪/Portal 契约、最小接入和真实 React 展台。npm 0.4.0 不含这些能力，发布留到下次窗口。
+- 完成 [Ant Design / MUI 逐项对标](docs/ANTD_MUI_AUDIT.md)：补齐表单只读/校验/键盘、连续多选、树字符导航、数据表单选/排序清除/自动固定列、分页首末页/边界焦点、受控左右抽屉、媒体方向键/首尾焦点、图表受控逐点查看与格式化、健康历史稳定 ID 与受控详情。RemoteMultiSelect 默认连续选择，`closeOnSelect=true` 可恢复选完关闭；原单选 Combobox 默认不变。无新增运行时依赖。
+- 发布审阅修正：数字未编辑时不重复提交，未指定 precision 时保留输入精度；加载中的媒体预览保持挂载以接收原生加载/失败事件；空图表不显示不可操作提示，时间轴移除不适用的 ARIA 属性；修正橙趣表格密度/表头主题变量、行悬停底色及仅 CSS 主题根的派生变量。
+
+- 对应 #1–#6：新增 Background/AppShell、MediaCard/MediaViewer、DateField/DateRangePicker/NumberField/TreeSelect/RemoteMultiSelect，加上 TrendChart/StackedBar，共 11 个公共组件。
+- DataTable 增加受控跨页选择、禁选/混合态、层级展开与详情、密度和固定表头/列；Pagination 增加页大小意图。
+- 新增三主题背景、表单、数据与中性媒体 tokens；提供六组真实 React 展台及[应用组件契约](docs/APPLICATION_COMPONENTS.md)。宿主继续负责请求、时区、导出、下载、虚拟列表和持久化。
+- StatusTimeline 增加开始/结束、原因、计数及统计口径的结构化详情，使用可避让视口的 Popover；新增柱形趋势、缺失断线和堆叠占比，未知值不补零，配套文字替代与空/陈旧/错误状态。
+- 本节 API 自 0.5.0 提供；0.4.0 不含这些能力。建议固定版本并提交 lockfile。
+
+- 补齐 Background 六类场景的底色、文字与纹理配置，新增局部 `appearance` 覆盖。`decoration` 默认 `auto`，仅画布使用主题纹理；正文与 AppShell 默认纯色，原有显式 `theme` / `none` 保留。Surface / Fieldset 与主要浮层接入语义底色，遮罩独立配置。新增展台 `#backgrounds`，包含实际弹窗、局部覆盖与纹理切换，仅展示当前主题的场景效果，跟随主题选择器更新。已有正文需要纹理时显式传 `decoration="theme"`。
 
 ## 0.4.0
 

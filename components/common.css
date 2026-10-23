@@ -21,7 +21,7 @@
 .rhine-table caption { text-align:left; font-size:var(--rhine-text-heading); line-height:var(--rhine-leading-heading); font-weight:var(--rhine-weight-heading); margin-bottom:var(--rhine-space-4); }
 .rhine-table th,.rhine-table td { padding:12px; border-bottom:1px solid var(--rhine-line); max-width:240px; overflow-wrap:anywhere; }
 .rhine-table th { color:var(--rhine-muted); font-weight:500; }.rhine-table td { font-variant-numeric:tabular-nums; }
-.rhine-table [data-align=right] { text-align:right; }.rhine-table tbody tr:hover { background:var(--rhine-selected); }
+.rhine-table [data-align=right] { text-align:right; }.rhine-table tbody tr:hover { background:var(--rhine-table-hover-bg); }
 .rhine-table th button { font:inherit; color:inherit; background:none; border:0; min-height:44px; cursor:pointer; padding:0; }
 .rhine-table th button:disabled { cursor:default; }
 .rhine-pagination { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:12px; }

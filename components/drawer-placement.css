@@ -1,0 +1,4 @@
+.rhine-dialog.rhine-drawer[data-side=left] { left:0; right:auto; animation-name:rhine-drawer-enter-left; }
+.rhine-dialog.rhine-drawer[data-side=right] { left:auto; right:0; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-drawer[data-side=left] { border-radius:0 24px 24px 0; box-shadow:5px 0 0 var(--rhine-ink); }
+@keyframes rhine-drawer-enter-left { from { opacity:0; transform:translateX(-3px); } to { opacity:1; transform:translateX(0); } }

@@ -11,7 +11,8 @@ import { SpacingGallery } from './SpacingGallery';
 import { LineHeightGallery } from './LineHeightGallery';
 import { SubscriptionGallery } from './SubscriptionGallery';
 import { BackgroundGallery } from './BackgroundGallery';
-import { ShellGallery } from './ExtensionsGallery';
+import { AdvancedDataGallery, AdvancedFormsGallery, MediaGallery, ShellGallery } from './ExtensionsGallery';
+import { MonitoringGallery } from './MonitoringGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -30,11 +31,15 @@ function Gallery() {
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
   const simulate = () => { setBusy(true); timer.current = setTimeout(() => { setBusy(false); setNotice(true); }, 900); };
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => <>
+    {section === 'monitoring' && <MonitoringGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}
+    {section === 'advanced-forms' && <AdvancedFormsGallery />}
+    {section === 'advanced-data' && <AdvancedDataGallery />}
+    {section === 'media' && <MediaGallery />}
     {section === 'subscriptions' && <SubscriptionGallery />}
     {section === 'top' && <>
-      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>50 个通用组件，共用一套视觉变量和动效规则。<br />这里运行的就是后续业务页面可直接导入的 React 组件。</p></div></div>
+      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>59 个通用组件，共用一套视觉变量和动效规则。<br />这里运行的就是后续业务页面可直接导入的 React 组件。</p></div></div>
       <div className="ds-overview-links">{[
         ['foundation','视觉基础','从色彩、间距与材质开始。'],
         ['typography','字体与文字','清晰的层级，稳定的阅读节奏。'],

@@ -13,6 +13,7 @@
   --rhine-line: #272b31;
   --rhine-control: #454c54;
   --rhine-selected: #1c2026;
+  --rhine-table-hover-bg: color-mix(in srgb, #ffd400 6%, var(--rhine-surface));
   --rhine-green: #ffd400;
   --rhine-signal: #ff6a1a;
   --rhine-warning: #ffb020;
@@ -228,7 +229,6 @@
   letter-spacing: .08em;
   border-bottom: 2px solid var(--ak-accent);
 }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-table tbody tr:hover { background: rgba(255, 212, 0, .06); }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-metric { font-variant-numeric: tabular-nums; }
 
 /* ================= 反馈 ================= */

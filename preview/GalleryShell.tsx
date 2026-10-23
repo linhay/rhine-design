@@ -7,7 +7,7 @@ import './theme-neo-brutalism.css';
 
 export const galleryGroups = [
   { label: '开始', items: [['top', '设计总览'], ['subscriptions', '订阅管理示例']] },
-  { label: '应用能力', items: [['app-shell', '背景与侧栏']] },
+  { label: '应用能力', items: [['app-shell', '背景与多侧栏'], ['advanced-forms', '复杂表单'], ['advanced-data', '受控数据表'], ['media', '媒体卡片与查看器'], ['monitoring', '健康详情与图表']] },
   { label: '设计语言', items: [['foundation', '视觉基础'], ['backgrounds', '场景背景'], ['spacing', '间距与组合'], ['typography', '字体与文字'], ['brand', '品牌标志']] },
   { label: '通用组件', items: [['actions', '按钮与输入'], ['selection', '选择与切换'], ['feedback', '状态与加载'], ['disclosure', '展开与组合'], ['data', '数据与分页'], ['forms', '表单与选择'], ['utilities', '操作与布局'], ['overlays', '浮层与反馈'], ['navigation', '导航与步骤'], ['form-workflow', '表单流程']] },
   { label: '交互与动效', items: [['patterns', '场景与交互指南'], ['motion', '动效实验室'], ['startup', '启动动画']] },
@@ -94,7 +94,7 @@ function GalleryContent({ motion, onMotionChange, children }: GalleryShellProps)
       <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={section} groups={galleryGroups.map(group=>({label:group.label,items:group.items.map(([id,label])=>({id,label,href:`#${id}`}))}))} onNavigate={item=>{
         setMenuOpen(false); if(section===item.id) main.current?.focus({preventScroll:true});
       }}/>
-      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>50 个组件 · 持续演进</span><span className="ak-readout">{readout}</span></div>
+      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>59 个组件 · 持续演进</span><span className="ak-readout">{readout}</span></div>
     </aside>
     <main className="ds-workspace" id="gallery-content" ref={main} tabIndex={-1} aria-label={label}>
       <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" value={theme} onChange={event => {
