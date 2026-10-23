@@ -47,11 +47,12 @@ export function DataTable<T>({ caption, columns, rows, rowKey, loading = false, 
         const children = expansion?.getChildren?.(row) ?? [];
         const expandable = expansion && (expansion.canExpand ? expansion.canExpand(row) : !!children.length || !!expansion.renderDetail);
         const detail = expanded ? expansion?.renderDetail?.(row) : null;
+        const hasDetail = detail !== null && detail !== undefined && typeof detail !== 'boolean';
         return <Fragment key={key}><tr data-selected={selection?.keys.includes(key)}>
           {selection && <td><Checkbox label={`选择${rowLabel(row)}`} checked={selection.keys.includes(key)} disabled={loading || selection.isDisabled?.(row)} onChange={() => selection.onChange(toggle(selection.keys, key))} /></td>}
-          {expansion && <td><span className="rhine-table__depth">第 {depth + 1} 层</span>{expandable && <Button variant="quiet" aria-label={`${expanded ? '收起' : '展开'}${rowLabel(row)}`} aria-expanded={!!expanded} aria-controls={detail ? `${id}-detail-${index}` : undefined} onClick={() => expansion.onChange(toggle(expansion.keys, key))}>{expanded ? '−' : '+'}</Button>}</td>}
+          {expansion && <td><span className="rhine-table__depth">第 {depth + 1} 层</span>{expandable && <Button variant="quiet" aria-label={`${expanded ? '收起' : '展开'}${rowLabel(row)}`} aria-expanded={!!expanded} aria-controls={hasDetail ? `${id}-detail-${index}` : undefined} onClick={() => expansion.onChange(toggle(expansion.keys, key))}>{expanded ? '−' : '+'}</Button>}</td>}
           {columns.map(column => <td key={column.key} data-align={column.align} data-sticky={column.sticky} style={columnStyle(column)}>{column.render(row) ?? '—'}</td>)}
-        </tr>{detail && <tr><td colSpan={columns.length + Number(!!selection) + Number(!!expansion)}><div id={`${id}-detail-${index}`} role="region" aria-label={`${rowLabel(row)}详情`}>{detail}</div></td></tr>}</Fragment>;
+        </tr>{hasDetail && <tr><td colSpan={columns.length + Number(!!selection) + Number(!!expansion)}><div id={`${id}-detail-${index}`} role="region" aria-label={`${rowLabel(row)}详情`}>{detail}</div></td></tr>}</Fragment>;
       })}</tbody></table>
     </div>
     {!rows.length && !loading && !error && <EmptyState title={emptyTitle} description="当前条件下没有可展示的数据。" />}

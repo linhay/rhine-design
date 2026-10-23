@@ -27,7 +27,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
-**0.5.0 候选（未发布）**：新增背景与多侧栏、复杂表单、受控数据表和媒体组件；源码共 57 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
+**0.5.0 候选（未发布）**：新增背景与多侧栏、复杂表单、受控数据表、媒体与监控图表；源码共 59 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
 
 <a id="quick-start"></a>
 

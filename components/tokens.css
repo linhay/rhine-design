@@ -27,6 +27,12 @@
   --rhine-table-cell-padding: 12px 16px;
   --rhine-field-group-bg: var(--rhine-surface);
   --rhine-tree-indent: 20px;
+  --rhine-chart-series-1: var(--rhine-green);
+  --rhine-chart-series-2: var(--rhine-signal);
+  --rhine-chart-series-3: #477aa8;
+  --rhine-chart-series-4: #8763a7;
+  --rhine-chart-grid: var(--rhine-line);
+  --rhine-chart-missing: var(--rhine-muted);
   --rhine-media-canvas: #101214;
   --rhine-media-overlay: #202428;
   --rhine-media-text: #f6f7f8;

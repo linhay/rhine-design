@@ -18,6 +18,6 @@
 .rhine-timeline--compact { position:relative; gap:0; }
 .rhine-timeline--compact .rhine-timeline__track { height:20px; }
 .rhine-timeline--compact .rhine-timeline__track input { top:-12px; bottom:auto; }
-.rhine-timeline--compact .rhine-timeline__detail { position:absolute; z-index:2; top:100%; inset-inline:0; padding:4px 8px; border:1px solid var(--rhine-line); background:var(--rhine-surface); box-shadow:0 4px 12px #242b2814; pointer-events:none; visibility:hidden; }
-.rhine-timeline--compact:hover .rhine-timeline__detail,.rhine-timeline--compact:focus-within .rhine-timeline__detail { visibility:visible; }
+.rhine-timeline-popover { z-index:50; width:min(360px,calc(100vw - 24px)); max-height:var(--radix-popover-content-available-height); overflow:auto; padding:16px; border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-card); background:var(--rhine-overlay-bg); color:var(--rhine-overlay-text); box-shadow:0 4px 12px #242b2814; overflow-wrap:anywhere; }
+.rhine-timeline-popover .rhine-key-value { margin-block:16px; }
 .rhine-timeline--compact:not(:hover):not(:focus-within) .rhine-timeline__bars [data-selected=true] { height:20px; outline:none; }

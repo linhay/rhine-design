@@ -2,9 +2,10 @@
 
 ## 未发布（0.5.0 候选）
 
-- 对应 #1–#5：新增 Background/AppShell、MediaCard/MediaViewer、DateField/DateRangePicker/NumberField/TreeSelect/RemoteMultiSelect，共 9 个公共组件。
+- 对应 #1–#6：新增 Background/AppShell、MediaCard/MediaViewer、DateField/DateRangePicker/NumberField/TreeSelect/RemoteMultiSelect，加上 TrendChart/StackedBar，共 11 个公共组件。
 - DataTable 增加受控跨页选择、禁选/混合态、层级展开与详情、密度和固定表头/列；Pagination 增加页大小意图。
-- 新增三主题背景、表单、数据与中性媒体 tokens；提供四组真实 React 展台及[应用组件契约](docs/APPLICATION_COMPONENTS.md)。宿主继续负责请求、时区、导出、下载、虚拟列表和持久化。
+- 新增三主题背景、表单、数据与中性媒体 tokens；提供六组真实 React 展台及[应用组件契约](docs/APPLICATION_COMPONENTS.md)。宿主继续负责请求、时区、导出、下载、虚拟列表和持久化。
+- StatusTimeline 增加开始/结束、原因、计数及统计口径的结构化详情，使用可避让视口的 Popover；新增柱形趋势、缺失断线和堆叠占比，未知值不补零，配套文字替代与空/陈旧/错误状态。
 - 本节 API 尚不包含在 npm 0.4.0，发布版本以 registry 回读为准。
 
 ## 未发布

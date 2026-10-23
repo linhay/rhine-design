@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement, type ReactNode } from 'react';
 import * as DialogBase from '@radix-ui/react-dialog';
 import { Checkbox } from './Forms';
 
@@ -9,13 +9,15 @@ export interface MediaCardProps {
   disabled?: boolean;
 }
 export function MediaCard({ title, date, kind, preview, state = preview ? 'ready' : 'empty', aspectRatio = '4 / 3', onOpen, selected = false, onSelectedChange, disabled }: MediaCardProps) {
+  const statusId = useId();
   return <article className="rhine-media-card" data-selected={selected}>
-    <button type="button" className="rhine-media-card__open" onClick={onOpen} disabled={disabled} aria-label={`打开${title}`}>
+    <button type="button" className="rhine-media-card__open" onClick={event => { event.currentTarget.focus({ preventScroll: true }); onOpen(); }} disabled={disabled} aria-label={`打开${title}`} aria-describedby={statusId}>
       <span className="rhine-media-card__preview" style={{ aspectRatio }} aria-busy={state === 'loading'}>
         {state === 'ready' ? preview : <span>{state === 'loading' ? '正在加载预览…' : state === 'error' ? '预览无法解码' : '暂无预览'}</span>}
         <span className="rhine-media-card__kind">{kind === 'photo' ? '照片' : kind === 'video' ? '视频' : kind}</span>
       </span><span className="rhine-media-card__caption"><strong>{title}</strong><span>{date || '日期未知'}</span></span>
     </button>
+    <span id={statusId} role="status" className="rhine-sr-only">{state === 'loading' ? `${title}：预览加载中` : state === 'error' ? `${title}：预览失败` : state === 'empty' ? `${title}：缺少预览` : ''}</span>
     {onSelectedChange && <Checkbox label={`选择${title}`} checked={selected} disabled={disabled} onChange={event => onSelectedChange(event.target.checked)} />}
   </article>;
 }

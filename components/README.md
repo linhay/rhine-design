@@ -46,7 +46,7 @@ export function Example() {
 
 ## 组件契约
 
-待发布 0.5.0 的 Background、AppShell、MediaCard、MediaViewer、DateField、DateRangePicker、NumberField、TreeSelect、RemoteMultiSelect，以及 DataTable/Pagination 扩展见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。新增 9 个，源码总数 57；npm 0.4.0 仍为 48 个。
+待发布 0.5.0 的 Background、AppShell、MediaCard、MediaViewer、DateField、DateRangePicker、NumberField、TreeSelect、RemoteMultiSelect、TrendChart、StackedBar，以及 DataTable/Pagination 和 StatusTimeline 详情扩展见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。新增 11 个，源码总数 59；npm 0.4.0 仍为 48 个。
 
 | 组件 | 关键输入 | 状态与边界 |
 | --- | --- | --- |

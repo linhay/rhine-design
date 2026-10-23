@@ -8,7 +8,9 @@ export type { MediaCardProps, MediaViewerProps } from './Media';
 export { DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect } from './AdvancedForms';
 export type { DateFieldProps, DateRange, DateRangePickerProps, NumberFieldProps, RemoteMultiSelectProps, TreeNode, TreeSelectProps } from './AdvancedForms';
 export { StatusTimeline, TimelineLegend } from './StatusTimeline';
-export type { TimelineSegment, TimelineStatus } from './StatusTimeline';
+export type { TimelineSegment, TimelineStatus, TimelineDetail } from './StatusTimeline';
+export { TrendChart, StackedBar } from './Charts';
+export type { ChartPoint, ChartPart, TrendChartProps, StackedBarProps } from './Charts';
 
 export { Logo } from './Logo';
 export type { LogoProps } from './Logo';

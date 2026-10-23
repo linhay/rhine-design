@@ -88,7 +88,7 @@ export function TreeSelect({ label, nodes, value, onValueChange, expandedKeys, o
   collect(nodes);
   const current = visible.some(item => item.node.id === active) ? active : visible[0]?.node.id;
   const focus = (key?: string) => { if (!key) return; setActive(key); const index = visible.findIndex(item => item.node.id === key); document.getElementById(`${id}-${index}`)?.focus(); };
-  const expand = (node: TreeNode, next: boolean) => onExpandedChange(next ? [...new Set([...expandedKeys, node.id])] : expandedKeys.filter(key => key !== node.id));
+  const expand = (node: TreeNode, next: boolean) => { if (!disabled) onExpandedChange(next ? [...new Set([...expandedKeys, node.id])] : expandedKeys.filter(key => key !== node.id)); };
   const choose = (node: TreeNode) => { if (disabled || loading || error || node.disabled) return; onValueChange(multiple ? value.includes(node.id) ? value.filter(key => key !== node.id) : [...value, node.id] : [node.id]); };
   const keyDown = (event: KeyboardEvent, node: TreeNode) => {
     const index = visible.findIndex(item => item.node.id === node.id), expanded = expandedKeys.includes(node.id);
@@ -106,7 +106,7 @@ export function TreeSelect({ label, nodes, value, onValueChange, expandedKeys, o
     return <div role="treeitem" key={node.id} id={`${id}-${index}`} tabIndex={current === node.id ? 0 : -1} aria-label={node.label} aria-expanded={node.children?.length ? expanded : undefined} aria-selected={!multiple ? value.includes(node.id) : undefined} aria-checked={multiple ? value.includes(node.id) : undefined} aria-disabled={disabled || loading || !!error || node.disabled || undefined}
       onFocus={event => { if (event.target === event.currentTarget) setActive(node.id); }} onKeyDown={event => keyDown(event, node)}>
       <div className="rhine-tree__row" data-selected={value.includes(node.id)} onClick={() => { focus(node.id); choose(node); }}>
-        {node.children?.length ? <button type="button" tabIndex={-1} aria-label={`${expanded ? '收起' : '展开'}${node.label}`} onClick={event => { event.stopPropagation(); focus(node.id); expand(node, !expanded); }}>{expanded ? '−' : '+'}</button> : <span className="rhine-tree__spacer" />}
+        {node.children?.length ? <button type="button" tabIndex={-1} disabled={disabled} aria-label={`${expanded ? '收起' : '展开'}${node.label}`} onClick={event => { event.stopPropagation(); focus(node.id); expand(node, !expanded); }}>{expanded ? '−' : '+'}</button> : <span className="rhine-tree__spacer" />}
         <span aria-hidden="true">{value.includes(node.id) ? '✓' : '○'}</span><span>{node.label}</span>{node.disabled && <small>不可选</small>}
       </div>{expanded && !!node.children?.length && <div role="group">{renderNodes(node.children)}</div>}
     </div>;

@@ -1,6 +1,6 @@
 # 应用组件与状态契约
 
-本页对应 GitHub issues [#1](https://github.com/linhay/rhine-design/issues/1)、[#2](https://github.com/linhay/rhine-design/issues/2)、[#3](https://github.com/linhay/rhine-design/issues/3)、[#4](https://github.com/linhay/rhine-design/issues/4)、[#5](https://github.com/linhay/rhine-design/issues/5)。新增 9 个组件，公共组件总数为 57。
+本页对应 GitHub issues [#1](https://github.com/linhay/rhine-design/issues/1)、[#2](https://github.com/linhay/rhine-design/issues/2)、[#3](https://github.com/linhay/rhine-design/issues/3)、[#4](https://github.com/linhay/rhine-design/issues/4)、[#5](https://github.com/linhay/rhine-design/issues/5)、[#6](https://github.com/linhay/rhine-design/issues/6)。新增 11 个组件，公共组件总数为 59。
 
 **版本边界：以下为待发布的 0.5.0 候选 API，npm 0.4.0 不含这些能力。** 本次不改变现有组件必填参数；DataTable/Pagination 的参数均为新增可选项。发布前可以固定包含本改动的 Git 提交，发布后使用 `npm install --save-exact @linhey/rhine-design@0.5.0` 并提交 lockfile。不要在版本尚未发布时按此 npm 命令升级。候选预览不代表 registry 或消费应用已经升级。
 
@@ -73,7 +73,7 @@ SideNav 继续负责当前项、长名称和 aria-current；Drawer 继续负责 
 | --- | --- | --- |
 | DateField | `label/value/onValueChange/min/max/disabled/error` | 原生 `input type=date`；ISO 日期字符串或空字符串，无 UTC/时区转换，原生日历和键盘由浏览器实现 |
 | DateRangePicker | 上述范围 + `value={start,end}`、`presets=[{label,value}]` | 两个原生日期输入，自定义范围、受控预设、清空；结束日期下界取 start/min 较晚者；反向范围显示错误，不静默调换 |
-| NumberField | `value: number|null`、`onValueChange/min/max/step/precision/disabled/error` | 编辑中保存字符串；失焦/Enter 提交；无效及越界输入保留并报错；上下键/按钮步进与钳制边界；空字符串提交 null |
+| NumberField | `value: number\|null`、`onValueChange/min/max/step/precision/disabled/error` | 编辑中保存字符串；失焦/Enter 提交；无效及越界输入保留并报错；上下键/按钮步进与钳制边界；空字符串提交 null |
 | TreeSelect | `nodes/value/onValueChange/expandedKeys/onExpandedChange/multiple`、loading/error/disabled | 节点为 `{id,label,disabled?,children?}`；父子独立选择，默认单选；调用方提供搜索后的树，不做全量过滤 |
 | RemoteMultiSelect | `query/onQueryChange/value/onValueChange/options`、loading/error/disabled | value 是完整 `{value,label,disabled?}[]`，已选标签不依赖本次结果；不重复选中；清空保留禁选标签 |
 
@@ -120,7 +120,29 @@ RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误�
 
 媒体 children、下载链接和资源版本选择通过 slots 提供；库不持有下载路径、播放状态或路由。actions 中使用原生 button/select/a 可自动使用中性叠加样式。宿主可将 scroll-snap 列表放入画布，并保留原有 Masonic 或其他虚拟列表。仅复用模态的背景滚动管理，没有增加 wheel 事件锁或自定义手势拦截。内部 Dialog/Popover 优先响应 Escape，下一次 Escape 再关闭查看器；媒体自身不播放进场动画，减少动态遵循同一主题根。
 
-## 真实展台
+## 健康详情与运维图表（issue #6）
+
+`TimelineSegment.detail` 可选，形状为 `{ start, end, reason?, counts?: [{ id, label, value: number|null, unit? }], methodology? }`。开始/结束时间是宿主格式化的含时区字符串；计数 0 与 null 分别呈现为零和未知，NaN/Infinity 也视为未知。统计口径缺失时明确标注未提供，不猜测原因或成功率。旧版只有 label/status 的调用仍兼容。
+
+完整与 compact 健康条均复用同一结构化详情。键盘聚焦和方向键、鼠标定位、触屏按下均打开同一个非模态 Popover；默认优先向上，空间不足自动转向下方，距离视口 12px，内容超过可用高度时内部滚动。Escape 或关闭按钮收起，点击外部也可退出。Popovers 挂到同一主题根，不受侧栏/卡片裁剪。保留当前时段的 aria-valuetext，并用 aria-details 指向已展开详情；焦点不因鼠标悬停被抢走。减少动态无新增例外。
+
+`TrendChart({ label, unit, rangeLabel, description, points, kind, stale?, error?, loading? })` 提供 `kind="bar" | "line"`，每个 point 是 `{id,label,value:number|null}`。宿主负责时间桶、排序、聚合、单位与统计说明；组件只映射坐标。零是有效采样，未知值不补零、不插值，折线路径在缺失点处断开；图内 ×、SVG 可访问说明和可展开的原始数据表共同表示缺失。单位、范围与图例均为 HTML 文字，避免窄屏 SVG 缩放导致文字小于 12px。多条资源指标使用多个命名图表组合，不内置数据请求或图表引擎。
+
+`StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，保留一位小数，不是健康分数或成功率。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
+
+图表 `stale` 显示采集陈旧说明，`error` 显示错误并保留旧数据，loading 同样保留旧数据；空数组与全未知区分。图例逐项提供名称与数值，不只靠颜色。`--rhine-chart-series-1/2/3/4`、`--rhine-chart-grid`、`--rhine-chart-missing` 是语义 tokens；前两色跟随主题主色/信号色，后两色供独立分类使用。图形不闪烁、不扫光、不内置告警阈值。相关 API 自待发布 0.5.0 提供，npm 0.4.0 尚不包含。
+
+```tsx
+<StatusTimeline label="请求历史" segments={segmentsWithDetail}
+  startLabel="10:00 UTC+8" endLabel="11:00 UTC+8" />
+<TrendChart kind="line" label="CPU 使用率" unit="%" rangeLabel={range}
+  description="每分钟采样，缺失保持未知" points={serverPoints}
+  stale={staleMessage} error={requestError} />
+<StackedBar label="互斥结果分类" unit="次" rangeLabel={range}
+  description="按最终结果分类" parts={serverCounts} />
+```
+
+## 真实展台入口
 
 开发服务 `npm run dev` 后访问：
 
@@ -128,5 +150,6 @@ RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误�
 - `/#advanced-forms`：日期预设/自定义/清空、数字草稿、树单多选、远程延迟/取消/IME，以及加载/失败/空/禁用。
 - `/#advanced-data`：跨页选中键、禁选、层级/详情、密度、已知/未知总数和局部固定列。
 - `/#media`：默认、长标题、加载、错误、缺预览，媒体查看器中的版本/下载与分层 Escape。
+- `/#monitoring`：结构化时段详情与紧凑条、柱形趋势、缺失点折线、已知/未知占比、文本替代及空/陈旧/错误状态。
 
 页首切换三主题及减少动态不重建当前展台；切换章节会卸载演示。自动测试验证受控行为，浏览器验收单独记录于 [候选验证](ISSUE_VALIDATION.md)。发布验收通过后按 [发布流程](RELEASING.md)发布精确版本；在发布前 issues 仍保留版本交付待办。

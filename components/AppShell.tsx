@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Button } from './components';
 import { Drawer } from './Overlays';
 import { Background, type BackgroundDecoration } from './Background';
@@ -21,6 +21,7 @@ function Panel({ panel, overlay, id, drawerOpen, setDrawerOpen }: { panel: Shell
 
 export function AppShell({ layout, navigation, secondary, header, children, label = '应用工作区', decoration = 'auto' }: AppShellProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const focusedPanel = useRef<'nav' | 'secondary' | null>(null);
   const [width, setWidth] = useState(0);
   const [navigationDrawer, setNavigationDrawer] = useState(false), [secondaryDrawer, setSecondaryDrawer] = useState(false);
   const id = useId();
@@ -34,13 +35,19 @@ export function AppShell({ layout, navigation, secondary, header, children, labe
   }, []);
   const navOverlay = width < 760, secondaryOverlay = width < 1120;
   const hasSecondary = layout !== 'single' && !!secondary;
-  useEffect(() => {
-    for (const suffix of ['nav', 'secondary']) {
+  useLayoutEffect(() => {
+    const suffix = focusedPanel.current;
+    if (suffix) {
       const pane = document.getElementById(`${id}-${suffix}`);
-      if (pane?.hidden && pane.contains(document.activeElement)) document.getElementById(`${id}-${suffix}-toggle`)?.focus();
+      if (pane?.hidden && (document.activeElement === document.body || pane.contains(document.activeElement))) {
+        (document.getElementById(`${id}-${suffix}-toggle`) ?? document.getElementById(`${id}-nav-toggle`))?.focus();
+        focusedPanel.current = null;
+      }
     }
   }, [id, navOverlay, secondaryOverlay, hasSecondary, navigation.open, secondary?.open]);
-  return <div className="rhine-shell" ref={ref} role="region" aria-label={label} data-layout={layout}>
+  return <div className="rhine-shell" ref={ref} role="region" aria-label={label} data-layout={layout}
+    onFocusCapture={event => { focusedPanel.current = document.getElementById(`${id}-nav`)?.contains(event.target) ? 'nav' : document.getElementById(`${id}-secondary`)?.contains(event.target) ? 'secondary' : null; }}
+    onBlurCapture={event => { if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) focusedPanel.current = null; }}>
     <header className="rhine-shell__header">
       <Panel panel={navigation} overlay={navOverlay} id={`${id}-nav`} drawerOpen={navigationDrawer} setDrawerOpen={setNavigationDrawer} />
       {hasSecondary && <Panel panel={secondary} overlay={secondaryOverlay} id={`${id}-secondary`} drawerOpen={secondaryDrawer} setDrawerOpen={setSecondaryDrawer} />}

@@ -5,6 +5,15 @@ import { AppShell, Background, DataTable, DateRangePicker, Dialog, MediaCard, Me
 import { ThemeProvider } from '../components/theme';
 
 describe('controlled form extensions', () => {
+  it('blocks global disabled tree expansion while keeping disabled nodes browsable in enabled trees', () => {
+    const expand = vi.fn();
+    const props = { label: '树', nodes: [{ id: 'root', label: '根', disabled: true, children: [{ id: 'child', label: '子' }] }], value: [], onValueChange: () => {}, expandedKeys: [], onExpandedChange: expand };
+    const { rerender } = render(<TreeSelect {...props} disabled />);
+    fireEvent.keyDown(screen.getByRole('treeitem', { name: '根' }), { key: 'ArrowRight' });
+    expect(expand).not.toHaveBeenCalled(); expect(screen.getByRole('button', { name: '展开根' })).toBeDisabled();
+    rerender(<TreeSelect {...props} />);
+    fireEvent.keyDown(screen.getByRole('treeitem', { name: '根' }), { key: 'ArrowRight' }); expect(expand).toHaveBeenCalledWith(['root']);
+  });
   it('retains intermediate number input and commits precision only on blur or Enter', () => {
     const change = vi.fn();
     render(<NumberField label="金额" value={1} onValueChange={change} min={-10} max={20} precision={2} step={0.25} />);
@@ -62,6 +71,11 @@ describe('controlled form extensions', () => {
 });
 
 describe('server-owned data', () => {
+  it('renders a numeric zero detail inside a region and associates its expansion control', () => {
+    render(<DataTable caption="记录" rows={[{ id: 'a' }]} rowKey={row => row.id} columns={[{ key: 'id', header: 'ID', render: row => row.id }]} expansion={{ keys: ['a'], onChange: () => {}, renderDetail: () => 0 }} />);
+    const detail = screen.getByRole('region', { name: 'a详情' }); expect(detail).toHaveTextContent('0');
+    expect(screen.getByRole('button', { name: '收起a' })).toHaveAttribute('aria-controls', detail.id);
+  });
   it('preserves off-page selection and disabled keys while selecting visible rows', () => {
     const change = vi.fn();
     const props = { caption: '记录', rows: [{ id: 'a' }, { id: 'b' }, { id: 'locked' }], rowKey: (row: { id: string }) => row.id, columns: [{ key: 'id', header: 'ID', render: (row: { id: string }) => row.id }] };
@@ -87,6 +101,15 @@ describe('server-owned data', () => {
 });
 
 describe('layout and media', () => {
+  it('returns focus to a surviving shell control when the focused secondary panel is removed', () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+    const bounds = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ width: 1200 } as DOMRect);
+    const props = { navigation: { label: '导航', content: <button>导航条目</button>, open: true, onOpenChange: () => {} }, secondary: { label: '详情', content: <button>详情操作</button>, open: true, onOpenChange: () => {} }, children: <p>正文</p> };
+    try {
+      const { rerender } = render(<AppShell {...props} layout="left-right" />); screen.getByRole('button', { name: '详情操作' }).focus();
+      rerender(<AppShell {...props} layout="single" />); expect(screen.getByRole('button', { name: '收起导航' })).toHaveFocus();
+    } finally { bounds.mockRestore(); vi.unstubAllGlobals(); }
+  });
   it('does not introduce a theme root for a local background', () => {
     const { container } = render(<ThemeProvider defaultTheme="neo-brutalism"><Background decoration="none"><p>正文</p></Background></ThemeProvider>);
     expect(container.querySelectorAll('.rhine-theme')).toHaveLength(1); expect(container.querySelector('.rhine-background')).toHaveAttribute('data-decoration', 'none');
@@ -104,7 +127,8 @@ describe('layout and media', () => {
   it('keeps media selection separate from opening and labels failed previews', () => {
     const open = vi.fn(), select = vi.fn(); render(<MediaCard title="文件" kind="RAW" state="error" onOpen={open} selected onSelectedChange={select} />);
     fireEvent.click(screen.getByRole('checkbox')); expect(select).toHaveBeenCalledWith(false); expect(open).not.toHaveBeenCalled();
-    expect(screen.getByText('预览无法解码')).toBeVisible(); fireEvent.click(screen.getByRole('button', { name: '打开文件' })); expect(open).toHaveBeenCalledOnce();
+    expect(screen.getByText('预览无法解码')).toBeVisible(); expect(screen.getByRole('status')).toHaveTextContent('预览失败');
+    const opener = screen.getByRole('button', { name: '打开文件' }); fireEvent.click(opener); expect(open).toHaveBeenCalledOnce(); expect(opener).toHaveFocus();
   });
   it('closes nested dialogs in layers and returns focus to the media opener', async () => {
     render(<ThemeProvider><MediaViewer trigger={<button>打开媒体</button>} title="照片" description="演示" metadataOpen metadata={<Dialog trigger={<button>资源信息</button>} title="资源详情" description="嵌套"><p>信息</p></Dialog>}><img alt="演示" /></MediaViewer></ThemeProvider>);
