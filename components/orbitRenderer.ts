@@ -38,13 +38,12 @@ export function mountOrbit(canvas: HTMLCanvasElement, onState: (state: OrbitStat
   let previousState: OrbitState | undefined;
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    // Keep layout state explicit so production tree shaking retains the renderer.
+    // Layout CSS pixels exclude CSS zoom; visual scaling must not change stroke proportions.
     const c = canvases.network;
-    const r = c.el.getBoundingClientRect();
-    c.w = r.width;
-    c.h = r.height;
-    c.el.width = Math.round(r.width * dpr);
-    c.el.height = Math.round(r.height * dpr);
+    c.w = c.el.clientWidth;
+    c.h = c.el.clientHeight;
+    c.el.width = Math.round(c.w * dpr);
+    c.el.height = Math.round(c.h * dpr);
     c.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     draw();
   }

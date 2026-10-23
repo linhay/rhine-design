@@ -15,17 +15,19 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
   let frameId: number, frames: Map<number, FrameRequestCallback>;
   let resize: () => void, intersect: (value: boolean) => void;
   let resizeDisconnect: () => void, intersectionDisconnect: () => void;
-  let draws: number, lines: number, trails: number, glows: number, firstPoint: number[];
+  let draws: number, lines: number, trails: number, glows: number, firstPoint: number[], firstRadius: number, zoom: number;
   let hasPoint: boolean;
   let context: CanvasRenderingContext2D;
 
   beforeEach(() => {
     reduced = new Media(); compact = new Media(); hidden = false;
     bounds = { width: 600, height: 680 }; frameId = 0; frames = new Map();
-    draws = lines = trails = glows = 0; firstPoint = []; hasPoint = false;
+    draws = lines = trails = glows = firstRadius = 0; firstPoint = []; hasPoint = false; zoom = 1;
     resizeDisconnect = vi.fn(); intersectionDisconnect = vi.fn();
     vi.spyOn(document, 'hidden', 'get').mockImplementation(() => hidden);
-    vi.spyOn(HTMLCanvasElement.prototype, 'getBoundingClientRect').mockImplementation(() => ({ ...bounds, x: 0, y: 0, top: 0, left: 0, right: bounds.width, bottom: bounds.height, toJSON() {} }));
+    vi.spyOn(HTMLCanvasElement.prototype, 'clientWidth', 'get').mockImplementation(() => bounds.width);
+    vi.spyOn(HTMLCanvasElement.prototype, 'clientHeight', 'get').mockImplementation(() => bounds.height);
+    vi.spyOn(HTMLCanvasElement.prototype, 'getBoundingClientRect').mockImplementation(() => ({ width: bounds.width * zoom, height: bounds.height * zoom, x: 0, y: 0, top: 0, left: 0, right: bounds.width * zoom, bottom: bounds.height * zoom, toJSON() {} }));
     vi.stubGlobal('matchMedia', (query: string) => query.includes('prefers-reduced') ? reduced : compact);
     vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => { const id = ++frameId; frames.set(id, callback); return id; });
     vi.stubGlobal('cancelAnimationFrame', (id: number) => frames.delete(id));
@@ -37,8 +39,8 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     });
     const gradient = { addColorStop() {} };
     context = {
-      setTransform() {}, clearRect() { draws++; lines = trails = glows = 0; hasPoint = false; },
-      beginPath() {}, closePath() {}, stroke() {}, fill() {}, arc() {},
+      setTransform() {}, clearRect() { draws++; lines = trails = glows = firstRadius = 0; hasPoint = false; },
+      beginPath() {}, closePath() {}, stroke() {}, fill() {}, arc(_x: number, _y: number, radius: number) { if (!firstRadius) firstRadius = radius; },
       moveTo(x: number, y: number) { if (!hasPoint) { hasPoint = true; firstPoint = [x, y]; } },
       lineTo() { lines++; },
       createLinearGradient() { trails++; return gradient; },
@@ -75,6 +77,21 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     expect(frames.size).toBe(0); expect(screen.getByRole('button', { name: '继续动效' })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(screen.getByRole('button', { name: '继续动效' }));
     expect(frames.size).toBe(1); expect(container.querySelector('canvas')).toBe(canvas); expect(input).toHaveValue('已经输入');
+  });
+
+  it('keeps geometry and stroke proportions stable when CSS zoom changes before a pause or resize', () => {
+    const { container } = render(<OrbitBackdrop />);
+    const canvas = container.querySelector('canvas')!;
+    const snapshot = () => ({ width: canvas.width, height: canvas.height, point: [...firstPoint], lineWidth: context.lineWidth, radius: firstRadius });
+    const before = snapshot();
+    // CSS zoom changes the visual rectangle without changing layout dimensions or issuing RO.
+    zoom = 2;
+    expect(canvas.getBoundingClientRect().width).toBe(canvas.clientWidth * 2);
+    fireEvent.click(screen.getByRole('button', { name: '暂停动效' }));
+    expect(snapshot()).toEqual(before); expect(frames.size).toBe(0);
+    act(() => resize()); expect(snapshot()).toEqual(before);
+    fireEvent.click(screen.getByRole('button', { name: '继续动效' }));
+    advance(100); expect(snapshot()).toEqual(before); expect(frames.size).toBe(1);
   });
 
   it('honors system and explicit reduction, and never lets false bypass the system', () => {
