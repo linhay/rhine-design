@@ -4,9 +4,10 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 
 | Task | First reference (relative to package root) | Implementation / example |
 | --- | --- | --- |
-| Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (main; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
+| Theme integration, switching, controlled preferences | `docs/THEMING.md` (0.4.0) | `components/theme.tsx`, `preview/GalleryShell.tsx` |
+| Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (0.4.0; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
 | Visual direction, colors, spacing, layout | `docs/DESIGN_SYSTEM.md` | `components/tokens.css`, `components/Layout.tsx` |
-| Spacing, grouping, card composition | `components/SPACING.md` (main; existing gap API works in 0.3.0) | `components/Layout.tsx`, `preview/SpacingGallery.tsx`; `/#spacing` |
+| Spacing, grouping, card composition | `components/SPACING.md` (0.4.0 docs; existing gap API works in 0.3.0) | `components/Layout.tsx`, `preview/SpacingGallery.tsx`; `/#spacing` |
 | Text hierarchy, line height, paragraphs, Chinese/Latin text, metrics | `components/TYPOGRAPHY.md` | `components/Typography.tsx`, `preview/LineHeightGallery.tsx`; `/#typography` |
 | Logo, light/dark variants, wordmark | `components/README.md` → 品牌标志 | `components/Logo.tsx`, `components/assets/logo.svg` |
 | Buttons, navigation, basic states | `components/README.md` → 组件契约 | `components/components.tsx` |

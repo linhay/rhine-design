@@ -1,0 +1,234 @@
+/* Gallery-only chrome and decoration. Not imported by the public theme entry. */
+/* ================= 全局质感 ================= */
+
+/* 坐标网格底纹 + 顶部扫描线氛围 */
+.rhine-theme[data-rhine-theme="arknights"] .ds-workspace {
+  background-image:
+    linear-gradient(var(--ak-gridline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ak-gridline) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* ================= 字体性格 ================= */
+/* 标签、编号、说明全部等宽化，正文保持无衬线可读性 */
+.rhine-theme[data-rhine-theme="arknights"] .ds-caption,
+.rhine-theme[data-rhine-theme="arknights"] .ds-component-title>span,
+.rhine-theme[data-rhine-theme="arknights"] .ds-notes {
+  font-family: var(--rhine-mono);
+  letter-spacing: .04em;
+}
+
+/* ================= 顶栏 ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-workspace-head {
+  position: relative;
+  background: rgba(11, 13, 16, .85);
+  border-bottom-color: var(--rhine-line);
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-workspace-head::after {
+  content: '';
+  position: absolute;
+  left: 32px;
+  bottom: -1px;
+  width: 160px;
+  height: 4px;
+  background: var(--ak-hazard);
+}
+
+/* ================= 侧栏：深色舱室 ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-sidebar {
+  background: #08090c;
+  border-right-color: var(--rhine-line);
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-sidebar-brand {
+  border-bottom: 1px solid var(--rhine-line);
+  background: repeating-linear-gradient(-45deg, rgba(255, 212, 0, .07) 0 10px, transparent 10px 20px);
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-sidebar-brand>a { color: var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="arknights"] .ds-sidebar-brand small { color: var(--ak-accent); letter-spacing: .18em; }
+.rhine-theme[data-rhine-theme="arknights"] .ds-sidebar-foot>span:first-child { color: var(--ak-accent); }
+
+/* ================= 主视觉 Hero ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-kicker {
+  color: var(--ak-accent);
+  letter-spacing: 3px;
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-kicker::before { content: '// '; }
+.rhine-theme[data-rhine-theme="arknights"] .ds-hero h1 {
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-hero h1>span {
+  color: var(--ak-accent);
+  /* 黄色高光下划线块 */
+  background: linear-gradient(transparent 62%, rgba(255, 212, 0, .22) 62%);
+}
+@media(max-width:760px) {
+  .rhine-theme[data-rhine-theme="arknights"] .ds-hero h1 { font-size: 34px; }
+}
+
+/* 总览卡片：大号幽灵编号 + 斜切 */
+.rhine-theme[data-rhine-theme="arknights"] .ds-overview-links { counter-reset: ak-link; }
+.rhine-theme[data-rhine-theme="arknights"] .ds-overview-links>a {
+  counter-increment: ak-link;
+  position: relative;
+  background: var(--ak-panel);
+  clip-path: polygon(0 0, calc(100% - var(--ak-cut)) 0, 100% var(--ak-cut), 100% 100%, 0 100%);
+  overflow: hidden;
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-overview-links>a::after {
+  content: counter(ak-link, decimal-leading-zero);
+  position: absolute;
+  right: 12px;
+  bottom: -14px;
+  font: 700 72px/1 var(--rhine-mono);
+  color: rgba(238, 240, 236, .05);
+  pointer-events: none;
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-overview-links>a:hover {
+  border-color: var(--ak-accent);
+  background: var(--ak-panel-hi);
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-overview-links>a:hover>span { color: var(--ak-accent); }
+
+/* ================= 章节标题 ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-section-title { align-items:center; }
+.rhine-theme[data-rhine-theme="arknights"] .ds-section-title>span {
+  background: var(--ak-accent);
+  color: var(--ak-accent-ink);
+  font: 700 12px/1 var(--rhine-mono);
+  padding: 5px 8px;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-section-title h2 { letter-spacing: .02em; }
+
+/* 组件标题等宽化 */
+.rhine-theme[data-rhine-theme="arknights"] .ds-component-title h3 { letter-spacing: .06em; }
+
+/* ================= 面板与容器：斜切 + 角标框架 ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-logo-stage {
+  background: var(--ak-panel);
+  clip-path: polygon(0 0, calc(100% - var(--ak-cut)) 0, 100% var(--ak-cut), 100% 100%, 0 100%);
+}
+
+/* ================= Logo 展台 ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-logo-stage--dark { background: #08090c; border-color: var(--rhine-line); }
+.rhine-theme[data-rhine-theme="arknights"] .ds-logo-stage>span:last-child { letter-spacing: 3px; color: var(--rhine-muted); }
+
+/* ================= 页脚 ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-footer {
+  border-top: 0;
+  position: relative;
+  font-family: var(--rhine-mono);
+  letter-spacing: .06em;
+}
+.rhine-theme[data-rhine-theme="arknights"] .ds-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 4px;
+  background: var(--ak-hazard);
+}
+
+/* ================= 调色板展示 ================= */
+.rhine-theme[data-rhine-theme="arknights"] .ds-palette>div>div { border-color: var(--rhine-control); }
+
+/* ================= 进阶：HUD 视框 / 扫描 / 开机 ================= */
+
+/* 终端读数（默认隐藏，仅本主题显示） */
+.ak-readout { display: none; }
+.rhine-theme[data-rhine-theme="arknights"] .ak-readout {
+  display: block;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--rhine-line);
+  color: var(--ak-accent);
+  font: 11px/18px var(--rhine-mono);
+  letter-spacing: .08em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 四角 HUD 取景框 */
+.ak-hud { display: none; }
+.rhine-theme[data-rhine-theme="arknights"] .ak-hud {
+  display: block;
+  position: fixed;
+  inset: 10px;
+  z-index: 90;
+  pointer-events: none;
+}
+.rhine-theme[data-rhine-theme="arknights"] .ak-hud i {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(255, 212, 0, .5);
+}
+.rhine-theme[data-rhine-theme="arknights"] .ak-hud i:nth-child(1) { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.rhine-theme[data-rhine-theme="arknights"] .ak-hud i:nth-child(2) { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+.rhine-theme[data-rhine-theme="arknights"] .ak-hud i:nth-child(3) { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+.rhine-theme[data-rhine-theme="arknights"] .ak-hud i:nth-child(4) { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+
+/* 主题切换开机闪屏 */
+.rhine-theme[data-rhine-theme="arknights"].ds-shell::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 212, 0, .06) 0 2px, transparent 2px 4px),
+    #050608;
+  animation: ak-boot 520ms steps(3, end) both;
+}
+@keyframes ak-boot {
+  0% { opacity: 1; }
+  55% { opacity: .55; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+/* 屏幕右缘竖排标识 */
+.rhine-theme[data-rhine-theme="arknights"].ds-shell::before {
+  content: 'RHINE // TACTICAL TERMINAL';
+  position: fixed;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font: 10px/1 var(--rhine-mono);
+  letter-spacing: 5px;
+  color: rgba(238, 240, 236, .16);
+  z-index: 50;
+  pointer-events: none;
+}
+@media(max-width:760px) {
+  .rhine-theme[data-rhine-theme="arknights"].ds-shell::before { content: none; }
+}
+
+/* Hero 扫描线 */
+.rhine-theme[data-rhine-theme="arknights"] .ds-hero { position: relative; overflow: hidden; }
+.rhine-theme[data-rhine-theme="arknights"] .ds-hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -120px;
+  height: 120px;
+  background: linear-gradient(180deg, transparent, rgba(255, 212, 0, .07), transparent);
+  pointer-events: none;
+  animation: ak-scan 4.5s linear infinite;
+}
+@keyframes ak-scan {
+  from { top: -120px; }
+  to { top: 100%; }
+}
+
+/* 减少动态：关闭扫描与开机闪屏 */
+@media(prefers-reduced-motion:reduce) {
+  .rhine-theme[data-rhine-theme="arknights"] .ds-hero::after { animation: none; content: none; }
+  .rhine-theme[data-rhine-theme="arknights"].ds-shell::after { animation: none; content: none; }
+}
+.rhine-theme[data-rhine-theme="arknights"][data-rhine-motion=reduced] .ds-hero::after,
+.rhine-theme[data-rhine-theme="arknights"][data-rhine-motion=reduced].ds-shell::after { animation: none; content: none; }

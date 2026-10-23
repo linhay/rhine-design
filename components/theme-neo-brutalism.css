@@ -1,4 +1,4 @@
-/* Opt-in after styles.css. Keep semantic success distinct from the orange action color. */
+/* Component theme. Imported automatically by @linhey/rhine-design/theme, or after styles.css for CSS-only usage. */
 .rhine-theme[data-rhine-theme="neo-brutalism"] {
   color-scheme: light;
   --rhine-bg: #eaf0f4;
@@ -78,17 +78,6 @@
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-progress__track { height: 10px; border: 1.5px solid var(--rhine-ink); border-radius: 6px; background: #e7ebee; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-progress__track>span { background: var(--rhine-signal); }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-side-nav a[aria-current=page] { color: var(--rhine-ink); border: 2px solid var(--rhine-ink); background: var(--rhine-selected); font-weight: 700; }
-
-/* Gallery chrome uses the same theme; application layout stays with its host. */
-.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-sidebar { border-right-width: 2px; border-color: var(--rhine-ink); }
-.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-workspace-head { background: var(--rhine-surface); border-bottom: 2px solid var(--rhine-ink); flex-wrap: wrap; }
-.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-overview-links>a { border: 2px solid var(--rhine-ink); border-radius: 22px; box-shadow: var(--rhine-hard-shadow); }
-.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-hero h1 { font-weight: 800; }
-.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-hero h1>span { color: var(--rhine-ink); text-decoration: underline; text-decoration-color: var(--rhine-signal); text-decoration-thickness: 6px; text-underline-offset: 8px; }
-.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-logo-stage { border: 2px solid var(--rhine-ink); border-radius: 22px; }
-@media(max-width:760px) {
-  .rhine-theme[data-rhine-theme="neo-brutalism"] .ds-sidebar { border-right: 0; border-bottom: 2px solid var(--rhine-ink); }
-}
 @media(prefers-reduced-motion:reduce) {
   .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: none; }
 }

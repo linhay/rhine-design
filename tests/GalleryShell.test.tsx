@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GalleryShell } from '../preview/GalleryShell';
+import { themes } from '@linhey/rhine-design/theme';
 
 function Demo() {
   const [motion, setMotion] = useState('system');
@@ -13,7 +14,52 @@ function navigate(hash: string) {
     window.dispatchEvent(new HashChangeEvent('hashchange'));
   });
 }
-afterEach(() => window.history.replaceState(null, '', '/'));
+afterEach(() => {
+  vi.restoreAllMocks();
+  window.history.replaceState(null, '', '/');
+  window.localStorage.clear();
+});
+
+describe('gallery theme integration', () => {
+  it('uses public metadata, prioritizes URL theme and persists choices without losing the chapter', () => {
+    window.localStorage.setItem('rhine-preview-theme', 'rhine');
+    window.history.replaceState(null, '', '/?theme=arknights&other=keep#forms');
+    render(<Demo />);
+    const picker = screen.getByRole('combobox', { name: '界面主题' });
+    expect(picker).toHaveValue('arknights');
+    expect(screen.getAllByRole('option').map(option => option.textContent)).toEqual(themes.map(item => item.label));
+    const main = screen.getByRole('main');
+    main.scrollTop = 120;
+    fireEvent.change(picker, { target: { value: 'neo-brutalism' } });
+    expect(main.closest('.rhine-theme')).toHaveAttribute('data-rhine-theme', 'neo-brutalism');
+    expect(main.scrollTop).toBe(120);
+    expect(screen.getByRole('heading')).toHaveTextContent('forms');
+    expect(window.localStorage.getItem('rhine-preview-theme')).toBe('neo-brutalism');
+    expect(window.location.search).toBe('?other=keep');
+    expect(window.location.hash).toBe('#forms');
+  });
+
+  it('restores a stored theme when the URL is invalid and falls back for unknown stored values', () => {
+    window.localStorage.setItem('rhine-preview-theme', 'neo-brutalism');
+    window.history.replaceState(null, '', '/?theme=unknown');
+    const { unmount } = render(<Demo />);
+    expect(screen.getByRole('combobox', { name: '界面主题' })).toHaveValue('neo-brutalism');
+    unmount();
+    window.localStorage.setItem('rhine-preview-theme', 'unknown');
+    render(<Demo />);
+    expect(screen.getByRole('combobox', { name: '界面主题' })).toHaveValue('rhine');
+  });
+
+  it('still switches when browser storage is unavailable', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('Storage disabled'); });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('Storage disabled'); });
+    render(<Demo />);
+    const picker = screen.getByRole('combobox', { name: '界面主题' });
+    fireEvent.change(picker, { target: { value: 'arknights' } });
+    expect(picker).toHaveValue('arknights');
+    expect(screen.getByRole('main').closest('.rhine-theme')).toHaveAttribute('data-rhine-theme', 'arknights');
+  });
+});
 
 describe('gallery chapter navigation', () => {
   it('opens deep links and follows history changes with one chapter and a current link', () => {

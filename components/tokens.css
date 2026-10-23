@@ -1,5 +1,5 @@
 /* Canonical tokens for the component library and design previews. */
-:root {
+:root, :where(.rhine-theme[data-rhine-theme]) {
   --rhine-bg: #f2f1e9;
   --rhine-surface: #fcfcf8;
   --rhine-ink: #242b28;

@@ -1,6 +1,6 @@
 {
   "name": "@linhey/rhine-design",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public",
@@ -15,6 +15,7 @@
   },
   "exports": {
     ".": "./components/index.ts",
+    "./theme": "./components/theme.tsx",
     "./tokens.css": "./components/tokens.css",
     "./styles.css": "./components/styles.css",
     "./theme-arknights.css": "./components/theme-arknights.css",
@@ -23,6 +24,7 @@
   },
   "sideEffects": [
     "./components/index.ts",
+    "./components/theme.tsx",
     "**/*.css"
   ],
   "files": [

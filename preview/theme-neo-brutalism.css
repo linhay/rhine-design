@@ -1,0 +1,11 @@
+/* Gallery-only chrome and decoration. Not imported by the public theme entry. */
+/* Gallery chrome uses the same theme; application layout stays with its host. */
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-sidebar { border-right-width: 2px; border-color: var(--rhine-ink); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-workspace-head { background: var(--rhine-surface); border-bottom: 2px solid var(--rhine-ink); flex-wrap: wrap; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-overview-links>a { border: 2px solid var(--rhine-ink); border-radius: 22px; box-shadow: var(--rhine-hard-shadow); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-hero h1 { font-weight: 800; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-hero h1>span { color: var(--rhine-ink); text-decoration: underline; text-decoration-color: var(--rhine-signal); text-decoration-thickness: 6px; text-underline-offset: 8px; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .ds-logo-stage { border: 2px solid var(--rhine-ink); border-radius: 22px; }
+@media(max-width:760px) {
+  .rhine-theme[data-rhine-theme="neo-brutalism"] .ds-sidebar { border-right: 0; border-bottom: 2px solid var(--rhine-ink); }
+}

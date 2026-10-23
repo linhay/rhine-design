@@ -2,7 +2,7 @@
 name: rhine-design
 description: Use Rhine Design components and specifications to design, implement, or review React UI, typography, themes, and motion. Apply when a project uses Rhine Design or the user requests its visual language or component system.
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # Rhine Design · 莱茵设计
@@ -11,7 +11,7 @@ Use the installed version's components and contracts to build consistent interfa
 
 ## Locate the matching source
 
-Package: `@linhey/rhine-design`. GitHub: `linhay/rhine-design` (different account spelling). The published baseline is 0.3.0; the main checkout also documents unreleased navigation/form APIs. Never assume those APIs exist in an installed 0.3.0 package.
+Package: `@linhey/rhine-design`. GitHub: `linhay/rhine-design` (different account spelling). This skill targets 0.4.0, including theme, navigation, form and timeline APIs. Never assume those APIs exist in an installed 0.3.0 package.
 
 Find the package in the host's dependencies, normally `node_modules/@linhey/rhine-design/`, or its registered source checkout. Verify `package.json` name/version before using the paths below. Paths in references are relative to that package root, not the copied skill directory. Read installed types and source when versions differ; do not infer a new API from this skill. If the package is unavailable, use the task's supplied design sources and identify the missing implementation evidence.
 

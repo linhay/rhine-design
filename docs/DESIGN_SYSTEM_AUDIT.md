@@ -29,7 +29,7 @@ V1.3新增Text/Select/Toolbar、9档文字样式和[字体/文案规范](../comp
 | P0 | 统一状态矩阵 | 默认/悬停/按下/焦点/禁用/选中/只读/加载/错误，按适用范围验收；信息不可只靠颜色 | 规则已补；完整逐组件辅助技术审计待做 |
 | P1 | 数据展示组合 | Metric、KeyValue、DataTable、Pagination；未知/零、刷新加载/失败、窄窗局部滚动；请求明细业务组合由页面负责 | V1.4已实现，待业务接入 |
 | P1 | 链接、功能图标、图标按钮 | 16/20px统一图标网格、明确名称、44px操作目标、禁用与focus；链接跳转和按钮动作区分 | V1.4已实现Link/Icon/IconButton/CopyButton |
-| P1 | 表单Field公共结构 | 输入/Select统一label/hint/error，必填和只读；多字段失败时焦点与错误汇总 | main已提供Fieldset与ErrorSummary及失败提交焦点示例（未发布） |
+| P1 | 表单Field公共结构 | 输入/Select统一label/hint/error，必填和只读；多字段失败时焦点与错误汇总 | 0.4.0已提供Fieldset与ErrorSummary及失败提交焦点示例 |
 | P1 | 完整主题语义 | 表面、文字、边界、选中、焦点、错误与图表在深色下成对校验 | 未实现完整深色模式；不能只反转颜色 |
 | P1 | 焦点与原生平台验收 | WebView、VoiceOver/Narrator、纯键盘、纯文本缩放、系统高对比与字体差异 | 浏览器证据不能替代原生验证 |
 | P2 | Dialog/ConfirmDialog/Popover/Tooltip/Menu | Escape、焦点进入/归还、遮罩、滚动、层级和减少动态一起处理 | V1.4采用Radix无样式基础并提供真实展台 |

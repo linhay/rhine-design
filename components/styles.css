@@ -5,6 +5,7 @@
 @import './timeline.css';
 
 .rhine-theme { color:var(--rhine-ink); background:var(--rhine-bg); font:var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); font-synthesis:none; }
+.rhine-theme[data-rhine-theme="rhine"] { color-scheme:light; }
 .rhine-theme *, .rhine-theme *::before, .rhine-theme *::after { box-sizing:border-box; }
 .rhine-theme [hidden] { display:none!important; }
 .rhine-theme :is(button,input,select,textarea,summary,a,[tabindex]):focus-visible { outline:2px solid var(--rhine-green); outline-offset:3px; }

@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-main 共48个组件；已发布0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+0.4.0 共48个组件；0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 页面改动遵循：优先复用组件 → 先在设计稿/展台修改并验证 → 再按任务授权实现到App。缺组件先补组件与展台，不在业务页另写同用途样式；同一任务已授权设计和实现时连续推进，无需重复确认。
 
@@ -33,6 +33,8 @@ export function Example() {
 ```
 
 入口 `index.ts` 自动导入组件 CSS。使用一个 `.rhine-theme` 包裹组件树，获得字体、盒模型、焦点和动效降级规则。主题根放在页面根部，不加transform、裁剪或contain；浮层Portal挂在最近的主题根以继承变量和减少动态偏好。独立运行与跨项目导入方式见[套件入口](../README.md)；跨仓复用核对React19与套件package.json中的5个Radix依赖，不导入展台。
+
+0.4.0 新增主题入口 `@linhey/rhine-design/theme`，导出 `ThemeProvider`、`useTheme`、`themes`、`ThemeName` 和 `ThemeProviderProps`（自 0.4.0 提供）。Provider 自动生成主题根并加载内置主题；用 `setTheme('arknights')` 切换，受控偏好与存储由宿主管理。支持并列 Provider，暂不支持嵌套覆盖。完整契约及代码见[主题 API](../docs/THEMING.md)。
 
 - `tokens.css`：唯一色彩、尺寸与动画变量来源。
 - `styles.css`：`rhine-` 前缀组件样式，业务页面可组合布局但不覆盖组件状态。

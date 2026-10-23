@@ -23,7 +23,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
-**main 新增能力：**六个导航/表单流程组件及场景规范尚未发布到 npm 0.3.0；在线展台跟随 main，安装前请核对[版本记录](CHANGELOG.md)。新增组件及选型见[交互规范](docs/INTERACTION_PATTERNS.md)，参考项目见[GitHub 调研](docs/REFERENCE_RESEARCH.md)。
+**0.4.0 新增能力：**主题 API、三套内置主题，以及导航、表单流程与健康时间轴组件；在线展台跟随 main，安装前请核对[版本记录](CHANGELOG.md)。新增组件及选型见[交互规范](docs/INTERACTION_PATTERNS.md)，参考项目见[GitHub 调研](docs/REFERENCE_RESEARCH.md)。
 
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
@@ -36,7 +36,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install @linhey/rhine-design@0.3.0
+npm install @linhey/rhine-design@0.4.0
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
@@ -65,22 +65,31 @@ export function Welcome() {
 
 入口自动加载样式，用 `.rhine-theme` 包裹页面即可使用默认主题。布局和颜色变量使用 `--rhine-*` 前缀；完整定义见 [tokens.css](components/tokens.css)。
 
-### 可选主题（main，尚未发布 npm）
+### 一键切换主题（0.4.0）
 
 展台右上角可切换并记忆主题。新增 **橙趣 · 粗描边**：浅灰蓝点阵背景、米白圆角卡片、黑色粗边、向右下偏移的硬阴影与亮橙主按钮。打开 [在线订阅管理示例](https://linhay.github.io/rhine-design/?theme=neo-brutalism#subscriptions)，体验卡片详情、管理菜单与演示表单；本地开发访问 `http://127.0.0.1:18309/?theme=neo-brutalism#subscriptions`。
 
-从包含此主题的源码版本接入，在组件样式之后导入主题，并在页面根部设置属性：
+从 0.4.0 接入，入口自动加载内置主题，页面只需包裹一次：
 
 ```tsx
 import { Button, Surface } from '@linhey/rhine-design';
-import '@linhey/rhine-design/theme-neo-brutalism.css';
+import { ThemeProvider, useTheme } from '@linhey/rhine-design/theme';
 
-<div className="rhine-theme" data-rhine-theme="neo-brutalism">
-  <Surface><Button>主要操作</Button></Surface>
-</div>
+function Appearance() {
+  const { setTheme } = useTheme();
+  return <Button onClick={() => setTheme('arknights')}>切换战术主题</Button>;
+}
+
+export function App() {
+  return <ThemeProvider defaultTheme="neo-brutalism">
+    <Surface><Appearance /></Surface>
+  </ThemeProvider>;
+}
 ```
 
-完整变量、类型标签、交互与减少动态规则见 [橙趣主题规范](docs/THEME_NEO_BRUTALISM.md)。现有暖白主题与 `theme-arknights.css` 战术终端主题仍可独立使用。
+受控模式、主题列表、存储职责、浮层继承和迁移方式见 [主题 API 接入](docs/THEMING.md)。第一版支持并列 Provider，不支持嵌套覆盖；偏好由宿主管理，库不读写本地存储。此 API 自 0.4.0 提供。
+
+完整变量、类型标签、交互与减少动态规则见 [橙趣主题规范](docs/THEME_NEO_BRUTALISM.md)。现有 CSS-only 用法仍支持；展台装饰独立放在 `preview/theme-*.css`。
 
 类名、CSS 变量、动画名称与动态设置统一使用 `rhine-` 命名空间。升级到 0.3.0 时请同步迁移主题根、自定义样式与动效属性，具体见 [迁移说明](CHANGELOG.md#030)。
 
@@ -89,7 +98,7 @@ import '@linhey/rhine-design/theme-neo-brutalism.css';
 - 包导出 TS/TSX、CSS 和 SVG 源码，构建器需支持 CSS 导入与 Vite 的 SVG `?no-inline` 引用；目前未验证其他构建器和 SSR。
 - 浮层挂载到最近的 `.rhine-theme`。请将主题根放在页面根部，避免对它使用 `transform`、裁剪或 `contain`。
 - 组件提供呈现与交互，应用负责数据请求、搜索、分页和操作结果。
-- 默认使用暖白主题；main 还提供可选的战术终端与橙趣主题。Logo 的深浅配色独立于界面主题。
+- 默认使用暖白主题；0.4.0 还提供可选的战术终端与橙趣主题。Logo 的深浅配色独立于界面主题。
 
 <a id="components"></a>
 
@@ -106,7 +115,7 @@ import '@linhey/rhine-design/theme-neo-brutalism.css';
 | 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
 
-¹ main 新增，尚未包含在 npm 0.3.0。
+¹ 自 0.4.0 提供。
 
 参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 

@@ -1,6 +1,8 @@
 # 橙趣 · 粗描边
 
-可选主题，标识 `neo-brutalism`。从包含本文件的源码版本导入 `@linhey/rhine-design/theme-neo-brutalism.css`，置于组件样式之后，再给 `.rhine-theme` 添加 `data-rhine-theme="neo-brutalism"`。main 新增，npm 0.3.0 不包含此主题。
+可选主题，标识 `neo-brutalism`。从包含本文件的源码版本导入 `@linhey/rhine-design/theme-neo-brutalism.css`，置于组件样式之后，再给 `.rhine-theme` 添加 `data-rhine-theme="neo-brutalism"`。自 0.4.0 提供，npm 0.3.0 不包含此主题。
+
+React 接入推荐使用 `@linhey/rhine-design/theme` 的 `<ThemeProvider defaultTheme="neo-brutalism">`，它自动加载样式并管理主题根；子组件可通过 `useTheme().setTheme()` 切换。详见[主题 API](THEMING.md)。展台专属布局装饰位于 `preview/theme-neo-brutalism.css`，不包含在公共主题入口中。
 
 ## 视觉规则
 

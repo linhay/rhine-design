@@ -2,7 +2,7 @@
 
 本规范面向通用工具、管理界面和数据应用。先确定用户任务、信息是否需要持续可见、是否允许中断，再选组件。视觉沿用莱茵设计；行为参考成熟模式。`preview/PatternGallery.tsx` 提供可操作的选型示例。
 
-**版本边界：**本页新增的 SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimeline、TimelineLegend 及 Dialog.sidePanel 当前属于 main 源码的未发布能力。npm 0.3.0 不包含它们；接入前核对 `components/index.ts`，使用固定源码提交或等待后续正式版本。
+**版本边界：**本页新增的 SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimeline、TimelineLegend 及 Dialog.sidePanel 自 0.4.0 提供。npm 0.3.0 不包含它们；接入前核对安装版本及 `components/index.ts`。
 
 ## 选择与关联证据并排
 
