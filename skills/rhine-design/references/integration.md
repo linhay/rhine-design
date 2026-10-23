@@ -23,6 +23,8 @@ export function Example() {
 
 Version 0.4.0 also exports `ThemeProvider`, `useTheme`, `themes`, `ThemeName` and `ThemeProviderProps` from `@linhey/rhine-design/theme` (not in npm 0.3.0). See [the theme contract](../../../docs/THEMING.md). This entry loads base and built-in theme CSS and renders the `.rhine-theme` root. Use `defaultTheme` for local state, or `theme` with `onThemeChange` for host state; storage and URL preferences remain with the host. Sibling providers are supported; nested providers throw. Do not wrap it in another themed root or key the subtree by theme. Gallery decoration is excluded from the public theme CSS.
 
+Unreleased source adds `Background` with canvas/content/sidebar/surface/overlay/media roles. `decoration="auto"` is the default: only canvas uses theme texture; content and AppShell default to plain backgrounds. Use `appearance` for local color/text/texture/size overrides and theme-root scene tokens for shared configuration. Background is paint only, not a new theme root or modal. Preview `#backgrounds` shows only the selected theme and follows the theme picker. Check installed exports before adopting this API; it is not in npm 0.4.0.
+
 - The entry imports CSS automatically. Keep the package's entry and CSS `sideEffects` declarations so production tree shaking retains styles.
 - Put `.rhine-theme` at the page root. Do not transform, clip or apply containment to it: overlays portal to the nearest theme root and need its variables and reduced-motion settings.
 - For a locally linked checkout, use Vite `resolve.dedupe: ['react', 'react-dom']`. Duplicate React can break hooks; do not patch component state to mask this.
