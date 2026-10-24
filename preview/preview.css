@@ -18,4 +18,6 @@ body { margin:0; }
 .ds-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; align-items:start; }.ds-grid>* { min-width:0; }.ds-component-title { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:20px; }.ds-component-title h3 { font:600 16px var(--rhine-mono); margin:0; }.ds-component-title>span { color:var(--rhine-muted); font-size:12px; }
 .ds-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }.ds-caption { font-size:12px; line-height:1.8; color:var(--rhine-muted); }.ds-gap-top { margin-top:20px; }.ds-badges { margin-bottom:24px; }.ds-loaded { min-height:72px; margin:0; }
 .ds-footer { border-top:1px solid var(--rhine-ink); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:24px 0; color:var(--rhine-muted); font-size:12px; }
+.ds-orbit-artwork { min-height:clamp(360px, 52vw, 560px); }
+.ds-orbit-example-content { width:min(100%, 560px); }
 @media(max-width:760px) { .ds-hero,.ds-grid { grid-template-columns:1fr; gap:24px; }.ds-hero { padding-top:32px; }.ds-hero h1 { font-size:32px; letter-spacing:-1px; }.ds-palette { grid-template-columns:repeat(auto-fit,minmax(min(100%,90px),1fr)); }.ds-palette>div>div { height:64px; }.ds-section-title h2 { font-size:19px; } }

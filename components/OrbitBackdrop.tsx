@@ -3,11 +3,13 @@ import { Button } from './components';
 import { mountOrbit, type OrbitRenderer, type OrbitState } from './orbitRenderer';
 
 export interface OrbitBackdropProps extends HTMLAttributes<HTMLDivElement> {
+  /** Follows the host theme by default; original preserves the initial dark artwork. */
+  appearance?: 'theme' | 'original';
   /** Adds a static preference; false never overrides the system or an ancestor. */
   reducedMotion?: boolean;
 }
 
-export function OrbitBackdrop({ reducedMotion = false, children, className = '', ...props }: OrbitBackdropProps) {
+export function OrbitBackdrop({ appearance = 'theme', reducedMotion = false, children, className = '', ...props }: OrbitBackdropProps) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const renderer = useRef<OrbitRenderer | null>(null);
   const [paused, setPaused] = useState(false);
@@ -25,7 +27,7 @@ export function OrbitBackdrop({ reducedMotion = false, children, className = '',
   const label = state === 'reduced' ? '已减少动态' : state === 'compact' ? '窄屏静态画面'
     : canControl ? paused ? '继续动效' : '暂停动效' : '静态画面';
 
-  return <div {...props} className={`rhine-orbit ${className}`} data-rhine-orbit-state={state}>
+  return <div {...props} className={`rhine-orbit ${className}`} data-rhine-orbit-appearance={appearance} data-rhine-orbit-state={state}>
     <canvas ref={canvas} className="rhine-orbit-canvas" aria-hidden="true" />
     <div className="rhine-orbit-content">{children}</div>
     <div className="rhine-orbit-controls"><Button variant="secondary" disabled={!canControl} onClick={() => setPaused(value => !value)}>{label}</Button></div>

@@ -155,7 +155,9 @@ export function Example() {
 
 ## 轨道背景（0.6.0）
 
-`OrbitBackdrop` 接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。它提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
+`OrbitBackdrop` 自 0.6.0 提供，接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。0.6.0 提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
+
+尚未发布的源码候选新增 `appearance?: 'theme' | 'original'`：Rhine 与 Arknights 保留原版 420 个环节点、185 条曲线、80 个深度桶及相同运动，分别使用细线空心点、分段虚线方点。Neo Brutalism 按用户指定展示旋转的草莓甜甜圈，按需加载 Three.js，提供有厚度的糖霜、烘焙纹理、立体糖针与环绕糖粒；加载或 WebGL 失败时回退到 Canvas2D。窄屏也可旋转，但仍遵循全部减少动态与可见性规则。`original` 在所有主题中保留初版深色轨道。模式切换复用时钟与已创建的绘制器，保留暂停状态与内容草稿。展台主画面展示纯艺术，组合控件示例默认折叠；npm 0.6.0 尚不包含这些新增能力。验证范围见[验证边界](../docs/ORBIT_BACKDROP.md#2026-10-24-当前候选与验证边界未发布)。
 
 源码候选新增 `AppShellToggle` 与 `AppShell.controls="inline"`；尚未发布 npm。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮源码候选尚未发布-npm)。
 ## 中子星背景（未发布源码候选）
