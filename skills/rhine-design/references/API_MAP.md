@@ -17,11 +17,13 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | Select | `components/Select.tsx` |
 | Toolbar | `components/Toolbar.tsx` |
 | Icon, IconButton, Link, CopyButton | `components/Actions.tsx` |
+| ButtonLink（0.7.0） | `components/Actions.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；原生 anchor/下载语义，同 Button 视觉，busy 保焦点并移除 href |
 | Divider, Stack, Inline, Grid | `components/Layout.tsx` |
 | Metric, KeyValue, DataTable, Pagination | `components/Data.tsx` |
 | Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx` |
 | Dialog, Drawer (0.4.0), ConfirmDialog, Popover, Menu, Tooltip | `components/Overlays.tsx` |
 | StatusTimeline, TimelineLegend (0.4.0) | `components/StatusTimeline.tsx`；历史证据，不计算健康评分 |
+| TimelineLegend compact/items（0.7.0） | `components/StatusTimeline.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；宿主短标签/完整规则，一行局部滚动，hover/focus/touch 详情 |
 | StatusTimelineList（0.7.0） | `components/StatusTimelineList.tsx`、`docs/APPLICATION_COMPONENTS.md`；稳定行 ID、标题/摘要/紧凑时间条组合、单一详情，宿主保留请求与分页；展台 `/#monitoring` |
 | SideNav, Breadcrumbs, Steps (0.4.0) | `components/Navigation.tsx` |
 | Fieldset, ErrorSummary (0.4.0) | `components/FormWorkflow.tsx` |

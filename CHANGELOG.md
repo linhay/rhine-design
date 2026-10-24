@@ -4,8 +4,12 @@
 
 - 橙趣草莓甜甜圈增强为按需加载的 Three.js 艺术：立体糖霜、程序烘焙纹理、280 根糖针、110 颗糖珠、100 根环绕糖粒与 460 颗糖尘；共用原版倾角、62%/57%中心与缩放，校准主体尺寸，保留环面旋转、共享暂停与减少动态时钟，并提供 Canvas2D 降级和 GPU 清理。
 - OrbitBackdrop 新增 `appearance="theme" | "original"`：莱茵为玻璃培养舱（双螺旋、气泡、蚀刻刻度和机械封口），战术为源石晶簇（倒角晶面、矿物纹理、琥珀裂纹和漂浮碎片），橙趣为草莓甜甜圈。三套物品均按需加载 Three.js；窄屏也可播放，共用暂停、减少动态和可见性时钟，切换主题复用已创建的绘制器。WebGL 失败回退 Canvas2D，Canvas 不可用时展示本地 SVG。`original` 保留初版完整深色轨道。
-- 新增 `StatusTimelineList` 多条健康历史组合；与 `AppShellToggle`、`NeutronStarBackdrop` 一起将公共组件增至 63。
+- 新增 `StatusTimelineList` 多条健康历史组合；与 `AppShellToggle`、`NeutronStarBackdrop`、`ButtonLink` 一起将公共组件增至 64。
 - 补齐 Neo Brutalism 的 Badge 墨色描边与字重，中性标签使用主题文字色。
+
+- 对应 [#14](https://github.com/linhay/rhine-design/issues/14)：新增原生 anchor 语义的 `ButtonLink`，复用 Button 视觉及 busy/disabled；移交 `StatusTimelineList` 稳定行/互斥详情组合，并扩展 `TimelineLegend compact/items` 为一行短标签与悬停、键盘、触屏规则详情。无参图例保持兼容。
+- 时间轴与图例详情在祖先 CSS zoom 下归一化定位包装层，保留正文放大与视口内滚动；鼠标离开跨卡详情延迟关闭，移入浮层可继续阅读，不更改键盘或触屏入口。
+- 新增[紧凑摘要与凭证操作](docs/COMPACT_ACCOUNT_PATTERNS.md)及 `#compact-account` 真实样机：无框额度摘要、配对事实、短必要提示、按需历史；消融不减小业务字体、不隐藏未知/失败或混淆不同成本与到期。以上能力随 0.7.0 提供。
 
 - AppShell 新增可选 inline 控制模式与 AppShellToggle：侧栏品牌区收起、正文导航区展开/打开抽屉，不再强制独立顶部横栏；默认 header 模式保持兼容。补充焦点迁移、断点和 Escape 回归及真实展台。
 - 对应 [#12](https://github.com/linhay/rhine-design/issues/12)：新增 `NeutronStarBackdrop`，承接完整中子星艺术：28 条磁场线、560 个流动粒子、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头固定。默认跟随现有主题 tokens，`appearance="original"` 保留原始深空；主题切换不重置时间，正文与实体控件保持清晰。

@@ -2,6 +2,8 @@
 
 本规范面向通用工具、管理界面和数据应用。先确定用户任务、信息是否需要持续可见、是否允许中断，再选组件。视觉沿用莱茵设计；行为参考成熟模式。`preview/PatternGallery.tsx` 提供可操作的选型示例。
 
+密集账号摘要、可下载凭证的操作组及内容消融见[紧凑摘要与凭证操作](COMPACT_ACCOUNT_PATTERNS.md)：先依据用户任务保留身份、动作、结果和后果，合并重复提示，将历史渐进展示；使用真实 ButtonLink 与 compact 图例，不在业务层另造按钮外观。
+
 **版本边界：**本页新增的 SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimeline、TimelineLegend 及 Dialog.sidePanel 自 0.4.0 提供。npm 0.3.0 不包含它们；接入前核对安装版本及 `components/index.ts`。
 
 ## 选择与关联证据并排
