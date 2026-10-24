@@ -8,6 +8,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | Background, AppShell（0.5.0） | `components/Background.tsx`、`components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；桌面open与临时drawerOpen独立，断点为容器CSS布局宽度 |
 | MediaCard, MediaViewer（0.5.0） | `components/Media.tsx`；中性画布，不嵌套主题 |
 | DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
+| Date presets + confirmed custom range（组合，无新增导出） | `docs/DATE_RANGE_FILTER.md`、`preview/DateRangeFilterGallery.tsx`；复用 SegmentedControl + Button + Popover + DateRangePicker，宿主负责时区、预设和查询 |
 | ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
 | OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
 | NeutronStarBackdrop, NeutronStarBackdropProps (unreleased source; absent from 0.6.0) | `components/NeutronStarBackdrop.tsx`；契约 `docs/NEUTRON_STAR_BACKDROP.md`；Three.js drawing modules are internal |

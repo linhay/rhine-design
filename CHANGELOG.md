@@ -1,10 +1,11 @@
 # 版本记录
 
-## 未发布
+## Unreleased
 
 - 对应 [#12](https://github.com/linhay/rhine-design/issues/12)：新增 `NeutronStarBackdrop` 源码候选，承接完整中子星艺术：28 条磁场线、560 个流动粒子、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头固定。默认跟随现有主题 tokens，`appearance="original"` 保留原始深空；主题切换不重置时间，正文与实体控件保持清晰。
 - Three.js 绘制按需加载，内置暂停 / 继续，系统、显式、祖先减少动态及隐藏 / 离屏 / 零尺寸停帧，恢复不追赶。SSR 安全结构、异步卸载保护、GPU 资源清理与静态降级；无 WebGL、导入失败和 context lost 不影响内容，context restored 按当前偏好恢复。
 - 新增艺术优先的 `#neutron-star` 真实展台，演示控制与内容组合默认折叠；重播不丢表单草稿。[组件契约](docs/NEUTRON_STAR_BACKDROP.md)、API / 任务索引及回归测试同步。此 API 未发布，不包含于 npm 0.6.0；源码消费须固定精确 commit。
+- 对应 [#10](https://github.com/linhay/rhine-design/issues/10)：新增[日期筛选组合规范](docs/DATE_RANGE_FILTER.md)与 `#date-range-filter` 真实展台；复用 0.6.0 已发布的 SegmentedControl、Button、Popover、DateRangePicker 和布局组件。快捷项共用分段边界，日期持续可见，预设即时应用、自定义确认后应用，取消和关闭不提交。包含跨年、长标签、禁用、键盘和三主题验证；不新增公共组件 API 或运行时样式，不变更包版本。
 
 ## 0.6.0（2026-10-24）
 

@@ -158,6 +158,7 @@ export function App() {
 | 轨道装饰、暂停与静态降级 | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | [轨道星空](https://linhay.github.io/rhine-design/#orbit) |
 | 中子星艺术、主题与 WebGL 生命周期 | [NeutronStarBackdrop（源码候选）](docs/NEUTRON_STAR_BACKDROP.md) | 源码展台 `/#neutron-star`，合并后上线 |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
+| 日期快捷项、范围草稿与确认 | [日期筛选组合](docs/DATE_RANGE_FILTER.md) | [日期筛选](https://linhay.github.io/rhine-design/#date-range-filter) |
 | 导航与表单流程 | [组件契约](docs/INTERACTION_PATTERNS.md#新组件契约) | [导航](https://linhay.github.io/rhine-design/#navigation) · [表单](https://linhay.github.io/rhine-design/#form-workflow) |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |
 
