@@ -11,6 +11,8 @@ export { DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect 
 export type { DateFieldProps, DateRange, DateRangePickerProps, NumberFieldProps, RemoteMultiSelectProps, TreeNode, TreeSelectProps } from './AdvancedForms';
 export { StatusTimeline, TimelineLegend } from './StatusTimeline';
 export type { TimelineSegment, TimelineStatus, TimelineDetail, StatusTimelineProps } from './StatusTimeline';
+export { StatusTimelineList } from './StatusTimelineList';
+export type { StatusTimelineItem, StatusTimelineListProps } from './StatusTimelineList';
 export { TrendChart, StackedBar } from './Charts';
 export type { ChartPoint, ChartPart, TrendChartProps, StackedBarProps } from './Charts';
 

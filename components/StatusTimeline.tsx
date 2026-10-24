@@ -25,6 +25,7 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
   const open = controlledOpen ?? localOpen;
   const setOpen = (next: boolean) => { if (disabled && next) return; if (controlledOpen === undefined) setLocalOpen(next); if (next !== open) onOpenChange?.(next); };
   const root = useRef<HTMLDivElement>(null), slider = useRef<HTMLInputElement>(null), popup = useRef<HTMLDivElement>(null), returning = useRef(false), focusDetail = useRef(false);
+  const detailHadFocus = useRef(false);
   useLayoutEffect(() => { setContainer(root.current?.closest<HTMLElement>('.rhine-theme') ?? document.body); }, []);
   const detailId = useId();
   const matched = segments.findIndex(item => item.id === (activeId ?? localId));
@@ -48,7 +49,9 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
         onPointerDown={() => setOpen(true)}
         onPointerMove={event => { if (disabled || event.pointerType !== 'mouse' || !segments.length) return; const rect = event.currentTarget.getBoundingClientRect(); if (rect.width) select(Math.min(segments.length - 1, Math.max(0, Math.floor((event.clientX - rect.left) / rect.width * segments.length)))); setOpen(true); }} />
     </div></PopoverBase.Anchor><PopoverBase.Portal container={container}><PopoverBase.Content ref={popup} id={`${detailId}-popup`} className="rhine-timeline-popover" side="top" sideOffset={8} collisionPadding={12} aria-label={`${label}时段详情`}
-      onOpenAutoFocus={event => { event.preventDefault(); if (focusDetail.current) { focusDetail.current = false; popup.current?.querySelector<HTMLButtonElement>('button')?.focus(); } }} onCloseAutoFocus={event => { event.preventDefault(); focusDetail.current = false; if (document.activeElement === document.body || popup.current?.contains(document.activeElement)) { returning.current = true; slider.current?.focus(); } }}
+      onFocusCapture={() => { detailHadFocus.current = true; }}
+      onBlurCapture={event => { if (event.relatedTarget && event.relatedTarget !== document.body && !event.currentTarget.contains(event.relatedTarget)) detailHadFocus.current = false; }}
+      onOpenAutoFocus={event => { event.preventDefault(); if (focusDetail.current) { focusDetail.current = false; popup.current?.querySelector<HTMLButtonElement>('button')?.focus(); } }} onCloseAutoFocus={event => { event.preventDefault(); focusDetail.current = false; if (detailHadFocus.current && (document.activeElement === document.body || popup.current?.contains(document.activeElement))) { returning.current = true; slider.current?.focus(); } detailHadFocus.current = false; }}
       onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
       <div className="rhine-dialog__head"><strong>{summary}</strong><PopoverBase.Close asChild><Button variant="quiet" aria-label="关闭时段详情">关闭</Button></PopoverBase.Close></div>
       {segment?.detail && <><KeyValue items={[
