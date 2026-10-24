@@ -71,3 +71,28 @@ CSS zoom 不能替代浏览器原生缩放；`document.hidden` 事件模拟不�
 ![战术源石晶簇](assets/orbit-crystal.png)
 
 ![草莓甜甜圈](assets/orbit-strawberry.png)
+
+## 入口文字与全页背景（0.9.0 新增）
+
+| 输入 | 契约 |
+| --- | --- |
+| `controls?: boolean`（0.9.0） | 默认 `true`；`false` 不渲染局部暂停按钮，并移除为控件预留的额外底部内边距。它不解除已经暂停的状态，也不覆盖系统、prop 或祖先减少动态 |
+| `composition?: 'full' \| 'corner'`（0.9.0） | 默认 `full` 保留现有构图；`corner` 将实际绘制区域和静态降级艺术一起放至右下角，宽度最多 480px、高度为容器的 44% 且最多 360px |
+| `framed?: boolean`（0.9.0） | 默认 `true` 保留主题面板边框、圆角与阴影；`false` 移除这三项装饰，用于宿主定位的全页背景，背景艺术与内容内边距仍保留 |
+
+[Issue #17](https://github.com/linhay/rhine-design/issues/17) 补充入口页面的公共构图能力。需要保留上方文字阅读空间时使用 `composition="corner"`，让完整艺术在右下方较小的绘制区域内重绘；Canvas2D、可选 WebGL 和 Canvas 不可用时的静态 SVG 使用相同几何，不裁去艺术的一部分来伪造位置变化。宿主将标题和正文组合在上方；`corner` 不替宿主判断任意内容高度，长文案仍需真实布局验证。
+
+```tsx
+<OrbitBackdrop composition="corner" controls={false} style={{ minHeight: 640 }}>
+  <Stack gap={4}>
+    <Text as="h1" variant="title">继续创造</Text>
+    <Text>从这里进入工作空间。</Text>
+  </Stack>
+</OrbitBackdrop>
+```
+
+宽度不足以保留独立艺术栏时，宿主可将同一组件定位为整个页面的背景，使用 `framed={false}` 去掉面板装饰；前景表单使用 `Surface` 保障可读性。响应式断点、业务内容和页面高度归宿主布局负责，禁止通过业务选择器覆盖内部 Canvas 或控件。
+
+`controls={false}` 只移除局部控制界面，不关闭动画、不禁用系统或手动减少动态，也不创建额外帧循环。默认用法继续提供暂停入口；用户明确采用无局部按钮的装饰背景时，可由宿主统一动效偏好控制。重新显示控件保留其原暂停状态；改变构图和面板边框不重挂载画布或重置子元素状态。该组合在 0.9.0 新增，旧版本不提供这些选项。
+
+展台中的 `OrbitEntryExample` 按实际容器 760px 重排：宽容器独立艺术栏，窄容器扩展为整页背景，表单保留实色 Surface。布局变更不重挂载画布或输入；`?fixture=orbit-entry` 提供独立验收入口。

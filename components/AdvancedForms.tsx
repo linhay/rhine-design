@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type SyntheticEvent } from 'react';
 import { Button, TextField, type Choice } from './components';
 import { Combobox } from './Forms';
 
@@ -23,9 +23,29 @@ function useDateValidation(error: string | undefined, onValidationChange?: (erro
 }
 /** Date-only ISO strings: conversion to timestamps and time zones belongs to the host. */
 export function DateField({ onValueChange, onValidationChange, error, ...props }: DateFieldProps) {
-  const invalid = error || dateError(props.value, props.min, props.max);
+  const [editing, setEditing] = useState({ accepted: props.value, draft: props.value, badInput: false });
+  const lastEvent = useRef<Event | null>(null);
+  const nativeBadInput = useRef(false);
+  let current = editing;
+  if (editing.accepted !== props.value) {
+    current = { accepted: props.value, draft: props.value, badInput: false };
+    nativeBadInput.current = false;
+    setEditing(current);
+  }
+  const invalid = error || (current.badInput ? '请填写完整有效的日期。' : dateError(current.draft, props.min, props.max));
   useDateValidation(invalid, onValidationChange);
-  return <TextField {...props} error={invalid} type="date" onChange={event => { if (!props.disabled && !props.readOnly) onValueChange(event.target.value); }} />;
+  const change = (event: SyntheticEvent<HTMLInputElement>) => {
+    if (props.disabled || props.readOnly || lastEvent.current === event.nativeEvent) return;
+    lastEvent.current = event.nativeEvent;
+    const { value, validity } = event.currentTarget;
+    nativeBadInput.current = validity.badInput;
+    // Native date fragments also expose an empty value; they are not a cleared boundary.
+    setEditing({ accepted: props.value, draft: value, badInput: validity.badInput });
+    if (!validity.badInput) onValueChange(value);
+  };
+  // Chromium can change an empty calendar fragment without firing input/change.
+  const checkFragments = (event: SyntheticEvent<HTMLInputElement>) => { if (event.currentTarget.validity.badInput !== nativeBadInput.current) change(event); };
+  return <TextField {...props} value={current.draft} error={invalid} type="date" onInput={change} onChange={change} onKeyUp={checkFragments} onBlur={checkFragments} />;
 }
 export interface DateRange { start: string; end: string }
 export interface DateRangePickerProps {
@@ -38,16 +58,24 @@ export interface DateRangePickerProps {
 }
 export function DateRangePicker({ label, value, onValueChange, min, max, disabled, error, presets = [], readOnly = false, required, clearable = true, hint, startLabel = '开始日期', endLabel = '结束日期', startName, endName, onValidationChange }: DateRangePickerProps) {
   const id = useId();
+  const [fieldErrors, setFieldErrors] = useState<{ start: string | null; end: string | null }>({ start: null, end: null });
+  const [resetRevision, setResetRevision] = useState(0);
   const rangeError = (range: DateRange) => dateError(range.start, min, max) || dateError(range.end, min, max) || (range.start && range.end && range.start > range.end ? '结束日期不能早于开始日期。' : undefined);
-  const invalid = error || rangeError(value);
+  const invalid = error || rangeError(value) || fieldErrors.start || fieldErrors.end || undefined;
   useDateValidation(invalid, onValidationChange);
+  const fieldValidation = (field: 'start' | 'end', message: string | null) => setFieldErrors(current => current[field] === message ? current : { ...current, [field]: message });
+  const replace = (next: DateRange) => {
+    setFieldErrors({ start: null, end: null });
+    setResetRevision(revision => revision + 1);
+    onValueChange(next);
+  };
   return <fieldset className="rhine-date-range" disabled={disabled} aria-describedby={[hint && `${id}-hint`, invalid && id].filter(Boolean).join(' ') || undefined}>
     <legend>{label}</legend><div className="rhine-date-range__fields">
-      <DateField label={startLabel} name={startName} value={value.start} min={min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={start => onValueChange({ ...value, start })} error={invalid ? '请检查日期范围' : undefined} />
-      <DateField label={endLabel} name={endName} value={value.end} min={value.start && (!min || value.start > min) ? value.start : min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={end => onValueChange({ ...value, end })} />
+      <DateField key={`start-${resetRevision}`} label={startLabel} name={startName} value={value.start} min={min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={start => onValueChange({ ...value, start })} onValidationChange={message => fieldValidation('start', message)} />
+      <DateField key={`end-${resetRevision}`} label={endLabel} name={endName} value={value.end} min={value.start && (!min || value.start > min) ? value.start : min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={end => onValueChange({ ...value, end })} onValidationChange={message => fieldValidation('end', message)} />
     </div><div className="rhine-inline">
-      {presets.map(preset => <Button key={preset.label} variant="secondary" disabled={disabled || readOnly || !!rangeError(preset.value) || !!(required && (!preset.value.start || !preset.value.end))} onClick={() => onValueChange(preset.value)}>{preset.label}</Button>)}
-      {clearable && <Button variant="quiet" disabled={disabled || readOnly || (!value.start && !value.end)} onClick={() => onValueChange({ start: '', end: '' })}>清空日期</Button>}
+      {presets.map(preset => <Button key={preset.label} variant="secondary" disabled={disabled || readOnly || !!rangeError(preset.value) || !!(required && (!preset.value.start || !preset.value.end))} onClick={() => replace(preset.value)}>{preset.label}</Button>)}
+      {clearable && <Button variant="quiet" disabled={disabled || readOnly || (!value.start && !value.end && !fieldErrors.start && !fieldErrors.end)} onClick={() => replace({ start: '', end: '' })}>清空日期</Button>}
     </div>{hint && <p id={`${id}-hint`} className="rhine-field__hint">{hint}</p>}{invalid && <p id={id} role="alert" className="rhine-field__error">{invalid}</p>}
   </fieldset>;
 }

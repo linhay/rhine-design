@@ -158,6 +158,33 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     advance(100); expect(snapshot()).toEqual(before); expect(frames.size).toBe(1);
   });
 
+  it('omits local controls without replacing the canvas, losing drafts or bypassing reduced motion', () => {
+    const view = (controls: boolean, composition: 'full' | 'corner', framed: boolean) => <OrbitBackdrop controls={controls} composition={composition} framed={framed}>
+      <input aria-label="背景草稿" defaultValue="起点" />
+    </OrbitBackdrop>;
+    const { container, rerender } = render(view(true, 'full', true));
+    const canvas = container.querySelector('canvas');
+    fireEvent.change(screen.getByLabelText('背景草稿'), { target: { value: '继续保留' } });
+    fireEvent.click(screen.getByRole('button', { name: '暂停动效' }));
+    rerender(view(false, 'corner', false));
+    expect(container.querySelector('.rhine-orbit-controls')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(container.querySelector('canvas')).toBe(canvas);
+    expect(screen.getByLabelText('背景草稿')).toHaveValue('继续保留');
+    expect(container.querySelector('.rhine-orbit')).toHaveAttribute('data-rhine-orbit-composition', 'corner');
+    expect(container.querySelector('.rhine-orbit')).toHaveAttribute('data-rhine-orbit-framed', 'false');
+    expect(frames.size).toBe(0);
+    rerender(view(true, 'corner', false));
+    fireEvent.click(screen.getByRole('button', { name: '继续动效' }));
+    rerender(view(false, 'corner', false));
+    expect(frames.size).toBe(1);
+    act(() => reduced.set(true));
+    expect(frames.size).toBe(0);
+    expect(container.querySelector('.rhine-orbit')).toHaveAttribute('data-rhine-orbit-state', 'reduced');
+    act(() => reduced.set(false));
+    expect(frames.size).toBe(1);
+  });
+
   it('recolors a paused frame when its theme or appearance changes without remounting or losing content', async () => {
     const view = (theme: string, appearance: 'theme' | 'original' = 'theme') => <div className="orbit-palette-fixture" data-rhine-theme={theme}>
       <OrbitBackdrop appearance={appearance}><input aria-label="轨道草稿" defaultValue="起点" /></OrbitBackdrop>
@@ -412,7 +439,7 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     await act(async () => { fireEvent.click(screen.getByRole('radio', { name: '跟随主题' })); });
     expect(within(main).getByRole('button', { name: '继续动效' })).toBeEnabled();
     const replay = screen.getByRole('button', { name: '重播轨道' }); replay.focus(); fireEvent.click(replay);
-    expect(container.querySelector('canvas')).not.toBe(canvas); expect(replay).toHaveFocus(); expect(frames.size).toBe(2);
+    expect(container.querySelector('canvas')).not.toBe(canvas); expect(replay).toHaveFocus(); expect(frames.size).toBe(4);
     expect(screen.getByRole('textbox', { name: '直接叠加的输入框' })).toHaveValue('新的轨道名称');
     expect(screen.getByRole('textbox', { name: '工作空间名称' })).toHaveValue('新的工作空间');
     fireEvent.click(screen.getByRole('switch', { name: '减少轨道动态' })); expect(frames.size).toBe(0);
