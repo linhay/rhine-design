@@ -10,6 +10,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
 | ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
 | OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
+| NeutronStarBackdrop, NeutronStarBackdropProps (unreleased source; absent from 0.6.0) | `components/NeutronStarBackdrop.tsx`；契约 `docs/NEUTRON_STAR_BACKDROP.md`；Three.js drawing modules are internal |
 | Logo | `components/Logo.tsx` |
 | Text | `components/Typography.tsx` |
 | Select | `components/Select.tsx` |
@@ -40,5 +41,6 @@ API decisions that commonly matter:
 - `Text`'s `as` chooses semantics; `variant` chooses visual hierarchy.
 - `Logo` accepts `wordmark` and `label`; its `theme` affects the logo, not the full component library.
 - `OrbitBackdrop` is decorative artwork with built-in pause / resume. Its `reducedMotion` prop can strengthen but never override system reduction; see `docs/ORBIT_BACKDROP.md` for visibility, narrow-window and fallback behavior. It does not express loading or business progress.
+- `NeutronStarBackdrop` preserves the separate neutron-star artwork. `appearance="theme"` follows existing theme tokens; `original` restores its deep-space palette without replacing the host control theme. It lazy-loads WebGL, freezes under reduction or visibility constraints, and retains static art on failure. It is an unreleased source API, not part of npm 0.6.0; see `docs/NEUTRON_STAR_BACKDROP.md`.
 - `Toast` presents one notification, not a global queue. `DataTable` is not a query or table-state engine.
 - Components in `preview/` are demonstrations. Public API must resolve through a `package.json` export; theme APIs use the separate `/theme` entry.

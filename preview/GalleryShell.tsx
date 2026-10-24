@@ -10,7 +10,7 @@ export const galleryGroups = [
   { label: '应用能力', items: [['app-shell', '背景与多侧栏'], ['advanced-forms', '复杂表单'], ['advanced-data', '受控数据表'], ['media', '媒体卡片与查看器'], ['monitoring', '健康详情与图表']] },
   { label: '设计语言', items: [['foundation', '视觉基础'], ['backgrounds', '场景背景'], ['spacing', '间距与组合'], ['typography', '字体与文字'], ['brand', '品牌标志']] },
   { label: '通用组件', items: [['actions', '按钮与输入'], ['selection', '选择与切换'], ['feedback', '状态与加载'], ['disclosure', '展开与组合'], ['data', '数据与分页'], ['forms', '表单与选择'], ['utilities', '操作与布局'], ['overlays', '浮层与反馈'], ['navigation', '导航与步骤'], ['form-workflow', '表单流程']] },
-  { label: '交互与动效', items: [['patterns', '场景与交互指南'], ['motion', '动效实验室'], ['startup', '启动动画'], ['orbit', '轨道星空']] },
+  { label: '交互与动效', items: [['patterns', '场景与交互指南'], ['motion', '动效实验室'], ['startup', '启动动画'], ['orbit', '轨道星空'], ['neutron-star', '中子星']] },
 ] as const;
 export type GallerySection = typeof galleryGroups[number]['items'][number][0];
 const entries = galleryGroups.flatMap(group => [...group.items]);
