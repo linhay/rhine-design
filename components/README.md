@@ -73,7 +73,7 @@ export function Example() {
 
 新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
 
-源码候选的 `StatusTimelineList` 与 `TimelineLegend compact/items` 提供紧凑历史组合及一行短图例；宿主传入完整规则，悬停/聚焦/点按查看。无参 TimelineLegend 仍兼容既有标签。真实样机 `/#compact-account` 同时验证无框额度摘要、配对事实与渐进展示的凭证操作，见[紧凑组合规范](../docs/COMPACT_ACCOUNT_PATTERNS.md)。npm 0.6.0 尚未提供这些扩展。
+0.7.0 的 `StatusTimelineList` 与 `TimelineLegend compact/items` 提供紧凑历史组合及一行短图例；宿主传入完整规则，悬停/聚焦/点按查看。无参 TimelineLegend 仍兼容既有标签。真实样机 `/#compact-account` 同时验证无框额度摘要、配对事实与渐进展示的凭证操作，见[紧凑组合规范](../docs/COMPACT_ACCOUNT_PATTERNS.md)。npm 0.6.0 不提供这些扩展。
 
 浏览状态不等于执行结果；页面使用宿主的真实状态决定selected/busy/notice，视觉反馈不能提前宣称业务完成。
 
