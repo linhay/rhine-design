@@ -12,4 +12,4 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 
 真实展台 `#overlay-bounds` 使用独立 iframe，提供三主题、400/520/880px、100%/200%、文档/主题根/正文、四角锚点和四个优先方向。账号长文本、日期字段、取消/应用、菜单末项均为合成数据。
 
-浏览器回归入口为 `scripts/check-overlay-bounds.js`，使用 Playwright CLI 的 `run-code --filename`，默认服务端口 18480。检查实际浮层和操作边界、内部滚动后的真实点击、焦点归还，以及打开期间动态缩放的输入节点与草稿保持；仅 `document.scrollWidth` 无法证明浮层没有越界。
+浏览器回归入口为 `scripts/check-overlay-bounds.js`，使用 Playwright CLI 的 `run-code --filename`。先运行 `npm run build && npx vite preview --host 127.0.0.1 --port 18480 --strictPort`；脚本固定使用 18480，并非 `npm run dev` 的默认端口。检查实际浮层和操作边界、内部滚动后的真实点击、焦点归还，以及打开期间动态缩放的输入节点与草稿保持；仅 `document.scrollWidth` 无法证明浮层没有越界。

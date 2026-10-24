@@ -10,6 +10,8 @@ import './drawer-placement.css';
 import './dialog-settings.css';
 import { useFloatingScale, useFloatingSide } from './useFloatingScale';
 
+const dialogDismiss = new WeakMap<Element, () => void>();
+
 // Keep portal content inside the root theme so tokens and reduced-motion overrides inherit.
 function useScope() {
   const ref = useRef<HTMLSpanElement>(null);
@@ -29,24 +31,24 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
   const changeOpen = (next: boolean) => { setLocalOpen(next); onOpenChange?.(next); };
   useLayoutEffect(() => {
     if (!content) return;
-    // Radix installs its top-layer Escape listener in a passive effect. Before
-    // that effect, a fast Escape can still reach the parent's stale listener.
-    const escape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || !(event.target instanceof Element)) return;
-      const owner = event.target.closest('[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"]');
-      if (owner !== content) return;
-      event.preventDefault(); event.stopPropagation();
-      setLocalOpen(false); onOpenChange?.(false);
-    };
-    window.addEventListener('keydown', escape, true);
-    return () => window.removeEventListener('keydown', escape, true);
+    dialogDismiss.set(content, () => { setLocalOpen(false); onOpenChange?.(false); });
+    return () => { dialogDismiss.delete(content); };
   }, [content, onOpenChange]);
+  const escape = (event: KeyboardEvent) => {
+    if (event.defaultPrevented || !(event.target instanceof Element)) return;
+    const owner = event.target.closest('[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"]');
+    if (!owner || owner === content) return;
+    // Radix's top layer may lag a newly focused nested dialog until its passive
+    // effect runs. Redirect only that stale callback; keep Tooltip/Menu priority.
+    event.preventDefault();
+    dialogDismiss.get(owner)?.();
+  };
   const sideNavigation = typeof sidePanel === 'function';
   const settings = navigation != null && navigation !== false;
   if (settings && sidePanel) throw new Error('Dialog navigation and sidePanel are mutually exclusive.');
   const closeButton = <DialogBase.Close asChild><IconButton label={drawer ? '关闭抽屉' : '关闭对话框'} icon="close" /></DialogBase.Close>;
   return <span className="rhine-overlay-anchor" ref={ref}><DialogBase.Root open={open ?? localOpen} onOpenChange={changeOpen}><DialogBase.Trigger asChild>{trigger}</DialogBase.Trigger><DialogBase.Portal container={container}>
-    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content ref={setContent} onCloseAutoFocus={onCloseAutoFocus} data-side={drawer ? side : undefined} className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${settings ? ' rhine-dialog--settings' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}`}><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div><DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description><div className="rhine-dialog__body">{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content">{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</DialogBase.Content>
+    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={onCloseAutoFocus} data-side={drawer ? side : undefined} className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${settings ? ' rhine-dialog--settings' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}`}><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div><DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description><div className="rhine-dialog__body">{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content">{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</DialogBase.Content>
   </DialogBase.Portal></DialogBase.Root></span>;
 }
 export function ConfirmDialog({ trigger, title, description, confirmLabel = '确认操作', danger = false, onConfirm }: { trigger: ReactElement; title: string; description: string; confirmLabel?: string; danger?: boolean; onConfirm: () => Promise<void> | void }) {

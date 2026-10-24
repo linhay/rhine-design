@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { themes, type ThemeName } from './theme';
+import { themes, type ThemeName } from './themeMetadata';
 import rhine from './assets/theme-previews/rhine.png?no-inline';
 import arknights from './assets/theme-previews/arknights.png?no-inline';
 import neoBrutalism from './assets/theme-previews/neo-brutalism.png?no-inline';

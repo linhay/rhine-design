@@ -1,3 +1,5 @@
+// First run: npm run build && npx vite preview --host 127.0.0.1 --port 18480 --strictPort
+// Fixed regression port 18480 differs from npm run dev (18309).
 // Run with playwright-cli run-code --filename scripts/check-overlay-bounds.js against port 18480.
 async page => {
   const errors = [], failures = [], cases = [];
@@ -69,6 +71,6 @@ async page => {
   const stable = await input.evaluate(element => element.isConnected && element.value === '动态缩放保留');
   const dynamicBounds = await bounds(page.getByRole('dialog', { name: '工作区与日期详情' }));
   await page.keyboard.press('Escape');
-  const escaped = await page.getByRole('dialog').count() === 0;
+  const escaped = await page.getByRole('dialog').waitFor({state:'detached'}).then(() => true, () => false);
   return { pass: failures.length === 0 && errors.length === 0 && stable && contained(dynamicBounds) && escaped, cases: cases.length, tooltipCases, failures, errors, dynamic: { stable, bounds: dynamicBounds, escaped } };
 }
