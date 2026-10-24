@@ -3,9 +3,12 @@
   min-width:0; overflow:hidden; background:var(--rhine-content-bg); color:var(--rhine-content-text);
 }
 .rhine-neutron-art {
-  position:absolute; inset:0; overflow:hidden; pointer-events:none;
+  position:absolute; inset:0; max-height:740px; overflow:hidden; pointer-events:none;
+  mask-image:linear-gradient(to bottom, transparent, #000 8%, #000 72%, transparent);
+  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 8%, #000 72%, transparent);
   background:radial-gradient(ellipse at 78% 15%, color-mix(in srgb, var(--rhine-green) 14%, transparent), transparent 60%);
 }
+@media (max-width:600px) { .rhine-neutron-art { max-height:620px; } }
 .rhine-neutron[data-rhine-neutron-appearance="original"] { background:#070c18; }
 .rhine-neutron[data-rhine-neutron-appearance="original"] .rhine-neutron-art {
   background:radial-gradient(ellipse at 78% 15%, #13223e, transparent 52%);

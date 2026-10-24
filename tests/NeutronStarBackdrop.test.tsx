@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BufferGeometry, Material, ShaderMaterial, type Scene, type PerspectiveCamera, type Object3D, type Mesh, type Points } from 'three';
+import { BufferGeometry, Material, ShaderMaterial, Vector3, type Scene, type PerspectiveCamera, type Object3D, type Mesh, type Points } from 'three';
 import { NeutronStarBackdrop } from '../components/NeutronStarBackdrop';
 import { mountNeutron } from '../components/neutronRenderer';
 
@@ -33,6 +33,7 @@ vi.mock('three', async importOriginal => {
       render(scene: Scene, camera: PerspectiveCamera) {
         if (gpu.renderFails) throw new Error('GPU lost');
         this.scene = scene; this.camera = camera; this.draws++;
+        scene.updateMatrixWorld(); camera.updateMatrixWorld();
         scene.traverse(object => { const value = (object as Mesh).material as ShaderMaterial; if (value?.uniforms?.time) this.time = value.uniforms.time.value; });
       }
     },
@@ -114,6 +115,23 @@ describe('NeutronStarBackdrop artwork and WebGL lifecycle', () => {
     expect(instance.domElement.width).toBe(1320); expect(instance.camera!.aspect).toBeCloseTo(880 / 620);
     bounds.width = 400; resize(); expect(instance.domElement.width).toBe(600); expect(instance.time).toBe(frozen); expect(frames.size).toBe(0);
     view.remove();
+  });
+
+  it.each([[400, 1008], [400, 620], [160, 620], [880, 740]])('keeps the complete core in view throughout its orbit at %s × %s', (width, height) => {
+    bounds = { width, height };
+    const view = mount({ appearance: 'original' }); const instance = gpu.instances[0];
+    let core!: Mesh;
+    instance.scene!.traverse(object => { if ((object as Mesh).geometry?.type === 'SphereGeometry') core ??= object as Mesh; });
+    function checkCore() {
+      const points = core.geometry.attributes.position, point = new Vector3();
+      for (let i = 0; i < points.count; i++) {
+        point.fromBufferAttribute(points, i).applyMatrix4(core.matrixWorld).project(instance.camera!);
+        expect(Math.abs(point.x)).toBeLessThan(.95); expect(Math.abs(point.y)).toBeLessThan(.95);
+      }
+    }
+    advance(0); checkCore();
+    for (let ms = 50; ms <= 28000; ms += 50) { advance(ms); if (ms % 3500 === 0) checkCore(); }
+    expect(instance.time).toBeCloseTo(28, 6); view.remove();
   });
 
   it('pauses and resumes the same scene without catching up or replacing entered content', async () => {

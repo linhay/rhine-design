@@ -237,7 +237,13 @@ export function mountNeutron(host: HTMLDivElement, onState: (state: NeutronState
       if (width !== bitmapWidth || height !== bitmapHeight || ratio !== pixelRatio) {
         if (ratio !== pixelRatio) gl.setPixelRatio(ratio);
         streams.material.uniforms.pixelRatio.value = particleMaterial.uniforms.pixelRatio.value = ratio;
-        camera.aspect = width / height; camera.updateProjectionMatrix();
+        camera.aspect = width / height;
+        // A tall page must not crop the core's orbit: fit the camera, not the artwork geometry.
+        camera.position.x = .85 * Math.min(1, Math.max(0, (1.2 - camera.aspect) / .3));
+        camera.lookAt(camera.position.x, 0, 0);
+        camera.zoom = Math.min(1, camera.aspect / .95);
+        camera.updateProjectionMatrix();
+        halo.quaternion.copy(camera.quaternion);
         gl.setSize(width, height, false);
         bitmapWidth = width; bitmapHeight = height; pixelRatio = ratio;
       }
