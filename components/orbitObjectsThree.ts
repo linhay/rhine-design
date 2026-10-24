@@ -6,7 +6,8 @@ import {
   Points, Scene, ShaderMaterial, SRGBColorSpace, Texture, TorusGeometry, WebGLRenderer,
 } from 'three';
 import { paperTexture, mineralMaterial, studioEnvironment } from './orbitObjectMaterials';
-import { paperBirdFolds } from './orbitBirdGeometry';
+import { morphPaperPoint, paperBirdFolds, type PaperFold } from './orbitBirdGeometry';
+import { paperBirdFlight, paperMorphAmount } from './orbitBirdFlight';
 
 export type OrbitObjectKind = 'paper' | 'technical';
 export interface OrbitObjectArtwork {
@@ -62,27 +63,47 @@ export function createOrbitObject(kind: OrbitObjectKind, invalidate: () => void)
       const shadedPaper = material(new MeshStandardMaterial({ color: '#dce4d5', map: grain, bumpMap: grain, bumpScale: .006, roughness: .92, side: DoubleSide }));
       const innerPaper = material(new MeshStandardMaterial({ color: '#a7b9a7', map: grain, roughness: .93, side: DoubleSide }));
       const crease = material(new LineBasicMaterial({ color: '#6f8572', transparent: true, opacity: .13 }));
-      function foldedSheet(points: number[][], faces: number[][], parent: Group, name: string) {
+      function foldedSheet(fold: PaperFold, target: PaperFold, parent: Group) {
+        const { points, faces, name } = fold;
         const positions: number[] = [], uvs: number[] = [];
         for (const face of faces) for (const i of face) { positions.push(...points[i]); uvs.push(points[i][0] * .5 + .5, points[i][2] * .5 + .5); }
         const g = geometry(new BufferGeometry()); g.setAttribute('position', new Float32BufferAttribute(positions, 3)); g.setAttribute('uv', new Float32BufferAttribute(uvs, 2)); g.computeVertexNormals();
         faces.forEach((_, i) => g.addGroup(i * 3, 3, i % 10 === 4 ? 2 : i % 4 === 2 ? 1 : 0));
         const sheet = new Mesh(g, [paper, shadedPaper, innerPaper]); sheet.name = name; parent.add(sheet);
-        parent.add(new LineSegments(geometry(new EdgesGeometry(g, 8)), crease));
+        const edges = geometry(new EdgesGeometry(g, 8)), edgePositions = edges.getAttribute('position');
+        const edgeIndices = Array.from({ length: edgePositions.count }, (_, i) => points.findIndex(p =>
+          Math.abs(p[0] - edgePositions.getX(i)) < 1e-6 && Math.abs(p[1] - edgePositions.getY(i)) < 1e-6 && Math.abs(p[2] - edgePositions.getZ(i)) < 1e-6));
+        const lines = new LineSegments(edges, crease); parent.add(lines);
+        // Reuse the same buffers, materials and crease endpoints for the entire transformation.
+        let previousAmount = -1;
+        updates.push(time => {
+          const amount = paperMorphAmount(time);
+          if (amount === previousAmount) return;
+          const vertices = points.map((p, i) => morphPaperPoint(p, target.points[i], amount, fold.wing, fold.name));
+          const positions = g.getAttribute('position');
+          faces.forEach((face, f) => face.forEach((index, v) => positions.setXYZ(f * 3 + v, ...vertices[index])));
+          edgeIndices.forEach((index, i) => edgePositions.setXYZ(i, ...vertices[index]));
+          positions.needsUpdate = true; edgePositions.needsUpdate = true;
+          g.computeVertexNormals(); g.computeBoundingSphere(); edges.computeBoundingSphere();
+          previousAmount = amount;
+        });
         return sheet;
       }
       const wings = new Map<number, Group>();
       for (const direction of [-1, 1]) {
         const wing = new Group(); wing.name = direction < 0 ? 'paper-wing-left' : 'paper-wing-right'; object.add(wing); wings.set(direction, wing);
-        updates.push(time => { wing.rotation.z = direction * (.025 + Math.sin(time * .75) * .075); });
+        updates.push(time => { wing.rotation.z = direction * paperBirdFlight(time).wing; });
       }
-      for (const fold of paperBirdFolds()) foldedSheet(fold.points, fold.faces, fold.wing ? wings.get(fold.wing)! : object, fold.name);
+      const targets = paperBirdFolds('butterfly');
+      paperBirdFolds().forEach((fold, i) => foldedSheet(fold, targets[i], fold.wing ? wings.get(fold.wing)! : object));
       const scraps = instanced(geometry(new PlaneGeometry(.035,.018)), shadedPaper, 42, 'floating-paper-flecks', frame);
       scraps.frustumCulled = false;
       const seeds = Array.from({length:scraps.count},()=>({a:random()*Math.PI*2,r:1.15+random()*.7,y:random()*2.1-1.05,s:.4+random()*.9}));
       updates.push(time=>{
-        object.position.y=-.16+Math.sin(time*.55)*.07;
-        seeds.forEach((p,i)=>{const a=p.a+time*.06;dummy.position.set(Math.cos(a)*p.r,p.y+Math.sin(time*.35+p.a)*.1,Math.sin(a)*p.r*.58);dummy.rotation.set(p.a+time*.16,a,time*.1+p.a);dummy.scale.setScalar(p.s);dummy.updateMatrix();scraps.setMatrixAt(i,dummy.matrix);});
+        const flight = paperBirdFlight(time);
+        object.position.set(flight.x, flight.y, flight.z);
+        object.rotation.set(flight.pitch, flight.yaw, flight.bank);
+        seeds.forEach((p,i)=>{const a=p.a+time*.06, wake=paperBirdFlight(time-i*.06);dummy.position.set(wake.x+Math.cos(a)*p.r*.65,wake.y+p.y*.7, wake.z- .25-i*.017+Math.sin(a)*p.r*.25);dummy.rotation.set(p.a+time*.16,a,time*.1+p.a);dummy.scale.setScalar(p.s);dummy.updateMatrix();scraps.setMatrixAt(i,dummy.matrix);});
         scraps.instanceMatrix.needsUpdate=true;
       });
     } else {
@@ -172,14 +193,19 @@ export function createOrbitObject(kind: OrbitObjectKind, invalidate: () => void)
         const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
         if (width !== lastWidth || height !== lastHeight || ratio !== lastRatio) {
           renderer!.setPixelRatio(ratio); renderer!.setSize(width, height, false);
-          const scale = Math.min(width * (bird ? .215 : .28), Math.max(1, height - 76) * (bird ? .36 : .3));
+          const scale = Math.min(width * (bird ? .175 : .28), Math.max(1, height - 76) * (bird ? .285 : .3));
           camera.aspect = width / height; camera.position.set(0, 0, 6); camera.lookAt(0, 0, 0);
           camera.fov = 2 * Math.atan(height / (2 * scale * 6)) * 180 / Math.PI; camera.updateProjectionMatrix();
           camera.projectionMatrix.elements[8] = -.08; camera.projectionMatrix.elements[9] = -36 / height;
           camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
           particleMaterial.uniforms.pixelRatio.value = ratio; lastWidth = width; lastHeight = height; lastRatio = ratio;
         }
-        object.rotation.y = bird ? Math.sin(time * .23) * .18 : time * .11;
+        if (!bird) object.rotation.y = time * .11;
+        else {
+          const flight = paperBirdFlight(time);
+          shadow.position.x = .08 + flight.x * .7;
+          shadow.scale.setScalar(1 - (flight.y + .3) * .18);
+        }
         updates.forEach(update => update(time)); particleMaterial.uniforms.time.value = time;
         renderer!.render(scene, camera); return true;
       },

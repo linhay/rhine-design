@@ -52,20 +52,75 @@ describe.each<OrbitObjectKind>(['paper', 'technical'])('Three.js %s object', kin
     expect(requestAnimationFrame).not.toHaveBeenCalled(); art.dispose();
   });
 
-  if (kind === 'paper') it('keeps the folded bird inside desktop and narrow frames throughout its wing cycle', () => {
+  if (kind === 'paper') it('continuously reshapes the existing paper buffers and creases, freezes mid-fold and reverses', () => {
+    const art = createOrbitObject(kind, vi.fn());
+    art.draw(880, 526, 0);
+    const object = gpu.renderers[0].scene!.getObjectByName('theme-object')!;
+    const meshes: Mesh[] = [];
+    object.traverse(node => { if ((node as Mesh).geometry) meshes.push(node as Mesh); });
+    const identities = meshes.map(mesh => [mesh.uuid, mesh.geometry.uuid, mesh.geometry.getAttribute('position')]);
+    const capture = () => meshes.map(mesh => [...mesh.geometry.getAttribute('position').array]);
+    const bird = capture();
+    art.draw(880, 526, 11); const halfway = capture();
+    expect(halfway).not.toEqual(bird);
+    art.draw(520, 460, 11); expect(capture()).toEqual(halfway);
+    art.draw(880, 526, 11.0001);
+    const adjacent = capture();
+    expect(Math.max(...adjacent.flatMap((points, i) => points.map((v, j) => Math.abs(v - halfway[i][j]))))).toBeLessThan(.001);
+    art.draw(880, 526, 21); const butterfly = capture();
+    expect(butterfly).not.toEqual(bird); expect(butterfly).not.toEqual(halfway);
+    expect(butterfly.every(points => points.every(Number.isFinite))).toBe(true);
+    art.draw(880, 526, 31); expect(capture()).toEqual(halfway);
+    art.draw(880, 526, 42); expect(capture()).toEqual(bird);
+    expect(meshes.map(mesh => [mesh.uuid, mesh.geometry.uuid, mesh.geometry.getAttribute('position')])).toEqual(identities);
+    expect(object.children.every(child => child.visible)).toBe(true);
+    art.dispose();
+  });
+
+  if (kind === 'paper') it('opens a nearly flat sheet between two folding gestures and suspends flapping', () => {
+    const art = createOrbitObject(kind, vi.fn());
+    const heightAt = (time: number) => {
+      art.draw(880, 526, time);
+      const wing = gpu.renderers[0].scene!.getObjectByName('paper-wing-left')!;
+      expect(Math.abs(wing.rotation.z)).toBe(0);
+      let height = 0;
+      wing.traverse(node => {
+        const positions = (node as Mesh).geometry?.getAttribute('position');
+        if (positions) for (let i = 0; i < positions.count; i++) height = Math.max(height, Math.abs(positions.getY(i)));
+      });
+      return height;
+    };
+    const gathered = heightAt(6.2), opened = heightAt(11), refolded = heightAt(14.4);
+    expect(opened).toBeLessThan(.08);
+    expect(gathered).toBeGreaterThan(opened * 4);
+    expect(refolded).toBeGreaterThan(opened * 4);
+    art.dispose();
+  });
+
+  if (kind === 'paper') it('flies, banks and beats its wings without leaving desktop or narrow frames', () => {
     const art = createOrbitObject(kind, vi.fn()), vertex = new Vector3();
-    for (const [width, height] of [[400,360],[520,460],[880,526]]) for (let time = 0; time <= 64; time += 2) {
+    const motion: number[][] = [];
+    let maxX = 0, maxY = 0, extreme = '';
+    for (const [width, height] of [[400,360],[520,460],[880,526]]) for (let time = 0; time <= 84; time += .5) {
       art.draw(width, height, time);
       const { scene, camera } = gpu.renderers[0];
+      const bird = scene!.getObjectByName('theme-object')!;
+      motion.push([bird.position.x, bird.position.y, bird.position.z, bird.rotation.z, scene!.getObjectByName('paper-wing-left')!.rotation.z]);
       scene!.getObjectByName('theme-object')!.traverse(node => {
         const positions = (node as Mesh).geometry?.getAttribute('position');
         if (!positions) return;
         for (let i = 0; i < positions.count; i++) {
           vertex.fromBufferAttribute(positions, i).applyMatrix4(node.matrixWorld).project(camera!);
-          expect(Math.abs(vertex.x)).toBeLessThan(.96);
-          expect(Math.abs(vertex.y)).toBeLessThan(.94);
+          maxX = Math.max(maxX, Math.abs(vertex.x));
+          if (Math.abs(vertex.y) > maxY) { maxY = Math.abs(vertex.y); extreme = `${width}x${height} t=${time} ${node.name}`; }
         }
       });
+    }
+    expect(maxX).toBeLessThan(.96);
+    expect(maxY, extreme).toBeLessThan(.94);
+    for (const [axis, minimumSpan] of [ .7, .3, .38, .22, .5 ].entries()) {
+      const values = motion.map(pose => pose[axis]);
+      expect(Math.max(...values) - Math.min(...values)).toBeGreaterThan(minimumSpan);
     }
     art.dispose();
   });

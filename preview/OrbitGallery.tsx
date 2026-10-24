@@ -17,7 +17,7 @@ export function OrbitGallery() {
       <Switch label="减少轨道动态" checked={reduced} onCheckedChange={setReduced} />
     </Inline>
     <OrbitBackdrop key={`art-${replay}`} className="ds-gap-top ds-orbit-artwork" appearance={appearance} reducedMotion={reduced} role="region" aria-label="轨道背景预览" />
-    <p className="ds-caption">折纸鸟轻轻振翅，晶簇与甜甜圈缓缓旋转。切换主题保留播放位置，窄屏也能播放；暂停或开启减少动态后保持静止。</p>
+    <p className="ds-caption">纸鸟在飞行中连续折叠成纸蝴蝶，再舒展还原；晶簇与甜甜圈缓缓旋转。切换主题保留播放位置，窄屏也能播放；暂停或开启减少动态后保持当前形态。</p>
     <Disclosure title="查看组合控件示例">
       <Text tone="muted">输入框与按钮的叠加效果单独展示，不遮挡上方轨道。</Text>
       <OrbitBackdrop key={`controls-${replay}`} className="ds-gap-top" appearance={appearance} reducedMotion={reduced} role="region" aria-label="轨道上的控件组合">

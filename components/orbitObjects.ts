@@ -1,12 +1,14 @@
-import { paperBirdFolds } from './orbitBirdGeometry';
+import { morphPaperPoint, paperBirdFolds } from './orbitBirdGeometry';
+import { paperBirdFlight, paperMorphAmount, rotatePaperPoint } from './orbitBirdFlight';
 
 const birdFolds = paperBirdFolds();
+const butterflyFolds = paperBirdFolds('butterfly');
 type Kind = 'paper' | 'technical';
 type Point = { x: number; y: number; depth: number };
 
 /** A lightweight object illustration remains available without WebGL. */
 export function drawOrbitObject(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, kind: Kind) {
-  const bird = kind === 'paper', scale = Math.min(width * (bird ? .215 : .28), Math.max(1, height - 76) * (bird ? .36 : .3));
+  const bird = kind === 'paper', scale = Math.min(width * (bird ? .175 : .28), Math.max(1, height - 76) * (bird ? .285 : .3));
   const angle = bird ? Math.sin(time * .23) * .18 - .65 : time * .11 - .32, roll = bird ? -.12 : .08, tilt = bird ? .53 : .13;
   const point = (x: number, y: number, z = 0): Point => {
     const xx = x * Math.cos(angle) + z * Math.sin(angle), zz = -x * Math.sin(angle) + z * Math.cos(angle);
@@ -23,14 +25,25 @@ export function drawOrbitObject(ctx: CanvasRenderingContext2D, width: number, he
   ctx.clearRect(0, 0, width, height); ctx.globalAlpha = 1; ctx.shadowBlur = 0; ctx.setLineDash([]);
   ctx.lineWidth = 1; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineDashOffset = 0;
   if (bird) {
+    const flight = paperBirdFlight(time);
+    const projectBird = (x: number, y: number, z: number): Point => {
+      const local = rotatePaperPoint(x, y, z, flight.pitch, flight.yaw, flight.bank);
+      const [px, py, depth] = rotatePaperPoint(local[0] + flight.x, local[1] + flight.y, local[2] + flight.z, .53, -.65, -.12);
+      const perspective = 6 / (6 - depth);
+      return { x: width * .54 + px * scale * perspective, y: height / 2 - 18 - py * scale * perspective, depth };
+    };
     const faces: {points:Point[];shade:string;depth:number}[]=[];
     const folded = (vertices:number[][], triangles:number[][]) => triangles.forEach((indices,i)=>{
-      const points=indices.map(j=>point(vertices[j][0],vertices[j][1]-.16+Math.sin(time*.55)*.07,vertices[j][2]));
+      const points=indices.map(j=>projectBird(vertices[j][0],vertices[j][1],vertices[j][2]));
       faces.push({points,shade:['#f5f2e4','#d8e0d0','#fdfaf0','#bcccb9'][i%4],depth:points.reduce((n,p)=>n+p.depth,0)/points.length});
     });
-    for (const fold of birdFolds) {
-      const a = fold.wing * (.025 + Math.sin(time * .75) * .075);
-      folded(fold.points.map(([x,y,z]) => [x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a),z]),fold.faces);
+    const amount = paperMorphAmount(time);
+    for (const [index, fold] of birdFolds.entries()) {
+      const a = fold.wing * flight.wing;
+      folded(fold.points.map((p, i) => {
+        const [x,y,z] = morphPaperPoint(p, butterflyFolds[index].points[i], amount, fold.wing, fold.name);
+        return [x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a),z];
+      }),fold.faces);
     }
     faces.sort((a,b)=>a.depth-b.depth).forEach(face=>path([...face.points,face.points[0]],face.shade,'#8a9b8138',.55));
   } else {
