@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useRef, useState, type AnchorHTMLAttributes, typ
 import { Button, type ButtonProps } from './components';
 
 const paths = {
+  menu: 'M3 5h14M3 10h14M3 15h14',
   close: 'm5 5 10 10M15 5 5 15',
   chevronDown: 'm5 8 5 5 5-5',
   chevronLeft: 'm12 5-5 5 5 5',

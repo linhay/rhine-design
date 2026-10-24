@@ -11,17 +11,17 @@ export interface MediaCardProps extends Omit<ComponentPropsWithRef<'article'>, '
 }
 export function MediaCard({ title, date, kind, preview, state = preview != null && preview !== false ? 'ready' : 'empty', aspectRatio = '4 / 3', onOpen, selected = false, onSelectedChange, disabled, actions, className = '', ...props }: MediaCardProps) {
   const statusId = useId();
-  return <article {...props} className={`rhine-media-card ${className}`} data-selected={selected}>
+  return <article {...props} className={`rhine-media-card ${className}`} data-selected={selected} data-state={state} data-disabled={disabled || undefined}>
     <button type="button" className="rhine-media-card__open" onClick={event => { event.currentTarget.focus({ preventScroll: true }); onOpen(); }} disabled={disabled} aria-label={`打开${title}`} aria-describedby={statusId}>
       <span className="rhine-media-card__preview" style={{ aspectRatio }} aria-busy={state === 'loading'}>
         {(state === 'ready' || state === 'loading') && <span className="rhine-media-card__asset" hidden={state === 'loading'}>{preview}</span>}
-        {state !== 'ready' && <span>{state === 'loading' ? '正在加载预览…' : state === 'error' ? '预览无法解码' : '暂无预览'}</span>}
+        {state !== 'ready' && <span className="rhine-media-card__status"><span aria-hidden="true" className="rhine-media-card__status-mark">{state === 'error' ? '!' : state === 'loading' ? '···' : '—'}</span><span>{state === 'loading' ? '正在加载预览…' : state === 'error' ? '预览无法解码' : '暂无预览'}</span></span>}
         <span className="rhine-media-card__kind">{kind === 'photo' ? '照片' : kind === 'video' ? '视频' : kind}</span>
       </span><span className="rhine-media-card__caption"><strong>{title}</strong><span>{date || '日期未知'}</span></span>
     </button>
     <span id={statusId} role="status" className="rhine-sr-only">{state === 'loading' ? `${title}：预览加载中` : state === 'error' ? `${title}：预览失败` : state === 'empty' ? `${title}：缺少预览` : ''}</span>
-    {onSelectedChange && <Checkbox label={`选择${title}`} checked={selected} disabled={disabled} onChange={event => onSelectedChange(event.target.checked)} />}
-    {actions != null && <div className="rhine-media-card__actions">{actions}</div>}
+    {(onSelectedChange || actions != null) && <div className="rhine-media-card__footer">{onSelectedChange && <Checkbox label={`选择${title}`} checked={selected} disabled={disabled} onChange={event => onSelectedChange(event.target.checked)} />}
+    {actions != null && <div className="rhine-media-card__actions">{actions}</div>}</div>}
   </article>;
 }
 
@@ -70,9 +70,9 @@ export function MediaViewer({ trigger, title, description, children, open, defau
           if (event.key === 'ArrowRight' && nextEnabled) { event.preventDefault(); onNext?.(); }
         }}>
         <header className="rhine-media-viewer__header"><div><DialogBase.Title>{title}</DialogBase.Title><DialogBase.Description>{description}</DialogBase.Description></div>
-          <div className="rhine-media-viewer__actions"><button ref={previousRef} type="button" disabled={!previousEnabled} aria-keyshortcuts={keyboardNavigation ? 'ArrowLeft' : undefined} onClick={onPrevious}>上一项</button><button ref={nextRef} type="button" disabled={!nextEnabled} aria-keyshortcuts={keyboardNavigation ? 'ArrowRight' : undefined} onClick={onNext}>下一项</button>
-            {hasMetadata && <button type="button" aria-controls={metadataId} aria-expanded={showMetadata} onClick={changeMetadata}>{showMetadata ? '收起信息' : '显示信息'}</button>}
-            {actions}<DialogBase.Close asChild><button type="button" aria-label="关闭媒体查看器">关闭</button></DialogBase.Close>
+          <div className="rhine-media-viewer__actions"><button className="rhine-button rhine-button--secondary" ref={previousRef} type="button" disabled={!previousEnabled} aria-keyshortcuts={keyboardNavigation ? 'ArrowLeft' : undefined} onClick={onPrevious}>上一项</button><button className="rhine-button rhine-button--secondary" ref={nextRef} type="button" disabled={!nextEnabled} aria-keyshortcuts={keyboardNavigation ? 'ArrowRight' : undefined} onClick={onNext}>下一项</button>
+            {hasMetadata && <button className="rhine-button rhine-button--secondary" type="button" aria-controls={metadataId} aria-expanded={showMetadata} onClick={changeMetadata}>{showMetadata ? '收起信息' : '显示信息'}</button>}
+            {actions}<DialogBase.Close asChild><button className="rhine-button rhine-button--primary" type="button" aria-label="关闭媒体查看器">关闭</button></DialogBase.Close>
           </div>
         </header>
         <div className="rhine-media-viewer__body"><div className="rhine-media-viewer__canvas">{children}</div>{hasMetadata && <aside id={metadataId} hidden={!showMetadata} className="rhine-media-viewer__metadata" aria-label="媒体信息">{metadata}</aside>}</div>

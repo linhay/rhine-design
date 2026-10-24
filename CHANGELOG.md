@@ -5,6 +5,8 @@
 - 橙趣草莓甜甜圈增强为按需加载的 Three.js 艺术：立体糖霜、程序烘焙纹理、280 根糖针、110 颗糖珠、100 根环绕糖粒与 460 颗糖尘；共用原版倾角、62%/57%中心与缩放，校准主体尺寸，保留环面旋转、共享暂停与减少动态时钟，并提供 Canvas2D 降级和 GPU 清理。
 - OrbitBackdrop 新增 `appearance="theme" | "original"`：莱茵为折纸鸟（578 个三角折面、扇形褶皱与叠层双翼、暖白纸纹、轻微振翅和悬浮纸屑），战术为源石晶簇（倒角晶面、矿物纹理、琥珀裂纹和漂浮碎片），橙趣为草莓甜甜圈。三套物品均按需加载 Three.js；窄屏也可播放，共用暂停、减少动态和可见性时钟，切换主题复用已创建的绘制器。WebGL 失败回退 Canvas2D，Canvas 不可用时展示本地 SVG。`original` 保留初版完整深色轨道。
 - 新增 `StatusTimelineList` 多条健康历史组合；与 `AppShellToggle`、`NeutronStarBackdrop`、`ButtonLink` 一起将公共组件增至 64。
+- AppShell 新增可选 `contentHeader` 导航插槽，位于正文滚动区外；展台按应用栏模式组合当前页、侧栏入口与上下文操作，窄窗使用菜单入口，保留草稿和焦点。三主题边界同步；默认 header 模式保持兼容。
+- 重做媒体卡片与查看器：卡片边框、类型标签、选中态及独立操作区跟随三套主题；查看器仅画布保持中性深色，工具栏和信息栏使用宿主主题。展台改为自适应资源网格并单列异常状态，修复 CSS zoom 下查看器高度重复放大。
 - 补齐 Neo Brutalism 的 Badge 墨色描边与字重，中性标签使用主题文字色。
 
 - 对应 [#14](https://github.com/linhay/rhine-design/issues/14)：新增原生 anchor 语义的 `ButtonLink`，复用 Button 视觉及 busy/disabled；移交 `StatusTimelineList` 稳定行/互斥详情组合，并扩展 `TimelineLegend compact/items` 为一行短标签与悬停、键盘、触屏规则详情。无参图例保持兼容。

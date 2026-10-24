@@ -12,7 +12,7 @@ export interface ShellPanel {
 export interface AppShellProps {
   layout: 'single' | 'double-left' | 'left-right';
   navigation: ShellPanel; secondary?: ShellPanel;
-  header?: ReactNode; children: ReactNode; label?: string; decoration?: BackgroundDecoration;
+  header?: ReactNode; contentHeader?: ReactNode; children: ReactNode; label?: string; decoration?: BackgroundDecoration;
   className?: string; style?: CSSProperties;
   controls?: 'header' | 'inline';
 }
@@ -41,11 +41,11 @@ function Panel({ panel, overlay, side, id, drawerOpen, setDrawerOpen, hidden = f
   return <div className="rhine-shell__panel-control" hidden={hidden}>
     <Drawer title={panel.label} description="关闭后返回当前任务。" side={side} open={drawerOpen} onOpenChange={setDrawerOpen}
       onCloseAutoFocus={event => { if (document.getElementById(`${id}-toggle`)?.hidden) { event.preventDefault(); document.getElementById(`${id}-collapse`)?.focus(); } }}
-      trigger={iconOnly ? <IconButton {...props} icon="chevronRight" label={label} title={label} /> : <Button {...props} variant="secondary">{label}</Button>}>{panel.content}</Drawer>
+      trigger={iconOnly ? <IconButton {...props} icon={floating && side === 'left' ? 'menu' : 'chevronRight'} label={label} title={label} /> : <Button {...props} variant="secondary">{label}</Button>}>{panel.content}</Drawer>
   </div>;
 }
 
-export function AppShell({ layout, navigation, secondary, header, children, label = '应用工作区', decoration = 'auto', className = '', style, controls = 'header' }: AppShellProps) {
+export function AppShell({ layout, navigation, secondary, header, contentHeader, children, label = '应用工作区', decoration = 'auto', className = '', style, controls = 'header' }: AppShellProps) {
   const ref = useRef<HTMLDivElement>(null);
   const focusedPanel = useRef<'nav' | 'secondary' | null>(null);
   const focusedToggle = useRef<string | null>(null);
@@ -93,7 +93,8 @@ export function AppShell({ layout, navigation, secondary, header, children, labe
     <div className="rhine-shell__body">
       <aside id={`${id}-nav`} className="rhine-shell__nav" style={{ flexBasis: navigation.width }} aria-label={navigation.label} hidden={navOverlay || navigationDrawer || !navigation.open}>{!navigationDrawer && navigation.content}</aside>
       <aside id={`${id}-secondary`} className="rhine-shell__secondary" style={{ flexBasis: secondary?.width }} aria-label={secondary?.label} hidden={!hasSecondary || secondaryOverlay || secondaryDrawer || !secondary?.open}>{hasSecondary && !secondaryDrawer && secondary?.content}</aside>
-      <Background className="rhine-shell__content" decoration={decoration} tabIndex={0} role="region" aria-label="正文">{children}</Background>
+      <div className="rhine-shell__main">{contentHeader != null && <header className="rhine-shell__content-header">{contentHeader}</header>}
+      <Background className="rhine-shell__content" decoration={decoration} tabIndex={0} role="region" aria-label="正文">{children}</Background></div>
     </div>
   </div></ShellControls.Provider>;
 }
