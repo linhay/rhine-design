@@ -7,7 +7,7 @@ function surface(width: number, height: number) {
   return { canvas, context };
 }
 
-/** A local studio environment gives glass and machined metal broad, stable reflections. */
+/** Local studio lighting keeps paper folds and polished mineral faces legible. */
 export function studioEnvironment() {
   const { canvas, context: c } = surface(1024, 512);
   const room = c.createLinearGradient(0, 0, 0, 512);
@@ -21,23 +21,14 @@ export function studioEnvironment() {
   return texture;
 }
 
-export function chamberInscription(glass = false) {
-  const { canvas, context: c } = surface(2048, 256);
-  c.fillStyle = glass ? '#658471' : '#c8d5bd';
-  if (glass) {
-    c.font = '500 22px monospace';
-    for (let i = 0; i <= 20; i++) {
-      const y = 18 + i * 10.7;
-      c.fillRect(1010, y, i % 5 ? 24 : 48, 1.5);
-      if (i % 5 === 0) c.fillText(String(100 - i * 5).padStart(3, '0'), 1074, y + 7);
-    }
-    c.font = '500 16px monospace'; c.fillText('mL', 1090, 252);
-  } else {
-    c.font = '500 52px monospace'; c.fillText('RHINE  /  CELL CULTURE', 720, 94);
-    c.font = '400 26px monospace'; c.fillStyle = '#a3b09b'; c.fillText('SPECIMEN 07     //     RL-018', 725, 152);
-    for (let i = 0; i < 50; i++) c.fillRect(150 + i * 5, 40, i % 3 ? 1 : 3, 130 - i % 7 * 7);
-    c.font = '400 22px monospace'; c.fillText('01 / BIOLOGICAL SYSTEMS', 150, 210);
-    for (let i = 0; i < 7; i++) c.fillRect(1540 + i * 24, 80, 12, 64);
+export function paperTexture() {
+  const { canvas, context: c } = surface(512, 512);
+  c.fillStyle = '#f7f4e8'; c.fillRect(0, 0, 512, 512);
+  let seed = 7619;
+  const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+  for (let i = 0; i < 24000; i++) {
+    c.fillStyle = i % 3 ? 'rgba(97,111,85,.035)' : 'rgba(255,255,255,.22)';
+    c.fillRect(random() * 512, random() * 512, .3 + random() * 1.5, .2 + random() * .5);
   }
   const texture = new CanvasTexture(canvas); texture.colorSpace = SRGBColorSpace;
   return texture;

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BufferGeometry, InstancedMesh, Material, Texture, type Mesh, type PerspectiveCamera, type Points, type Scene, type ShaderMaterial } from 'three';
+import { BufferGeometry, InstancedMesh, Material, Texture, Vector3, type Mesh, type PerspectiveCamera, type Points, type Scene, type ShaderMaterial } from 'three';
 import { createOrbitObject, type OrbitObjectKind } from '../components/orbitObjectsThree';
 
 const gpu = vi.hoisted(() => ({ renderers: [] as Array<{
@@ -29,25 +29,45 @@ describe.each<OrbitObjectKind>(['paper', 'technical'])('Three.js %s object', kin
     expect(art.draw(0, 620, 1)).toBe(false);
     art.draw(400, 620, 1);
     expect(art.canvas.width).toBe(600); expect(art.canvas.height).toBe(930);
-    const scene = gpu.renderers[0].scene!, lab = kind === 'paper';
-    expect(scene.name).toBe(lab ? 'glass-culture-chamber' : 'originium-cluster');
-    const particles = scene.getObjectByName(lab ? 'culture-bubbles' : 'floating-fragments') as InstancedMesh;
-    const dust = scene.getObjectByName(lab ? 'culture-motes' : 'crystal-embers') as Points<BufferGeometry, ShaderMaterial>;
-    const capture = () => ({ object: scene.getObjectByName('theme-object')!.matrixWorld.toArray(), particles: [...particles.instanceMatrix.array], time: dust.material.uniforms.time.value });
+    const scene = gpu.renderers[0].scene!, bird = kind === 'paper';
+    expect(scene.name).toBe(bird ? 'origami-paper-bird' : 'originium-cluster');
+    const particles = scene.getObjectByName(bird ? 'floating-paper-flecks' : 'floating-fragments') as InstancedMesh;
+    const dust = scene.getObjectByName(bird ? 'paper-motes' : 'crystal-embers') as Points<BufferGeometry, ShaderMaterial>;
+    const capture = () => ({ wings: bird ? ['paper-wing-left', 'paper-wing-right'].map(name => scene.getObjectByName(name)!.rotation.z) : [], object: scene.getObjectByName('theme-object')!.matrixWorld.toArray(), particles: [...particles.instanceMatrix.array], time: dust.material.uniforms.time.value });
     const frozen = capture(); art.draw(400, 620, 1); expect(capture()).toEqual(frozen);
     art.draw(880, 526, 1); expect(capture()).toEqual(frozen);
     art.draw(880, 526, 2); expect(capture().object).not.toEqual(frozen.object); expect(capture().particles).not.toEqual(frozen.particles);
     expect(capture().time).toBe(2);
-    if (lab) {
-      const wall = scene.getObjectByName('glass-wall') as Mesh;
-      expect((wall.material as Material).transparent).toBe(true);
-      expect((scene.getObjectByName('culture-cells') as InstancedMesh).count).toBeGreaterThan(40);
-      expect(scene.getObjectByName('chamber-graduations')).toBeDefined();
+    if (bird) {
+      expect(capture().wings).not.toEqual(frozen.wings);
+      const body = scene.getObjectByName('folded-body') as Mesh;
+      expect(body.geometry.getAttribute('position').count).toBeGreaterThan(20);
+      expect(scene.getObjectByName('paper-wing-left')).toBeDefined();
+      expect(scene.getObjectByName('paper-wing-right')).toBeDefined();
+      expect(scene.getObjectByName('folded-neck-and-beak')).toBeDefined();
     } else {
       for (let i = 0; i < 5; i++) expect(scene.getObjectByName(`originium-facet-${i}`)).toBeDefined();
       expect(scene.getObjectByName('containment-ring')).toBeDefined();
     }
     expect(requestAnimationFrame).not.toHaveBeenCalled(); art.dispose();
+  });
+
+  if (kind === 'paper') it('keeps the folded bird inside desktop and narrow frames throughout its wing cycle', () => {
+    const art = createOrbitObject(kind, vi.fn()), vertex = new Vector3();
+    for (const [width, height] of [[400,360],[520,460],[880,526]]) for (let time = 0; time <= 64; time += 2) {
+      art.draw(width, height, time);
+      const { scene, camera } = gpu.renderers[0];
+      scene!.getObjectByName('theme-object')!.traverse(node => {
+        const positions = (node as Mesh).geometry?.getAttribute('position');
+        if (!positions) return;
+        for (let i = 0; i < positions.count; i++) {
+          vertex.fromBufferAttribute(positions, i).applyMatrix4(node.matrixWorld).project(camera!);
+          expect(Math.abs(vertex.x)).toBeLessThan(.96);
+          expect(Math.abs(vertex.y)).toBeLessThan(.94);
+        }
+      });
+    }
+    art.dispose();
   });
 
   it('recovers a frozen context and releases every owned resource exactly once', () => {
@@ -72,7 +92,7 @@ describe.each<OrbitObjectKind>(['paper', 'technical'])('Three.js %s object', kin
     expect(materialSpy.mock.contexts).toEqual(expect.arrayContaining([...materials]));
     expect(new Set(materialSpy.mock.contexts).size).toBe(materialSpy.mock.calls.length);
     expect(new Set(instanceSpy.mock.contexts)).toEqual(instances); expect(instanceSpy).toHaveBeenCalledTimes(instances.size);
-    expect(textureSpy).toHaveBeenCalledTimes(kind === 'paper' ? 3 : 1);
+    expect(textureSpy).toHaveBeenCalledTimes(kind === 'paper' ? 2 : 1);
     expect(new Set(textureSpy.mock.contexts).size).toBe(textureSpy.mock.calls.length);
     expect(renderer.dispose).toHaveBeenCalledOnce(); expect(renderer.forceContextLoss).toHaveBeenCalledOnce();
     expect(art.canvas.isConnected).toBe(false); expect(art.draw(400, 620, 4)).toBe(false);
@@ -81,13 +101,9 @@ describe.each<OrbitObjectKind>(['paper', 'technical'])('Three.js %s object', kin
 
   it('releases partial allocations if object construction fails', () => {
     const disposeGeometry = vi.spyOn(BufferGeometry.prototype, 'dispose');
-    vi.spyOn(InstancedMesh.prototype, 'setMatrixAt').mockImplementationOnce(() => { throw new Error('Synthetic setup failure'); });
-    if (kind === 'technical') {
-      // Technical instances receive their first matrices at draw time; fail earlier instead.
-      vi.spyOn(BufferGeometry.prototype, 'setAttribute').mockImplementationOnce(() => { throw new Error('Synthetic setup failure'); });
-    }
+    vi.spyOn(BufferGeometry.prototype, 'setAttribute').mockImplementationOnce(() => { throw new Error('Synthetic setup failure'); });
     expect(() => createOrbitObject(kind, vi.fn())).toThrow('Synthetic setup failure');
-    if (kind === 'paper') expect(disposeGeometry).toHaveBeenCalled();
+    expect(disposeGeometry).toHaveBeenCalled();
     expect(gpu.renderers[0].dispose).toHaveBeenCalledOnce(); expect(gpu.renderers[0].forceContextLoss).toHaveBeenCalledOnce();
   });
 });

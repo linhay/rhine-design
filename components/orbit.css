@@ -79,7 +79,7 @@
 .rhine-orbit-canvas[hidden] { display:none; }
 .rhine-orbit[data-rhine-orbit-appearance="theme"][data-rhine-orbit-state="unavailable"]::after {
   inset:16px 16px 68px;
-  background:url('./assets/orbit-lab.svg') center / contain no-repeat;
+  background:url('./assets/orbit-bird.svg') center / contain no-repeat;
 }
 /* Keep host control tokens intact; only unpainted content inherits the artwork foreground. */
 .rhine-orbit-content {

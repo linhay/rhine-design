@@ -29,7 +29,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 **0.5.0 新增能力**：新增背景与多侧栏、复杂表单、受控数据表、媒体与监控图表，共 59 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
 
-**0.7.0 新增能力**：三主题 Three.js 艺术分别为玻璃培养舱、源石晶簇与草莓甜甜圈，保留原始轨道切换；新增 `NeutronStarBackdrop`、`StatusTimelineList` 、`AppShellToggle` 与 `ButtonLink`，公共组件总数为 64。包含暂停、减少动态、静态降级与资源清理。安装前核对[版本记录](CHANGELOG.md)与 registry；在线展台跟随 main。
+**0.7.0 新增能力**：三主题 Three.js 艺术分别为折纸鸟、源石晶簇与草莓甜甜圈，保留原始轨道切换；新增 `NeutronStarBackdrop`、`StatusTimelineList` 、`AppShellToggle` 与 `ButtonLink`，公共组件总数为 64。包含暂停、减少动态、静态降级与资源清理。安装前核对[版本记录](CHANGELOG.md)与 registry；在线展台跟随 main。
 
 0.7.0 同时提供 `ButtonLink` 与可传规则的一行 `TimelineLegend`；[紧凑摘要与凭证操作规范](docs/COMPACT_ACCOUNT_PATTERNS.md)说明无框摘要、历史详情与必要操作的组合。真实展台为 `/#compact-account`。
 

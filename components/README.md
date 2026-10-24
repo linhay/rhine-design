@@ -160,7 +160,7 @@ export function Example() {
 
 `OrbitBackdrop` 自 0.6.0 提供，接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。0.6.0 提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
 
-0.7.0 新增 `appearance?: 'theme' | 'original'`：莱茵展示带双螺旋、玻璃反射、蚀刻刻度、机械封口与气泡的培养舱；战术展示带倒角晶面、矿物纹理、琥珀裂纹与漂浮碎片的源石晶簇；橙趣展示有烘焙纹理、糖霜、糖针与糖尘的草莓甜甜圈。三套物品按需加载 Three.js，窄屏可播放，遵循同一暂停、减少动态、隐藏与离屏规则；WebGL 失败回退 Canvas2D，Canvas 不可用时使用本地 SVG。`original` 保留初版完整深色轨道。切换主题复用时钟和绘制器，保留暂停与内容草稿。详见[轨道背景契约](../docs/ORBIT_BACKDROP.md)。
+0.7.0 新增 `appearance?: 'theme' | 'original'`：莱茵展示暖白纸纹、浅绿折面、轻微振翅与悬浮纸屑的折纸鸟；战术展示带倒角晶面、矿物纹理、琥珀裂纹与漂浮碎片的源石晶簇；橙趣展示有烘焙纹理、糖霜、糖针与糖尘的草莓甜甜圈。三套物品按需加载 Three.js，窄屏可播放，遵循同一暂停、减少动态、隐藏与离屏规则；WebGL 失败回退 Canvas2D，Canvas 不可用时使用本地 SVG。`original` 保留初版完整深色轨道。切换主题复用时钟和绘制器，保留暂停与内容草稿。详见[轨道背景契约](../docs/ORBIT_BACKDROP.md)。
 
 0.7.0 新增 `AppShellToggle` 与 `AppShell.controls="inline"`。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮070)。
 ## 中子星背景（0.7.0）
