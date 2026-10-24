@@ -10,6 +10,15 @@ function nativeInput(input: HTMLElement, value: string, badInput: boolean) {
 }
 
 describe('native date editing', () => {
+  it('does not display a valid proposal that the controlled host rejected', () => {
+    const change = vi.fn();
+    render(<DateField label="日期" value="2026-10-20" onValueChange={change} />);
+    const input = screen.getByLabelText('日期');
+    nativeInput(input, '2026-10-21', false);
+    expect(change).toHaveBeenCalledExactlyOnceWith('2026-10-21');
+    expect(input).toHaveValue('2026-10-20');
+  });
+
   it('does not report an incomplete native date as an intentionally empty boundary', () => {
     const change = vi.fn(), validation = vi.fn();
     const props = { label: '日期', value: '2026-10-20', onValueChange: change, onValidationChange: validation };
@@ -25,7 +34,7 @@ describe('native date editing', () => {
     expect(input).toHaveAttribute('aria-invalid', 'true');
     nativeInput(input, '2026-10-21', false);
     expect(change.mock.calls).toEqual([['2026-10-21']]);
-    expect(input).toHaveValue('2026-10-21');
+    expect(input).toHaveValue('2026-10-20');
     expect(validation).toHaveBeenLastCalledWith(null);
   });
 

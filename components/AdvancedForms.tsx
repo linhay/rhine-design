@@ -40,7 +40,9 @@ export function DateField({ onValueChange, onValidationChange, error, ...props }
     const { value, validity } = event.currentTarget;
     nativeBadInput.current = validity.badInput;
     // Native date fragments also expose an empty value; they are not a cleared boundary.
-    setEditing({ accepted: props.value, draft: value, badInput: validity.badInput });
+    // Only incomplete native fragments are local drafts. Valid values remain
+    // controlled by the host, which may reject a proposed change.
+    setEditing({ accepted: props.value, draft: validity.badInput ? value : props.value, badInput: validity.badInput });
     if (!validity.badInput) onValueChange(value);
   };
   // Chromium can change an empty calendar fragment without firing input/change.
