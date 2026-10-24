@@ -161,6 +161,22 @@ MediaCard 支持原生 article 属性、ref 与独立 actions（重试等操作�
 
 StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 ID 控制选中；未指定或当前 ID 消失时显示最后一个时段。`open/defaultOpen/onOpenChange` 控制详情，`disabled` 禁止操作及显示详情。Enter/Space 将键盘焦点送入详情关闭按钮，退出后返回健康条且不会立即重开。
 
+### 多条历史记录（源码候选，尚未发布 npm）
+
+`StatusTimelineList({ label, items, emptyLabel? })` 统一标题、摘要、备注、分隔与 compact 时间条。同一列表一次只展开一条详情；鼠标切换记录不抢焦点，键盘进入详情后退出返回对应时间条，嵌套 Dialog 的下一次 Escape 才关闭外层。行删除、禁用或历史变为空时关闭旧详情。
+
+每项为 `StatusTimelineItem`：稳定的 `id`、文字 `title`、可选 `summary: ReactNode`、`note`、`unavailableLabel`，以及 `timeline: { segments, startLabel, endLabel, disabled? } | null`。null 表示历史不可用，空 segments 表示没有时段；两者均不冒充健康。`emptyLabel` 默认“暂无历史记录”，`unavailableLabel` 默认“历史记录暂不可用 · 未知”。摘要由宿主提供，0 与未知应明确区分。行 ID 和时段 ID 不使用数组索引，确保排序或刷新后保留正确身份。
+
+组件不请求、排序、分页或计算健康/额度。宿主保留数据权限、服务端分页与加载/错误反馈；列表只协调呈现与详情开关。真实展台 `/#monitoring` 覆盖默认、加载、错误保留旧记录、空、未知、不完整、禁用、长名称及分栏弹窗。
+
+```tsx
+<StatusTimelineList label="资源历史" items={[
+  { id: 'resource-a', title: '资源 A', summary: '剩余 78%',
+    timeline: { segments, startLabel: '10/23 00:00 UTC+8', endLabel: '10/24 00:00 UTC+8' } },
+  { id: 'resource-b', title: '资源 B', summary: '剩余未知', timeline: null },
+]} />
+```
+
 `TrendChart({ label, unit, rangeLabel, description, points, kind, stale?, error?, loading? })` 提供 `kind="bar" | "line"`，每个 point 是 `{id,label,value:number|null}`。宿主负责时间桶、排序、聚合、单位与统计说明；组件只映射坐标。零是有效采样，未知值不补零、不插值，折线路径在缺失点处断开；图内 ×、SVG 可访问说明和可展开的原始数据表共同表示缺失。单位、范围与图例均为 HTML 文字，避免窄屏 SVG 缩放导致文字小于 12px。多条资源指标使用多个命名图表组合，不内置数据请求或图表引擎。
 
 `StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，保留一位小数，不是健康分数或成功率。宿主必须提供互斥分类，不能把重叠统计相加当作总量。

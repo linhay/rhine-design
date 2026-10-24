@@ -20,6 +20,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx` |
 | Dialog, Drawer (0.4.0), ConfirmDialog, Popover, Menu, Tooltip | `components/Overlays.tsx` |
 | StatusTimeline, TimelineLegend (0.4.0) | `components/StatusTimeline.tsx`；历史证据，不计算健康评分 |
+| StatusTimelineList（源码候选，未发布） | `components/StatusTimelineList.tsx`、`docs/APPLICATION_COMPONENTS.md`；稳定行 ID、标题/摘要/紧凑时间条组合、单一详情，宿主保留请求与分页；展台 `/#monitoring` |
 | SideNav, Breadcrumbs, Steps (0.4.0) | `components/Navigation.tsx` |
 | Fieldset, ErrorSummary (0.4.0) | `components/FormWorkflow.tsx` |
 | Toast | `components/Toast.tsx` |
