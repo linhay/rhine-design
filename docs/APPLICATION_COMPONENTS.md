@@ -39,6 +39,32 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 ## 三种外壳布局
 
+### 内联控制按钮（源码候选，尚未发布 npm）
+
+默认 `controls="header"` 保持既有顶部操作栏。宿主已有页面导航栏时可用 `controls="inline"`：没有 `header` 内容就不生成顶部横栏。将 `AppShellToggle placement="panel"` 放入侧栏品牌区，将对应的 `placement="content"` 放入正文导航栏；每个面板各放一对。`panel` 默认 navigation，可选 secondary；`iconOnly` 使用已有 IconButton。不要另写折叠状态、复制 Drawer 或用 CSS 隐藏默认横栏。
+
+展开桌面面板时只显示品牌区的收起按钮；收起后正文显示展开按钮；窄窗正文按钮打开 Drawer，抽屉使用已有关闭按钮。`content` 控制保留挂载以归还焦点，`panel` 控制随内联面板隐藏。正文入口必须放在始终可达的位置（例如吸顶导航栏），即使切换页面也要保留。折叠/展开与断点变化迁移键盘焦点，Drawer 继续负责 Escape 与焦点约束。控件没有异步、加载或错误状态，不把业务 busy 绑定到导航。
+
+```tsx
+<AppShell controls="inline" layout="single"
+  navigation={{ label: '导航', open, onOpenChange: setOpen,
+    content: <><div>Workspace <AppShellToggle placement="panel" iconOnly /></div><Navigation /></> }}>
+  <header><AppShellToggle placement="content" iconOnly />{status}{actions}</header>
+  <h1 className="rhine-sr-only">{pageTitle}</h1>
+  <Content />
+</AppShell>
+```
+
+### 平级工作区顶部操作区
+
+侧栏已标识当前位置时，默认省略顶部面包屑与重复页名。用 `Inline` 组合 `AppShellToggle`、状态和操作即可，不新增页头组件或逐页开关；`AppShell` 不生成或强制 Breadcrumbs。宿主保留一个可访问的页面标题、主区域名称与路由焦点管理。真实父子层级仍可按需使用 Breadcrumbs，设计库展台自身的章节路径不属于产品平级工作区。
+
+品牌区放收起入口，正文操作区放对应展开入口。操作行在正文滚动时可达，窄窗自然换行；连接状态、刷新、错误与加载反馈不因删除标题丢失。没有状态或操作的区域不额外生成标题占位；仍需为侧栏恢复入口保留可达位置。复用已有组件与 tokens，不在业务层用 CSS 隐藏 Breadcrumbs。
+
+`/#app-shell` 的默认内联模式展示这一组合：平级侧栏、无重复页名的操作行、正文读屏标题和任务草稿。验收覆盖三主题、400/520/880、200%重排、侧栏收起/展开、窄窗 Drawer、Tab/Escape、切页后的当前项与草稿保留。此规范为源码候选，未声明新的已发布 API。
+
+真实展台 `#app-shell` 可切换默认顶部和内联控制模式；沿用三布局、长文案、正文草稿、禁用/加载/错误状态与全局主题/减少动态设置。
+
 `AppShell` 接收 `layout="single" | "double-left" | "left-right"`；`navigation` 必填、`secondary` 在后两种布局可选。面板形状为 `{ label, content, open, onOpenChange }`；`header` 放当前任务操作、`children` 为正文，`decoration` 控制正文背景。
 
 | 方案 | 用途 | 顺序 |

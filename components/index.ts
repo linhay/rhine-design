@@ -1,10 +1,12 @@
 import './styles.css';
+export { NeutronStarBackdrop } from './NeutronStarBackdrop';
+export type { NeutronStarBackdropProps } from './NeutronStarBackdrop';
 export { OrbitBackdrop } from './OrbitBackdrop';
 export type { OrbitBackdropProps } from './OrbitBackdrop';
 export { Background } from './Background';
 export type { BackgroundProps, BackgroundRole, BackgroundDecoration, BackgroundAppearance } from './Background';
-export { AppShell } from './AppShell';
-export type { AppShellProps, ShellPanel } from './AppShell';
+export { AppShell, AppShellToggle } from './AppShell';
+export type { AppShellProps, AppShellToggleProps, ShellPanel } from './AppShell';
 export { MediaCard, MediaViewer } from './Media';
 export type { MediaCardProps, MediaViewerProps } from './Media';
 export { DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect } from './AdvancedForms';

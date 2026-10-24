@@ -5,6 +5,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Task | First reference (relative to package root) | Implementation / example |
 | --- | --- | --- |
 | Application shell, backgrounds, media, advanced inputs, controlled tables | `docs/APPLICATION_COMPONENTS.md` (0.5.0) | `preview/ExtensionsGallery.tsx`; `/#app-shell`, `/#advanced-forms`, `/#advanced-data`, `/#media` |
+| Workspace header, duplicate page titles, optional breadcrumbs | `docs/APPLICATION_COMPONENTS.md` → 平级工作区顶部操作区 (source guideline) | `preview/ExtensionsGallery.tsx`; `/#app-shell`; keep status/actions, navigation restore and accessible page identity |
 | Theme integration, switching, controlled preferences | `docs/THEMING.md` (0.4.0) | `components/theme.tsx`, `preview/GalleryShell.tsx` |
 | Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (0.4.0; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
 | Date presets, visible date ranges, custom-range drafts and confirmation | `docs/DATE_RANGE_FILTER.md` (source pattern using existing 0.6.0 APIs) | `preview/DateRangeFilterGallery.tsx`; `/#date-range-filter`; no public DateRangeFilter component |
@@ -19,9 +20,10 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Transition, replay, cancellation, reduced motion | `components/MOTION.md` | `preview/`, `components/styles.css` |
 | Startup sequence, logo assembly, ready handoff | `components/STARTUP.md` | Search `startup` in `preview/`; not a public Startup component |
 | Orbit artwork, decorative Canvas, pause / resume, reduced motion | `docs/ORBIT_BACKDROP.md` (0.6.0) | `components/OrbitBackdrop.tsx`, internal `components/orbitRenderer.ts`; `/#orbit` |
+| Neutron-star artwork, themed WebGL, async loading, static fallback | `docs/NEUTRON_STAR_BACKDROP.md` (unreleased source; absent from npm 0.6.0) | `components/NeutronStarBackdrop.tsx`; `preview/NeutronStarGallery.tsx`; `/#neutron-star` |
 | Missing capability or system coverage | `docs/DESIGN_SYSTEM_AUDIT.md` | Verify status against `components/index.ts` |
 | Version upgrade | `CHANGELOG.md` | Installed `package.json`, current types |
 
-Run the library showcase with `npm ci && npm run dev` in a source checkout. Default port is 18309; sections include `/#foundation`, `/#typography`, `/#brand`, `/#motion` and `/#startup`, plus `/#orbit` in the unreleased source candidate. Do not assume another project's server or local filesystem layout.
+Run the library showcase with `npm ci && npm run dev` in a source checkout. Default port is 18309; sections include `/#foundation`, `/#typography`, `/#brand`, `/#motion`, `/#startup` and `/#orbit`, plus `/#neutron-star` in the unreleased source candidate. Do not assume another project's server or local filesystem layout.
 
 For host pages, keep product-specific drafts in the host project. The library's `preview/` demonstrates reusable behavior, not business APIs. Labels such as “candidate” or “preview” in motion docs identify experiments; check whether the behavior is actually exported before integrating it.

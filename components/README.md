@@ -4,6 +4,8 @@
 
 0.6.0 共60个组件；0.5.0为59个，0.4.0为48个，0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
+未发布源码新增第61个组件 `NeutronStarBackdrop`，npm 0.6.0 不包含它；见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)。安装版本与源码导出分别核对。
+
 页面改动遵循：优先复用组件 → 先在设计稿/展台修改并验证 → 再按任务授权实现到App。缺组件先补组件与展台，不在业务页另写同用途样式；同一任务已授权设计和实现时连续推进，无需重复确认。
 
 ## 间距组合
@@ -59,7 +61,7 @@ export function Example() {
 | Badge | tone=neutral/success/warning/error；children | 只读短状态，颜色必须配文字，不做可点击按钮 |
 | Surface | HTML div 属性 | 静态分区，无点击语义；不是弹窗或导航 |
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
-| SelectionCard | label；selected；onSelectedChange；disabled；children | 原生 checkbox 可取消；是否单选由上层控制；内部不嵌套按钮/链接/其他输入 |
+| SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
 | Tabs | label；items[{value,label,content,disabled?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树 |
 | SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange | 原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供 |
@@ -157,3 +159,12 @@ export function Example() {
 ## 轨道背景（0.6.0）
 
 `OrbitBackdrop` 接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。它提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
+
+源码候选新增 `AppShellToggle` 与 `AppShell.controls="inline"`；尚未发布 npm。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮源码候选尚未发布-npm)。
+## 中子星背景（未发布源码候选）
+
+`NeutronStarBackdrop` 接收 `HTMLAttributes<HTMLDivElement>`、`reducedMotion?: boolean`、`appearance?: 'theme' | 'original'` 和可选 `children`。默认从当前主题取得艺术配色，`original` 保留原始深空；切换颜色不重置时间，实体内容控件仍用宿主主题。按需加载 Three.js，保留 28 条磁场线、560 个流粒、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头保持固定。
+
+内置暂停 / 继续；系统、显式和祖先减少动态、隐藏、离屏或零尺寸停帧，恢复不追赶。SSR 不访问浏览器绘制环境，异步初始化晚于卸载时不创建渲染器；无 WebGL、导入失败或 context lost 保留静态艺术和业务内容，context restored 按当前偏好恢复，卸载释放监听、帧循环及 GPU 资源。宿主负责尺寸和普通内容布局，正文不模糊；不以装饰状态控制业务。完整用法与验收见[中子星背景契约](../docs/NEUTRON_STAR_BACKDROP.md)，真实源码展台为 `/#neutron-star`。
+
+内容层只预留底部 `44px + 2 × --rhine-space-4` 控件安全区，不强制正文四边 padding；宿主在自己的 Stack 或页面容器设置边距，避免重复叠加。静态 fallback 保留当前配色的星核、磁场意图，不保证与三维画面逐像素一致。

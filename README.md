@@ -33,6 +33,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 **源码候选（尚未发布）**：`ButtonLink`、`StatusTimelineList` 与可传规则的一行 `TimelineLegend`；[紧凑摘要与凭证操作规范](docs/COMPACT_ACCOUNT_PATTERNS.md)说明用户任务驱动的文字消融、无框摘要与历史渐进展示。真实展台为 `/#compact-account`；npm 0.6.0 不含这些新增 API。
 
+**未发布源码候选**：新增 `NeutronStarBackdrop` 中子星艺术，保留磁场、流粒、星尘、喷流与公转；默认跟随主题，也可选择原始深空。npm 0.6.0 不含此 API，候选契约见[中子星背景](docs/NEUTRON_STAR_BACKDROP.md)。
+
 本轮新增 API 与交互已逐项核对 Ant Design / MUI，修复及明确保留的差异见[对标清单](docs/ANTD_MUI_AUDIT.md)。
 
 <a id="quick-start"></a>
@@ -81,6 +83,10 @@ export function Welcome() {
 
 OrbitBackdrop 承接授权移交的轨道动画，保留环节点、曲线、箭头、光晕与透视，并提供暂停、减少动态和离屏停帧。它是纯装饰，不表示加载或业务进度。契约与接入见[轨道背景](docs/ORBIT_BACKDROP.md)，真实展台见[轨道星空](https://linhay.github.io/rhine-design/#orbit)。
 
+### 中子星背景（未发布源码候选）
+
+NeutronStarBackdrop 承接另一套独立的中子星艺术，使用按需加载的 Three.js 绘制；内置暂停、减少动态、离屏停帧与静态降级。主题切换不重播，正文与控件不模糊。最小接入、生命周期及版本边界见[中子星契约](docs/NEUTRON_STAR_BACKDROP.md)，源码展台入口为 `/#neutron-star`。不要用轨道组件替换中子星的原视觉配方。
+
 ### 一键切换主题（0.4.0）
 
 展台右上角可切换并记忆主题。新增 **橙趣 · 粗描边**：浅灰蓝点阵背景、米白圆角卡片、黑色粗边、向右下偏移的硬阴影与亮橙主按钮。打开 [在线订阅管理示例](https://linhay.github.io/rhine-design/?theme=neo-brutalism#subscriptions)，体验卡片详情、管理菜单与演示表单；本地开发访问 `http://127.0.0.1:18309/?theme=neo-brutalism#subscriptions`。
@@ -126,14 +132,14 @@ export function App() {
 | --- | --- |
 | 品牌与文字 | Logo · Text |
 | 操作 | Button · Icon · IconButton · Link · CopyButton |
-| 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · OrbitBackdrop³ |
+| 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
 | 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² |
 | 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
 | 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
 | 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
 
-¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。
+¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。⁴ 未发布源码候选，不包含于 npm 0.6.0。
 
 参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 
@@ -152,6 +158,7 @@ export function App() {
 | 动效、交互与减少动态 | [Motion](components/MOTION.md) | [动效实验室](https://linhay.github.io/rhine-design/#motion) |
 | 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | [启动动画](https://linhay.github.io/rhine-design/#startup) |
 | 轨道装饰、暂停与静态降级 | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | [轨道星空](https://linhay.github.io/rhine-design/#orbit) |
+| 中子星艺术、主题与 WebGL 生命周期 | [NeutronStarBackdrop（源码候选）](docs/NEUTRON_STAR_BACKDROP.md) | 源码展台 `/#neutron-star`，合并后上线 |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
 | 日期快捷项、范围草稿与确认 | [日期筛选组合](docs/DATE_RANGE_FILTER.md) | [日期筛选](https://linhay.github.io/rhine-design/#date-range-filter) |
 | 无框摘要、一行图例与凭证操作消融 | [紧凑组合](docs/COMPACT_ACCOUNT_PATTERNS.md) | [紧凑账号](https://linhay.github.io/rhine-design/#compact-account) |

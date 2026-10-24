@@ -22,11 +22,11 @@ export function Badge({ tone = 'neutral', children }: { tone?: Tone; children: R
 export function Surface({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div {...props} className={classes('rhine-surface', className)} />;
 }
-export function SelectionCard({ label, selected, onSelectedChange, disabled = false, children }: {
-  label: string; selected: boolean; onSelectedChange: (value: boolean) => void; disabled?: boolean; children: ReactNode;
+export function SelectionCard({ label, selected, onSelectedChange, disabled = false, showIndicator = true, children }: {
+  label: string; selected: boolean; onSelectedChange: (value: boolean) => void; disabled?: boolean; showIndicator?: boolean; children: ReactNode;
 }) {
   return <label className="rhine-selection" data-selected={selected} data-disabled={disabled}>
-    <span className="rhine-selection__heading"><strong>{label}</strong><input type="checkbox" aria-label={label} checked={selected} disabled={disabled} onChange={event => onSelectedChange(event.target.checked)} /></span>
+    <span className="rhine-selection__heading"><strong>{label}</strong><input className={showIndicator ? undefined : 'rhine-sr-only'} type="checkbox" aria-label={label} checked={selected} disabled={disabled} onChange={event => onSelectedChange(event.target.checked)} /></span>
     <span className="rhine-selection__content">{children}</span>
   </label>;
 }
