@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import * as PopoverBase from '@radix-ui/react-popover';
 import { Text } from './Typography';
 import { KeyValue } from './Data';
@@ -18,6 +18,46 @@ export interface StatusTimelineProps {
 }
 export const timelineLabels: Record<TimelineStatus, string> = { healthy: '有输出·未见异常', recovered: '重试已恢复', degraded: '异常·结果待确认', failed: '存在最终失败', unknown: '未知 / 无数据' };
 
+// Radix positions fixed wrappers in viewport pixels; CSS zoom on ancestors scales them a second time.
+function useTimelinePopoverScale(ref: RefObject<HTMLDivElement | null>, open: boolean) {
+  const [content, setContent] = useState<HTMLDivElement | null>(null);
+  const attach = useCallback((element: HTMLDivElement | null) => { ref.current = element; setContent(element); }, [ref]);
+  useLayoutEffect(() => {
+    const wrapper = content?.parentElement;
+    if (!open || !content || !wrapper?.hasAttribute('data-radix-popper-content-wrapper')) return;
+    const ancestors: HTMLElement[] = [];
+    for (let element = wrapper.parentElement; element; element = element.parentElement) ancestors.push(element);
+    const original = { wrapperZoom: wrapper.style.zoom, contentZoom: content.style.zoom, maxWidth: content.style.maxWidth, maxHeight: content.style.maxHeight };
+    const measure = () => {
+      const scale = ancestors.reduce((value, element) => {
+        const raw = getComputedStyle(element).zoom;
+        const zoom = raw.endsWith('%') ? parseFloat(raw) / 100 : parseFloat(raw);
+        return value * (Number.isFinite(zoom) && zoom > 0 ? zoom : 1);
+      }, 1);
+      wrapper.style.zoom = String(1 / scale);
+      content.style.zoom = String(scale);
+      content.style.maxWidth = `calc((100vw - 24px) / ${scale})`;
+      content.style.maxHeight = `calc(var(--radix-popover-content-available-height) / ${scale})`;
+    };
+    measure();
+    const observer = new MutationObserver(measure);
+    ancestors.forEach(element => observer.observe(element, { attributes: true, attributeFilter: ['style', 'class'] }));
+    return () => { observer.disconnect(); wrapper.style.zoom = original.wrapperZoom; content.style.zoom = original.contentZoom; content.style.maxWidth = original.maxWidth; content.style.maxHeight = original.maxHeight; };
+  }, [open, content]);
+  return attach;
+}
+
+function useTimelineHoverExit(trigger: RefObject<HTMLElement | null>, popup: RefObject<HTMLDivElement | null>, close: () => void) {
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const cancel = () => { clearTimeout(timer.current); timer.current = undefined; };
+  const leave = () => { cancel(); timer.current = setTimeout(() => {
+    const keyboardFocus = document.activeElement === trigger.current && trigger.current?.matches(':focus-visible');
+    if (!keyboardFocus && !popup.current?.contains(document.activeElement)) close();
+  }, 150); };
+  useEffect(() => cancel, []);
+  return { cancel, leave };
+}
+
 /** Host supplies ordered, validated evidence; this component never computes a health score. */
 export function StatusTimeline({ label, segments, startLabel, endLabel, compact = false, disabled = false, activeId, defaultActiveId, onActiveChange, open: controlledOpen, defaultOpen = false, onOpenChange }: StatusTimelineProps) {
   const [localId, setLocalId] = useState(defaultActiveId);
@@ -34,7 +74,11 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
   const segment = segments[selected];
   const summary = segment ? `${segment.label} · ${timelineLabels[segment.status]}` : '暂无记录';
   const hasPopup = !disabled && !!segment && (compact || !!segment.detail);
-  return <div ref={root} className={`rhine-timeline${compact ? ' rhine-timeline--compact' : ''}`}>
+  const attachPopup = useTimelinePopoverScale(popup, open && hasPopup);
+  const hover = useTimelineHoverExit(slider, popup, () => setOpen(false));
+  return <div ref={root} className={`rhine-timeline${compact ? ' rhine-timeline--compact' : ''}`}
+    onPointerEnter={hover.cancel}
+    onPointerLeave={event => { if (event.pointerType === 'mouse' && !(event.relatedTarget instanceof Node && popup.current?.contains(event.relatedTarget))) hover.leave(); }}>
     <PopoverBase.Root open={open && hasPopup} onOpenChange={setOpen}><PopoverBase.Anchor asChild><div className="rhine-timeline__track">
       <div className="rhine-timeline__bars" aria-hidden="true">{segments.map((item, i) => <span key={item.id} data-status={item.status} data-selected={i === selected} />)}</div>
       <input ref={slider} type="range" min={0} max={Math.max(0, segments.length - 1)} value={Math.max(0, selected)} disabled={disabled || !segments.length}
@@ -48,7 +92,9 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
         onChange={event => { select(Number(event.target.value)); setOpen(true); }}
         onPointerDown={() => setOpen(true)}
         onPointerMove={event => { if (disabled || event.pointerType !== 'mouse' || !segments.length) return; const rect = event.currentTarget.getBoundingClientRect(); if (rect.width) select(Math.min(segments.length - 1, Math.max(0, Math.floor((event.clientX - rect.left) / rect.width * segments.length)))); setOpen(true); }} />
-    </div></PopoverBase.Anchor><PopoverBase.Portal container={container}><PopoverBase.Content ref={popup} id={`${detailId}-popup`} className="rhine-timeline-popover" side="top" sideOffset={8} collisionPadding={12} aria-label={`${label}时段详情`}
+    </div></PopoverBase.Anchor><PopoverBase.Portal container={container}><PopoverBase.Content ref={attachPopup} id={`${detailId}-popup`} className="rhine-timeline-popover" side="top" sideOffset={8} collisionPadding={12} aria-label={`${label}时段详情`}
+      onPointerEnter={hover.cancel}
+      onPointerLeave={event => { if (event.pointerType === 'mouse' && !(event.relatedTarget instanceof Node && root.current?.contains(event.relatedTarget))) hover.leave(); }}
       onFocusCapture={() => { detailHadFocus.current = true; }}
       onBlurCapture={event => { if (event.relatedTarget && event.relatedTarget !== document.body && !event.currentTarget.contains(event.relatedTarget)) detailHadFocus.current = false; }}
       onOpenAutoFocus={event => { event.preventDefault(); if (focusDetail.current) { focusDetail.current = false; popup.current?.querySelector<HTMLButtonElement>('button')?.focus(); } }} onCloseAutoFocus={event => { event.preventDefault(); focusDetail.current = false; if (detailHadFocus.current && (document.activeElement === document.body || popup.current?.contains(document.activeElement))) { returning.current = true; slider.current?.focus(); } detailHadFocus.current = false; }}
@@ -65,6 +111,51 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
   </div>;
 }
 
-export function TimelineLegend() {
-  return <ul className="rhine-timeline__legend" aria-label="健康记录图例">{Object.entries(timelineLabels).map(([status, label]) => <li key={status}><span data-status={status} aria-hidden="true"/>{label}</li>)}</ul>;
+export interface TimelineLegendItem { status: TimelineStatus; label: string; description?: string }
+export interface TimelineLegendProps { label?: string; compact?: boolean; items?: TimelineLegendItem[] }
+const defaultLegendItems: TimelineLegendItem[] = Object.entries(timelineLabels).map(([status, label]) => ({ status: status as TimelineStatus, label }));
+
+/** Short labels describe evidence; hosts provide the precise rules rather than relying on color. */
+export function TimelineLegend({ label = '健康记录图例', compact = false, items = defaultLegendItems }: TimelineLegendProps) {
+  const root = useRef<HTMLUListElement>(null);
+  const [container, setContainer] = useState<HTMLElement>();
+  const [active, setActive] = useState<TimelineStatus | null>(null);
+  useLayoutEffect(() => { setContainer(root.current?.closest<HTMLElement>('.rhine-theme') ?? document.body); }, []);
+  useEffect(() => { if (active && !items.some(item => item.status === active && item.description)) setActive(null); }, [active, items]);
+  return <ul ref={root} className={`rhine-timeline__legend${compact ? ' rhine-timeline__legend--compact' : ''}`} aria-label={label}>
+    {items.map(item => <LegendItem key={item.status} item={item} container={container} open={active === item.status}
+      onOpenChange={next => setActive(current => next ? item.status : current === item.status ? null : current)} />)}
+  </ul>;
+}
+
+function LegendItem({ item, container, open, onOpenChange }: { item: TimelineLegendItem; container?: HTMLElement; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const id = useId(), trigger = useRef<HTMLButtonElement>(null), popup = useRef<HTMLDivElement>(null), returning = useRef(false);
+  const detailHadFocus = useRef(false);
+  const hover = useTimelineHoverExit(trigger, popup, () => onOpenChange(false));
+  const attachPopup = useTimelinePopoverScale(popup, open);
+  const marker = <span data-status={item.status} aria-hidden="true" />;
+  if (!item.description) return <li>{marker}{item.label}</li>;
+  return <li><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Anchor asChild>
+    <button ref={trigger} type="button" className="rhine-timeline__legend-trigger" aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? id : undefined}
+      onFocus={() => { if (!returning.current) onOpenChange(true); returning.current = false; }}
+      onClick={() => onOpenChange(true)}
+      onPointerEnter={event => { if (event.pointerType === 'mouse') { hover.cancel(); onOpenChange(true); } }}
+      onPointerLeave={event => { if (event.pointerType === 'mouse' && !(event.relatedTarget instanceof Node && popup.current?.contains(event.relatedTarget))) hover.leave(); }}
+      onKeyDown={event => {
+        if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); onOpenChange(false); }
+        if ((event.key === 'Enter' || event.key === ' ') && open) { event.preventDefault(); popup.current?.querySelector<HTMLButtonElement>('button')?.focus(); }
+      }}>
+      {marker}{item.label}
+    </button>
+  </PopoverBase.Anchor><PopoverBase.Portal container={container}><PopoverBase.Content ref={attachPopup} id={id} className="rhine-timeline-popover" aria-label={`${item.label}规则`} side="top" sideOffset={8} collisionPadding={12}
+    onFocusCapture={() => { detailHadFocus.current = true; }}
+    onBlurCapture={event => { if (event.relatedTarget && event.relatedTarget !== document.body && !event.currentTarget.contains(event.relatedTarget)) detailHadFocus.current = false; }}
+    onOpenAutoFocus={event => event.preventDefault()}
+    onCloseAutoFocus={event => { event.preventDefault(); if (detailHadFocus.current && (popup.current?.contains(document.activeElement) || document.activeElement === document.body)) { returning.current = true; trigger.current?.focus(); } detailHadFocus.current = false; }}
+    onInteractOutside={event => { if (event.target === trigger.current || trigger.current?.contains(event.target as Node)) event.preventDefault(); }}
+    onPointerEnter={hover.cancel}
+    onPointerLeave={event => { if (event.pointerType === 'mouse' && !(event.relatedTarget instanceof Node && trigger.current?.contains(event.relatedTarget))) hover.leave(); }}>
+    <div className="rhine-dialog__head"><strong>{item.label}</strong><PopoverBase.Close asChild><Button variant="quiet" aria-label={`关闭${item.label}规则`}>关闭</Button></PopoverBase.Close></div>
+    <Text>{item.description}</Text>
+  </PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></li>;
 }

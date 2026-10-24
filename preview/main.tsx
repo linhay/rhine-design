@@ -16,6 +16,7 @@ import { NeutronStarGallery } from './NeutronStarGallery';
 import { AdvancedDataGallery, AdvancedFormsGallery, MediaGallery, ShellGallery } from './ExtensionsGallery';
 import { MonitoringGallery } from './MonitoringGallery';
 import { DateRangeFilterGallery } from './DateRangeFilterGallery';
+import { CompactAccountGallery } from './CompactAccountGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -37,6 +38,7 @@ function Gallery() {
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => <>
     {section === 'monitoring' && <MonitoringGallery />}
     {section === 'date-range-filter' && <DateRangeFilterGallery />}
+    {section === 'compact-account' && <CompactAccountGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- 对应 [#14](https://github.com/linhay/rhine-design/issues/14)：新增原生 anchor 语义的 `ButtonLink`，复用 Button 视觉及 busy/disabled；移交 `StatusTimelineList` 稳定行/互斥详情组合，并扩展 `TimelineLegend compact/items` 为一行短标签与悬停、键盘、触屏规则详情。无参图例保持兼容。
+- 时间轴与图例详情在祖先 CSS zoom 下归一化定位包装层，保留正文放大与视口内滚动；鼠标离开跨卡详情延迟关闭，移入浮层可继续阅读，不更改键盘或触屏入口。
+- 新增[紧凑摘要与凭证操作](docs/COMPACT_ACCOUNT_PATTERNS.md)及 `#compact-account` 真实样机：无框额度摘要、配对事实、短必要提示、按需历史；消融不减小业务字体、不隐藏未知/失败或混淆不同成本与到期。以上为源码候选，不变更 npm 版本。
+
 - AppShell 新增可选 inline 控制模式与 AppShellToggle：侧栏品牌区收起、正文导航区展开/打开抽屉，不再强制独立顶部横栏；默认 header 模式保持兼容。补充焦点迁移、断点和 Escape 回归及真实展台。
 - 对应 [#12](https://github.com/linhay/rhine-design/issues/12)：新增 `NeutronStarBackdrop` 源码候选，承接完整中子星艺术：28 条磁场线、560 个流动粒子、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头固定。默认跟随现有主题 tokens，`appearance="original"` 保留原始深空；主题切换不重置时间，正文与实体控件保持清晰。
 - Three.js 绘制按需加载，内置暂停 / 继续，系统、显式、祖先减少动态及隐藏 / 离屏 / 零尺寸停帧，恢复不追赶。SSR 安全结构、异步卸载保护、GPU 资源清理与静态降级；无 WebGL、导入失败和 context lost 不影响内容，context restored 按当前偏好恢复。
