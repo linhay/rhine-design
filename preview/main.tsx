@@ -14,6 +14,7 @@ import { BackgroundGallery } from './BackgroundGallery';
 import { OrbitGallery } from './OrbitGallery';
 import { AdvancedDataGallery, AdvancedFormsGallery, MediaGallery, ShellGallery } from './ExtensionsGallery';
 import { MonitoringGallery } from './MonitoringGallery';
+import { DateRangeFilterGallery } from './DateRangeFilterGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -33,6 +34,7 @@ function Gallery() {
   const simulate = () => { setBusy(true); timer.current = setTimeout(() => { setBusy(false); setNotice(true); }, 900); };
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => <>
     {section === 'monitoring' && <MonitoringGallery />}
+    {section === 'date-range-filter' && <DateRangeFilterGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}
