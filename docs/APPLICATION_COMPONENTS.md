@@ -39,7 +39,7 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 ## 三种外壳布局
 
-### 内联控制按钮（源码候选，尚未发布 npm）
+### 内联控制按钮（0.7.0）
 
 默认 `controls="header"` 保持既有顶部操作栏。宿主已有页面导航栏时可用 `controls="inline"`：没有 `header` 内容就不生成顶部横栏。将 `AppShellToggle placement="panel"` 放入侧栏品牌区，将对应的 `placement="content"` 放入正文导航栏；每个面板各放一对。`panel` 默认 navigation，可选 secondary；`iconOnly` 使用已有 IconButton。不要另写折叠状态、复制 Drawer 或用 CSS 隐藏默认横栏。
 
@@ -61,7 +61,7 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 品牌区放收起入口，正文操作区放对应展开入口。操作行在正文滚动时可达，窄窗自然换行；连接状态、刷新、错误与加载反馈不因删除标题丢失。没有状态或操作的区域不额外生成标题占位；仍需为侧栏恢复入口保留可达位置。复用已有组件与 tokens，不在业务层用 CSS 隐藏 Breadcrumbs。
 
-`/#app-shell` 的默认内联模式展示这一组合：平级侧栏、无重复页名的操作行、正文读屏标题和任务草稿。验收覆盖三主题、400/520/880、200%重排、侧栏收起/展开、窄窗 Drawer、Tab/Escape、切页后的当前项与草稿保留。此规范为源码候选，未声明新的已发布 API。
+`/#app-shell` 的默认内联模式展示这一组合：平级侧栏、无重复页名的操作行、正文读屏标题和任务草稿。验收覆盖三主题、400/520/880、200%重排、侧栏收起/展开、窄窗 Drawer、Tab/Escape、切页后的当前项与草稿保留。该组合使用 0.7.0 的内联外壳 API。
 
 真实展台 `#app-shell` 可切换默认顶部和内联控制模式；沿用三布局、长文案、正文草稿、禁用/加载/错误状态与全局主题/减少动态设置。
 
@@ -170,7 +170,7 @@ MediaCard 支持原生 article 属性、ref 与独立 actions（重试等操作�
 
 StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 ID 控制选中；未指定或当前 ID 消失时显示最后一个时段。`open/defaultOpen/onOpenChange` 控制详情，`disabled` 禁止操作及显示详情。Enter/Space 将键盘焦点送入详情关闭按钮，退出后返回健康条且不会立即重开。
 
-### 多条历史记录（源码候选，尚未发布 npm）
+### 多条历史记录（0.7.0）
 
 时间条默认色块高 28px，悬停或聚焦选中块高 36px；compact 轨道高 28px，44px 命中区垂直居中。完整时间条沿用 44px 轨道；图例尺寸独立，不随色块加高。
 

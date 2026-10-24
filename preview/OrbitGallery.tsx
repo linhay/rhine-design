@@ -9,15 +9,15 @@ export function OrbitGallery() {
   const [workspaceName, setWorkspaceName] = useState('Rhine Studio');
   return <section id="orbit">
     <div className="ds-section-title"><span>ORBIT</span><h2>轨道星空 · 品牌艺术背景</h2></div>
-    <p className="ds-caption">纸面与战术主题保留空间轨道，橙趣主题是一枚旋转的草莓甜甜圈，也可以切换到原始深色星空。</p>
+    <p className="ds-caption">莱茵的玻璃培养舱、战术的悬浮源石晶簇、橙趣的草莓甜甜圈。每个主题都有自己的物件，也可以切换到原始深色星空。</p>
     <Inline gap={3}>
-      <Badge>0.6.0</Badge>
+      <Badge>0.7.0</Badge>
       <SegmentedControl label="画面风格" value={appearance} onValueChange={value => setAppearance(value as 'theme' | 'original')} items={[{ value: 'theme', label: '跟随主题' }, { value: 'original', label: '原始深色' }]} />
       <Button variant="secondary" onClick={() => setReplay(value => value + 1)}>重播轨道</Button>
       <Switch label="减少轨道动态" checked={reduced} onCheckedChange={setReduced} />
     </Inline>
     <OrbitBackdrop key={`art-${replay}`} className="ds-gap-top ds-orbit-artwork" appearance={appearance} reducedMotion={reduced} role="region" aria-label="轨道背景预览" />
-    <p className="ds-caption">切换风格保留播放位置；暂停后可继续。甜甜圈在窄屏也会旋转，开启减少动态后保持静止。</p>
+    <p className="ds-caption">旋转的物件伴随气泡、碎晶与糖粒。切换主题保留播放位置，窄屏也能播放；暂停或开启减少动态后保持静止。</p>
     <Disclosure title="查看组合控件示例">
       <Text tone="muted">输入框与按钮的叠加效果单独展示，不遮挡上方轨道。</Text>
       <OrbitBackdrop key={`controls-${replay}`} className="ds-gap-top" appearance={appearance} reducedMotion={reduced} role="region" aria-label="轨道上的控件组合">

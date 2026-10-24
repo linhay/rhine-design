@@ -16,10 +16,10 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、60 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、63 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **60 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **63 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
@@ -29,9 +29,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 **0.5.0 新增能力**：新增背景与多侧栏、复杂表单、受控数据表、媒体与监控图表，共 59 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
 
-**0.6.0 新增能力**：新增 `OrbitBackdrop` 轨道艺术组件，提供暂停、减少动态与静态降级，总数增至 60。安装前核对[版本记录](CHANGELOG.md)与 registry；在线展台跟随 main。
+**0.7.0 新增能力**：三主题 Three.js 艺术分别为玻璃培养舱、源石晶簇与草莓甜甜圈，保留原始轨道切换；新增 `NeutronStarBackdrop`、`StatusTimelineList` 与 `AppShellToggle`，公共组件总数为 63。包含暂停、减少动态、静态降级与资源清理。安装前核对[版本记录](CHANGELOG.md)与 registry；在线展台跟随 main。
 
-**未发布源码候选**：新增 `NeutronStarBackdrop` 中子星艺术，保留磁场、流粒、星尘、喷流与公转；默认跟随主题，也可选择原始深空。npm 0.6.0 不含此 API，候选契约见[中子星背景](docs/NEUTRON_STAR_BACKDROP.md)。
 
 本轮新增 API 与交互已逐项核对 Ant Design / MUI，修复及明确保留的差异见[对标清单](docs/ANTD_MUI_AUDIT.md)。
 
@@ -44,7 +43,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install --save-exact @linhey/rhine-design@0.6.0
+npm install --save-exact @linhey/rhine-design@0.7.0
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
@@ -130,14 +129,14 @@ export function App() {
 | --- | --- |
 | 品牌与文字 | Logo · Text |
 | 操作 | Button · Icon · IconButton · Link · CopyButton |
-| 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
+| 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · AppShellToggle⁴ · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
 | 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² |
 | 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
-| 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
+| 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · StatusTimelineList⁴ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
 | 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
 
-¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。⁴ 未发布源码候选，不包含于 npm 0.6.0。
+¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。⁴ 自 0.7.0 提供。
 
 参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 

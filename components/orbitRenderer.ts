@@ -1,5 +1,6 @@
 import { createOrbitDonut } from './orbitDonut';
 import type { DonutArtwork } from './orbitDonutThree';
+import { drawOrbitObject } from './orbitObjects';
 import { orbitFraming, projectOrbitPoint, rotateOrbitPoint } from './orbitProjection';
 
 type OrbitLinework = 'original' | 'paper' | 'technical' | 'donut';
@@ -41,7 +42,9 @@ export function mountOrbit(canvas: HTMLCanvasElement, onState: (state: OrbitStat
   const TAU = Math.PI * 2;
   let linework: OrbitLinework = 'original';
   let drawDonut: ReturnType<typeof createOrbitDonut> | undefined;
-  let donutArtwork: DonutArtwork | undefined, donutLoading = false, donutFailed = false;
+  type ObjectStyle = Exclude<OrbitLinework, 'original'>;
+  const artworks = new Map<ObjectStyle, DonutArtwork>();
+  const loading = new Set<ObjectStyle>(), failed = new Set<ObjectStyle>();
   const palette = { ...originalPalette }, fadeColors = { near: '', far: '' };
   function readPalette() {
     const style = getComputedStyle(canvas), previousFill = ctx!.fillStyle;
@@ -240,27 +243,36 @@ export function mountOrbit(canvas: HTMLCanvasElement, onState: (state: OrbitStat
     const { w, h } = canvases.network;
     if (!w || !h) return;
     let rendered = false;
-    if (linework === 'donut') {
-      if (!donutArtwork && !donutLoading && !donutFailed && window.WebGL2RenderingContext) {
-        donutLoading = true;
-        import('./orbitDonutThree').then(({ createDonutArtwork }) => {
-          donutLoading = false;
-          if (disposed || linework !== 'donut') return;
-          try { donutArtwork = createDonutArtwork(sync); canvas.after(donutArtwork.canvas); sync(); }
-          catch { donutFailed = true; }
-        }).catch(() => { donutLoading = false; donutFailed = true; });
+    if (linework !== 'original') {
+      const kind = linework;
+      if (!artworks.has(kind) && !loading.has(kind) && !failed.has(kind) && window.WebGL2RenderingContext) {
+        loading.add(kind);
+        const load = kind === 'donut'
+          ? import('./orbitDonutThree').then(module => () => module.createDonutArtwork(sync))
+          : import('./orbitObjectsThree').then(module => () => module.createOrbitObject(kind, sync));
+        load.then(create => {
+          loading.delete(kind);
+          if (disposed || linework !== kind) return;
+          const artwork = create();
+          artworks.set(kind, artwork);
+          canvas.after(artwork.canvas);
+          sync();
+        }).catch(() => { loading.delete(kind); failed.add(kind); });
       }
-      try { rendered = donutArtwork?.draw(w, h, time) ?? false; }
-      catch { donutArtwork?.dispose(); donutArtwork = undefined; donutFailed = true; }
-      if (!rendered) (drawDonut ??= createOrbitDonut())(ctx!, w, h, time, palette['line-primary']);
+      try { rendered = artworks.get(kind)?.draw(w, h, time) ?? false; }
+      catch { artworks.get(kind)?.dispose(); artworks.delete(kind); failed.add(kind); }
+      if (!rendered) {
+        if (kind === 'donut') (drawDonut ??= createOrbitDonut())(ctx!, w, h, time, palette['line-primary']);
+        else drawOrbitObject(ctx!, w, h, time, kind);
+      }
     } else network();
     // Keep the measured 2D canvas in layout while the optional WebGL painter covers it.
     canvas.toggleAttribute('data-orbit-covered', rendered);
-    if (donutArtwork) donutArtwork.canvas.hidden = !rendered;
+    for (const [kind, artwork] of artworks) artwork.canvas.hidden = kind !== linework || !rendered;
   }
   function state(): OrbitState {
     if (manualReduced || reduced?.matches || canvas.closest('[data-rhine-motion="reduced"]')) return 'reduced';
-    if (compact?.matches && linework !== 'donut') return 'compact';
+    if (compact?.matches && linework === 'original') return 'compact';
     if (document.hidden) return 'hidden';
     if (!visible) return 'offscreen';
     if (canvases.network.w <= 0 || canvases.network.h <= 0) return 'empty';
@@ -320,7 +332,8 @@ export function mountOrbit(canvas: HTMLCanvasElement, onState: (state: OrbitStat
     },
     dispose() {
       disposed = true;
-      donutArtwork?.dispose(); canvas.removeAttribute('data-orbit-covered');
+      for (const artwork of artworks.values()) artwork.dispose();
+      artworks.clear(); canvas.removeAttribute('data-orbit-covered');
       cancelAnimationFrame(frame);
       observer?.disconnect();
       intersection?.disconnect();

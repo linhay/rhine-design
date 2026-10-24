@@ -18,8 +18,8 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Modal, menu, popover, tooltip, feedback | `components/COMMON_COMPONENTS.md` | `components/Overlays.tsx`, `components/Toast.tsx` |
 | Transition, replay, cancellation, reduced motion | `components/MOTION.md` | `preview/`, `components/styles.css` |
 | Startup sequence, logo assembly, ready handoff | `components/STARTUP.md` | Search `startup` in `preview/`; not a public Startup component |
-| Orbit artwork, decorative Canvas, pause / resume, reduced motion | `docs/ORBIT_BACKDROP.md` (0.6.0) | `components/OrbitBackdrop.tsx`, internal `components/orbitRenderer.ts`; `/#orbit` |
-| Neutron-star artwork, themed WebGL, async loading, static fallback | `docs/NEUTRON_STAR_BACKDROP.md` (unreleased source; absent from npm 0.6.0) | `components/NeutronStarBackdrop.tsx`; `preview/NeutronStarGallery.tsx`; `/#neutron-star` |
+| Orbit artwork, decorative Canvas, pause / resume, reduced motion | `docs/ORBIT_BACKDROP.md` (base 0.6.0, themed objects 0.7.0) | `components/OrbitBackdrop.tsx`, internal `components/orbitRenderer.ts`; `/#orbit` |
+| Neutron-star artwork, themed WebGL, async loading, static fallback | `docs/NEUTRON_STAR_BACKDROP.md` (0.7.0) | `components/NeutronStarBackdrop.tsx`; `preview/NeutronStarGallery.tsx`; `/#neutron-star` |
 | Missing capability or system coverage | `docs/DESIGN_SYSTEM_AUDIT.md` | Verify status against `components/index.ts` |
 | Version upgrade | `CHANGELOG.md` | Installed `package.json`, current types |
 

@@ -2,9 +2,9 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-0.6.0 共60个组件；0.5.0为59个，0.4.0为48个，0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+0.7.0 共63个组件，新增 NeutronStarBackdrop、StatusTimelineList 与 AppShellToggle；0.6.0 为60个；0.5.0为59个，0.4.0为48个，0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
-未发布源码新增第61个组件 `NeutronStarBackdrop`，npm 0.6.0 不包含它；见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)。安装版本与源码导出分别核对。
+中子星艺术、主题物品和生命周期见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)与[轨道背景契约](../docs/ORBIT_BACKDROP.md)。安装版本与源码导出分别核对。
 
 页面改动遵循：优先复用组件 → 先在设计稿/展台修改并验证 → 再按任务授权实现到App。缺组件先补组件与展台，不在业务页另写同用途样式；同一任务已授权设计和实现时连续推进，无需重复确认。
 
@@ -157,10 +157,10 @@ export function Example() {
 
 `OrbitBackdrop` 自 0.6.0 提供，接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。0.6.0 提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
 
-尚未发布的源码候选新增 `appearance?: 'theme' | 'original'`：Rhine 与 Arknights 保留原版 420 个环节点、185 条曲线、80 个深度桶及相同运动，分别使用细线空心点、分段虚线方点。Neo Brutalism 按用户指定展示旋转的草莓甜甜圈，按需加载 Three.js，提供有厚度的糖霜、烘焙纹理、立体糖针与环绕糖粒；加载或 WebGL 失败时回退到 Canvas2D。窄屏也可旋转，但仍遵循全部减少动态与可见性规则。`original` 在所有主题中保留初版深色轨道。模式切换复用时钟与已创建的绘制器，保留暂停状态与内容草稿。展台主画面展示纯艺术，组合控件示例默认折叠；npm 0.6.0 尚不包含这些新增能力。验证范围见[验证边界](../docs/ORBIT_BACKDROP.md#2026-10-24-当前候选与验证边界未发布)。
+0.7.0 新增 `appearance?: 'theme' | 'original'`：莱茵展示带双螺旋、玻璃反射、蚀刻刻度、机械封口与气泡的培养舱；战术展示带倒角晶面、矿物纹理、琥珀裂纹与漂浮碎片的源石晶簇；橙趣展示有烘焙纹理、糖霜、糖针与糖尘的草莓甜甜圈。三套物品按需加载 Three.js，窄屏可播放，遵循同一暂停、减少动态、隐藏与离屏规则；WebGL 失败回退 Canvas2D，Canvas 不可用时使用本地 SVG。`original` 保留初版完整深色轨道。切换主题复用时钟和绘制器，保留暂停与内容草稿。详见[轨道背景契约](../docs/ORBIT_BACKDROP.md)。
 
-源码候选新增 `AppShellToggle` 与 `AppShell.controls="inline"`；尚未发布 npm。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮源码候选尚未发布-npm)。
-## 中子星背景（未发布源码候选）
+0.7.0 新增 `AppShellToggle` 与 `AppShell.controls="inline"`。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮070)。
+## 中子星背景（0.7.0）
 
 `NeutronStarBackdrop` 接收 `HTMLAttributes<HTMLDivElement>`、`reducedMotion?: boolean`、`appearance?: 'theme' | 'original'` 和可选 `children`。默认从当前主题取得艺术配色，`original` 保留原始深空；切换颜色不重置时间，实体内容控件仍用宿主主题。按需加载 Three.js，保留 28 条磁场线、560 个流粒、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头保持固定。
 

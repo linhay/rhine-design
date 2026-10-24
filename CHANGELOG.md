@@ -1,18 +1,19 @@
 # 版本记录
 
-## Unreleased
+## 0.7.0（2026-10-24）
 
-- 橙趣草莓甜甜圈增强为按需加载的 Three.js 艺术：立体糖霜、程序烘焙纹理、280 根糖针、110 颗糖珠、100 根环绕糖粒与 460 颗糖尘；共用原版倾角、62%/57%中心与缩放，校准主体尺寸，保留环面旋转、共享暂停与减少动态时钟，并提供 Canvas2D 降级和 GPU 清理。此增强未发布到 npm。
-- OrbitBackdrop 新增 `appearance="theme" | "original"`：莱茵细线空心点与战术分段虚线方点保留原版 420 节点、185 曲线、80 深度桶及运动；橙趣按指定替换为旋转的草莓甜甜圈，包含粉色糖霜、彩色糖针、烘焙侧面与粗描边。甜甜圈在窄屏可播放，仍支持暂停、减少动态、隐藏与离屏停帧，以及 Canvas 不可用时的静态 SVG。`original` 在所有主题中保留初版深色轨道。切换保留暂停状态与动画时间，主画面展示纯艺术，组合控件示例默认折叠。此 API 尚未发布，npm 0.6.0 不包含；范围见[验证记录](docs/ORBIT_BACKDROP.md#2026-10-24-当前候选与验证边界未发布)。
+- 橙趣草莓甜甜圈增强为按需加载的 Three.js 艺术：立体糖霜、程序烘焙纹理、280 根糖针、110 颗糖珠、100 根环绕糖粒与 460 颗糖尘；共用原版倾角、62%/57%中心与缩放，校准主体尺寸，保留环面旋转、共享暂停与减少动态时钟，并提供 Canvas2D 降级和 GPU 清理。
+- OrbitBackdrop 新增 `appearance="theme" | "original"`：莱茵为玻璃培养舱（双螺旋、气泡、蚀刻刻度和机械封口），战术为源石晶簇（倒角晶面、矿物纹理、琥珀裂纹和漂浮碎片），橙趣为草莓甜甜圈。三套物品均按需加载 Three.js；窄屏也可播放，共用暂停、减少动态和可见性时钟，切换主题复用已创建的绘制器。WebGL 失败回退 Canvas2D，Canvas 不可用时展示本地 SVG。`original` 保留初版完整深色轨道。
+- 新增 `StatusTimelineList` 多条健康历史组合；与 `AppShellToggle`、`NeutronStarBackdrop` 一起将公共组件增至 63。
 - 补齐 Neo Brutalism 的 Badge 墨色描边与字重，中性标签使用主题文字色。
 
 - AppShell 新增可选 inline 控制模式与 AppShellToggle：侧栏品牌区收起、正文导航区展开/打开抽屉，不再强制独立顶部横栏；默认 header 模式保持兼容。补充焦点迁移、断点和 Escape 回归及真实展台。
-- 对应 [#12](https://github.com/linhay/rhine-design/issues/12)：新增 `NeutronStarBackdrop` 源码候选，承接完整中子星艺术：28 条磁场线、560 个流动粒子、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头固定。默认跟随现有主题 tokens，`appearance="original"` 保留原始深空；主题切换不重置时间，正文与实体控件保持清晰。
+- 对应 [#12](https://github.com/linhay/rhine-design/issues/12)：新增 `NeutronStarBackdrop`，承接完整中子星艺术：28 条磁场线、560 个流动粒子、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头固定。默认跟随现有主题 tokens，`appearance="original"` 保留原始深空；主题切换不重置时间，正文与实体控件保持清晰。
 - Three.js 绘制按需加载，内置暂停 / 继续，系统、显式、祖先减少动态及隐藏 / 离屏 / 零尺寸停帧，恢复不追赶。SSR 安全结构、异步卸载保护、GPU 资源清理与静态降级；无 WebGL、导入失败和 context lost 不影响内容，context restored 按当前偏好恢复。
 - 外层流粒与对应磁场线对齐，避免使用生成参数的错误边界裁剪粒子；暂停控件的焦点框绘制于按钮内部，保持原始深空下的键盘焦点可见。
 - 修复长页窄屏中星核随公转移出画幅：艺术层独立限高并渐隐，窄画幅由库内相机取景适配；保留原始几何与时间公式，正文和控件布局不受艺术高度限制。
-- 新增艺术优先的 `#neutron-star` 真实展台，演示控制与内容组合默认折叠；重播不丢表单草稿。[组件契约](docs/NEUTRON_STAR_BACKDROP.md)、API / 任务索引及回归测试同步。此 API 未发布，不包含于 npm 0.6.0；源码消费须固定精确 commit。
-- 对应 [#10](https://github.com/linhay/rhine-design/issues/10)：新增[日期筛选组合规范](docs/DATE_RANGE_FILTER.md)与 `#date-range-filter` 真实展台；复用 0.6.0 已发布的 SegmentedControl、Button、Popover、DateRangePicker 和布局组件。快捷项共用分段边界，日期持续可见，预设即时应用、自定义确认后应用，取消和关闭不提交。包含跨年、长标签、禁用、键盘和三主题验证；不新增公共组件 API 或运行时样式，不变更包版本。
+- 新增艺术优先的 `#neutron-star` 真实展台，演示控制与内容组合默认折叠；重播不丢表单草稿。[组件契约](docs/NEUTRON_STAR_BACKDROP.md)、API / 任务索引及回归测试同步。此 API 自 0.7.0 提供。
+- 对应 [#10](https://github.com/linhay/rhine-design/issues/10)：新增[日期筛选组合规范](docs/DATE_RANGE_FILTER.md)与 `#date-range-filter` 真实展台；复用 0.6.0 已发布的 SegmentedControl、Button、Popover、DateRangePicker 和布局组件。快捷项共用分段边界，日期持续可见，预设即时应用、自定义确认后应用，取消和关闭不提交。包含跨年、长标签、禁用、键盘和三主题验证；仅组合已有 API，不新增独立日期筛选组件。
 
 ## 0.6.0（2026-10-24）
 

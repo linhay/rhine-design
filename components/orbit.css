@@ -76,7 +76,11 @@
 }
 .rhine-orbit-canvas { position:absolute; inset:0; display:block; width:100%; height:100%; pointer-events:none; }
 .rhine-orbit-canvas[data-orbit-covered] { visibility:hidden; }
-.rhine-orbit-donut-webgl[hidden] { display:none; }
+.rhine-orbit-canvas[hidden] { display:none; }
+.rhine-orbit[data-rhine-orbit-appearance="theme"][data-rhine-orbit-state="unavailable"]::after {
+  inset:16px 16px 68px;
+  background:url('./assets/orbit-lab.svg') center / contain no-repeat;
+}
 /* Keep host control tokens intact; only unpainted content inherits the artwork foreground. */
 .rhine-orbit-content {
   position:relative; z-index:1; flex:1; min-width:0;
@@ -102,6 +106,9 @@
 }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-orbit[data-rhine-orbit-appearance="theme"] {
   --rhine-orbit-linework: technical;
+}
+.rhine-theme[data-rhine-theme="arknights"] .rhine-orbit[data-rhine-orbit-appearance="theme"][data-rhine-orbit-state="unavailable"]::after {
+  background-image:url('./assets/orbit-crystal.svg');
 }
 .rhine-orbit-content :is(.rhine-text--muted, .rhine-field__hint) { color:inherit; opacity:.8; }
 .rhine-orbit-content .rhine-logo:not(.rhine-logo--icon) { color:inherit; }

@@ -222,107 +222,39 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     expect(frames.size).toBe(0);
   });
 
-  it('preserves every original trajectory and depth order across theme strokes at two playback times', async () => {
+  it('preserves the original geometry across host themes while object themes keep the same frozen clock and content', async () => {
     recordPaint = true;
     const view = (theme: string, appearance: 'theme' | 'original' = 'theme') => <div className="orbit-linework-fixture" data-rhine-theme={theme}>
-      <OrbitBackdrop appearance={appearance}><input aria-label="线条设计草稿" defaultValue="保留内容" /></OrbitBackdrop>
+      <OrbitBackdrop appearance={appearance}><input aria-label="主题草稿" defaultValue="保留内容" /></OrbitBackdrop>
     </div>;
-    const networkColors = new Set(['#68b2f4', '#dfbb5c', '#48b6b3']);
-    const markerColors = new Set(['#51b7f6', '#e5b94d', '#2ec7a1', '#ff658c', '#f2f7ff', '#addaff', '#e1a147']);
-    const trajectory = (paint: Paint) => paint.path.filter(command => command[0] === 'move' || command[0] === 'line');
-    const isMarker = (paint: Paint) => paint.path.length === 1 && ['arc', 'rect'].includes(paint.path[0][0]) && markerColors.has(paint.color as string);
-    function frame() {
-      const network = painted.filter(paint => paint.kind === 'stroke' && paint.path.length === 2 && networkColors.has(paint.color as string));
-      const structure = painted.flatMap(paint => {
-        const points = trajectory(paint);
-        if (paint.kind === 'stroke' && points.length) return [{ kind: 'stroke', points }];
-        // Include the central occluder among the strokes to check its exact depth-order insertion.
-        if (paint.kind === 'fill' && points.length === 101) return [{ kind: 'occluder', points }];
-        // Painted/outlined markers are one layer each, regardless of the themed contour.
-        if (isMarker(paint)) return [{ kind: `marker:${paint.color}`, points: [] }];
-        return [];
-      });
-      const arrows = painted.filter(paint => paint.kind === 'stroke' && trajectory(paint).length === 3).map(paint => trajectory(paint)[1].slice(1));
-      const markers = painted.filter(isMarker).map(paint => {
-        const command = paint.path[0], square = command[0] === 'rect';
-        return { color: paint.color, kind: paint.kind, square,
-          x: square ? command[1] + command[3] / 2 : command[1],
-          y: square ? command[2] + command[4] / 2 : command[2],
-          radius: square ? command[3] / 2 : command[3] };
-      });
-      return { structure, arrows, markers, network };
-    }
     const { container, rerender } = render(view('default', 'original'));
     const canvas = container.querySelector('canvas');
     advance(100); advance(200);
-    fireEvent.change(screen.getByLabelText('线条设计草稿'), { target: { value: '切换后保留' } });
+    fireEvent.change(screen.getByLabelText('主题草稿'), { target: { value: '保留我的输入' } });
     fireEvent.click(screen.getByRole('button', { name: '暂停动效' }));
-    const firstSample = frame();
-
-    for (let sample = 0; sample < 2; sample++) {
-      const original = frame();
-      expect(original.network).toHaveLength(185 * 80);
-      expect(original.arrows).toHaveLength(420);
-      expect(original.structure).toHaveLength(185 * 80 + 420 * 3 + 1 + original.markers.length);
-      expect(trails).toBe(420); expect(glows).toBe(140);
-      if (sample) {
-        expect(original.structure).not.toEqual(firstSample.structure);
-        expect(original.arrows).not.toEqual(firstSample.arrows);
-      }
-      let paperWidth = 0;
-      for (const theme of ['default', 'arknights']) {
-        await act(async () => { rerender(view(theme)); });
-        const themed = frame();
-        expect(themed.network).toHaveLength(185 * 80);
-        expect(themed.structure).toEqual(original.structure);
-        expect(themed.arrows).toEqual(original.arrows);
-        expect(themed.markers).toHaveLength(original.markers.length);
-        themed.markers.forEach((marker, index) => {
-          const expected = original.markers[index];
-          expect(marker.color).toBe(expected.color);
-          // A square's center is recovered by subtracting and adding its radius; allow float roundoff only.
-          expect(marker.x).toBeCloseTo(expected.x, 10); expect(marker.y).toBeCloseTo(expected.y, 10);
-          expect(marker.radius).toBe(expected.radius);
-        });
-        const maxWidth = Math.max(...themed.network.map(paint => paint.width));
-        if (theme === 'default') {
-          paperWidth = maxWidth;
-          expect(themed.network.every(paint => paint.cap === 'round' && paint.join === 'round' && !paint.dash.length)).toBe(true);
-          expect(themed.markers.some(marker => marker.kind === 'stroke')).toBe(true);
-          expect(themed.markers.some(marker => marker.square)).toBe(false);
-        } else if (theme === 'arknights') {
-          expect(themed.network.every(paint => paint.cap === 'butt' && paint.join === 'miter')).toBe(true);
-          expect(themed.network.some(paint => paint.dash.length > 0 && paint.dashOffset < 0)).toBe(true);
-          const dashed = themed.network.filter(paint => paint.dash.length);
-          const endingAt = new Map(dashed.map(paint => [JSON.stringify(paint.path[1].slice(1)), paint]));
-          let connected = 0;
-          for (const segment of dashed) {
-            const previous = endingAt.get(JSON.stringify(segment.path[0].slice(1)));
-            if (!previous) continue;
-            const length = Math.hypot(previous.path[1][1] - previous.path[0][1], previous.path[1][2] - previous.path[0][2]);
-            expect(segment.dashOffset).toBeCloseTo(previous.dashOffset - length, 10);
-            connected++;
-          }
-          expect(connected).toBeGreaterThan(100);
-          expect(themed.markers.some(marker => marker.square)).toBe(true);
-          expect(maxWidth).toBeGreaterThan(paperWidth);
-        }
-        expect(trails).toBe(0); expect(glows).toBe(0); expect(frames.size).toBe(0);
-      }
-      await act(async () => { rerender(view('neo-brutalism', 'original')); });
-      expect(frame().structure).toEqual(original.structure);
-      expect(trails).toBe(420); expect(glows).toBe(140); expect(frames.size).toBe(0);
-      if (!sample) {
-        fireEvent.click(screen.getByRole('button', { name: '继续动效' }));
-        advance(10000); expect(frame().structure).toEqual(original.structure);
-        advance(10100);
-        fireEvent.click(screen.getByRole('button', { name: '暂停动效' }));
-      }
+    const original = painted;
+    expect(trails).toBe(420); expect(glows).toBe(140);
+    for (const theme of ['arknights', 'neo-brutalism', 'default']) {
+      await act(async () => { rerender(view(theme, 'original')); });
+      expect(painted).toEqual(original); expect(frames.size).toBe(0);
     }
+    const paintings: Paint[][] = [];
+    for (const theme of ['default', 'arknights']) {
+      await act(async () => { rerender(view(theme)); });
+      const frozen = painted; paintings.push(frozen);
+      expect(trails).toBe(0); expect(glows).toBe(0); expect(frozen.length).toBeGreaterThan(100);
+      advance(5000); expect(painted).toEqual(frozen);
+      await act(async () => { rerender(view(theme, 'original')); });
+      expect(painted).toEqual(original);
+      await act(async () => { rerender(view(theme)); });
+      expect(painted).toEqual(frozen); expect(frames.size).toBe(0);
+    }
+    expect(paintings[0]).not.toEqual(paintings[1]);
+    fireEvent.click(screen.getByRole('button', { name: '继续动效' }));
+    advance(10000); expect(painted).toEqual(paintings[1]);
+    advance(10100); expect(painted).not.toEqual(paintings[1]);
     expect(container.querySelector('canvas')).toBe(canvas);
-    expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalledTimes(1);
-    expect(screen.getByLabelText('线条设计草稿')).toHaveValue('切换后保留');
-    expect(screen.getByRole('button', { name: '继续动效' })).toBeEnabled();
+    expect(screen.getByLabelText('主题草稿')).toHaveValue('保留我的输入');
   });
 
   it('honors system and explicit reduction, and never lets false bypass the system', () => {
@@ -386,7 +318,7 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     expect(screen.getByRole('button', { name: '窄屏静态画面' })).toBeDisabled();
     expect(trails).toBe(420); expect(glows).toBe(140);
     await act(async () => { rerender(view('theme', 'arknights')); });
-    expect(screen.getByRole('button', { name: '窄屏静态画面' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '继续动效' })).toBeEnabled();
     await act(async () => { rerender(view()); });
     expect(screen.getByRole('button', { name: '继续动效' })).toBeEnabled();
     expect(painted).toEqual(frozen); expect(frames.size).toBe(0);
@@ -397,8 +329,8 @@ describe('OrbitBackdrop artwork and lifecycle', () => {
     advance(10100); expect(painted).not.toEqual(frozen);
   });
 
-  it('stops the donut for every motion preference, visibility change and disposal', async () => {
-    const view = (explicit = false) => <div className="orbit-linework-fixture" data-rhine-theme="neo-brutalism">
+  it.each(['default', 'arknights', 'neo-brutalism'])('stops the %s object for every motion preference, visibility change and disposal', async theme => {
+    const view = (explicit = false) => <div className="orbit-linework-fixture" data-rhine-theme={theme}>
       <OrbitBackdrop reducedMotion={explicit} />
     </div>;
     compact.matches = true;
