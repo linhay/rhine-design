@@ -19,6 +19,7 @@
 .rhine-timeline__legend--compact li { flex:none; white-space:nowrap; }
 .rhine-timeline__legend-trigger { display:inline-flex; align-items:center; justify-content:center; gap:var(--rhine-space-1); min-width:44px; min-height:44px; padding:var(--rhine-space-1); border:0; border-radius:var(--rhine-radius-button); background:transparent; color:inherit; font:inherit; cursor:help; }
 .rhine-timeline__legend-trigger:hover,.rhine-timeline__legend-trigger[aria-expanded=true] { background:var(--rhine-selected); color:var(--rhine-ink); }
+.rhine-theme .rhine-timeline__legend--compact button.rhine-timeline__legend-trigger:focus-visible { outline-offset:-3px; }
 .rhine-timeline--compact { position:relative; gap:0; }
 .rhine-timeline--compact .rhine-timeline__track { height:28px; }
 .rhine-timeline--compact .rhine-timeline__track input { top:-8px; bottom:auto; }
