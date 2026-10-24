@@ -53,7 +53,7 @@
 .rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-button--secondary, .rhine-button--quiet):hover:not(:disabled):not([aria-disabled=true]) { background: var(--rhine-selected); }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #81262d; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: translate(3px, 3px); box-shadow: none; }
-.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:disabled { background: #e1e5e8; color: var(--rhine-muted); border-color: #89929a; box-shadow: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:is(:disabled,[data-disabled=true],[aria-disabled=true]:not([aria-busy=true])) { background: #e1e5e8; color: var(--rhine-muted); border-color: #89929a; box-shadow: none; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button[aria-busy=true] { box-shadow: none; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] :is(button, input, select, textarea, summary, a, [tabindex]):focus-visible { outline: 3px solid var(--rhine-ink); outline-offset: 4px; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-tone-success { --rhine-tone-bg: var(--rhine-tag-green); }

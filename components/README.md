@@ -51,6 +51,7 @@ export function Example() {
 | 组件 | 关键输入 | 状态与边界 |
 | --- | --- | --- |
 | Button | variant=primary/secondary/quiet/danger；busy；busyLabel；原生按钮属性 | 默认 type=button；busy 保留焦点并拦截再次 click，不自动把业务标记成功；disabled 使用原生禁用 |
+| ButtonLink（源码候选，未发布） | 必填 href；原生 anchor 属性与 ref；Button 同款 variant/busy/busyLabel；disabled | 原生导航/下载；disabled 退出 Tab；busy 保焦点；两者移除 href、阻止主/辅助点击；[契约](../docs/COMPACT_ACCOUNT_PATTERNS.md) |
 | Logo | variant=mark/icon/lockup；theme=light/dark/auto；size；animate；decorative；label；wordmark | 第三版三角构架；默认静态、48px、浅色单标志；最小16px；无点击/业务状态 |
 | Text | variant；as；tone；numeric；HTML属性 | 默认p/body；视觉层级不决定HTML语义；长文本可换行；不转换数值或截断文本 |
 | Select | label；hint；error；原生单选select属性；option子节点 | 标签与描述自动关联；原生菜单和键盘；受控或defaultValue；不支持multiple/size列表模式；箭头装饰性且不接收点击 |
@@ -69,6 +70,8 @@ export function Example() {
 | EmptyState | title；description；action | 说明当前状态并可给一个下一步动作；不将错误伪装成空数据 |
 
 新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
+
+源码候选的 `StatusTimelineList` 与 `TimelineLegend compact/items` 提供紧凑历史组合及一行短图例；宿主传入完整规则，悬停/聚焦/点按查看。无参 TimelineLegend 仍兼容既有标签。真实样机 `/#compact-account` 同时验证无框额度摘要、配对事实与渐进展示的凭证操作，见[紧凑组合规范](../docs/COMPACT_ACCOUNT_PATTERNS.md)。npm 0.6.0 尚未提供这些扩展。
 
 浏览状态不等于执行结果；页面使用宿主的真实状态决定selected/busy/notice，视觉反馈不能提前宣称业务完成。
 

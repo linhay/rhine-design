@@ -22,7 +22,8 @@
 .rhine-button--secondary:hover:not(:disabled):not([aria-disabled=true]),.rhine-button--quiet:hover:not(:disabled):not([aria-disabled=true]) { background:var(--rhine-selected); }
 .rhine-button--danger { background:var(--rhine-error); border-color:var(--rhine-error); }
 .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background:#81342e; border-color:#81342e; }
-.rhine-button:disabled { background:var(--rhine-selected); border-color:var(--rhine-line); color:var(--rhine-muted); cursor:default; }
+.rhine-button:is(:disabled,[data-disabled=true],[aria-disabled=true]:not([aria-busy=true])) { background:var(--rhine-selected); border-color:var(--rhine-line); color:var(--rhine-muted); cursor:default; }
+.rhine-button-link { text-decoration:none; text-align:center; }
 .rhine-button[aria-busy=true] { cursor:wait; }
 .rhine-button__ghost { visibility:hidden; }
 .rhine-button__busy { position:absolute; inset:0; display:grid; place-items:center; }

@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useRef, useState, type AnchorHTMLAttributes, type ButtonHTMLAttributes } from 'react';
-import { Button } from './components';
+import { Button, type ButtonProps } from './components';
 
 const paths = {
   close: 'm5 5 10 10M15 5 5 15',
@@ -26,6 +26,22 @@ export const IconButton = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTM
 export function Link({ children, className = '', target, rel, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
   return <a {...props} target={target} rel={target === '_blank' ? `${rel || ''} noopener noreferrer`.trim() : rel} className={`rhine-link ${className}`}>{children}{target === '_blank' && <><Icon name="external" size={16} /><span className="rhine-sr-only">（新窗口打开）</span></>}</a>;
 }
+export interface ButtonLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement>, Pick<ButtonProps, 'variant' | 'busy' | 'busyLabel'> {
+  href: string;
+  disabled?: boolean;
+}
+export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(function ButtonLink({ href, variant = 'primary', busy = false, busyLabel = '处理中', disabled = false, className = '', children, tabIndex, onClick, onAuxClick, ...props }, ref) {
+  const unavailable = disabled || busy;
+  // Removing href also prevents context-menu and modified-click navigation while unavailable.
+  return <a {...props} ref={ref} href={unavailable ? undefined : href} role="link"
+    tabIndex={disabled ? -1 : tabIndex ?? (busy ? 0 : undefined)} aria-disabled={unavailable || undefined}
+    aria-busy={busy || undefined} data-disabled={disabled || undefined} className={`rhine-button rhine-button--${variant} rhine-button-link ${className}`}
+    onClick={event => { if (unavailable) { event.preventDefault(); event.stopPropagation(); return; } onClick?.(event); }}
+    onAuxClick={event => { if (unavailable) { event.preventDefault(); event.stopPropagation(); return; } onAuxClick?.(event); }}>
+    <span className={busy ? 'rhine-button__ghost' : undefined} aria-hidden={busy || undefined}>{children}</span>
+    {busy && <span className="rhine-button__busy"><span className="rhine-spinner" aria-hidden="true" /><span className="rhine-sr-only">{busyLabel}</span></span>}
+  </a>;
+});
 export function CopyButton({ value, label = '复制', copy = text => navigator.clipboard.writeText(text) }: { value: string; label?: string; copy?: (value: string) => Promise<void> }) {
   const [status, setStatus] = useState<'idle' | 'busy' | 'success' | 'error'>('idle');
   const pending = useRef(false);

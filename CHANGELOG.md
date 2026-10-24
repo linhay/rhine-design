@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- 对应 [#14](https://github.com/linhay/rhine-design/issues/14)：新增原生 anchor 语义的 `ButtonLink`，复用 Button 视觉及 busy/disabled；移交 `StatusTimelineList` 稳定行/互斥详情组合，并扩展 `TimelineLegend compact/items` 为一行短标签与悬停、键盘、触屏规则详情。无参图例保持兼容。
+- 时间轴与图例详情在祖先 CSS zoom 下归一化定位包装层，保留正文放大与视口内滚动；鼠标离开跨卡详情延迟关闭，移入浮层可继续阅读，不更改键盘或触屏入口。
+- 新增[紧凑摘要与凭证操作](docs/COMPACT_ACCOUNT_PATTERNS.md)及 `#compact-account` 真实样机：无框额度摘要、配对事实、短必要提示、按需历史；消融不减小业务字体、不隐藏未知/失败或混淆不同成本与到期。以上为源码候选，不变更 npm 版本。
+
 - 对应 [#10](https://github.com/linhay/rhine-design/issues/10)：新增[日期筛选组合规范](docs/DATE_RANGE_FILTER.md)与 `#date-range-filter` 真实展台；复用 0.6.0 已发布的 SegmentedControl、Button、Popover、DateRangePicker 和布局组件。快捷项共用分段边界，日期持续可见，预设即时应用、自定义确认后应用，取消和关闭不提交。包含跨年、长标签、禁用、键盘和三主题验证；不新增公共组件 API 或运行时样式，不变更包版本。
 
 ## 0.6.0（2026-10-24）

@@ -56,5 +56,6 @@ Required issue content:
 - Host state determines data, selection and operation outcomes. Search and pagination remain host/server responsibilities; busy indicators never imply success.
 - For multi-field failures, preserve input and focus a summary only after failed submission; links return to fields without changing routing. Use SideNav/Breadcrumbs/Steps only when exported by the installed source.
 - Monitoring shows units, freshness and stale/unknown states; errors must not rely on color, flashing or transient toasts.
+- Design from the user's current task: keep identity, available actions, results and decision-relevant consequences; remove duplicate state labels and implementation prose. Reveal history on demand. Inside an existing Surface prefer borderless read-only summaries and paired facts; never compress by shrinking business text, cropping values, hiding unknown/error states or merging distinct costs/expiry meanings. See `docs/COMPACT_ACCOUNT_PATTERNS.md` when present; its new APIs are source candidates, not npm 0.6.0 features.
 - Motion explains a change. Respect reduced motion, cancellation and replay; startup decoration never blocks real readiness. Preview-only experiments are not exported components.
 - Keep independent release boundaries: do not change unrelated products or publish packages merely because this skill was invoked.

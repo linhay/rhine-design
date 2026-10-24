@@ -31,6 +31,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 **0.6.0 新增能力**：新增 `OrbitBackdrop` 轨道艺术组件，提供暂停、减少动态与静态降级，总数增至 60。安装前核对[版本记录](CHANGELOG.md)与 registry；在线展台跟随 main。
 
+**源码候选（尚未发布）**：`ButtonLink`、`StatusTimelineList` 与可传规则的一行 `TimelineLegend`；[紧凑摘要与凭证操作规范](docs/COMPACT_ACCOUNT_PATTERNS.md)说明用户任务驱动的文字消融、无框摘要与历史渐进展示。真实展台为 `/#compact-account`；npm 0.6.0 不含这些新增 API。
+
 本轮新增 API 与交互已逐项核对 Ant Design / MUI，修复及明确保留的差异见[对标清单](docs/ANTD_MUI_AUDIT.md)。
 
 <a id="quick-start"></a>
@@ -152,6 +154,7 @@ export function App() {
 | 轨道装饰、暂停与静态降级 | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | [轨道星空](https://linhay.github.io/rhine-design/#orbit) |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
 | 日期快捷项、范围草稿与确认 | [日期筛选组合](docs/DATE_RANGE_FILTER.md) | [日期筛选](https://linhay.github.io/rhine-design/#date-range-filter) |
+| 无框摘要、一行图例与凭证操作消融 | [紧凑组合](docs/COMPACT_ACCOUNT_PATTERNS.md) | [紧凑账号](https://linhay.github.io/rhine-design/#compact-account) |
 | 导航与表单流程 | [组件契约](docs/INTERACTION_PATTERNS.md#新组件契约) | [导航](https://linhay.github.io/rhine-design/#navigation) · [表单](https://linhay.github.io/rhine-design/#form-workflow) |
 | 系统覆盖与演进方向 | [组件系统对照](docs/DESIGN_SYSTEM_AUDIT.md) | — |
 
