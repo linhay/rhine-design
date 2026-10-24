@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BufferGeometry, Material, ShaderMaterial, type Scene, type PerspectiveCamera, type Object3D, type Mesh, type Points } from 'three';
+import { BufferGeometry, Material, ShaderMaterial, Vector3, type Scene, type PerspectiveCamera, type Object3D, type Mesh, type Points, type Line } from 'three';
 import { NeutronStarBackdrop } from '../components/NeutronStarBackdrop';
 import { mountNeutron } from '../components/neutronRenderer';
 
@@ -103,6 +103,42 @@ describe('NeutronStarBackdrop artwork and WebGL lifecycle', () => {
     expect(instance.time).toBeCloseTo(28, 6);
     expect(orbit.position.x).toBeCloseTo(initial[0], 6); expect(orbit.position.z).toBeCloseTo(initial[2], 6);
     view.remove();
+  });
+
+  it('keeps inner and outer stream particles on their corresponding magnetic field lines', () => {
+    const view = mount();
+    const objects: Object3D[] = []; gpu.instances[0].scene!.traverse(value => objects.push(value));
+    const lines = objects.filter(object => object.type === 'Line') as Line[];
+    const streams = objects.find(object => object.type === 'Points' && (object as Points).geometry.attributes.position.count === 560) as Points;
+    const seeds = streams.geometry.attributes.position;
+    const errors = [0, 2, 14, 280, 282, 294].map(index => {
+      // At time zero, these seeds coincide with sampled vertices on the dipole curves.
+      const theta = .24 + seeds.getY(index) * 2.66159;
+      const azimuth = seeds.getX(index) * 6.28318;
+      const radius = seeds.getZ(index) * Math.sin(theta) ** 2;
+      const particle = new Vector3(radius * Math.sin(theta) * Math.cos(azimuth), radius * Math.cos(theta), radius * Math.sin(theta) * Math.sin(azimuth));
+      const line = lines[index % 14 + (index < 280 ? 0 : 14)].geometry.attributes.position;
+      const fieldPoint = new Vector3().fromBufferAttribute(line, Math.round(seeds.getY(index) * 100));
+      return particle.distanceTo(fieldPoint);
+    });
+    view.remove();
+    errors.forEach(error => expect(error).toBeLessThan(.00001));
+  });
+
+  it('does not cull shader-generated streams with bounds that exclude their field lines', () => {
+    const view = mount();
+    const objects: Object3D[] = []; gpu.instances[0].scene!.traverse(value => objects.push(value));
+    const streams = objects.find(object => object.type === 'Points' && (object as Points).geometry.attributes.position.count === 560) as Points;
+    streams.geometry.computeBoundingSphere();
+    const bound = streams.geometry.boundingSphere!;
+    const coversField = objects.filter(object => object.type === 'Line').every(object => {
+      const positions = (object as Line).geometry.attributes.position;
+      return Array.from({ length: positions.count }, (_, index) => new Vector3().fromBufferAttribute(positions, index))
+        .every(point => bound.containsPoint(point));
+    });
+    const safelyVisible = !streams.frustumCulled || coversField;
+    view.remove();
+    expect(safelyVisible).toBe(true);
   });
 
   it('uses layout pixels at 200% CSS zoom, caps DPR, and redraws a paused resize without advancing time', () => {

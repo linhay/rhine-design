@@ -46,3 +46,5 @@
 .rhine-neutron[data-rhine-neutron-appearance="original"] .rhine-neutron-content .rhine-button--quiet:focus-visible { outline:none; box-shadow:inset 0 0 0 2px currentColor; }
 .rhine-neutron-controls { position:absolute; right:var(--rhine-space-4); bottom:var(--rhine-space-4); z-index:2; max-width:calc(100% - var(--rhine-space-4) * 2); }
 .rhine-neutron-controls .rhine-button { max-width:100%; }
+/* Keep the focus ring on the painted control, where its text color retains contrast. */
+.rhine-theme .rhine-neutron .rhine-neutron-controls .rhine-button:focus-visible { outline:2px solid currentColor; outline-offset:-5px; }

@@ -122,7 +122,7 @@ export function mountNeutron(host: HTMLDivElement, onState: (state: NeutronState
     // Stream points follow the same dipole curves as the magnetic field lines.
     const streamsGeometry = geometry(new BufferGeometry());
     const seeds = [];
-    for (let i = 0; i < 560; i++) seeds.push((i % 14) / 14, (i % 40) / 40, i < 280 ? 1.1 : 1.65);
+    for (let i = 0; i < 560; i++) seeds.push((i % 14) / 14 + (i < 280 ? 0 : .15 / (Math.PI * 2)), (i % 40) / 40, i < 280 ? 1.1 : 1.65);
     streamsGeometry.setAttribute('position', new Float32BufferAttribute(seeds, 3));
     const streams = new Points(streamsGeometry, material(new ShaderMaterial({
       transparent: true, depthWrite: false, blending: AdditiveBlending,
@@ -136,6 +136,8 @@ export function mountNeutron(host: HTMLDivElement, onState: (state: NeutronState
       fragmentShader: `uniform vec3 tint; varying float alpha; void main(){float d=length(gl_PointCoord-.5)*2.;
         gl_FragColor=vec4(tint,(1.-smoothstep(.1,1.,d))*alpha);}`,
     })));
+    // Position attributes hold seeds, so their CPU bounds do not enclose the shader-generated curves.
+    streams.frustumCulled = false;
     star.add(streams);
     const particleGeometry = geometry(new BufferGeometry());
     const positions = [];
