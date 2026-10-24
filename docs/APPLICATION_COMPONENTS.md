@@ -163,6 +163,8 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 ### 多条历史记录（源码候选，尚未发布 npm）
 
+时间条默认色块高 28px，悬停或聚焦选中块高 36px；compact 轨道高 28px，44px 命中区垂直居中。完整时间条沿用 44px 轨道；图例尺寸独立，不随色块加高。
+
 `StatusTimelineList({ label, items, emptyLabel? })` 统一标题、摘要、备注、分隔与 compact 时间条。同一列表一次只展开一条详情；鼠标切换记录不抢焦点，键盘进入详情后退出返回对应时间条，嵌套 Dialog 的下一次 Escape 才关闭外层。行删除、禁用或历史变为空时关闭旧详情。
 
 每项为 `StatusTimelineItem`：稳定的 `id`、文字 `title`、可选 `summary: ReactNode`、`note`、`unavailableLabel`，以及 `timeline: { segments, startLabel, endLabel, disabled? } | null`。null 表示历史不可用，空 segments 表示没有时段；两者均不冒充健康。`emptyLabel` 默认“暂无历史记录”，`unavailableLabel` 默认“历史记录暂不可用 · 未知”。摘要由宿主提供，0 与未知应明确区分。行 ID 和时段 ID 不使用数组索引，确保排序或刷新后保留正确身份。
