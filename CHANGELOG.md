@@ -1,5 +1,9 @@
 # 版本记录
 
+## Unreleased
+
+- 对应 [#10](https://github.com/linhay/rhine-design/issues/10)：新增[日期筛选组合规范](docs/DATE_RANGE_FILTER.md)与 `#date-range-filter` 真实展台；复用 0.6.0 已发布的 SegmentedControl、Button、Popover、DateRangePicker 和布局组件。快捷项共用分段边界，日期持续可见，预设即时应用、自定义确认后应用，取消和关闭不提交。包含跨年、长标签、禁用、键盘和三主题验证；不新增公共组件 API 或运行时样式，不变更包版本。
+
 ## 0.6.0（2026-10-24）
 
 - 对应 [#8](https://github.com/linhay/rhine-design/issues/8)：新增 `OrbitBackdrop`，将授权移交的轨道艺术维护为公共组件，保留 420 个环节点、185 条空间曲线、箭头、光晕与透视；公共组件增至 60 个，无新增运行时依赖。
