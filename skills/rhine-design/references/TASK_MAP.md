@@ -8,6 +8,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Workspace header, duplicate page titles, optional breadcrumbs | `docs/APPLICATION_COMPONENTS.md` → 平级工作区顶部操作区 (source guideline) | `preview/ExtensionsGallery.tsx`; `/#app-shell`; keep status/actions, navigation restore and accessible page identity |
 | Theme integration, switching, controlled preferences | `docs/THEMING.md` (0.4.0) | `components/theme.tsx`, `preview/GalleryShell.tsx` |
 | Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (0.4.0; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
+| Date presets, visible date ranges, custom-range drafts and confirmation | `docs/DATE_RANGE_FILTER.md` (source pattern using existing 0.6.0 APIs) | `preview/DateRangeFilterGallery.tsx`; `/#date-range-filter`; no public DateRangeFilter component |
 | Visual direction, colors, spacing, layout | `docs/DESIGN_SYSTEM.md` | `components/tokens.css`, `components/Layout.tsx` |
 | Spacing, grouping, card composition | `components/SPACING.md` (0.4.0 docs; existing gap API works in 0.3.0) | `components/Layout.tsx`, `preview/SpacingGallery.tsx`; `/#spacing` |
 | Text hierarchy, line height, paragraphs, Chinese/Latin text, metrics | `components/TYPOGRAPHY.md` | `components/Typography.tsx`, `preview/LineHeightGallery.tsx`; `/#typography` |

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - AppShell 新增可选 inline 控制模式与 AppShellToggle：侧栏品牌区收起、正文导航区展开/打开抽屉，不再强制独立顶部横栏；默认 header 模式保持兼容。补充焦点迁移、断点和 Escape 回归及真实展台。
+- 对应 [#10](https://github.com/linhay/rhine-design/issues/10)：新增[日期筛选组合规范](docs/DATE_RANGE_FILTER.md)与 `#date-range-filter` 真实展台；复用 0.6.0 已发布的 SegmentedControl、Button、Popover、DateRangePicker 和布局组件。快捷项共用分段边界，日期持续可见，预设即时应用、自定义确认后应用，取消和关闭不提交。包含跨年、长标签、禁用、键盘和三主题验证；不新增公共组件 API 或运行时样式，不变更包版本。
 
 ## 0.6.0（2026-10-24）
 
