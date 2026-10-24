@@ -10,6 +10,7 @@ async page => {
     const bars=page.locator('.rhine-list-filter-bar');
     for(let i=0;i<3;i++) {
       const bar=bars.nth(i), trigger=bar.getByRole('button',{name:/^更多筛选/});
+      if(i<2) check(await bar.locator('.rhine-list-filter-bar__search label').evaluate(e=>{const r=e.getBoundingClientRect();return r.width>20&&r.height>10;}),{theme,width,zoom,i,kind:'visible-search-label'});
       check(await bar.getByRole('combobox').count()===2,{theme,width,zoom,i,kind:'primary-limit'});
       await trigger.click(); const dialog=page.getByRole('dialog');
       await dialog.evaluate(e=>Promise.all(e.getAnimations().map(a=>a.finished)));

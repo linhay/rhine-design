@@ -32,12 +32,13 @@ function SessionListExample({ mode, embedded = false }: { mode: PreviewState; em
   const [person, setPerson] = useState('all');
   const [reviewed, setReviewed] = useState(false);
   const [range, setRange] = useState<DateRange>({ start: '', end: '' });
+  const [dateResetKey, setDateResetKey] = useState(0);
   const [exportCount, setExportCount] = useState(0);
   const { refreshing, refresh } = usePreviewRefresh();
   const disabled = mode === 'disabled';
   const pending = mode === 'loading' || refreshing;
   const label = embedded ? '人员会话筛选' : '录制会话筛选';
-  const reset = () => { setQuery(''); setState('all'); setSort('newest'); setPerson('all'); setReviewed(false); setRange({ start: '', end: '' }); };
+  const reset = () => { setQuery(''); setState('all'); setSort('newest'); setPerson('all'); setReviewed(false); setRange({ start: '', end: '' }); setDateResetKey(key => key + 1); };
   // Gallery records are synthetic; production hosts send these values to their own query service.
   const rows = mode === 'empty' ? [] : records.filter(row =>
     (state === 'all' || row.state === state) &&
@@ -83,7 +84,7 @@ function SessionListExample({ mode, embedded = false }: { mode: PreviewState; em
         {
           id: 'date', label: '最后事件日期', activeLabel: dateLabel(range),
           onClear: disabled ? undefined : () => setRange({ start: '', end: '' }),
-          control: <DateRangePicker label="最后事件日期" value={range} onValueChange={setRange} disabled={disabled}
+          control: <DateRangePicker key={dateResetKey} label="最后事件日期" value={range} onValueChange={setRange} disabled={disabled}
             presets={[{ label: '今天', value: { start: '2026-10-24', end: '2026-10-24' } }]} />,
         },
       ]}
@@ -109,10 +110,11 @@ function StatisticsExample({ mode }: { mode: PreviewState }) {
   const [platform, setPlatform] = useState('all');
   const [metric, setMetric] = useState('cost');
   const [range, setRange] = useState<DateRange>({ start: '2026-10-24', end: '2026-10-24' });
+  const [dateResetKey, setDateResetKey] = useState(0);
   const { refreshing, refresh } = usePreviewRefresh();
   const disabled = mode === 'disabled';
   const pending = mode === 'loading' || refreshing;
-  const reset = () => { setScope('all'); setPlatform('all'); setMetric('cost'); setRange({ start: '2026-10-24', end: '2026-10-24' }); };
+  const reset = () => { setScope('all'); setPlatform('all'); setMetric('cost'); setRange({ start: '2026-10-24', end: '2026-10-24' }); setDateResetKey(key => key + 1); };
   return <Stack gap={4}>
     <ListFilterBar label="部门用量筛选"
       primary={[
@@ -126,7 +128,7 @@ function StatisticsExample({ mode }: { mode: PreviewState }) {
           control: <Select label="统计范围" value={scope} disabled={disabled} onChange={event => setScope(event.target.value)}><option value="all">所有可见部门</option><option>示例团队 / 跨部门体验与可访问性协作小组</option></Select> },
         { id: 'range', label: '统计日期', activeLabel: range.start === '2026-10-24' && range.end === '2026-10-24' ? undefined : dateLabel(range),
           onClear: disabled ? undefined : () => setRange({ start: '2026-10-24', end: '2026-10-24' }),
-          control: <DateRangePicker label="统计日期" value={range} onValueChange={setRange} disabled={disabled} clearable={false} /> },
+          control: <DateRangePicker key={dateResetKey} label="统计日期" value={range} onValueChange={setRange} disabled={disabled} clearable={false} /> },
       ]}
       onReset={disabled ? undefined : reset} refresh={{ onClick: refresh, busy: pending, disabled }} pending={pending}
       result={pending ? undefined : mode === 'empty' ? '当前范围无用量' : `${dateLabel(range)} · ${scope === 'all' ? '所有可见部门' : scope}`}
