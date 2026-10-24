@@ -1,4 +1,6 @@
 import './styles.css';
+export { NeutronStarBackdrop } from './NeutronStarBackdrop';
+export type { NeutronStarBackdropProps } from './NeutronStarBackdrop';
 export { OrbitBackdrop } from './OrbitBackdrop';
 export type { OrbitBackdropProps } from './OrbitBackdrop';
 export { Background } from './Background';

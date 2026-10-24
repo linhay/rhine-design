@@ -12,6 +12,7 @@ import { LineHeightGallery } from './LineHeightGallery';
 import { SubscriptionGallery } from './SubscriptionGallery';
 import { BackgroundGallery } from './BackgroundGallery';
 import { OrbitGallery } from './OrbitGallery';
+import { NeutronStarGallery } from './NeutronStarGallery';
 import { AdvancedDataGallery, AdvancedFormsGallery, MediaGallery, ShellGallery } from './ExtensionsGallery';
 import { MonitoringGallery } from './MonitoringGallery';
 import { DateRangeFilterGallery } from './DateRangeFilterGallery';
@@ -39,6 +40,7 @@ function Gallery() {
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}
+    {section === 'neutron-star' && <NeutronStarGallery />}
     {section === 'advanced-forms' && <AdvancedFormsGallery />}
     {section === 'advanced-data' && <AdvancedDataGallery />}
     {section === 'media' && <MediaGallery />}
