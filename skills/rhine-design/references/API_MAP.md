@@ -51,3 +51,5 @@ API decisions that commonly matter:
 - `NeutronStarBackdrop` preserves the separate neutron-star artwork. `appearance="theme"` follows existing theme tokens; `original` restores its deep-space palette without replacing the host control theme. It lazy-loads WebGL, freezes under reduction or visibility constraints, and retains static art on failure. It requires 0.7.0 or later; see `docs/NEUTRON_STAR_BACKDROP.md`.
 - `Toast` presents one notification, not a global queue. `DataTable` is not a query or table-state engine.
 - Components in `preview/` are demonstrations. Public API must resolve through a `package.json` export; theme APIs use the separate `/theme` entry.
+
+Unreleased candidates (check installed exports): `ThemePicker` / `ThemePreview` in `components/ThemePicker.tsx`, contract `docs/THEME_PICKER.md`; `Dialog.navigation` in `components/Overlays.tsx`, contract `docs/SETTINGS_DIALOG.md`; shared floating CSS zoom behavior in `docs/FLOATING_OVERLAYS.md`.

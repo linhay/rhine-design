@@ -2,6 +2,9 @@ import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Badge, Button, Checkbox, Disclosure, EmptyState, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
 import './preview.css';
+import { OverlayBoundsFixture, OverlayBoundsGallery } from './OverlayBoundsGallery';
+import { SettingsDialogGallery, SettingsDialogFixture } from './SettingsDialogGallery';
+import { ThemePickerGallery, ThemePickerFixture } from './ThemePickerGallery';
 import { CommonGallery } from './CommonGallery';
 import { MotionGallery } from './MotionGallery';
 import { StartupGallery } from './StartupGallery';
@@ -36,6 +39,9 @@ function Gallery() {
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
   const simulate = () => { setBusy(true); timer.current = setTimeout(() => { setBusy(false); setNotice(true); }, 900); };
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => <>
+    {section === 'theme-picker' && <ThemePickerGallery />}
+    {section === 'settings-dialog' && <SettingsDialogGallery />}
+    {section === 'overlay-bounds' && <OverlayBoundsGallery />}
     {section === 'monitoring' && <MonitoringGallery />}
     {section === 'date-range-filter' && <DateRangeFilterGallery />}
     {section === 'compact-account' && <CompactAccountGallery />}
@@ -129,4 +135,4 @@ function Gallery() {
 
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode><Gallery /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : <Gallery />}</StrictMode>);

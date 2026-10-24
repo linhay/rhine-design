@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import * as PopoverBase from '@radix-ui/react-popover';
+import { useFloatingScale } from './useFloatingScale';
 import { Text } from './Typography';
 import { KeyValue } from './Data';
 import { Button } from './components';
@@ -17,35 +18,6 @@ export interface StatusTimelineProps {
   open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void;
 }
 export const timelineLabels: Record<TimelineStatus, string> = { healthy: '有输出·未见异常', recovered: '重试已恢复', degraded: '异常·结果待确认', failed: '存在最终失败', unknown: '未知 / 无数据' };
-
-// Radix positions fixed wrappers in viewport pixels; CSS zoom on ancestors scales them a second time.
-function useTimelinePopoverScale(ref: RefObject<HTMLDivElement | null>, open: boolean) {
-  const [content, setContent] = useState<HTMLDivElement | null>(null);
-  const attach = useCallback((element: HTMLDivElement | null) => { ref.current = element; setContent(element); }, [ref]);
-  useLayoutEffect(() => {
-    const wrapper = content?.parentElement;
-    if (!open || !content || !wrapper?.hasAttribute('data-radix-popper-content-wrapper')) return;
-    const ancestors: HTMLElement[] = [];
-    for (let element = wrapper.parentElement; element; element = element.parentElement) ancestors.push(element);
-    const original = { wrapperZoom: wrapper.style.zoom, contentZoom: content.style.zoom, maxWidth: content.style.maxWidth, maxHeight: content.style.maxHeight };
-    const measure = () => {
-      const scale = ancestors.reduce((value, element) => {
-        const raw = getComputedStyle(element).zoom;
-        const zoom = raw.endsWith('%') ? parseFloat(raw) / 100 : parseFloat(raw);
-        return value * (Number.isFinite(zoom) && zoom > 0 ? zoom : 1);
-      }, 1);
-      wrapper.style.zoom = String(1 / scale);
-      content.style.zoom = String(scale);
-      content.style.maxWidth = `calc((100vw - 24px) / ${scale})`;
-      content.style.maxHeight = `calc(var(--radix-popover-content-available-height) / ${scale})`;
-    };
-    measure();
-    const observer = new MutationObserver(measure);
-    ancestors.forEach(element => observer.observe(element, { attributes: true, attributeFilter: ['style', 'class'] }));
-    return () => { observer.disconnect(); wrapper.style.zoom = original.wrapperZoom; content.style.zoom = original.contentZoom; content.style.maxWidth = original.maxWidth; content.style.maxHeight = original.maxHeight; };
-  }, [open, content]);
-  return attach;
-}
 
 function useTimelineHoverExit(trigger: RefObject<HTMLElement | null>, popup: RefObject<HTMLDivElement | null>, close: () => void) {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -74,7 +46,7 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
   const segment = segments[selected];
   const summary = segment ? `${segment.label} · ${timelineLabels[segment.status]}` : '暂无记录';
   const hasPopup = !disabled && !!segment && (compact || !!segment.detail);
-  const attachPopup = useTimelinePopoverScale(popup, open && hasPopup);
+  const attachPopup = useFloatingScale(popup);
   const hover = useTimelineHoverExit(slider, popup, () => setOpen(false));
   return <div ref={root} className={`rhine-timeline${compact ? ' rhine-timeline--compact' : ''}`}
     onPointerEnter={hover.cancel}
@@ -132,7 +104,7 @@ function LegendItem({ item, container, open, onOpenChange }: { item: TimelineLeg
   const id = useId(), trigger = useRef<HTMLButtonElement>(null), popup = useRef<HTMLDivElement>(null), returning = useRef(false);
   const detailHadFocus = useRef(false);
   const hover = useTimelineHoverExit(trigger, popup, () => onOpenChange(false));
-  const attachPopup = useTimelinePopoverScale(popup, open);
+  const attachPopup = useFloatingScale(popup);
   const marker = <span data-status={item.status} aria-hidden="true" />;
   if (!item.description) return <li>{marker}{item.label}</li>;
   return <li><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Anchor asChild>

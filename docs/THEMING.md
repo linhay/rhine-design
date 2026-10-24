@@ -143,3 +143,5 @@ import { Background, Surface } from '@linhey/rhine-design';
 若需全主题配置，在**主题根**通过 CSS 变量覆盖对应场景的底色、文字与纹理；局部调整优先用 `appearance`。局部背景不会传递给挂在主题根的 Portal，浮层仍使用主题的浮层变量。
 
 兼容已有源码调用：`roleTone` 的原有三种值与显式 `theme` / `none` 均保留；省略 `decoration` 的正文及 `AppShell` 改为 `auto`，默认纯色。需要旧版正文纹理的调用方显式传入 `decoration="theme"`。侧栏显式传入 `theme` 现在也会开启纹理；默认仍关闭。以上能力自 0.5.0 提供，不属于 npm 0.4.0。
+
+主题选择的新候选组合见 [ThemePicker / ThemePreview](THEME_PICKER.md)；静态预览避免嵌套 Provider，未发布能力需核对源码与实际安装包。

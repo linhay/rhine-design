@@ -27,3 +27,5 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 Run the library showcase with `npm ci && npm run dev` in a source checkout. Default port is 18309; sections include `/#foundation`, `/#typography`, `/#brand`, `/#motion`, `/#startup` and `/#orbit`, plus `/#neutron-star` and `/#compact-account` in 0.7.0. Do not assume another project's server or local filesystem layout.
 
 For host pages, keep product-specific drafts in the host project. The library's `preview/` demonstrates reusable behavior, not business APIs. Labels such as “candidate” or “preview” in motion docs identify experiments; check whether the behavior is actually exported before integrating it.
+
+For unreleased theme-comparison cards, settings navigation, or floating CSS zoom boundaries, read `docs/THEME_PICKER.md`, `docs/SETTINGS_DIALOG.md`, and `docs/FLOATING_OVERLAYS.md` respectively. Preview routes: `#theme-picker`, `#settings-dialog`, `#overlay-bounds`. Do not infer package availability from the main gallery.

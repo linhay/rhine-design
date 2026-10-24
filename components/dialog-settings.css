@@ -1,0 +1,9 @@
+.rhine-dialog--settings { width:min(960px,calc(100% - 32px)); max-height:calc(100% - 32px); container-type:inline-size; }
+.rhine-dialog__settings-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
+.rhine-dialog__navigation { min-width:0; padding-bottom:16px; border-bottom:1px solid var(--rhine-line); }
+.rhine-dialog__settings-content { min-width:0; overflow-wrap:anywhere; }
+.rhine-dialog__settings-content :is(input,textarea,select) { max-width:100%; }
+@container (min-width:560px) {
+  .rhine-dialog__settings-grid { grid-template-columns:minmax(160px,1fr) minmax(0,3fr); }
+  .rhine-dialog__navigation { padding:0 24px 0 0; border-bottom:0; border-right:1px solid var(--rhine-line); }
+}

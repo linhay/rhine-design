@@ -172,3 +172,9 @@ export function Example() {
 内置暂停 / 继续；系统、显式和祖先减少动态、隐藏、离屏或零尺寸停帧，恢复不追赶。SSR 不访问浏览器绘制环境，异步初始化晚于卸载时不创建渲染器；无 WebGL、导入失败或 context lost 保留静态艺术和业务内容，context restored 按当前偏好恢复，卸载释放监听、帧循环及 GPU 资源。宿主负责尺寸和普通内容布局，正文不模糊；不以装饰状态控制业务。完整用法与验收见[中子星背景契约](../docs/NEUTRON_STAR_BACKDROP.md)，真实源码展台为 `/#neutron-star`。
 
 内容层只预留底部 `44px + 2 × --rhine-space-4` 控件安全区，不强制正文四边 padding；宿主在自己的 Stack 或页面容器设置边距，避免重复叠加。静态 fallback 保留当前配色的星核、磁场意图，不保证与三维画面逐像素一致。
+
+## 未发布补充
+
+- [浮层缩放与边界](../docs/FLOATING_OVERLAYS.md)：Popover、Menu、Tooltip 与时间轴共享 CSS zoom 修正。
+- [设置 Dialog](../docs/SETTINGS_DIALOG.md)：`navigation` 插槽及窄窗/缩放重排。
+- [主题选择](../docs/THEME_PICKER.md)：`ThemePicker` / `ThemePreview`，候选源码新增两项组件至 66；旧版安装包仍按自身导出判断。
