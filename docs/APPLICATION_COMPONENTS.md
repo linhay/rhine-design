@@ -39,7 +39,7 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 ## 三种外壳布局
 
-### 内联控制按钮（0.7.0）
+### 内联控制按钮（0.8.0）
 
 默认 `controls="header"` 保持既有顶部操作栏。宿主已有页面导航栏时可用 `controls="inline"`：没有 `header` 内容就不生成顶部横栏。将 `AppShellToggle placement="panel"` 放入侧栏品牌区，将对应的 `placement="content"` 放入正文导航栏；每个面板各放一对。`panel` 默认 navigation，可选 secondary；`iconOnly` 使用已有 IconButton。不要另写折叠状态、复制 Drawer 或用 CSS 隐藏默认横栏。
 
@@ -56,7 +56,7 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 </AppShell>
 ```
 
-### 工作区导航栏（0.7.0）
+### 工作区导航栏（0.8.0）
 
 参考 [Ant Design Layout](https://ant.design/components/layout/) 的 Header / Sider / Content 分工与 [MUI App Bar](https://mui.com/material-ui/react-app-bar/) 的标题、导航和操作组合，工作区顶部承载当前位置与导航入口。用可选 `contentHeader` 将导航栏放在正文滚动区外，与侧栏并列；它不会随正文滚走，不需要宿主另写 sticky。既有 `header` 仍位于整个外壳顶部，不传新插槽时保持原有行为。
 
@@ -68,7 +68,7 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 真实展台 `#app-shell` 可切换默认顶部和内联控制模式；沿用三布局、长文案、正文草稿、禁用/加载/错误状态与全局主题/减少动态设置。
 
-`AppShell` 接收 `layout="single" | "double-left" | "left-right"`；`navigation` 必填、`secondary` 在后两种布局可选。面板形状为 `{ label, content, open, onOpenChange }`；`header` 为整壳顶部区域、`contentHeader` 为正文列的常驻导航区域（0.7.0）、`children` 为正文，`decoration` 控制正文背景。
+`AppShell` 接收 `layout="single" | "double-left" | "left-right"`；`navigation` 必填、`secondary` 在后两种布局可选。面板形状为 `{ label, content, open, onOpenChange }`；`header` 为整壳顶部区域、`contentHeader` 为正文列的常驻导航区域（0.8.0）、`children` 为正文，`decoration` 控制正文背景。
 
 | 方案 | 用途 | 顺序 |
 | --- | --- | --- |
@@ -161,9 +161,9 @@ Pagination 新增 `disabled/label/showFirstButton/showLastButton`；首末页按
 
 MediaCard 支持原生 article 属性、ref 与独立 actions（重试等操作不能嵌套在打开按钮里）。MediaViewer 支持 defaultOpen、defaultMetadataOpen 及 className/style；不传 metadataOpen 时，信息栏按钮即可管理内部状态。`previousDisabled/nextDisabled` 显式表达边界，左右键默认触发上/下一项，可用 `keyboardNavigation=false` 关闭；输入框、选择器、媒体播放器和嵌套浮层保留自身按键。导航按钮到达边界变禁用时焦点留在查看器内，可继续反向浏览。
 
-0.7.0 将中性媒体区域限定为查看器的画布（canvas `#101214`、text `#f6f7f8`、focus `#9bceff`）。卡片、类型标签、工具栏和信息栏使用宿主主题的 surface/ink/control/radius tokens：莱茵纸面细边、战术直角与信号色、橙趣墨色粗边与硬阴影。卡片选中态不改变边框宽度，不引起排列跳动；选择与重试位于独立底部操作区。媒体像素保持原色和 contain 比例，不跟随主题变色。
+0.8.0 将中性媒体区域限定为查看器的画布（canvas `#101214`、text `#f6f7f8`、focus `#9bceff`）。卡片、类型标签、工具栏和信息栏使用宿主主题的 surface/ink/control/radius tokens：莱茵纸面细边、战术直角与信号色、橙趣墨色粗边与硬阴影。卡片选中态不改变边框宽度，不引起排列跳动；选择与重试位于独立底部操作区。媒体像素保持原色和 contain 比例，不跟随主题变色。
 
-顶部操作可换行，触控目标至少 44px；桌面 metadata 位于右侧，760px 以下移到底部。查看器按固定定位视口的百分比尺寸取景，避免 CSS zoom 将 dvh 高度重复放大；操作栏可达，正文和信息可以滚动。不嵌套 Provider，沿用宿主的动效与主题偏好。此视觉调整自 0.7.0 提供，0.6.0 不包含。
+顶部操作可换行，触控目标至少 44px；桌面 metadata 位于右侧，760px 以下移到底部。查看器按固定定位视口的百分比尺寸取景，避免 CSS zoom 将 dvh 高度重复放大；操作栏可达，正文和信息可以滚动。不嵌套 Provider，沿用宿主的动效与主题偏好。此视觉调整自 0.8.0 提供，0.6.0 不包含。
 
 媒体 children、下载链接和资源版本选择通过 slots 提供；库不持有下载路径、播放状态或路由。actions 中使用原生 button/select/a 可自动使用宿主主题的控件样式。宿主可将 scroll-snap 列表放入画布，并保留原有 Masonic 或其他虚拟列表。仅复用模态的背景滚动管理，没有增加 wheel 事件锁或自定义手势拦截。内部 Dialog/Popover 优先响应 Escape，下一次 Escape 再关闭查看器；媒体自身不播放进场动画，减少动态遵循同一主题根。
 
@@ -175,7 +175,7 @@ MediaCard 支持原生 article 属性、ref 与独立 actions（重试等操作�
 
 StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 ID 控制选中；未指定或当前 ID 消失时显示最后一个时段。`open/defaultOpen/onOpenChange` 控制详情，`disabled` 禁止操作及显示详情。Enter/Space 将键盘焦点送入详情关闭按钮，退出后返回健康条且不会立即重开。
 
-### 多条历史记录（0.7.0）
+### 多条历史记录（0.8.0）
 
 时间条默认色块高 28px，悬停或聚焦选中块高 36px；compact 轨道高 28px，44px 命中区垂直居中。完整时间条沿用 44px 轨道；图例尺寸独立，不随色块加高。
 

@@ -1,6 +1,6 @@
 # 浮层的缩放与可达性
 
-未发布修订，对应 #16；已有 npm 版本不因此获得此能力。
+自 0.8.0 提供，对应 #16；旧版本不因此获得此能力。
 
 Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留在最近的 `.rhine-theme` 内，继承主题与减少动态偏好。所有这些浮层共用定位缩放修正，不需要消费方覆盖 Radix 包装层或库选择器。
 

@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-0.7.0 共64个组件，新增 NeutronStarBackdrop、StatusTimelineList、AppShellToggle 与 ButtonLink；0.6.0 为60个；0.5.0为59个，0.4.0为48个，0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+0.8.0 共66个组件，新增 NeutronStarBackdrop、StatusTimelineList、AppShellToggle 与 ButtonLink；0.6.0 为60个；0.5.0为59个，0.4.0为48个，0.3.0为40个。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 中子星艺术、主题物品和生命周期见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)与[轨道背景契约](../docs/ORBIT_BACKDROP.md)。安装版本与源码导出分别核对。
 
@@ -53,7 +53,7 @@ export function Example() {
 | 组件 | 关键输入 | 状态与边界 |
 | --- | --- | --- |
 | Button | variant=primary/secondary/quiet/danger；busy；busyLabel；原生按钮属性 | 默认 type=button；busy 保留焦点并拦截再次 click，不自动把业务标记成功；disabled 使用原生禁用 |
-| ButtonLink（0.7.0） | 必填 href；原生 anchor 属性与 ref；Button 同款 variant/busy/busyLabel；disabled | 原生导航/下载；disabled 退出 Tab；busy 保焦点；两者移除 href、阻止主/辅助点击；[契约](../docs/COMPACT_ACCOUNT_PATTERNS.md) |
+| ButtonLink（0.8.0） | 必填 href；原生 anchor 属性与 ref；Button 同款 variant/busy/busyLabel；disabled | 原生导航/下载；disabled 退出 Tab；busy 保焦点；两者移除 href、阻止主/辅助点击；[契约](../docs/COMPACT_ACCOUNT_PATTERNS.md) |
 | Logo | variant=mark/icon/lockup；theme=light/dark/auto；size；animate；decorative；label；wordmark | 第三版三角构架；默认静态、48px、浅色单标志；最小16px；无点击/业务状态 |
 | Text | variant；as；tone；numeric；HTML属性 | 默认p/body；视觉层级不决定HTML语义；长文本可换行；不转换数值或截断文本 |
 | Select | label；hint；error；原生单选select属性；option子节点 | 标签与描述自动关联；原生菜单和键盘；受控或defaultValue；不支持multiple/size列表模式；箭头装饰性且不接收点击 |
@@ -73,7 +73,7 @@ export function Example() {
 
 新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
 
-0.7.0 的 `StatusTimelineList` 与 `TimelineLegend compact/items` 提供紧凑历史组合及一行短图例；宿主传入完整规则，悬停/聚焦/点按查看。无参 TimelineLegend 仍兼容既有标签。真实样机 `/#compact-account` 同时验证无框额度摘要、配对事实与渐进展示的凭证操作，见[紧凑组合规范](../docs/COMPACT_ACCOUNT_PATTERNS.md)。npm 0.6.0 不提供这些扩展。
+0.8.0 的 `StatusTimelineList` 与 `TimelineLegend compact/items` 提供紧凑历史组合及一行短图例；宿主传入完整规则，悬停/聚焦/点按查看。无参 TimelineLegend 仍兼容既有标签。真实样机 `/#compact-account` 同时验证无框额度摘要、配对事实与渐进展示的凭证操作，见[紧凑组合规范](../docs/COMPACT_ACCOUNT_PATTERNS.md)。npm 0.6.0 不提供这些扩展。
 
 浏览状态不等于执行结果；页面使用宿主的真实状态决定selected/busy/notice，视觉反馈不能提前宣称业务完成。
 
@@ -156,16 +156,16 @@ export function Example() {
 
 新增 `Background` 与 `AppShell`，0.5.0 共 59 个组件；npm 0.4.0 仍为 48 个。Background 支持六类 roleTone、auto/theme/none 装饰策略及 appearance 局部覆盖；AppShell 提供组合展台使用的固定顶部操作区与响应式侧栏。完整 API、最小接入、背景滚动及 Portal 边界见[背景与应用外壳契约](../docs/APPLICATION_COMPONENTS.md)。
 
-0.7.0 新增可选 `AppShell.contentHeader`：工作区导航常驻正文列顶部，正文独立滚动；组合现有 `AppShellToggle`、`Inline`、标题与操作。0.7.0 媒体组件同步更新主题边界：卡片、标签、查看器工具栏与信息栏跟随宿主主题，仅媒体画布保持中性。以上不包含于 npm 0.6.0，交互与验证边界见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。
+0.8.0 新增可选 `AppShell.contentHeader`：工作区导航常驻正文列顶部，正文独立滚动；组合现有 `AppShellToggle`、`Inline`、标题与操作。0.8.0 媒体组件同步更新主题边界：卡片、标签、查看器工具栏与信息栏跟随宿主主题，仅媒体画布保持中性。以上不包含于 npm 0.6.0，交互与验证边界见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。
 
 ## 轨道背景（0.6.0）
 
 `OrbitBackdrop` 自 0.6.0 提供，接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。0.6.0 提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
 
-0.7.0 新增 `appearance?: 'theme' | 'original'`：莱茵展示暖白纸纹、浅绿折面、轻微振翅与悬浮纸屑的折纸鸟；战术展示带倒角晶面、矿物纹理、琥珀裂纹与漂浮碎片的源石晶簇；橙趣展示有烘焙纹理、糖霜、糖针与糖尘的草莓甜甜圈。三套物品按需加载 Three.js，窄屏可播放，遵循同一暂停、减少动态、隐藏与离屏规则；WebGL 失败回退 Canvas2D，Canvas 不可用时使用本地 SVG。`original` 保留初版完整深色轨道。切换主题复用时钟和绘制器，保留暂停与内容草稿。详见[轨道背景契约](../docs/ORBIT_BACKDROP.md)。
+0.8.0 新增 `appearance?: 'theme' | 'original'`：莱茵展示暖白纸纹、浅绿折面、轻微振翅与悬浮纸屑的折纸鸟；战术展示带倒角晶面、矿物纹理、琥珀裂纹与漂浮碎片的源石晶簇；橙趣展示有烘焙纹理、糖霜、糖针与糖尘的草莓甜甜圈。三套物品按需加载 Three.js，窄屏可播放，遵循同一暂停、减少动态、隐藏与离屏规则；WebGL 失败回退 Canvas2D，Canvas 不可用时使用本地 SVG。`original` 保留初版完整深色轨道。切换主题复用时钟和绘制器，保留暂停与内容草稿。详见[轨道背景契约](../docs/ORBIT_BACKDROP.md)。
 
-0.7.0 新增 `AppShellToggle` 与 `AppShell.controls="inline"`。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮070)。
-## 中子星背景（0.7.0）
+0.8.0 新增 `AppShellToggle` 与 `AppShell.controls="inline"`。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮080)。
+## 中子星背景（0.8.0）
 
 `NeutronStarBackdrop` 接收 `HTMLAttributes<HTMLDivElement>`、`reducedMotion?: boolean`、`appearance?: 'theme' | 'original'` 和可选 `children`。默认从当前主题取得艺术配色，`original` 保留原始深空；切换颜色不重置时间，实体内容控件仍用宿主主题。按需加载 Three.js，保留 28 条磁场线、560 个流粒、700 颗星尘、极向喷流与星核；星系以 28 秒有效播放时间完成一轮深度公转，镜头保持固定。
 
@@ -173,7 +173,7 @@ export function Example() {
 
 内容层只预留底部 `44px + 2 × --rhine-space-4` 控件安全区，不强制正文四边 padding；宿主在自己的 Stack 或页面容器设置边距，避免重复叠加。静态 fallback 保留当前配色的星核、磁场意图，不保证与三维画面逐像素一致。
 
-## 未发布补充
+## 0.8.0 补充
 
 - [浮层缩放与边界](../docs/FLOATING_OVERLAYS.md)：Popover、Menu、Tooltip 与时间轴共享 CSS zoom 修正。
 - [设置 Dialog](../docs/SETTINGS_DIALOG.md)：`navigation` 插槽及窄窗/缩放重排。

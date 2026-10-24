@@ -1,6 +1,6 @@
 # 主题预览与选择
 
-`ThemePicker` 与 `ThemePreview` 是未发布新增 API，对应 #20。已有 npm 0.6.0 / 冻结的 0.7.0 制品不包含它们。
+`ThemePicker` 与 `ThemePreview` 自 0.8.0 提供，对应 #20；0.6.0 及未发布的 0.7.0 候选不包含它们。
 
 ```tsx
 function Appearance() {

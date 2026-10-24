@@ -1,6 +1,6 @@
 # 设置导航 Dialog
 
-未发布 API，对应 #18。默认 Dialog、Drawer 和 `sidePanel` 用法保持兼容。
+自 0.8.0 提供，对应 #18。默认 Dialog、Drawer 和 `sidePanel` 用法保持兼容。
 
 ```tsx
 <Dialog title="设置" description="管理工作区偏好" trigger={<Button>设置</Button>}

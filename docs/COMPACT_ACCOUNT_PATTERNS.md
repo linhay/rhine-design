@@ -1,6 +1,6 @@
 # 紧凑摘要与凭证操作
 
-对应 [issue #14](https://github.com/linhay/rhine-design/issues/14)。本页的 `ButtonLink`、`StatusTimelineList` 与 `TimelineLegend` 扩展自 npm 0.7.0 提供，0.6.0 不包含；使用前核对实际导出并固定消费版本。真实展台：`/#compact-account`。
+对应 [issue #14](https://github.com/linhay/rhine-design/issues/14)。本页的 `ButtonLink`、`StatusTimelineList` 与 `TimelineLegend` 扩展自 npm 0.8.0 提供，0.6.0 不包含；使用前核对实际导出并固定消费版本。真实展台：`/#compact-account`。
 
 ## 从用户任务开始消融
 

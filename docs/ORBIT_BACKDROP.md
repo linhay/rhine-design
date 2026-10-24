@@ -1,8 +1,8 @@
 # OrbitBackdrop · 主题艺术背景
 
-`OrbitBackdrop` 是带暂停控制的装饰组件。0.7.0 根据主题展示折纸鸟、源石晶簇或草莓甜甜圈，也可通过 `appearance="original"` 保留初版深色轨道。它适合欢迎、登录和品牌展示区域，不表达业务进度，不包含账号逻辑或外部资源请求。移交来源见 [Issue #8](https://github.com/linhay/rhine-design/issues/8)。
+`OrbitBackdrop` 是带暂停控制的装饰组件。0.8.0 根据主题展示折纸鸟、源石晶簇或草莓甜甜圈，也可通过 `appearance="original"` 保留初版深色轨道。它适合欢迎、登录和品牌展示区域，不表达业务进度，不包含账号逻辑或外部资源请求。移交来源见 [Issue #8](https://github.com/linhay/rhine-design/issues/8)。
 
-**版本边界：**基础组件自 `@linhey/rhine-design@0.6.0` 提供；`appearance` 与三套主题物品需要 0.7.0。0.6.0 默认固定深色轨道，升级后默认跟随主题；需要保持旧视觉时显式使用 `appearance="original"`。固定精确版本并提交 lockfile。
+**版本边界：**基础组件自 `@linhey/rhine-design@0.6.0` 提供；`appearance` 与三套主题物品需要 0.8.0。0.6.0 默认固定深色轨道，升级后默认跟随主题；需要保持旧视觉时显式使用 `appearance="original"`。固定精确版本并提交 lockfile。
 
 ## 使用与契约
 

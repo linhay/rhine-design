@@ -94,7 +94,7 @@ function GalleryContent({ motion, onMotionChange, children }: GalleryShellProps)
       <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={section} groups={galleryGroups.map(group=>({label:group.label,items:group.items.map(([id,label])=>({id,label,href:`#${id}`}))}))} onNavigate={item=>{
         setMenuOpen(false); if(section===item.id) main.current?.focus({preventScroll:true});
       }}/>
-      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>66 个组件 · 含未发布候选</span><span className="ak-readout">{readout}</span></div>
+      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>66 个组件 · 0.8.0</span><span className="ak-readout">{readout}</span></div>
     </aside>
     <main className="ds-workspace" id="gallery-content" ref={main} tabIndex={-1} aria-label={label}>
       <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" value={theme} onChange={event => {
