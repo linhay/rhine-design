@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { OrbitEntryExample } from './BackgroundFiltersFixture';
 import { Badge, Button, Disclosure, Inline, OrbitBackdrop, SegmentedControl, Stack, Surface, Switch, Text, TextField } from '../components';
 
 export function OrbitGallery() {
@@ -45,6 +46,19 @@ export function OrbitGallery() {
           </Stack></Surface>
         </Stack></div>
       </OrbitBackdrop>
+    </Disclosure>
+    <Disclosure title="查看入口与全页背景组合">
+      <Text tone="muted">文字保留在上方，艺术位于右下角；无框背景下的表单使用 Surface 保持清晰。</Text>
+      <div className="ds-orbit-layout-container"><div className="ds-orbit-layout-examples ds-gap-top">
+        <OrbitBackdrop className="ds-orbit-corner-example" appearance={appearance} reducedMotion={reduced} composition="corner" controls={false} role="region" aria-label="右下角艺术与文字">
+          <Stack gap={4}>
+            <Text variant="overline">RHINE STUDIO</Text>
+            <Text as="h3" variant="title">从这里，<br />继续创造。</Text>
+            <Text tone="muted">让内容拥有清晰的阅读空间。</Text>
+          </Stack>
+        </OrbitBackdrop>
+        <OrbitEntryExample appearance={appearance} reduced={reduced} />
+      </div></div>
     </Disclosure>
   </section>;
 }

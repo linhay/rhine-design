@@ -1,3 +1,4 @@
+import { BackgroundFiltersFixture } from './BackgroundFiltersFixture';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Badge, Button, Checkbox, Disclosure, EmptyState, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
@@ -19,6 +20,7 @@ import { NeutronStarGallery } from './NeutronStarGallery';
 import { AdvancedDataGallery, AdvancedFormsGallery, MediaGallery, ShellGallery } from './ExtensionsGallery';
 import { MonitoringGallery } from './MonitoringGallery';
 import { DateRangeFilterGallery } from './DateRangeFilterGallery';
+import { ListFilterBarGallery } from './ListFilterBarGallery';
 import { CompactAccountGallery } from './CompactAccountGallery';
 
 function Gallery() {
@@ -44,6 +46,7 @@ function Gallery() {
     {section === 'overlay-bounds' && <OverlayBoundsGallery />}
     {section === 'monitoring' && <MonitoringGallery />}
     {section === 'date-range-filter' && <DateRangeFilterGallery />}
+    {section === 'list-filter-bar' && <ListFilterBarGallery />}
     {section === 'compact-account' && <CompactAccountGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}
@@ -135,4 +138,4 @@ function Gallery() {
 
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : <Gallery />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : <Gallery />}</StrictMode>);

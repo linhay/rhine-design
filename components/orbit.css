@@ -118,3 +118,24 @@
 .rhine-orbit .rhine-orbit-content .rhine-button--quiet:focus-visible { outline:none; box-shadow:inset 0 0 0 2px currentColor; }
 .rhine-orbit-controls { position:absolute; right:var(--rhine-space-4); bottom:var(--rhine-space-4); z-index:2; max-width:calc(100% - var(--rhine-space-4) * 2); }
 .rhine-orbit-controls .rhine-button { max-width:100%; }
+
+/* Public composition options keep both renderers and static artwork in the same region. */
+.rhine-orbit[data-rhine-orbit-controls="false"] > .rhine-orbit-content { padding-bottom:var(--rhine-space-6); }
+.rhine-orbit[data-rhine-orbit-composition="corner"] > .rhine-orbit-canvas,
+.rhine-orbit[data-rhine-orbit-composition="corner"][data-rhine-orbit-state="unavailable"]::after,
+.rhine-theme[data-rhine-theme] .rhine-orbit[data-rhine-orbit-composition="corner"][data-rhine-orbit-state="unavailable"]::after {
+  inset:auto 0 0 auto;
+  width:min(100%, 480px); height:44%; max-height:360px;
+}
+.rhine-orbit[data-rhine-orbit-framed="false"],
+.rhine-theme[data-rhine-theme] .rhine-orbit[data-rhine-orbit-framed="false"] {
+  border:0; border-radius:0; box-shadow:none;
+}
+/* Older packaged artwork painted this fallback on the full root background. */
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-orbit[data-rhine-orbit-appearance="theme"][data-rhine-orbit-composition="corner"][data-rhine-orbit-state="unavailable"] {
+  background-image:none;
+}
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-orbit[data-rhine-orbit-appearance="theme"][data-rhine-orbit-composition="corner"][data-rhine-orbit-state="unavailable"]::after {
+  display:block;
+  background:url('./assets/orbit-donut.svg') center / contain no-repeat;
+}

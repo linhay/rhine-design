@@ -26,6 +26,7 @@ export { Select } from './Select';
 export type { SelectProps } from './Select';
 export { Toolbar } from './Toolbar';
 export type { ToolbarProps } from './Toolbar';
+export { ListFilterBar, type ListFilterBarProps, type ListFilterField } from './ListFilterBar';
 export { Icon, IconButton, Link, ButtonLink, CopyButton } from './Actions';
 export type { IconName, ButtonLinkProps } from './Actions';
 export { Divider, Stack, Inline, Grid } from './Layout';

@@ -58,6 +58,7 @@ export function Example() {
 | Text | variant；as；tone；numeric；HTML属性 | 默认p/body；视觉层级不决定HTML语义；长文本可换行；不转换数值或截断文本 |
 | Select | label；hint；error；原生单选select属性；option子节点 | 标签与描述自动关联；原生菜单和键盘；受控或defaultValue；不支持multiple/size列表模式；箭头装饰性且不接收点击 |
 | Toolbar | title；description；children；HTML div属性 | 自适应控件组合，role=group与普通Tab顺序；不伪装为需要方向键导航的ARIA toolbar；不含业务状态 |
+| ListFilterBar（0.9.0） | label；search；primary/filters 字段；onReset；refresh；一个 action；result/pending/error | 最多两个常显条件，超出项进入同一 Drawer；宿主维护即时状态、查询和权限；[契约与版本边界](../docs/LIST_FILTER_BAR.md) |
 | Badge | tone=neutral/success/warning/error；children | 只读短状态，颜色必须配文字，不做可点击按钮 |
 | Surface | HTML div 属性 | 静态分区，无点击语义；不是弹窗或导航 |
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
