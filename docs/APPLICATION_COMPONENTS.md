@@ -39,6 +39,23 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 ## 三种外壳布局
 
+### 内联控制按钮（源码候选，尚未发布 npm）
+
+默认 `controls="header"` 保持既有顶部操作栏。宿主已有页面导航栏时可用 `controls="inline"`：没有 `header` 内容就不生成顶部横栏。将 `AppShellToggle placement="panel"` 放入侧栏品牌区，将对应的 `placement="content"` 放入正文导航栏；每个面板各放一对。`panel` 默认 navigation，可选 secondary；`iconOnly` 使用已有 IconButton。不要另写折叠状态、复制 Drawer 或用 CSS 隐藏默认横栏。
+
+展开桌面面板时只显示品牌区的收起按钮；收起后正文显示展开按钮；窄窗正文按钮打开 Drawer，抽屉使用已有关闭按钮。`content` 控制保留挂载以归还焦点，`panel` 控制随内联面板隐藏。正文入口必须放在始终可达的位置（例如吸顶导航栏），即使切换页面也要保留。折叠/展开与断点变化迁移键盘焦点，Drawer 继续负责 Escape 与焦点约束。控件没有异步、加载或错误状态，不把业务 busy 绑定到导航。
+
+```tsx
+<AppShell controls="inline" layout="single"
+  navigation={{ label: '导航', open, onOpenChange: setOpen,
+    content: <><div>Workspace <AppShellToggle placement="panel" iconOnly /></div><Navigation /></> }}>
+  <header><AppShellToggle placement="content" iconOnly /><Breadcrumbs items={items} /></header>
+  <Content />
+</AppShell>
+```
+
+真实展台 `#app-shell` 可切换默认顶部和内联控制模式；沿用三布局、长文案、正文草稿、禁用/加载/错误状态与全局主题/减少动态设置。
+
 `AppShell` 接收 `layout="single" | "double-left" | "left-right"`；`navigation` 必填、`secondary` 在后两种布局可选。面板形状为 `{ label, content, open, onOpenChange }`；`header` 放当前任务操作、`children` 为正文，`decoration` 控制正文背景。
 
 | 方案 | 用途 | 顺序 |

@@ -154,3 +154,5 @@ export function Example() {
 ## 轨道背景（0.6.0）
 
 `OrbitBackdrop` 接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。它提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
+
+源码候选新增 `AppShellToggle` 与 `AppShell.controls="inline"`；尚未发布 npm。品牌区/正文区成对放置与可达性要求见[内联控制契约](../docs/APPLICATION_COMPONENTS.md#内联控制按钮源码候选尚未发布-npm)。

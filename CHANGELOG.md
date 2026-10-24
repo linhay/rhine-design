@@ -1,5 +1,9 @@
 # 版本记录
 
+## Unreleased
+
+- AppShell 新增可选 inline 控制模式与 AppShellToggle：侧栏品牌区收起、正文导航区展开/打开抽屉，不再强制独立顶部横栏；默认 header 模式保持兼容。补充焦点迁移、断点和 Escape 回归及真实展台。
+
 ## 0.6.0（2026-10-24）
 
 - 对应 [#8](https://github.com/linhay/rhine-design/issues/8)：新增 `OrbitBackdrop`，将授权移交的轨道艺术维护为公共组件，保留 420 个环节点、185 条空间曲线、箭头、光晕与透视；公共组件增至 60 个，无新增运行时依赖。
