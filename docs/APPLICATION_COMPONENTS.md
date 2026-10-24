@@ -43,29 +43,32 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 默认 `controls="header"` 保持既有顶部操作栏。宿主已有页面导航栏时可用 `controls="inline"`：没有 `header` 内容就不生成顶部横栏。将 `AppShellToggle placement="panel"` 放入侧栏品牌区，将对应的 `placement="content"` 放入正文导航栏；每个面板各放一对。`panel` 默认 navigation，可选 secondary；`iconOnly` 使用已有 IconButton。不要另写折叠状态、复制 Drawer 或用 CSS 隐藏默认横栏。
 
-展开桌面面板时只显示品牌区的收起按钮；收起后正文显示展开按钮；窄窗正文按钮打开 Drawer，抽屉使用已有关闭按钮。`content` 控制保留挂载以归还焦点，`panel` 控制随内联面板隐藏。正文入口必须放在始终可达的位置（例如吸顶导航栏），即使切换页面也要保留。折叠/展开与断点变化迁移键盘焦点，Drawer 继续负责 Escape 与焦点约束。控件没有异步、加载或错误状态，不把业务 busy 绑定到导航。
+展开桌面面板时只显示品牌区的收起按钮；收起后正文显示展开按钮；窄窗正文按钮打开 Drawer，抽屉使用已有关闭按钮。`content` 控制保留挂载以归还焦点，`panel` 控制随内联面板隐藏。正文入口必须放在始终可达的位置（推荐使用 `contentHeader` 导航插槽），即使切换页面也要保留。折叠/展开与断点变化迁移键盘焦点，Drawer 继续负责 Escape 与焦点约束。控件没有异步、加载或错误状态，不把业务 busy 绑定到导航。
 
 ```tsx
 <AppShell controls="inline" layout="single"
   navigation={{ label: '导航', open, onOpenChange: setOpen,
-    content: <><div>Workspace <AppShellToggle placement="panel" iconOnly /></div><Navigation /></> }}>
-  <header><AppShellToggle placement="content" iconOnly />{status}{actions}</header>
-  <h1 className="rhine-sr-only">{pageTitle}</h1>
+    content: <><div>Workspace <AppShellToggle placement="panel" iconOnly /></div><Navigation /></> }}
+  contentHeader={<nav aria-label="工作区导航"><Inline>
+    <AppShellToggle placement="content" iconOnly /><h1>{pageTitle}</h1>{actions}
+  </Inline></nav>}>
   <Content />
 </AppShell>
 ```
 
-### 平级工作区顶部操作区
+### 工作区导航栏（源码候选，尚未发布 npm）
 
-侧栏已标识当前位置时，默认省略顶部面包屑与重复页名。用 `Inline` 组合 `AppShellToggle`、状态和操作即可，不新增页头组件或逐页开关；`AppShell` 不生成或强制 Breadcrumbs。宿主保留一个可访问的页面标题、主区域名称与路由焦点管理。真实父子层级仍可按需使用 Breadcrumbs，设计库展台自身的章节路径不属于产品平级工作区。
+参考 [Ant Design Layout](https://ant.design/components/layout/) 的 Header / Sider / Content 分工与 [MUI App Bar](https://mui.com/material-ui/react-app-bar/) 的标题、导航和操作组合，工作区顶部承载当前位置与导航入口。用可选 `contentHeader` 将导航栏放在正文滚动区外，与侧栏并列；它不会随正文滚走，不需要宿主另写 sticky。既有 `header` 仍位于整个外壳顶部，不传新插槽时保持原有行为。
 
-品牌区放收起入口，正文操作区放对应展开入口。操作行在正文滚动时可达，窄窗自然换行；连接状态、刷新、错误与加载反馈不因删除标题丢失。没有状态或操作的区域不额外生成标题占位；仍需为侧栏恢复入口保留可达位置。复用已有组件与 tokens，不在业务层用 CSS 隐藏 Breadcrumbs。
+展台左侧显示全局导航入口与当前页标题，右侧显示上下文目录与工作区信息；桌面侧栏展开时入口由品牌区承担，收起后恢复到导航栏，窄窗使用菜单图标打开 Drawer。标题允许换行，操作保留命中尺寸；正文的草稿状态和业务操作留在正文。底色与分隔线随三主题变化，橙趣使用墨色粗线，战术使用信号色边界。
 
-`/#app-shell` 的默认内联模式展示这一组合：平级侧栏、无重复页名的操作行、正文读屏标题和任务草稿。验收覆盖三主题、400/520/880、200%重排、侧栏收起/展开、窄窗 Drawer、Tab/Escape、切页后的当前项与草稿保留。此规范为源码候选，未声明新的已发布 API。
+平级工作区不强制 Breadcrumbs；当前页只保留一个可访问的 h1，正文不再重复标题。此处依据用户“这是导航区”的纠正，替代旧展台仅有状态/操作行的组合；没有导航栏需求的宿主仍可省略 `contentHeader`。真实父子层级可按需组合 Breadcrumbs，展台自身的章节路径不属于产品平级工作区。
+
+验收包括三主题 × 400/520/880px 长标题无横向溢出、200% CSS zoom 重排、正文滚动时导航栏位置不变、侧栏展开/收起及焦点归还、窄窗 Drawer 切页与未保存草稿保留、信息弹窗 Escape 返回入口。原生浏览器缩放与屏幕阅读器组合需另验。
 
 真实展台 `#app-shell` 可切换默认顶部和内联控制模式；沿用三布局、长文案、正文草稿、禁用/加载/错误状态与全局主题/减少动态设置。
 
-`AppShell` 接收 `layout="single" | "double-left" | "left-right"`；`navigation` 必填、`secondary` 在后两种布局可选。面板形状为 `{ label, content, open, onOpenChange }`；`header` 放当前任务操作、`children` 为正文，`decoration` 控制正文背景。
+`AppShell` 接收 `layout="single" | "double-left" | "left-right"`；`navigation` 必填、`secondary` 在后两种布局可选。面板形状为 `{ label, content, open, onOpenChange }`；`header` 为整壳顶部区域、`contentHeader` 为正文列的常驻导航区域（未发布候选）、`children` 为正文，`decoration` 控制正文背景。
 
 | 方案 | 用途 | 顺序 |
 | --- | --- | --- |
@@ -158,9 +161,11 @@ Pagination 新增 `disabled/label/showFirstButton/showLastButton`；首末页按
 
 MediaCard 支持原生 article 属性、ref 与独立 actions（重试等操作不能嵌套在打开按钮里）。MediaViewer 支持 defaultOpen、defaultMetadataOpen 及 className/style；不传 metadataOpen 时，信息栏按钮即可管理内部状态。`previousDisabled/nextDisabled` 显式表达边界，左右键默认触发上/下一项，可用 `keyboardNavigation=false` 关闭；输入框、选择器、媒体播放器和嵌套浮层保留自身按键。导航按钮到达边界变禁用时焦点留在查看器内，可继续反向浏览。
 
-查看器采用同一主题根中的中性媒体 tokens：canvas `#101214`、overlay `#202428`、text `#f6f7f8`、muted `#bcc3ca`、border `#68727c`、focus `#9bceff`。不把战术主题当暗色媒体模式，也不嵌套 Provider。顶部操作可换行，触控目标至少 44px；桌面 metadata 位于右侧，760px 以下移到底部。短窗口内容可滚动，关闭按钮始终在顶部可达。
+当前源码候选将中性媒体区域限定为查看器的画布（canvas `#101214`、text `#f6f7f8`、focus `#9bceff`）。卡片、类型标签、工具栏和信息栏使用宿主主题的 surface/ink/control/radius tokens：莱茵纸面细边、战术直角与信号色、橙趣墨色粗边与硬阴影。卡片选中态不改变边框宽度，不引起排列跳动；选择与重试位于独立底部操作区。媒体像素保持原色和 contain 比例，不跟随主题变色。
 
-媒体 children、下载链接和资源版本选择通过 slots 提供；库不持有下载路径、播放状态或路由。actions 中使用原生 button/select/a 可自动使用中性叠加样式。宿主可将 scroll-snap 列表放入画布，并保留原有 Masonic 或其他虚拟列表。仅复用模态的背景滚动管理，没有增加 wheel 事件锁或自定义手势拦截。内部 Dialog/Popover 优先响应 Escape，下一次 Escape 再关闭查看器；媒体自身不播放进场动画，减少动态遵循同一主题根。
+顶部操作可换行，触控目标至少 44px；桌面 metadata 位于右侧，760px 以下移到底部。查看器按固定定位视口的百分比尺寸取景，避免 CSS zoom 将 dvh 高度重复放大；操作栏可达，正文和信息可以滚动。不嵌套 Provider，沿用宿主的动效与主题偏好。此视觉调整尚未发布，不代表 npm 0.6.0 的现有效果。
+
+媒体 children、下载链接和资源版本选择通过 slots 提供；库不持有下载路径、播放状态或路由。actions 中使用原生 button/select/a 可自动使用宿主主题的控件样式。宿主可将 scroll-snap 列表放入画布，并保留原有 Masonic 或其他虚拟列表。仅复用模态的背景滚动管理，没有增加 wheel 事件锁或自定义手势拦截。内部 Dialog/Popover 优先响应 Escape，下一次 Escape 再关闭查看器；媒体自身不播放进场动画，减少动态遵循同一主题根。
 
 ## 健康详情与运维图表（issue #6）
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AppShell, AppShellToggle, Inline, Background, Button, Checkbox, DataTable, DateField, DateRangePicker, Dialog, EmptyState, MediaCard, MediaViewer, Notice, NumberField, Pagination, RemoteMultiSelect, Select, SideNav, Skeleton, Stack, Surface, TextField, TreeSelect, type AppShellProps, type DateRange, type TreeNode, type TableSort } from '../components';
+import { AppShell, AppShellToggle, IconButton, Inline, Background, Button, Checkbox, DataTable, DateField, DateRangePicker, Dialog, EmptyState, MediaCard, MediaViewer, Notice, NumberField, Pagination, RemoteMultiSelect, Select, SideNav, Skeleton, Stack, Surface, TextField, TreeSelect, type AppShellProps, type DateRange, type TreeNode, type TableSort } from '../components';
 import type { Choice } from '../components/components';
 import './extensions.css';
 
@@ -19,18 +19,21 @@ export function ShellGallery() {
   const [inlineControls, setInlineControls] = useState(true);
   return <section><div className="ds-section-title"><span>LAYOUT</span><h2>画布与应用外壳</h2></div>
     <p className="ds-caption">单侧栏适合简单工具；双左栏适合目录与列表；左右栏适合编辑器与检查器。可用宽度不足 1120px 时次栏转抽屉，不足 760px 时全局导航也转抽屉。正文始终保留。</p>
-    <div className="ds-extension-controls"><Select label="布局方案" value={layout} onChange={event => setLayout(event.target.value as AppShellProps['layout'])}><option value="single">单侧栏</option><option value="double-left">双左侧栏</option><option value="left-right">左右侧栏</option></Select><Checkbox label="控制按钮放入侧栏和正文" checked={inlineControls} onChange={event => setInlineControls(event.target.checked)} /><Checkbox label="纯色背景" checked={plain} onChange={event => setPlain(event.target.checked)} /><StateControl value={state} onChange={setState} /></div>
+    <div className="ds-extension-controls"><Select label="布局方案" value={layout} onChange={event => setLayout(event.target.value as AppShellProps['layout'])}><option value="single">单侧栏</option><option value="double-left">双左侧栏</option><option value="left-right">左右侧栏</option></Select><Checkbox label="使用正文导航栏" checked={inlineControls} onChange={event => setInlineControls(event.target.checked)} /><Checkbox label="纯色背景" checked={plain} onChange={event => setPlain(event.target.checked)} /><StateControl value={state} onChange={setState} /></div>
     <div className="ds-shell-stage"><AppShell controls={inlineControls ? 'inline' : 'header'} layout={layout} decoration={plain ? 'none' : 'theme'}
       navigation={{ label: '全局导航', open: navOpen, onOpenChange: setNavOpen, drawerOpen: navDrawerOpen, onDrawerOpenChange: setNavDrawerOpen, content: <Stack gap={4}>{inlineControls && <Inline><strong>Rhine Workspace</strong><AppShellToggle placement="panel" iconOnly /></Inline>}<SideNav aria-label="应用导航" currentId={current} groups={[{ label: '工作空间', items: [{ id: 'inbox', label: '收件箱', href: '#app-shell' }, { id: 'archive', label: longName, href: '#app-shell' }] }]} onNavigate={(item, event) => { event.preventDefault(); setCurrent(item.id); setNavDrawerOpen(false); }} /></Stack> }}
       secondary={{ label: layout === 'left-right' ? '辅助详情' : '上下文目录', open: secondaryOpen, onOpenChange: setSecondaryOpen, content: <Stack gap={4}>{inlineControls && <AppShellToggle panel="secondary" placement="panel" />}<strong>{current === 'inbox' ? '收件箱' : longName}</strong>{state === 'loading' ? <Skeleton label="目录加载中" /> : state === 'error' ? <Notice title="目录读取失败" tone="error">可以继续编辑正文。</Notice> : state === 'empty' ? <EmptyState title="目录暂无内容" description="选择其他项目或继续编辑正文。" /> : <><p>当前条目、所属目录和属性。</p><Button variant="secondary" disabled={state === 'disabled'}>上下文操作</Button></>}</Stack> }}
+      contentHeader={inlineControls ? <nav aria-label="工作区导航"><Inline>
+        <AppShellToggle placement="content" iconOnly />
+        <h1>{current === 'inbox' ? '收件箱' : longName}</h1>
+        <div className="rhine-shell__navigation-actions"><AppShellToggle panel="secondary" placement="content" />
+          <Dialog title="工作区信息" description="查看当前工作区的信息。关闭后返回导航入口。" trigger={<IconButton icon="info" label="工作区信息" title="工作区信息" />}><TextField label="对话框输入" placeholder="试试 Tab 和 Escape" /></Dialog>
+        </div>
+      </Inline></nav> : undefined}
       header={inlineControls ? undefined : <Dialog title="背景与浮层" description="浮层仍然挂载在唯一主题根；不受局部背景裁剪。" trigger={<Button>打开对话框</Button>}><TextField label="对话框输入" placeholder="试试 Tab 和 Escape" /></Dialog>}>
-      <Stack gap={6}>{inlineControls && <header aria-label="工作区操作栏" style={{ position: 'sticky', top: 0, zIndex: 1, background: 'var(--rhine-bg)', paddingBlock: 'var(--rhine-space-2)' }}><Inline>
-        <AppShellToggle placement="content" /><AppShellToggle panel="secondary" placement="content" />
-        <span style={{ flex: 1 }}>本地草稿</span>
-        <Dialog title="背景与浮层" description="浮层继承当前主题，关闭后返回操作入口。" trigger={<Button variant="secondary">打开对话框</Button>}><TextField label="对话框输入" placeholder="试试 Tab 和 Escape" /></Dialog>
-      </Inline></header>}<div><h1 className="rhine-sr-only">{current === 'inbox' ? '收件箱' : longName}</h1><p>侧栏已标识当前页，顶部只保留状态和操作。正文默认使用纯色背景；关闭“纯色背景”可启用主题纹理。</p></div>
+      <Stack gap={6}>{!inlineControls && <h1 className="rhine-sr-only">{current === 'inbox' ? '收件箱' : longName}</h1>}<p>本地草稿 · 整理工作区，继续你的记录。</p>
         <Surface><Stack gap={4}><TextField label="正文草稿" value={draft} onChange={event => setDraft(event.target.value)} /><Button disabled={state === 'disabled'}>继续当前任务</Button></Stack></Surface>
-        {Array.from({ length: 5 }, (_, i) => <Surface key={i}><h3>内容段落 {i + 1}</h3><p>滚动正文时顶部操作栏保持可达；每栏仅有一个滚动容器。Tab 可依次访问导航、正文与辅助详情。</p></Surface>)}
+        {Array.from({ length: 5 }, (_, i) => <Surface key={i}><h3>内容段落 {i + 1}</h3><p>滚动正文时导航栏保持可达；每栏仅有一个滚动容器。Tab 可依次访问导航、正文与辅助详情。</p></Surface>)}
       </Stack>
     </AppShell></div>
     <div className="ds-extension-grid ds-gap-top">{(['canvas','content','sidebar'] as const).map(role => <Background key={role} roleTone={role} decoration={plain ? 'none' : 'theme'} className="ds-background-swatch"><strong>{role}</strong><Surface>Surface 始终提供不透明阅读表面。</Surface></Background>)}</div>
@@ -81,20 +84,21 @@ export function AdvancedDataGallery() {
 
 export function MediaGallery() {
   const [selected, setSelected] = useState(false), [open, setOpen] = useState(false), [index, setIndex] = useState(0), [metadata, setMetadata] = useState(true), [version, setVersion] = useState('original');
-  const titles = ['山野 · 午后的光', longName, '视频预览示例'];
+  const titles = ['山野 · 午后的光', '远山手记 · 原始影像与拍摄记录', '暮色之间 · 动态影像'];
   const [retried, setRetried] = useState(false);
-  return <section><div className="ds-section-title"><span>MEDIA</span><h2>媒体保持比例，画布保持中性</h2></div><p className="ds-caption">照片、RAW、Live 和视频共享卡片契约。中性暗色查看器独立于三套界面主题；媒体请求、视频播放、下载与版本资源均由宿主提供。示例只使用本地内嵌矢量预览。</p>
-    <MediaViewer open={open} onOpenChange={setOpen} trigger={<Button>打开全屏查看器</Button>} title={titles[index]} description={`${index + 1} / 3 · 左右方向键切换；输入和播放器保留自身按键`} onPrevious={() => setIndex(current => Math.max(0, current - 1))} onNext={() => setIndex(current => Math.min(2, current + 1))} previousDisabled={index === 0} nextDisabled={index === 2} metadataOpen={metadata} onMetadataOpenChange={setMetadata}
+  return <section className="ds-media-gallery"><div className="ds-section-title"><span>MEDIA</span><h2>影像与收藏</h2></div><p className="ds-media-intro">浏览、选择，或打开一张影像。保留画面的原始比例，让每一份作品有自己的位置。</p><div className="ds-media-toolbar"><span role="status">3 份资源 · {selected ? '已选 1 项' : '未选择'}</span>
+    <MediaViewer open={open} onOpenChange={setOpen} trigger={<Button>打开全屏查看器</Button>} title={titles[index]} description={`${index + 1} / 3 · 左右方向键切换影像`} onPrevious={() => setIndex(current => Math.max(0, current - 1))} onNext={() => setIndex(current => Math.min(2, current + 1))} previousDisabled={index === 0} nextDisabled={index === 2} metadataOpen={metadata} onMetadataOpenChange={setMetadata}
       actions={<><label>资源版本 <select aria-label="资源版本" value={version} onChange={event => setVersion(event.target.value)}><option value="original">原始资源</option><option value="preview">预览资源</option></select></label><a href={sampleImage} download="rhine-demo.svg">下载演示资源</a></>}
       metadata={<><h3>媒体信息</h3><p>{titles[index]}</p><p>类型：{index === 2 ? '视频' : '照片'}</p><p>版本：{version}</p><p>日期：未知</p><Dialog title="资源说明" description="Escape 先关闭此层，再关闭媒体查看器。" trigger={<button type="button">打开资源说明</button>}><p>业务元数据由宿主管理。</p></Dialog></>}
     >{index === 2 ? <video controls poster={sampleImage} aria-label="视频播放器示例" /> : <img src={sampleImage} alt="山峰与太阳构成的演示插画" />}</MediaViewer>
-    <div className="ds-extension-grid ds-gap-top">
-      <MediaCard title={titles[0]} kind="photo" date="2026-10-23" preview={<img src={sampleImage} alt="山野插画" />} onOpen={() => { setIndex(0); setOpen(true); }} selected={selected} onSelectedChange={setSelected} />
+    </div><div className="ds-media-grid">
+      <MediaCard title={titles[0]} kind="photo" date="2026-10-23" preview={<img src={sampleImage} alt="山野插画" />} onOpen={() => { setIndex(0); setOpen(true); }} selected={selected} onSelectedChange={setSelected} aspectRatio="3 / 2" />
       <MediaCard title={titles[1]} kind="RAW" preview={<img src={sampleImage} alt="原始预览" />} aspectRatio="3 / 2" onOpen={() => { setIndex(1); setOpen(true); }} />
-      <MediaCard title="视频，保持原始比例" kind="video" preview={<img src={sampleImage} alt="视频封面" />} onOpen={() => { setIndex(2); setOpen(true); }} />
-      <MediaCard title="加载中的 Live 资源" kind="Live" state="loading" onOpen={() => setOpen(true)} />
-      <MediaCard title="不可解码的文件" kind="RAW" state={retried ? 'ready' : 'error'} preview={retried ? <img src={sampleImage} alt="重试后恢复的示例预览" /> : undefined} onOpen={() => { setIndex(1); setOpen(true); }} actions={<Button variant="secondary" onClick={() => setRetried(true)} disabled={retried}>{retried ? '预览已恢复' : '重试预览'}</Button>} />
-      <MediaCard title="尚无预览的资源" kind="photo" state="empty" onOpen={() => setOpen(true)} />
-    </div>
+      <MediaCard title={titles[2]} date="2026-10-21" aspectRatio="3 / 2" kind="video" preview={<img src={sampleImage} alt="视频封面" />} onOpen={() => { setIndex(2); setOpen(true); }} />
+    </div><div className="ds-media-section-heading"><h3>状态与反馈</h3><p>加载、读取失败和缺少预览时，资源信息仍然保留。</p></div><div className="ds-media-grid ds-media-states">
+      <MediaCard aspectRatio="3 / 2" title="加载中的 Live 资源" kind="Live" state="loading" onOpen={() => setOpen(true)} />
+      <MediaCard aspectRatio="3 / 2" title="不可解码的文件" kind="RAW" state={retried ? 'ready' : 'error'} preview={retried ? <img src={sampleImage} alt="重试后恢复的示例预览" /> : undefined} onOpen={() => { setIndex(1); setOpen(true); }} actions={<Button variant="secondary" onClick={() => setRetried(true)} disabled={retried}>{retried ? '预览已恢复' : '重试预览'}</Button>} />
+      <MediaCard aspectRatio="3 / 2" title="尚无预览的资源" kind="photo" state="empty" onOpen={() => setOpen(true)} />
+    </div><p className="ds-caption ds-media-note">展台使用本地矢量插画；视频项展示封面与控件，不包含可播放文件。</p>
   </section>;
 }

@@ -4,16 +4,33 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { AppShell, AppShellToggle } from '../components';
 import { ThemeProvider } from '../components/theme';
 
-function Demo() {
+function Demo({ navigationBar = false }: { navigationBar?: boolean }) {
   const [open, setOpen] = useState(true);
   return <ThemeProvider><AppShell controls="inline" layout="single" navigation={{ label: '导航', open, onOpenChange: setOpen,
-    content: <div aria-label="品牌区"><strong>Workspace</strong><AppShellToggle placement="panel" iconOnly /><button>导航项</button></div> }}>
-    <AppShellToggle placement="content" iconOnly /><input aria-label="草稿" defaultValue="保留" />
+    content: <div aria-label="品牌区"><strong>Workspace</strong><AppShellToggle placement="panel" iconOnly /><button>导航项</button></div> }}
+    contentHeader={navigationBar ? <nav aria-label="工作区导航"><AppShellToggle placement="content" iconOnly /><h1>收件箱</h1></nav> : undefined}>
+    {!navigationBar && <AppShellToggle placement="content" iconOnly />}<input aria-label="草稿" defaultValue="保留" />
   </AppShell></ThemeProvider>;
 }
 
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 describe('inline shell controls', () => {
+  it('keeps navigation outside the body and preserves drafts when navigation changes', () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1040);
+    const { rerender } = render(<Demo navigationBar />);
+    const input = screen.getByLabelText('草稿');
+    fireEvent.change(input, { target: { value: '未保存的编辑' } });
+    expect(screen.getByRole('region', { name: '正文' })).not.toContainElement(screen.getByRole('navigation', { name: '工作区导航' }));
+    const collapse = screen.getByRole('button', { name: '收起导航' });
+    collapse.focus(); fireEvent.click(collapse);
+    const expand = within(screen.getByRole('navigation', { name: '工作区导航' })).getByRole('button', { name: '展开导航' });
+    expect(expand).toHaveFocus();
+    fireEvent.click(expand);
+    rerender(<Demo />);
+    expect(screen.getByLabelText('草稿')).toBe(input);
+    expect(input).toHaveValue('未保存的编辑');
+  });
   it('collapses from the brand and restores focus without a standalone header', () => {
     vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1040);

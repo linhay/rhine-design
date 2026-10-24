@@ -151,6 +151,8 @@ export function Example() {
 
 新增 `Background` 与 `AppShell`，0.5.0 共 59 个组件；npm 0.4.0 仍为 48 个。Background 支持六类 roleTone、auto/theme/none 装饰策略及 appearance 局部覆盖；AppShell 提供组合展台使用的固定顶部操作区与响应式侧栏。完整 API、最小接入、背景滚动及 Portal 边界见[背景与应用外壳契约](../docs/APPLICATION_COMPONENTS.md)。
 
+源码候选新增可选 `AppShell.contentHeader`：工作区导航常驻正文列顶部，正文独立滚动；组合现有 `AppShellToggle`、`Inline`、标题与操作。媒体源码候选同步更新主题边界：卡片、标签、查看器工具栏与信息栏跟随宿主主题，仅媒体画布保持中性。以上尚未包含于 npm 0.6.0，交互与验证边界见[应用组件契约](../docs/APPLICATION_COMPONENTS.md)。
+
 ## 轨道背景（0.6.0）
 
 `OrbitBackdrop` 自 0.6.0 提供，接收 `HTMLAttributes<HTMLDivElement>` 和 `reducedMotion?: boolean`，包含可选 `children`。0.6.0 提供固定深色轨道艺术与内置暂停 / 继续按钮，Canvas 为 `aria-hidden` 装饰。系统、显式减少动态、祖先偏好、窄窗、页面隐藏、离屏及零尺寸时停帧；恢复沿冻结时间继续，不追赶。Canvas 不可用时保留静态艺术与内容。宿主只组合布局，不复制动画或覆盖组件状态。完整生命周期、主题及接入约束见[轨道背景契约](../docs/ORBIT_BACKDROP.md)，真实组件展台为 `/#orbit`。自 0.6.0 起共 60 个组件。
