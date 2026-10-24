@@ -1,6 +1,6 @@
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Badge, Button, Disclosure, EmptyState, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
+import { Badge, Button, Checkbox, Disclosure, EmptyState, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
 import './preview.css';
 import { CommonGallery } from './CommonGallery';
 import { MotionGallery } from './MotionGallery';
@@ -21,6 +21,7 @@ function Gallery() {
   const [previewPage, setPreviewPage] = useState('oauth');
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState(false);
+  const [showSelectionIndicator, setShowSelectionIndicator] = useState(false);
   const [tab, setTab] = useState('tokens');
   const [metric, setMetric] = useState('tokens');
   const [progress, setProgress] = useState<number | null>(38);
@@ -99,7 +100,7 @@ function Gallery() {
       </section>}
 
       {section === 'selection' && <section id="selection"><div className="ds-section-title"><span>03</span><h2>选择清楚，位置稳定</h2></div>
-        <div className="ds-grid"><div><SelectionCard label="可选择容器" selected={selected} onSelectedChange={setSelected}><span className="ds-caption">适用于账号、模板或可取消选择项。<br />同一位置切换底色与边框，不抬升卡片。</span><div className="ds-gap-top"><Badge tone={selected?'success':'neutral'}>{selected?'已选择':'未选择'}</Badge></div></SelectionCard><p className="ds-caption">SelectionCard · 背景与边界 120ms</p></div>
+        <div className="ds-grid"><div><Checkbox label="显示卡片勾选框" checked={showSelectionIndicator} onChange={event => setShowSelectionIndicator(event.target.checked)} /><SelectionCard showIndicator={showSelectionIndicator} label="可选择容器" selected={selected} onSelectedChange={setSelected}><span className="ds-caption">适用于账号、模板或可取消选择项。<br />同一位置切换底色与边框，不抬升卡片。</span><div className="ds-gap-top"><Badge tone={selected?'success':'neutral'}>{selected?'已选择':'未选择'}</Badge></div></SelectionCard><p className="ds-caption">SelectionCard · 背景与边界 120ms</p></div>
         <Surface><div className="ds-component-title"><h3>SegmentedControl</h3><span>原生单选 / 120ms</span></div><SegmentedControl label="展示指标" items={[{value:'tokens',label:'Token'},{value:'requests',label:'请求数'},{value:'cost',label:'费用',disabled:true}]} value={metric} onValueChange={setMetric} /><p className="ds-caption">当前指标：{metric==='tokens'?'Token':'请求数'}。方向键切换，自动跳过禁用项。</p></Surface></div>
         <Surface className="ds-gap-top"><div className="ds-component-title"><h3>Tabs</h3><span>下划线与内容进入 180ms</span></div><Tabs label="组件说明" value={tab} onValueChange={setTab} items={[{value:'tokens',label:'视觉变量',content:<p>颜色、间距、字体与动效集中定义。业务页面只消费语义变量。</p>},{value:'disabled',label:'预留示例',disabled:true,content:null},{value:'motion',label:'动效规则',content:<p>内容进入最多移动 3px。保留隐藏面板状态，切换不触发重复业务操作。</p>}]} /></Surface>
       </section>}

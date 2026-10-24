@@ -58,7 +58,7 @@ export function Example() {
 | Badge | tone=neutral/success/warning/error；children | 只读短状态，颜色必须配文字，不做可点击按钮 |
 | Surface | HTML div 属性 | 静态分区，无点击语义；不是弹窗或导航 |
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
-| SelectionCard | label；selected；onSelectedChange；disabled；children | 原生 checkbox 可取消；是否单选由上层控制；内部不嵌套按钮/链接/其他输入 |
+| SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
 | Tabs | label；items[{value,label,content,disabled?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树 |
 | SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange | 原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供 |

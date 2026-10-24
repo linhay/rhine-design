@@ -37,6 +37,7 @@ rg -n 'ConfirmDialog|DataTable|Combobox' tests preview
 API decisions that commonly matter:
 
 - `Select` uses a native single-select; searchable candidates use `Combobox`.
+- `SelectionCard.showIndicator=false` visually hides the native input while preserving keyboard focus, accessible state and card selection styling (source candidate, unpublished).
 - `SelectionCard` uses checkbox semantics; the host determines single-selection policy. Do not nest other interactive controls in it.
 - `Text`'s `as` chooses semantics; `variant` chooses visual hierarchy.
 - `Logo` accepts `wordmark` and `label`; its `theme` affects the logo, not the full component library.
