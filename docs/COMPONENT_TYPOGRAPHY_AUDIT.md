@@ -39,6 +39,6 @@ mkdir -p output/playwright/issue-31
 playwright-cli -s=component-type run-code --filename=scripts/check-component-typography.js
 ```
 
-回归直接断言计算字号、行高与字重，并改变宿主行高/字重确认局部配对；检查三主题、400/520/880px、100%/200% CSS zoom、长文、44px 操作区域、关闭与焦点归还。不将 CSS zoom 外推为原生菜单缩放或所有浏览器覆盖。
+回归直接断言计算字号、行高与字重，并改变宿主行高/字重确认局部配对；检查三主题、400/520/880px、100%/200% CSS zoom、长文、44px 操作区域、关闭与焦点归还。400px、200% CSS zoom 下额外测量 EmptyState 标题与 MediaViewer 说明的文字 Range，确认实际多行且文字边界无水平或垂直裁切，不仅检查外围容器。不将 CSS zoom 外推为原生菜单缩放或所有浏览器覆盖。
 
 本轮结果：259 项组件测试、类型检查与生产构建通过；上述 18 组 Chromium 场景通过，无页面异常。另人工复核三主题在 400px、200% CSS zoom 下的空状态与媒体头部截图，长文和操作仍完整可读。

@@ -13,6 +13,20 @@ async page => {
     });
     check(actual.size === `${size}px` && actual.leading === `${leading}px` && actual.weight === String(weight), { ...context, selector, actual, expected:{size,leading,weight} });
   };
+  const wrappedText = async (selector, context) => {
+    const actual = await page.locator(selector).evaluate(e => {
+      const range = document.createRange();
+      range.selectNodeContents(e);
+      const lines = Array.from(range.getClientRects());
+      const box = e.getBoundingClientRect();
+      return {
+        lineCount:new Set(lines.map(r => Math.round(r.top))).size,
+        unclipped:e.scrollWidth <= e.clientWidth+1 && e.scrollHeight <= e.clientHeight+1 &&
+          lines.every(r => r.left >= box.left-1 && r.right <= box.right+1 && r.top >= box.top-1 && r.bottom <= box.bottom+1)
+      };
+    });
+    check(actual.lineCount > 1 && actual.unclipped, {...context,selector,kind:'text-wrap',actual});
+  };
   for (const theme of ['rhine', 'arknights', 'neo-brutalism']) {
     for (const width of [400,520,880]) for (const zoom of [1,2]) {
       const context = {theme,width,zoom}, heading = theme === 'neo-brutalism' ? 750 : 600;
@@ -32,7 +46,8 @@ async page => {
         await typography('.rhine-media-card__status',14,22,400,state);
       }
       await page.locator('.rhine-theme').evaluate(e => { e.style.lineHeight=''; e.style.fontWeight=''; });
-      check(await page.locator('.rhine-empty').evaluate(e => e.scrollWidth <= e.clientWidth+1 && e.querySelector('strong').getBoundingClientRect().height >= 24), {...context,kind:'empty-wrap'});
+      check(await page.locator('.rhine-empty').evaluate(e => e.scrollWidth <= e.clientWidth+1), {...context,kind:'empty-wrap'});
+      if (width === 400 && zoom === 2) await wrappedText('.rhine-empty strong',context);
       if (width === 400 && zoom === 2) await page.locator('.rhine-empty').screenshot({path:`output/playwright/issue-31/empty-${theme}.png`});
       const opener=page.getByRole('button',{name:'打开媒体示例',exact:true});
       await opener.click();
@@ -41,6 +56,7 @@ async page => {
       await typography('.rhine-media-viewer__header p',12,18,400,context);
       await typography('.rhine-media-viewer__header h2',18,26,heading,context);
       await typography('.rhine-media-viewer__actions label',12,18,400,context);
+      if (width === 400 && zoom === 2) await wrappedText('.rhine-media-viewer__header p',context);
       check(await dialog.evaluate(e => e.scrollWidth <= e.clientWidth+1), {...context,kind:'viewer-wrap'});
       check(await dialog.locator('button,select').evaluateAll((elements, zoom) => elements.every(e => e.getBoundingClientRect().height/zoom >= 44),zoom), {...context,kind:'hit-targets'});
       await dialog.getByRole('button',{name:'下一项',exact:true}).click();
