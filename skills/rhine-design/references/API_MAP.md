@@ -30,7 +30,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | SideNav, Breadcrumbs, Steps (0.4.0) | `components/Navigation.tsx` |
 | Fieldset, ErrorSummary (0.4.0) | `components/FormWorkflow.tsx` |
 | Toast | `components/Toast.tsx` |
-| Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState | `components/components.tsx`；Surface 的 `padding="none"` 仅取消表格容器外围内距，默认不变；未发布能力见 `CHANGELOG.md` |
+| Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState | `components/components.tsx`；Surface 的 `padding="none"` 仅取消表格容器外围内距，默认不变；此选项自 0.9.1 提供，见 `CHANGELOG.md` |
 
 Primary contracts: `components/README.md` and `components/COMMON_COMPONENTS.md`. Find behavioral evidence in `tests/` and composition examples in `preview/`.
 

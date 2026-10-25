@@ -1,10 +1,12 @@
 # 版本记录
 
-## 未发布
+## 0.9.1（2026-10-25）
 
 - #23：移除 StatusTimelineList 末项重复留白，保留 44px 命中区；紧凑账号展台的基础信息与今日/本周期读数按稳定列对齐，窄容器自然换行。
 - #24：Surface 新增 `padding="default" | "none"` 和公开 `SurfaceProps`；纯表格可取消外围内距，默认 24px、单元格间距与浮层/焦点行为保持不变。
 - #25：DateRangePicker 按实际容器宽度取消窄容器重复横向内距，DateField 收紧窄编辑区内距并保留 Inline 中的固有宽度；增加 150/200/280 CSS px 的范围与独立日期展台，保留原生日期、日历入口和受控草稿语义。
+- 修正固定合成历史的摘要为“24小时窗口”，避免将 2026-10-23～24 的示例误解为当前最近一天。以上修复见 [PR #26](https://github.com/linhay/rhine-design/pull/26)。
+- 默认 API 行为保持兼容，无需迁移；使用 `Surface padding="none"` 需升级至 0.9.1。验证范围与重跑步骤见[紧凑布局回归](docs/COMPACT_LAYOUT_VERIFICATION.md)。
 
 ## 0.9.0（2026-10-24）
 

@@ -109,7 +109,7 @@ export function DateRangeFilterGallery() {
       </Surface>
       <Stack gap={3}>
         <Text as="h3" variant="heading">窄容器中的完整日期</Text>
-        <Text variant="caption" tone="muted">只改变实际容器宽度，不缩小字号。请聚焦日期并编辑最后一段，确认完整年月日与日历入口仍可见；#25 尺寸修复为本地候选。</Text>
+        <Text variant="caption" tone="muted">只改变实际容器宽度，不缩小字号。请聚焦日期并编辑最后一段，确认完整年月日与日历入口仍可见；尺寸适配自 0.9.1 提供。</Text>
         <Select label="日期容器宽度" value={narrowWidth} onChange={event => setNarrowWidth(event.target.value)}>
           <option value="150">150 CSS px</option><option value="200">200 CSS px</option><option value="280">280 CSS px</option>
         </Select>

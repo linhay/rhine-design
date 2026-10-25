@@ -30,7 +30,7 @@ export function SpacingGallery() {
       </Grid>
       <Stack gap={3}>
         <Text as="h3" variant="heading">纯表格 · 取消容器外围内距</Text>
-        <Text variant="caption" tone="muted">Surface padding="none" 是本地候选；表头和单元格保留原有间距。切换主题并勾选行，检查边界和文字。</Text>
+        <Text variant="caption" tone="muted">Surface padding="none" 自 0.9.1 提供；表头和单元格保留原有间距。切换主题并勾选行，检查边界和文字。</Text>
         <Surface padding="none">
           <DataTable caption="示例部门用量" rows={[
             { id: 'research', name: '研发协作组', requests: 128 },

@@ -10,7 +10,7 @@
 
 ## 间距组合
 
-[间距规范](SPACING.md)定义尺度、分组与卡片配方：Surface默认负责24px内边距，嵌套Stack提供8px标题/说明和16px内容/操作间隔，Inline提供8px按钮间隔；Surface不自动给子元素加间距。单独承载表格时使用本地候选 `padding="none"`，只取消容器外围内距，保留表头/单元格间距。展台`#spacing`可检查默认、加载、错误、长文案及无外围内距表格。
+[间距规范](SPACING.md)定义尺度、分组与卡片配方：Surface默认负责24px内边距，嵌套Stack提供8px标题/说明和16px内容/操作间隔，Inline提供8px按钮间隔；Surface不自动给子元素加间距。单独承载表格时使用 0.9.1 的 `padding="none"`，只取消容器外围内距，保留表头/单元格间距。展台`#spacing`可检查默认、加载、错误、长文案及无外围内距表格。
 
 ## 使用
 
@@ -60,7 +60,7 @@ export function Example() {
 | Toolbar | title；description；children；HTML div属性 | 自适应控件组合，role=group与普通Tab顺序；不伪装为需要方向键导航的ARIA toolbar；不含业务状态 |
 | ListFilterBar（0.9.0） | label；search；primary/filters 字段；onReset；refresh；一个 action；result/pending/error | 最多两个常显条件，超出项进入同一 Drawer；宿主维护即时状态、查询和权限；[契约与版本边界](../docs/LIST_FILTER_BAR.md) |
 | Badge | tone=neutral/success/warning/error；children | 只读短状态，颜色必须配文字，不做可点击按钮 |
-| Surface | padding=default/none；HTML div 属性 | 默认24px内距；none仅取消容器padding，适合纯表格；静态分区，无点击语义；padding为[#24](https://github.com/linhay/rhine-design/issues/24)本地未发布候选 |
+| Surface | padding=default/none；HTML div 属性 | 默认24px内距；none仅取消容器padding，适合纯表格；静态分区，无点击语义；padding自0.9.1提供，见[#24](https://github.com/linhay/rhine-design/issues/24) |
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |

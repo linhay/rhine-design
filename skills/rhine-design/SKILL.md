@@ -2,7 +2,7 @@
 name: rhine-design
 description: Use Rhine Design components and specifications to design, implement, or review React UI, typography, themes, and motion. Apply when a project uses Rhine Design or the user requests its visual language or component system.
 metadata:
-  version: "0.8.0"
+  version: "0.9.1"
 ---
 
 # Rhine Design · 莱茵设计
@@ -13,7 +13,7 @@ Use the installed version's components and contracts to build consistent interfa
 
 ## Locate the matching source
 
-Package: `@linhey/rhine-design`. GitHub: `linhay/rhine-design` (different account spelling). This skill targets 0.8.0, including OrbitBackdrop, application shells, advanced forms, media, controlled tables and monitoring charts. Theme and navigation APIs require at least 0.4.0; application APIs require 0.5.0 and OrbitBackdrop requires 0.6.0. Check installed exports before adoption.
+Package: `@linhey/rhine-design`. GitHub: `linhay/rhine-design` (different account spelling). This skill targets 0.9.1, including ListFilterBar, Surface padding, narrow date layouts, OrbitBackdrop, application shells, advanced forms, media, controlled tables and monitoring charts. Theme and navigation APIs require at least 0.4.0; application APIs require 0.5.0 and OrbitBackdrop requires 0.6.0. Check installed exports before adoption.
 
 Find the package in the host's dependencies, normally `node_modules/@linhey/rhine-design/`, or its registered source checkout. Verify `package.json` name/version before using the paths below. Paths in references are relative to that package root, not the copied skill directory. Read installed types and source when versions differ; do not infer a new API from this skill. If the package is unavailable, use the task's supplied design sources and identify the missing implementation evidence.
 
@@ -56,6 +56,6 @@ Required issue content:
 - Host state determines data, selection and operation outcomes. Search and pagination remain host/server responsibilities; busy indicators never imply success.
 - For multi-field failures, preserve input and focus a summary only after failed submission; links return to fields without changing routing. Use SideNav/Breadcrumbs/Steps only when exported by the installed source.
 - Monitoring shows units, freshness and stale/unknown states; errors must not rely on color, flashing or transient toasts.
-- Design from the user's current task: keep identity, available actions, results and decision-relevant consequences; remove duplicate state labels and implementation prose. Reveal history on demand. Inside an existing Surface prefer borderless read-only summaries and paired facts; never compress by shrinking business text, cropping values, hiding unknown/error states or merging distinct costs/expiry meanings. See `docs/COMPACT_ACCOUNT_PATTERNS.md` when present; its new APIs are source candidates, not npm 0.6.0 features.
+- Design from the user's current task: keep identity, available actions, results and decision-relevant consequences; remove duplicate state labels and implementation prose. Reveal history on demand. Inside an existing Surface prefer borderless read-only summaries and paired facts; never compress by shrinking business text, cropping values, hiding unknown/error states or merging distinct costs/expiry meanings. See `docs/COMPACT_ACCOUNT_PATTERNS.md` when present; its base APIs require 0.8.0, and the spacing fixes and Surface padding option require 0.9.1.
 - Motion explains a change. Respect reduced motion, cancellation and replay; startup decoration never blocks real readiness. Preview-only experiments are not exported components.
 - Keep independent release boundaries: do not change unrelated products or publish packages merely because this skill was invoked.

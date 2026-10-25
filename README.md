@@ -46,10 +46,12 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install --save-exact @linhey/rhine-design@0.8.0
+npm install --save-exact @linhey/rhine-design@0.9.1
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
+
+**0.9.1 修复**：紧凑账号时间轴尾距与事实列对齐、纯表格 `Surface padding="none"`、窄容器中完整原生日期编辑区。默认行为兼容，完整说明见[版本记录](CHANGELOG.md#0912026-10-25)。0.9.0 的 `ListFilterBar` 搜索、主条件与更多筛选能力继续保留。
 
 ```tsx
 import { Button, Inline, Stack, Surface, Text } from '@linhey/rhine-design';
