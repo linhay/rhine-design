@@ -135,6 +135,8 @@ export function RemoteMultiSelect({ value, onValueChange, options, readOnly = fa
   const [expanded, setExpanded] = useState(false);
   const limit = maxVisibleTags !== undefined && Number.isFinite(maxVisibleTags) ? Math.max(0, Math.floor(maxVisibleTags)) : undefined;
   const collapsible = limit !== undefined && value.length > limit;
+  // Clearing or replacing the selection below the limit starts a new compact view.
+  if (expanded && !collapsible) setExpanded(false);
   const shown = collapsible && !expanded ? value.slice(0, limit) : value;
   const focusInput = () => document.getElementById(inputId)?.focus();
   const remove = (key: string) => {

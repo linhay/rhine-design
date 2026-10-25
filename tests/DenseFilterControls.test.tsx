@@ -66,4 +66,14 @@ describe('bounded multi-select tags', () => {
     expect(document.querySelectorAll('input[type=hidden]')).toHaveLength(1);
     expect(screen.queryByRole('button', { name: '展开已选项' })).not.toBeInTheDocument();
   });
+  it('collapses a new selection after the host clears an expanded selection', () => {
+    const props = { label: '部门', query: '', onQueryChange: vi.fn(), options: choices, onValueChange: vi.fn(), maxVisibleTags: 2, name: 'department' };
+    const { rerender } = render(<RemoteMultiSelect {...props} value={choices.slice(0, 90)} />);
+    fireEvent.click(screen.getByRole('button', { name: '展开已选项' }));
+    rerender(<RemoteMultiSelect {...props} value={[]} />);
+    rerender(<RemoteMultiSelect {...props} value={choices} />);
+    expect(within(screen.getByRole('list', { name: '部门已选项' })).getAllByRole('listitem')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: '展开已选项' })).toHaveAttribute('aria-expanded', 'false');
+    expect(document.querySelectorAll('input[type=hidden]')).toHaveLength(100);
+  });
 });

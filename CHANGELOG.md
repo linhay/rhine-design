@@ -1,5 +1,11 @@
 # 版本记录
 
+## Unreleased
+
+- #27：SegmentedControl 新增等宽 `fullWidth`；ListFilterBar 支持用 `drawerDescription` / `drawerResult` 省略重复说明与摘要，保留加载和错误反馈。
+- DateRangePicker 新增 `compact` 一体日期边框，窄容器内部重排；RemoteMultiSelect 新增 `maxVisibleTags`、总数与有界展开，保留完整表单值和键盘移除，极窄容器标签换行，清空后重新选择恢复折叠。
+- 新增 `#compact-filters` 真实组件展台与回归。以上为未发布源码能力，npm 0.9.1 不包含这些选项。
+
 ## 0.9.1（2026-10-25）
 
 - #23：移除 StatusTimelineList 末项重复留白，保留 44px 命中区；紧凑账号展台的基础信息与今日/本周期读数按稳定列对齐，窄容器自然换行。
