@@ -91,7 +91,7 @@
 .rhine-disclosure[data-expanded=true] summary>span { transform:rotate(45deg); }
 .rhine-disclosure__content { padding:4px 0 20px; }
 .rhine-empty { padding:32px 24px; text-align:center; border:1px solid var(--rhine-line); background:var(--rhine-surface); }
-.rhine-empty strong { font-size:16px; }.rhine-empty p { max-width:400px; margin:8px auto 20px; color:var(--rhine-muted); }
+.rhine-empty strong { display:block; font-size:var(--rhine-text-heading); line-height:var(--rhine-leading-heading); font-weight:var(--rhine-weight-heading); overflow-wrap:anywhere; }.rhine-empty p { max-width:400px; margin:8px auto 20px; color:var(--rhine-muted); }
 @keyframes rhine-spin { to { transform:rotate(360deg); } }
 .rhine-logo { display:inline-flex; flex:none; align-items:center; vertical-align:middle; color:var(--rhine-green); line-height:1; }
 .rhine-logo__symbol { display:block; width:var(--rhine-logo-size); height:var(--rhine-logo-size); flex:none; fill:currentColor; }

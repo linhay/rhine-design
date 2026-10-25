@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- #31：MediaViewer 说明补齐 caption 12/18/400，EmptyState 标题采用 heading 16/24 与主题标题字重；同类复制反馈、步骤/表单组说明、错误摘要和主题预览状态补齐语义配对，保留既有密度例外。真实回归入口 `#component-typography`。
 - #29：Checkbox 新增可选 `layout="row"` 与公开 `CheckboxProps`，提供窄侧栏双行文字对齐、对称内距、整行原生点击和主题选择/焦点，保留默认表单布局；展台见 `#checkbox-rows`。
 - #27：SegmentedControl 新增等宽 `fullWidth`；ListFilterBar 支持用 `drawerDescription` / `drawerResult` 省略重复说明与摘要，保留加载和错误反馈。
 - DateRangePicker 新增 `compact` 一体日期边框，窄容器内部重排；RemoteMultiSelect 新增 `maxVisibleTags`、总数与有界展开，保留完整表单值和键盘移除，极窄容器标签换行，清空后重新选择恢复折叠。

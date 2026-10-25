@@ -4,7 +4,7 @@
 .rhine-link:hover { text-decoration-thickness:2px; }
 .rhine-link>.rhine-icon { margin-left:4px; }
 .rhine-copy { display:inline-flex; align-items:center; gap:12px; flex-wrap:wrap; }
-.rhine-copy>[role] { font-size:var(--rhine-text-caption); }
+.rhine-copy>[role] { font-size:var(--rhine-text-caption); line-height:var(--rhine-leading-caption); font-weight:var(--rhine-weight-regular); }
 .rhine-stack { display:flex; flex-direction:column; min-width:0; }
 .rhine-inline { display:flex; align-items:center; flex-wrap:wrap; gap:var(--rhine-space-3); min-width:0; }
 .rhine-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--rhine-grid-min)),1fr)); min-width:0; }
