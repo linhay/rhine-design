@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- #29：Checkbox 新增可选 `layout="row"` 与公开 `CheckboxProps`，提供窄侧栏双行文字对齐、对称内距、整行原生点击和主题选择/焦点，保留默认表单布局；展台见 `#checkbox-rows`。
 - #27：SegmentedControl 新增等宽 `fullWidth`；ListFilterBar 支持用 `drawerDescription` / `drawerResult` 省略重复说明与摘要，保留加载和错误反馈。
 - DateRangePicker 新增 `compact` 一体日期边框，窄容器内部重排；RemoteMultiSelect 新增 `maxVisibleTags`、总数与有界展开，保留完整表单值和键盘移除，极窄容器标签换行，清空后重新选择恢复折叠。
 - 新增 `#compact-filters` 真实组件展台与回归。以上为未发布源码能力，npm 0.9.1 不包含这些选项。

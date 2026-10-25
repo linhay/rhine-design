@@ -18,6 +18,7 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 | Icon / IconButton | 少量常用16/20px线性图标、44px操作目标、可访问名称 |
 | CopyButton | 显式点击后复制；等待真实Promise成功才提示，失败可重试；可注入原生clipboard适配器 |
 | Checkbox | 原生复选框、混合态、label/hint；选中由调用方控制 |
+| Checkbox `layout="row"`（未发布） | 侧栏整行选择，名称/说明同列、对称内距与主题选中/焦点；默认 form 不变，见[双行多选契约](../docs/CHECKBOX_ROWS.md) |
 | RadioGroup | fieldset/legend与原生radio，独立组名、禁用项、键盘导航 |
 | Switch | 原生checkbox加switch语义；只用于二元偏好，不替代账号选择 |
 | Textarea | 可见label、hint/error、只读/禁用；允许垂直调整，不做富文本 |

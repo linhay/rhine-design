@@ -1,4 +1,5 @@
 import './styles.css';
+export type { CheckboxProps } from './Forms';
 export { NeutronStarBackdrop } from './NeutronStarBackdrop';
 export type { NeutronStarBackdropProps } from './NeutronStarBackdrop';
 export { OrbitBackdrop } from './OrbitBackdrop';

@@ -2,11 +2,24 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, type InputHTMLAttr
 import * as PopoverBase from '@radix-ui/react-popover';
 import { Button, type Choice } from './components';
 import { Icon, IconButton } from './Actions';
+import './checkbox-row.css';
 
-export function Checkbox({ label, hint, indeterminate = false, id: suppliedId, className = '', ...props }: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & { label: string; hint?: string; indeterminate?: boolean }) {
+export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  label: string;
+  hint?: string;
+  indeterminate?: boolean;
+  layout?: 'form' | 'row';
+}
+export function Checkbox({ label, hint, indeterminate = false, layout = 'form', id: suppliedId, className = '', ...props }: CheckboxProps) {
   const generatedId = useId(), id = suppliedId || generatedId;
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => { if (ref.current) ref.current.indeterminate = indeterminate; }, [indeterminate]);
+  if (layout === 'row') return <div className={`rhine-check rhine-check--row ${className}`}><label htmlFor={id}>
+    <input {...props} ref={ref} id={id} type="checkbox" aria-checked={indeterminate ? 'mixed' : undefined}
+      aria-labelledby={props['aria-labelledby'] || (!props['aria-label'] ? `${id}-label` : undefined)}
+      aria-describedby={[props['aria-describedby'], hint && `${id}-hint`].filter(Boolean).join(' ') || undefined} />
+    <span className="rhine-check__text"><span id={`${id}-label`} className="rhine-check__name">{label}</span>{hint && <span id={`${id}-hint`} className="rhine-check__hint">{hint}</span>}</span>
+  </label></div>;
   return <div className={`rhine-check ${className}`}><label htmlFor={id}><input {...props} ref={ref} id={id} type="checkbox" aria-checked={indeterminate ? 'mixed' : undefined} aria-describedby={[props['aria-describedby'], hint && `${id}-hint`].filter(Boolean).join(' ') || undefined} /><span>{label}</span></label>{hint && <p id={`${id}-hint`} className="rhine-text rhine-text--caption rhine-text--muted">{hint}</p>}</div>;
 }
 export function RadioGroup({ label, items, value, onValueChange, disabled = false, name }: { label: string; items: Choice[]; value: string; onValueChange: (value: string) => void; disabled?: boolean; name?: string }) {
