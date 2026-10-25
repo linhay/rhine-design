@@ -1,0 +1,12 @@
+.rhine-check--row { min-width:0; }
+.rhine-check.rhine-check--row > label { display:grid; grid-template-columns:18px minmax(0,1fr); align-items:start; align-content:center; gap:var(--rhine-space-2); min-height:44px; padding:var(--rhine-space-2); border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-control); background:var(--rhine-surface); color:var(--rhine-ink); }
+.rhine-check--row input { margin-top:2px; }
+.rhine-check__text { display:grid; gap:var(--rhine-space-1); min-width:0; overflow-wrap:anywhere; }
+.rhine-check__name { font-size:var(--rhine-text-body); line-height:var(--rhine-leading-body); font-weight:var(--rhine-weight-label); }
+.rhine-check__hint { font-size:var(--rhine-text-caption); line-height:var(--rhine-leading-caption); font-weight:400; color:var(--rhine-muted); }
+.rhine-check--row > label:has(input:checked),.rhine-check--row > label:has(input:indeterminate) { background:var(--rhine-selected); border-color:var(--rhine-green); }
+.rhine-check--row > label:hover:has(input:not(:disabled)) { border-color:var(--rhine-green); }
+.rhine-check--row > label:has(input:focus-visible) { box-shadow:inset 0 0 0 2px var(--rhine-green); }
+.rhine-theme .rhine-check.rhine-check--row input:focus-visible { outline:none; }
+.rhine-check--row > label:has(input:disabled) { cursor:default; }
+.rhine-check--row input:disabled + .rhine-check__text { color:var(--rhine-muted); }

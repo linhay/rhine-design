@@ -24,6 +24,7 @@ import { ListFilterBarGallery } from './ListFilterBarGallery';
 import { CompactAccountGallery } from './CompactAccountGallery';
 import { CompactFilterBarGallery } from './CompactFilterBarGallery';
 import { DenseFilterControlsGallery } from './DenseFilterControlsGallery';
+import { CheckboxRowGallery } from './CheckboxRowGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -51,6 +52,7 @@ function Gallery() {
     {section === 'list-filter-bar' && <ListFilterBarGallery />}
     {section === 'compact-account' && <CompactAccountGallery />}
     {section === 'compact-filters' && <><CompactFilterBarGallery /><DenseFilterControlsGallery /></>}
+    {section === 'checkbox-rows' && <CheckboxRowGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}

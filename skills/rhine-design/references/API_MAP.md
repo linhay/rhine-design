@@ -4,6 +4,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 
 | Exports | Source |
 | --- | --- |
+| Checkbox `layout="row"`, CheckboxProps（未发布） | `components/Forms.tsx`、`docs/CHECKBOX_ROWS.md`；整行双行多选，默认 form 保持兼容；npm 0.9.1 不含此选项 |
 | TrendChart, StackedBar；StatusTimeline.detail（0.5.0） | `components/Charts.tsx`、`components/StatusTimeline.tsx`；`docs/APPLICATION_COMPONENTS.md`，未知不补零；键盘逐点查看、按ID受控高亮/详情、valueFormatter |
 | Background, AppShell（0.5.0）；AppShellToggle（0.8.0） | `components/Background.tsx`、`components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；桌面open与临时drawerOpen独立，断点为容器CSS布局宽度 |
 | AppShell.contentHeader（0.8.0） | `components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；正文列常驻导航插槽，与正文滚动区分离，组合 AppShellToggle / Inline / 标题与上下文操作 |
