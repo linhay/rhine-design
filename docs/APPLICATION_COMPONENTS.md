@@ -114,6 +114,10 @@ SideNav 继续负责当前项、长名称和 aria-current；Drawer 继续负责 
 
 DateField 新增 `readOnly/required/id/name/hint/onValidationChange`；外部日期或 min/max 改变会更新格式/范围错误，不自动回写值。DateRangePicker 同样支持 readOnly/required/hint/onValidationChange，另有 `clearable`（默认 true）、`startLabel/endLabel/startName/endName`。预设含非法日期、反向区间或任一端越界时禁用。onValidationChange 回传格式/范围/显式 error，required 仍走提交时的原生表单校验。只读时保留浏览与聚焦，预设、清空、步进和选择不能更改值。
 
+原生日期的未完成片段可能同时表现为 `value=""` 与 `validity.badInput=true`，不能把它当作用户清空边界。DateField 保留此局部编辑状态并回传“请填写完整有效的日期。”，完整有效提议仍由宿主受控接受或拒绝；DateRangePicker 汇总两端校验。内置清空/预设同时清掉原生草稿；宿主在已接受值不变时强制恢复整个字段，须用独立 reset revision/key 明确重置，不能期待同值 props 推断重置意图。这些行为已包含于 #22 主线修复，消费旧副本需单独升级。
+
+窄容器的重复横向内距由共享日期组处理：本地 [#25](https://github.com/linhay/rhine-design/issues/25) 候选在实际容器不超过280 CSS px时取消日期组横向 padding/边框，并单列排列两端；DateField 自身不超过180 CSS px时仅将水平 padding 收到已有4px token，保持输入字号、44px 高度、完整日期和原生日历入口。此尺寸修复尚未发布；不更改日期值/API。400px视口、200% CSS zoom 的 Drawer 内输入曾仅116 CSS px，且 `scrollWidth === clientWidth`，因此必须实际读写最后日期片段，不能仅以无 DOM 溢出验收。单个 DateField 的宽度仍由宿主容器提供，同样需核对实际编辑区；本修复不承诺任意小宽度都能完整容纳浏览器原生日期。
+
 NumberField 支持小数步进（默认 1）；precision 限制为 0–15 位，未指定时普通提交保留解析后的 JS 数值，步进清除至 12 位的浮点尾差；IEEE-754 数值精度不适用于高精度货币账本。`-`、`1.` 等草稿在编辑时不改写；外部 value 真正变化时覆盖草稿。未改变值的失焦/Enter 不触发 onValueChange；输入法组词时不提交或步进。
 
 NumberField 另有 `readOnly/required/id/name/hint/controls`（按钮默认显示）；Escape 取消未提交草稿并恢复受控值，第二次 Escape 可交给外层浮层。min/max 变化会直接标明当前越界，不伪造用户输入或自动修改宿主值。空值步进按有效范围处理，不再把空字符串当成已达到零边界。

@@ -31,6 +31,12 @@
 | 某时段的时间与状态 | 悬停、键盘聚焦时显示 | 同时提供可访问名称；触屏也能聚焦/操作 |
 | 失败、未知、数据不完整、关键陈旧状态 | 相关区域常显 | 不用减少文字来掩盖数据质量问题 |
 
+## 局部宽度与输入可用性
+
+400px 视口并不代表控件有400px可用：需扣除宿主侧栏、卡片、Drawer 与字段分组的逐层内距。在 200% CSS zoom 下分别测控件边框、实际文本编辑区与邻接按钮，检查完整值、placeholder、标签、错误和焦点；原生日期必须实际聚焦并编辑最后一段，核对年月日与日历入口均未被挤掉。
+
+整页 `scrollWidth <= clientWidth` 只是外层检查，不能证明内部没有裁切。验收同时保留局部截图与关键输入交互；控件的 scrollWidth 也不能直接反映浏览器原生 date 的内部编辑区。优先容器查询与单列重排、去掉重复内距，保留正常字号及操作目标，不通过全局 overflow:hidden、字体缩小或隐藏日历入口掩盖问题。
+
 ## 历史健康记录
 
 `StatusTimeline({label,segments,startLabel,endLabel})` 接收按时间排序的 `{id,label,status}`；status仅限 healthy/recovered/degraded/failed/unknown。宿主负责证据分类、时区、缺失时段补unknown和陈旧说明；组件不计算评分、不查询后端。`TimelineLegend()`提供五种状态的文字和色块，恢复态另加纹理。两者从公共barrel导入并使用同一主题。

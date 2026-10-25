@@ -13,10 +13,20 @@
 .rhine-theme[data-rhine-theme=arknights] .rhine-shell__content-header { border-bottom-color:var(--rhine-green); }
 .rhine-shell__content { flex:1; min-width:0; min-height:0; overflow:auto; padding:24px; overflow-wrap:anywhere; }
 @media(max-width:760px) { .rhine-shell__content-header { padding:8px 16px; } .rhine-shell__content { padding:16px; } }
+/* Inline-size containment must retain an intrinsic width in wrapping Inline layouts. */
+.rhine-date-field { container:rhine-date-field / inline-size; contain-intrinsic-inline-size:180px; }
+@container rhine-date-field (max-width:180px) {
+  .rhine-date-field input[type=date] { padding-inline:var(--rhine-space-1); }
+}
+.rhine-date-range-container { width:100%; min-width:0; container:rhine-date-range / inline-size; }
 .rhine-date-range { margin:0; min-width:0; padding:16px; border:1px solid var(--rhine-line); background:var(--rhine-field-group-bg); }
 .rhine-date-range legend { padding:0 4px; font-weight:600; }
 .rhine-date-range__fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr)); gap:16px; margin-bottom:16px; }
 .rhine-date-range input { max-width:100%; min-width:0; }
+@container rhine-date-range (max-width:280px) {
+  .rhine-date-range { padding-inline:0; border-inline:0; }
+  .rhine-date-range__fields { grid-template-columns:minmax(0,1fr); }
+}
 .rhine-number-field { display:grid; gap:8px; min-width:0; }
 .rhine-multi-select { min-width:0; }
 .rhine-multi-select__tags { display:flex; flex-wrap:wrap; gap:8px; list-style:none; padding:0; margin:8px 0; }

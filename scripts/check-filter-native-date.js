@@ -1,5 +1,5 @@
 async page => {
-  await page.goto(`http://127.0.0.1:18484/?fixture=list-filters&theme=neo-brutalism&proof=${Date.now()}#list-filter-bar`);
+  await page.goto(`${new URL(page.url()).origin}/?fixture=list-filters&theme=neo-brutalism&proof=${Date.now()}#list-filter-bar`);
   const checks = [];
   const check = (name, pass, evidence = {}) => checks.push({ name, pass: Boolean(pass), ...evidence });
   await page.getByRole('group', { name: '录制会话筛选', exact: true }).getByRole('button', { name: /^更多筛选/ }).click();

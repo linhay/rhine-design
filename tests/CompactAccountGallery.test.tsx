@@ -19,7 +19,8 @@ describe('compact account composition', () => {
     view.rerender(<div className="rhine-theme"><CompactAccountExample state="unknown" /></div>);
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
     expect(screen.getByText('7D 剩余 — · 额度暂不可用')).toBeVisible();
-    expect(screen.getByText('历史记录不完整，仅展示已确认的时段。')).toBeVisible();
+    expect(screen.getByText(/10\/23 00:00 – 10\/24 00:00 · 上海/)).toBeVisible();
+    expect(screen.getByText(/历史记录不完整，仅展示已确认的时段。/)).toBeVisible();
     expect(within(screen.getByTestId('compact-account-facts')).getAllByText('—')).toHaveLength(5);
     view.rerender(<div className="rhine-theme"><CompactAccountExample state="long" /></div>);
     expect(screen.getByText('到期')).toBeVisible();

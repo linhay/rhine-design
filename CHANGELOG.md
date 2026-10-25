@@ -1,5 +1,11 @@
 # 版本记录
 
+## 未发布
+
+- #23：移除 StatusTimelineList 末项重复留白，保留 44px 命中区；紧凑账号展台的基础信息与今日/本周期读数按稳定列对齐，窄容器自然换行。
+- #24：Surface 新增 `padding="default" | "none"` 和公开 `SurfaceProps`；纯表格可取消外围内距，默认 24px、单元格间距与浮层/焦点行为保持不变。
+- #25：DateRangePicker 按实际容器宽度取消窄容器重复横向内距，DateField 收紧窄编辑区内距并保留 Inline 中的固有宽度；增加 150/200/280 CSS px 的范围与独立日期展台，保留原生日期、日历入口和受控草稿语义。
+
 ## 0.9.0（2026-10-24）
 
 - #17：OrbitBackdrop 新增 controls、composition 和 framed；背景画布与静态降级同置右下角，新增按容器宽度重排的入口组合，保留输入和减少动态。

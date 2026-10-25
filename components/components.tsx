@@ -19,8 +19,11 @@ export function Button({ variant = 'primary', busy = false, busyLabel = '处理�
 export function Badge({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
   return <span className={`rhine-badge rhine-tone-${tone}`}>{children}</span>;
 }
-export function Surface({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div {...props} className={classes('rhine-surface', className)} />;
+export interface SurfaceProps extends HTMLAttributes<HTMLDivElement> {
+  padding?: 'default' | 'none';
+}
+export function Surface({ className, padding = 'default', ...props }: SurfaceProps) {
+  return <div {...props} className={classes('rhine-surface', padding === 'none' && 'rhine-surface--padding-none', className)} />;
 }
 export function SelectionCard({ label, selected, onSelectedChange, disabled = false, showIndicator = true, children }: {
   label: string; selected: boolean; onSelectedChange: (value: boolean) => void; disabled?: boolean; showIndicator?: boolean; children: ReactNode;

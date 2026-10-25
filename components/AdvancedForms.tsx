@@ -47,7 +47,7 @@ export function DateField({ onValueChange, onValidationChange, error, ...props }
   };
   // Chromium can change an empty calendar fragment without firing input/change.
   const checkFragments = (event: SyntheticEvent<HTMLInputElement>) => { if (event.currentTarget.validity.badInput !== nativeBadInput.current) change(event); };
-  return <TextField {...props} value={current.draft} error={invalid} type="date" onInput={change} onChange={change} onKeyUp={checkFragments} onBlur={checkFragments} />;
+  return <TextField {...props} className="rhine-date-field" value={current.draft} error={invalid} type="date" onInput={change} onChange={change} onKeyUp={checkFragments} onBlur={checkFragments} />;
 }
 export interface DateRange { start: string; end: string }
 export interface DateRangePickerProps {
@@ -71,7 +71,7 @@ export function DateRangePicker({ label, value, onValueChange, min, max, disable
     setResetRevision(revision => revision + 1);
     onValueChange(next);
   };
-  return <fieldset className="rhine-date-range" disabled={disabled} aria-describedby={[hint && `${id}-hint`, invalid && id].filter(Boolean).join(' ') || undefined}>
+  return <div className="rhine-date-range-container"><fieldset className="rhine-date-range" disabled={disabled} aria-describedby={[hint && `${id}-hint`, invalid && id].filter(Boolean).join(' ') || undefined}>
     <legend>{label}</legend><div className="rhine-date-range__fields">
       <DateField key={`start-${resetRevision}`} label={startLabel} name={startName} value={value.start} min={min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={start => onValueChange({ ...value, start })} onValidationChange={message => fieldValidation('start', message)} />
       <DateField key={`end-${resetRevision}`} label={endLabel} name={endName} value={value.end} min={value.start && (!min || value.start > min) ? value.start : min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={end => onValueChange({ ...value, end })} onValidationChange={message => fieldValidation('end', message)} />
@@ -79,7 +79,7 @@ export function DateRangePicker({ label, value, onValueChange, min, max, disable
       {presets.map(preset => <Button key={preset.label} variant="secondary" disabled={disabled || readOnly || !!rangeError(preset.value) || !!(required && (!preset.value.start || !preset.value.end))} onClick={() => replace(preset.value)}>{preset.label}</Button>)}
       {clearable && <Button variant="quiet" disabled={disabled || readOnly || (!value.start && !value.end && !fieldErrors.start && !fieldErrors.end)} onClick={() => replace({ start: '', end: '' })}>清空日期</Button>}
     </div>{hint && <p id={`${id}-hint`} className="rhine-field__hint">{hint}</p>}{invalid && <p id={id} role="alert" className="rhine-field__error">{invalid}</p>}
-  </fieldset>;
+  </fieldset></div>;
 }
 
 export interface NumberFieldProps {
