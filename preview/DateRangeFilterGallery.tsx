@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, DateRangePicker, Divider, Icon, Inline, Popover, SegmentedControl, Stack, Surface, Text, type DateRange } from '../components';
+import { Button, DateField, DateRangePicker, Divider, Icon, Inline, Popover, SegmentedControl, Select, Stack, Surface, Text, type DateRange } from '../components';
 
 const quickRanges = [
   { value: 'today', label: '今天', range: { start: '2026-10-24', end: '2026-10-24' } },
@@ -78,6 +78,10 @@ export function DateRangeFilterExample({ label = '时间范围', initialValue = 
 }
 
 export function DateRangeFilterGallery() {
+  const [narrowWidth, setNarrowWidth] = useState('150');
+  const [narrowRange, setNarrowRange] = useState<DateRange>({ start: '2026-10-24', end: '2026-10-25' });
+  const [singleDate, setSingleDate] = useState('2026-10-24');
+  const [resetRevision, setResetRevision] = useState(0);
   return <section id="date-range-filter">
     <div className="ds-section-title"><span>RANGE</span><h2>日期筛选 · 快捷选择与自定义</h2></div>
     <p className="ds-caption">常用日期是一组互斥选项；具体日期持续可见。更多预设即选即用，自定义日期在确认后生效。</p>
@@ -103,6 +107,19 @@ export function DateRangeFilterGallery() {
           <Text variant="caption" tone="muted">归档结果的统计范围固定，保持日期可读。</Text>
         </Stack>
       </Surface>
+      <Stack gap={3}>
+        <Text as="h3" variant="heading">窄容器中的完整日期</Text>
+        <Text variant="caption" tone="muted">只改变实际容器宽度，不缩小字号。请聚焦日期并编辑最后一段，确认完整年月日与日历入口仍可见；#25 尺寸修复为本地候选。</Text>
+        <Select label="日期容器宽度" value={narrowWidth} onChange={event => setNarrowWidth(event.target.value)}>
+          <option value="150">150 CSS px</option><option value="200">200 CSS px</option><option value="280">280 CSS px</option>
+        </Select>
+        <Stack gap={3} style={{ width: Number(narrowWidth), maxWidth: '100%' }}>
+          <DateRangePicker key={resetRevision} label="局部日期" value={narrowRange} onValueChange={setNarrowRange} />
+          <Inline><DateField key={resetRevision} label="独立日期" value={singleDate} onValueChange={setSingleDate} /></Inline>
+          <Button variant="secondary" onClick={() => { setNarrowRange({ start: '2026-10-24', end: '2026-10-25' }); setSingleDate('2026-10-24'); setResetRevision(value => value + 1); }}>重置示例日期</Button>
+        </Stack>
+        <Text variant="caption" role="status">已接受日期：{narrowRange.start || '不限开始'} — {narrowRange.end || '不限结束'}</Text>
+      </Stack>
       <Text variant="caption" tone="muted">方向键切换快捷项；Escape 或取消退出草稿并归还焦点，点击外部控件按原生焦点行为继续。所有主题使用同一组公开组件。</Text>
     </Stack>
   </section>;

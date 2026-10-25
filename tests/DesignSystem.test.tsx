@@ -1,9 +1,20 @@
 import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { Button, Disclosure, Logo, Progress, SegmentedControl, Select, SelectionCard, Tabs, TextField } from '../components';
+import { Button, Disclosure, Logo, Progress, SegmentedControl, Select, SelectionCard, Surface, Tabs, TextField } from '../components';
 
 describe('reusable design components', () => {
+  it('keeps Surface native attributes and default spacing when opting out of table container padding', () => {
+    const { rerender } = render(<Surface role="region" aria-label="表格" className="host-layout">内容</Surface>);
+    const surface = screen.getByRole('region', { name: '表格' });
+    expect(surface).toHaveClass('rhine-surface', 'host-layout');
+    expect(surface).not.toHaveClass('rhine-surface--padding-none');
+    rerender(<Surface role="region" aria-label="表格" className="host-layout" padding="none">内容</Surface>);
+    expect(surface).toHaveClass('rhine-surface--padding-none', 'host-layout');
+    expect(surface).not.toHaveAttribute('padding');
+    rerender(<Surface role="region" aria-label="表格" padding="default">内容</Surface>);
+    expect(surface).not.toHaveClass('rhine-surface--padding-none');
+  });
   it('uses the independent library identity and accepts a host wordmark', () => {
     const { rerender } = render(<Logo variant="lockup" />);
     expect(screen.getByRole('img', { name: 'Rhine Design' })).toHaveTextContent('Rhine Design');

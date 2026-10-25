@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Button, Grid, Inline, Notice, Select, Stack, Surface, Text, type Spacing } from '../components';
+import { Button, DataTable, Grid, Inline, Notice, Select, Stack, Surface, Text, type Spacing } from '../components';
 import './spacing.css';
 
 const scale: Spacing[] = [1, 2, 3, 4, 6, 8, 12];
 export function SpacingGallery() {
   const [state, setState] = useState('normal');
+  const [selected, setSelected] = useState<string[]>(['research']);
   return <section id="spacing">
     <div className="ds-section-title"><span>SPACE</span><h2>间距与组合 · 让关系可见</h2></div>
     <Stack gap={6}>
@@ -27,6 +28,19 @@ export function SpacingGallery() {
           <Text variant="caption" tone="muted">Surface只负责边界与内边距。避免父gap与子margin重复累加；不固定卡高，不为空白增加动效。</Text>
         </Stack></Surface>
       </Grid>
+      <Stack gap={3}>
+        <Text as="h3" variant="heading">纯表格 · 取消容器外围内距</Text>
+        <Text variant="caption" tone="muted">Surface padding="none" 是本地候选；表头和单元格保留原有间距。切换主题并勾选行，检查边界和文字。</Text>
+        <Surface padding="none">
+          <DataTable caption="示例部门用量" rows={[
+            { id: 'research', name: '研发协作组', requests: 128 },
+            { id: 'accessibility', name: '跨部门体验与可访问性协作小组', requests: 42 },
+          ]} columns={[
+            { key: 'name', header: '部门', render: row => row.name, rowHeader: true },
+            { key: 'requests', header: '请求', render: row => row.requests, align: 'right' },
+          ]} rowKey={row => row.id} rowLabel={row => row.name} selection={{ keys: selected, onChange: setSelected }} />
+        </Surface>
+      </Stack>
     </Stack>
   </section>;
 }

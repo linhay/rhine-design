@@ -52,6 +52,12 @@
 
 页面已有h1时卡片通常用h2；标题等级由结构决定，不能用字号决定。不要为布局引入空Text、空段落或连续br。
 
+### 只承载表格的 Surface
+
+纯表格使用 `<Surface padding="none"><DataTable … /></Surface>`，取消容器外围24px内距，表头和单元格仍使用 DataTable 自身的阅读间距。该公开 prop 是 [#24](https://github.com/linhay/rhine-design/issues/24) 的本地未发布候选；默认 `padding="default"` 保持原来行为。
+
+这不是所有卡片的紧凑开关：正文、表单与混合内容继续采用默认配方。表格上方有标题/操作时，将其放到表格之外或显式分区，不把表头、单元格、分页和焦点空间一并清零；不为了边缘贴合设置 `overflow:hidden` 裁掉焦点。真实选择与长名称示例见 `#spacing`。
+
 行高与间距分别管理：正文14/22px、标题16/24px，独立正文段落默认12px段间距；不是在每一行之间再加gap。详见[行高规范](TYPOGRAPHY.md#行高段落与控件)。
 
 ## 常见组合

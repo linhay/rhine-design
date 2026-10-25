@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Badge, Button, ButtonLink, Checkbox, Disclosure, Divider, Inline, KeyValue,
+  Badge, Button, ButtonLink, Checkbox, Disclosure, Divider, Grid, Inline,
   Notice, Progress, Select, Skeleton, Stack, StatusTimelineList, Surface, Text,
   TextField, TimelineLegend, Tooltip, type TimelineSegment, type TimelineStatus,
 } from '../components';
@@ -45,29 +45,29 @@ export function CompactAccountExample({ state = 'normal' }: { state?: AccountSta
     </Stack>
     <Stack gap={1}>
       <StatusTimelineList label="资源用量与异常记录" items={[{
-        id: 'resource-a', title: '用量与异常记录',
-        note: unknown ? '历史记录不完整，仅展示已确认的时段。' : undefined,
+        id: 'resource-a', title: '用量与异常记录', summary: '24小时窗口 · 15分钟',
+        note: `10/23 00:00 – 10/24 00:00 · 上海${unknown ? ' · 历史记录不完整，仅展示已确认的时段。' : ''}`,
         timeline: { startLabel: '10/23 00:00 · 上海', endLabel: '10/24 00:00 · 上海', segments: unknown ? segments.slice(0, 48) : segments },
       }]} />
       <TimelineLegend compact label="历史状态图例" items={compactAccountLegend} />
     </Stack>
-    <Stack gap={2} data-testid="compact-account-facts">
-      <Inline gap={4}>
+    <Stack gap={3} className="compact-gallery-facts" data-testid="compact-account-facts">
+      <Grid gap={2} className="compact-gallery-facts-meta">
         <Tooltip content="数值越小，调度优先级越高；这不是健康评分。"><Text as="span" variant="caption" tabIndex={0}>优先级 <strong>0</strong></Text></Tooltip>
         <Text as="span" variant="caption">API-Key <strong>{unknown ? '—' : zero ? '0' : '3'}</strong></Text>
-      </Inline>
-      <KeyValue items={[
-        { key: 'expires', label: '到期', value: long ? '2027-10-24 23:59 · 上海（运营设置的账号期限）' : '未设置' },
-        ...(long ? [{ key: 'subscription-expires', label: '订阅到期', value: '2026-11-24 08:30 · 上海（当前服务套餐期限）' }] : []),
-      ]} />
-      <Inline gap={4} className="compact-gallery-fact-pair">
-        <Text as="span" variant="caption">今日消费 <strong>{unknown ? '—' : zero ? '$0.00' : long ? '$12,345.67 / $24,691.34' : '$2.40'}</strong></Text>
-        <Text as="span" variant="caption">本周期 <strong>{unknown ? '—' : zero ? '$0.00' : long ? '$123,456.78 / $246,913.56' : '$18.50'}</strong></Text>
-      </Inline>
-      <Inline gap={4} className="compact-gallery-fact-pair">
-        <Text as="span" variant="caption">今日生图 <strong>{unknown ? '—' : zero ? '0' : '8'}</strong></Text>
-        <Text as="span" variant="caption">本周期生图 <strong>{unknown ? '—' : zero ? '0' : '24'}</strong></Text>
-      </Inline>
+        <Text as="span" variant="caption" className="compact-gallery-facts-expiry">到期 <strong>{long ? '2027-10-24 23:59 · 上海（运营设置的账号期限）' : '未设置'}</strong></Text>
+        {long && <Text as="span" variant="caption" className="compact-gallery-facts-subscription">订阅到期 <strong>2026-11-24 08:30 · 上海（当前服务套餐期限）</strong></Text>}
+      </Grid>
+      <Stack gap={2}>
+        <Grid gap={2} className="compact-gallery-fact-pair">
+          <Text as="span" variant="caption">今日消费 <strong>{unknown ? '—' : zero ? '$0.00' : long ? '$12,345.67 / $24,691.34' : '$2.40'}</strong></Text>
+          <Text as="span" variant="caption">本周期 <strong>{unknown ? '—' : zero ? '$0.00' : long ? '$123,456.78 / $246,913.56' : '$18.50'}</strong></Text>
+        </Grid>
+        <Grid gap={2} className="compact-gallery-fact-pair">
+          <Text as="span" variant="caption">今日生图 <strong>{unknown ? '—' : zero ? '0' : '8'}</strong></Text>
+          <Text as="span" variant="caption">本周期生图 <strong>{unknown ? '—' : zero ? '0' : '24'}</strong></Text>
+        </Grid>
+      </Stack>
     </Stack>
   </Stack></Surface>;
 }
