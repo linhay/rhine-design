@@ -19,7 +19,17 @@ Node 24：254 项测试、类型检查和生产构建通过。生产预览下三
 
 ```sh
 npm run check
+```
+
+在一个终端启动预览，并在浏览器检查期间保持运行：
+
+```sh
 npx vite preview --host 127.0.0.1 --port 18527 --strictPort
+```
+
+预览就绪后，在另一个终端执行：
+
+```sh
 playwright-cli -s=dense-filters open 'http://127.0.0.1:18527/#compact-filters'
 mkdir -p output/playwright/issue-27
 playwright-cli -s=dense-filters run-code --filename=scripts/check-dense-filters.js
