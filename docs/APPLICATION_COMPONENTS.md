@@ -105,10 +105,10 @@ SideNav 继续负责当前项、长名称和 aria-current；Drawer 继续负责 
 | 组件 | 主要 API | 数据与键盘契约 |
 | --- | --- | --- |
 | DateField | `label/value/onValueChange/min/max/disabled/error` | 原生 `input type=date`；ISO 日期字符串或空字符串，无 UTC/时区转换，原生日历和键盘由浏览器实现 |
-| DateRangePicker | 上述范围 + `value={start,end}`、`presets=[{label,value}]` | 两个原生日期输入，自定义范围、受控预设、清空；结束日期下界取 start/min 较晚者；反向范围显示错误，不静默调换 |
+| DateRangePicker | 上述范围 + `value={start,end}`、`presets=[{label,value}]`、`compact?` | 两个原生日期输入，自定义范围、受控预设、清空；compact 合并为一体区间框；结束日期下界取 start/min 较晚者；反向范围显示错误，不静默调换 |
 | NumberField | `value: number\|null`、`onValueChange/min/max/step/precision/disabled/error` | 编辑中保存字符串；失焦/Enter 提交；无效及越界输入保留并报错；上下键/按钮步进与钳制边界；空字符串提交 null |
 | TreeSelect | `nodes/value/onValueChange/expandedKeys/onExpandedChange/multiple`、loading/error/disabled | 节点为 `{id,label,disabled?,children?}`；父子独立选择，默认单选；调用方提供搜索后的树，不做全量过滤 |
-| RemoteMultiSelect | `query/onQueryChange/value/onValueChange/options`、loading/error/disabled | value 是完整 `{value,label,disabled?}[]`，已选标签不依赖本次结果；不重复选中；清空保留禁选标签 |
+| RemoteMultiSelect | `query/onQueryChange/value/onValueChange/options`、loading/error/disabled、`maxVisibleTags?` | value 是完整 `{value,label,disabled?}[]`，已选标签不依赖本次结果；不重复选中；清空保留禁选标签；maxVisibleTags 限制常显数量并提供展开/收起，展开区域有界滚动 |
 
 日期 min/max 约束原生日历和表单有效性；手动编辑、业务校验及最终提交由宿主验证。原生日期面板位于浏览器 UI，不放在受裁剪的自定义浮层。日历外观、屏幕阅读器和移动 WebView 行为由具体浏览器决定，不声称提供自绘日历。预设必须使用宿主计算好的日期；不得以本机时区代替产品时区。没有“今天”隐式计算。
 

@@ -22,6 +22,8 @@ import { MonitoringGallery } from './MonitoringGallery';
 import { DateRangeFilterGallery } from './DateRangeFilterGallery';
 import { ListFilterBarGallery } from './ListFilterBarGallery';
 import { CompactAccountGallery } from './CompactAccountGallery';
+import { CompactFilterBarGallery } from './CompactFilterBarGallery';
+import { DenseFilterControlsGallery } from './DenseFilterControlsGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -48,6 +50,7 @@ function Gallery() {
     {section === 'date-range-filter' && <DateRangeFilterGallery />}
     {section === 'list-filter-bar' && <ListFilterBarGallery />}
     {section === 'compact-account' && <CompactAccountGallery />}
+    {section === 'compact-filters' && <><CompactFilterBarGallery /><DenseFilterControlsGallery /></>}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}

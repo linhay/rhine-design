@@ -10,6 +10,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | MediaCard, MediaViewer（0.5.0） | `components/Media.tsx`；中性画布，不嵌套主题 |
 | Media 主题重设计（0.8.0） | `components/media-parity.css`；`docs/APPLICATION_COMPONENTS.md`；卡片、标签与查看器操作/信息栏随宿主主题，仅媒体画布中性；选择与重试独立 |
 | DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
+| 紧凑筛选（未发布，npm 0.9.1 不含） | `docs/COMPACT_FILTER_CONTROLS.md`；SegmentedControl `fullWidth`、DateRangePicker `compact`、RemoteMultiSelect `maxVisibleTags`、ListFilterBar `drawerDescription` / `drawerResult`；保持默认兼容、完整选择值及加载/错误反馈 |
 | Date presets + confirmed custom range（组合，无新增导出） | `docs/DATE_RANGE_FILTER.md`、`preview/DateRangeFilterGallery.tsx`；复用 SegmentedControl + Button + Popover + DateRangePicker，宿主负责时区、预设和查询 |
 | ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
 | OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
