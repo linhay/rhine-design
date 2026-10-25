@@ -19,7 +19,7 @@ function useScope() {
   useLayoutEffect(() => { setContainer((ref.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
   return { ref, container };
 }
-export interface DialogProps { trigger: ReactElement; title: string; description: string; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; navigation?: ReactNode; sidePanel?: ReactNode | ((closeButton: ReactElement) => ReactNode); onCloseAutoFocus?: (event: Event) => void }
+export interface DialogProps { trigger: ReactElement; title: string; description: ReactNode; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; navigation?: ReactNode; sidePanel?: ReactNode | ((closeButton: ReactElement) => ReactNode); onCloseAutoFocus?: (event: Event) => void }
 export function Dialog(props: DialogProps) {
   return <DialogFrame {...props}/>;
 }
@@ -44,11 +44,12 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
     dialogDismiss.get(owner)?.();
   };
   const sideNavigation = typeof sidePanel === 'function';
+  const hasDescription = description != null && description !== false && description !== '';
   const settings = navigation != null && navigation !== false;
   if (settings && sidePanel) throw new Error('Dialog navigation and sidePanel are mutually exclusive.');
   const closeButton = <DialogBase.Close asChild><IconButton label={drawer ? '关闭抽屉' : '关闭对话框'} icon="close" /></DialogBase.Close>;
   return <span className="rhine-overlay-anchor" ref={ref}><DialogBase.Root open={open ?? localOpen} onOpenChange={changeOpen}><DialogBase.Trigger asChild>{trigger}</DialogBase.Trigger><DialogBase.Portal container={container}>
-    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={onCloseAutoFocus} data-side={drawer ? side : undefined} className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${settings ? ' rhine-dialog--settings' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}`}><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div><DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description><div className="rhine-dialog__body">{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content">{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</DialogBase.Content>
+    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={onCloseAutoFocus} {...(!hasDescription ? { 'aria-describedby': undefined } : {})} data-side={drawer ? side : undefined} className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${settings ? ' rhine-dialog--settings' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}`}><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div>{hasDescription && <DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description>}<div className="rhine-dialog__body">{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content">{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</DialogBase.Content>
   </DialogBase.Portal></DialogBase.Root></span>;
 }
 export function ConfirmDialog({ trigger, title, description, confirmLabel = '确认操作', danger = false, onConfirm }: { trigger: ReactElement; title: string; description: string; confirmLabel?: string; danger?: boolean; onConfirm: () => Promise<void> | void }) {

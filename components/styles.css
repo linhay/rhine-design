@@ -64,7 +64,10 @@
 .rhine-segmented { display:inline-flex; flex-wrap:wrap; gap:3px; padding:3px; border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-control); margin:0; min-width:0; }
 .rhine-segmented__option { position:relative; display:flex; flex:1 0 auto; cursor:pointer; }
 .rhine-segmented input { position:absolute; opacity:0; width:1px; height:1px; }
-.rhine-segmented__option span { display:flex; justify-content:center; align-items:center; min-height:40px; padding:8px 12px; color:var(--rhine-muted); font-size:14px; transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard),color var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.rhine-segmented__option span { display:flex; flex:1; justify-content:center; align-items:center; min-height:40px; padding:8px 12px; text-align:center; color:var(--rhine-muted); font-size:14px; transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard),color var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.rhine-segmented--full-width { display:flex; width:100%; flex-wrap:nowrap; }
+.rhine-segmented--full-width .rhine-segmented__option { flex:1 1 0; min-width:0; }
+.rhine-segmented--full-width .rhine-segmented__option span { min-width:0; overflow-wrap:anywhere; }
 .rhine-segmented input:checked+span { background:var(--rhine-ink); color:var(--rhine-surface); }
 .rhine-segmented input:focus-visible+span { outline:2px solid var(--rhine-green); outline-offset:3px; }
 .rhine-segmented input:disabled+span { opacity:.6; cursor:default; }

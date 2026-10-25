@@ -65,7 +65,7 @@ export function Example() {
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
 | Tabs | label；items[{value,label,content,disabled?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树 |
-| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange | 原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供 |
+| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth? | 原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
 | Notice | tone；title；children；action | error 使用 alert，其余 status；调用方决定显示/移除，不自动倒计时关闭错误 |
 | Progress | label；value:number/null；valueText? | null/NaN 为未知进度；数值钳制 0–100；组件不执行或估算真实进度 |
 | Skeleton | label；lines | 1–8 行，默认 3 行；单一可访问加载描述，装饰行隐藏 |

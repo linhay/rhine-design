@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type SyntheticEvent } from 'react';
 import { Button, TextField, type Choice } from './components';
 import { Combobox } from './Forms';
+import './compact-forms.css';
 
 export interface DateFieldProps {
   label: string; value: string; onValueChange: (value: string) => void;
@@ -55,10 +56,11 @@ export interface DateRangePickerProps {
   min?: string; max?: string; disabled?: boolean; error?: string;
   presets?: { label: string; value: DateRange }[];
   readOnly?: boolean; required?: boolean; clearable?: boolean; hint?: string;
+  compact?: boolean;
   startLabel?: string; endLabel?: string; startName?: string; endName?: string;
   onValidationChange?: (error: string | null) => void;
 }
-export function DateRangePicker({ label, value, onValueChange, min, max, disabled, error, presets = [], readOnly = false, required, clearable = true, hint, startLabel = '开始日期', endLabel = '结束日期', startName, endName, onValidationChange }: DateRangePickerProps) {
+export function DateRangePicker({ label, value, onValueChange, min, max, disabled, error, presets = [], readOnly = false, required, clearable = true, compact = false, hint, startLabel = '开始日期', endLabel = '结束日期', startName, endName, onValidationChange }: DateRangePickerProps) {
   const id = useId();
   const [fieldErrors, setFieldErrors] = useState<{ start: string | null; end: string | null }>({ start: null, end: null });
   const [resetRevision, setResetRevision] = useState(0);
@@ -71,14 +73,15 @@ export function DateRangePicker({ label, value, onValueChange, min, max, disable
     setResetRevision(revision => revision + 1);
     onValueChange(next);
   };
-  return <div className="rhine-date-range-container"><fieldset className="rhine-date-range" disabled={disabled} aria-describedby={[hint && `${id}-hint`, invalid && id].filter(Boolean).join(' ') || undefined}>
+  return <div className="rhine-date-range-container"><fieldset className={`rhine-date-range${compact ? ' rhine-date-range--compact' : ''}`} disabled={disabled} aria-describedby={[hint && `${id}-hint`, invalid && id].filter(Boolean).join(' ') || undefined}>
     <legend>{label}</legend><div className="rhine-date-range__fields">
       <DateField key={`start-${resetRevision}`} label={startLabel} name={startName} value={value.start} min={min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={start => onValueChange({ ...value, start })} onValidationChange={message => fieldValidation('start', message)} />
+      {compact && <span className="rhine-date-range__separator" aria-hidden="true">至</span>}
       <DateField key={`end-${resetRevision}`} label={endLabel} name={endName} value={value.end} min={value.start && (!min || value.start > min) ? value.start : min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={end => onValueChange({ ...value, end })} onValidationChange={message => fieldValidation('end', message)} />
-    </div><div className="rhine-inline">
+    </div>{(presets.length > 0 || clearable) && <div className="rhine-inline">
       {presets.map(preset => <Button key={preset.label} variant="secondary" disabled={disabled || readOnly || !!rangeError(preset.value) || !!(required && (!preset.value.start || !preset.value.end))} onClick={() => replace(preset.value)}>{preset.label}</Button>)}
       {clearable && <Button variant="quiet" disabled={disabled || readOnly || (!value.start && !value.end && !fieldErrors.start && !fieldErrors.end)} onClick={() => replace({ start: '', end: '' })}>清空日期</Button>}
-    </div>{hint && <p id={`${id}-hint`} className="rhine-field__hint">{hint}</p>}{invalid && <p id={id} role="alert" className="rhine-field__error">{invalid}</p>}
+    </div>}{hint && <p id={`${id}-hint`} className="rhine-field__hint">{hint}</p>}{invalid && <p id={id} role="alert" className="rhine-field__error">{invalid}</p>}
   </fieldset></div>;
 }
 
@@ -125,19 +128,28 @@ export interface RemoteMultiSelectProps {
   loading?: boolean; error?: string; disabled?: boolean;
   readOnly?: boolean; clearable?: boolean; closeOnSelect?: boolean; clearQueryOnSelect?: boolean;
   placeholder?: string; hint?: string; name?: string;
+  maxVisibleTags?: number;
 }
-export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, ...props }: RemoteMultiSelectProps) {
+export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, maxVisibleTags, ...props }: RemoteMultiSelectProps) {
   const inputId = useId();
+  const [expanded, setExpanded] = useState(false);
+  const limit = maxVisibleTags !== undefined && Number.isFinite(maxVisibleTags) ? Math.max(0, Math.floor(maxVisibleTags)) : undefined;
+  const collapsible = limit !== undefined && value.length > limit;
+  const shown = collapsible && !expanded ? value.slice(0, limit) : value;
   const focusInput = () => document.getElementById(inputId)?.focus();
   const remove = (key: string) => {
     if (props.disabled || readOnly || value.find(item => item.value === key)?.disabled) return;
     onValueChange(value.filter(item => item.value !== key)); focusInput();
   };
-  return <div className="rhine-multi-select">
+  return <div className={`rhine-multi-select${limit !== undefined ? ' rhine-multi-select--compact' : ''}`}>
     <Combobox {...props} id={inputId} readOnly={readOnly} selectedValues={value.map(item => item.value)} closeOnSelect={closeOnSelect} onEmptyBackspace={() => { const last = [...value].reverse().find(item => !item.disabled); if (last) remove(last.value); }} options={options.map(option => ({ ...option, disabled: option.disabled || value.some(item => item.value === option.value) }))} value={null} onValueChange={option => { const original = options.find(item => item.value === option.value); if (original && !value.some(item => item.value === original.value)) { onValueChange([...value, original]); if (clearQueryOnSelect) props.onQueryChange(''); } }} />
     {name && value.map(item => <input key={item.value} type="hidden" name={name} value={item.value} disabled={props.disabled} />)}
-    <ul className="rhine-multi-select__tags" aria-label={`${props.label}已选项`}>{value.map(item => <li key={item.value}><span>{item.label}</span><Button variant="quiet" disabled={props.disabled || readOnly || item.disabled} aria-label={`移除${item.label}`} onClick={() => remove(item.value)}>×</Button></li>)}</ul>
-    {clearable && <Button variant="quiet" disabled={props.disabled || readOnly || !value.some(item => !item.disabled)} onClick={() => { onValueChange(value.filter(item => item.disabled)); focusInput(); }}>清空选择</Button>}
+    <ul id={`${inputId}-tags`} className="rhine-multi-select__tags" aria-label={`${props.label}已选项`} data-expanded={collapsible && expanded || undefined}>{shown.map(item => <li key={item.value}><span>{item.label}</span><Button variant="quiet" disabled={props.disabled || readOnly || item.disabled} aria-label={`移除${item.label}`} onClick={() => remove(item.value)}>×</Button></li>)}</ul>
+    <div className="rhine-multi-select__actions">
+      {limit !== undefined && <span className="rhine-text rhine-text--caption rhine-text--muted">已选 {value.length} 项</span>}
+      {collapsible && <Button variant="quiet" aria-expanded={expanded} aria-controls={`${inputId}-tags`} onClick={() => setExpanded(current => !current)}>{expanded ? '收起已选项' : '展开已选项'}</Button>}
+      {clearable && <Button variant="quiet" disabled={props.disabled || readOnly || !value.some(item => !item.disabled)} onClick={() => { onValueChange(value.filter(item => item.disabled)); focusInput(); }}>清空选择</Button>}
+    </div>
   </div>;
 }
 

@@ -20,6 +20,8 @@ export interface ListFilterBarProps {
   refresh?: { onClick: () => void; busy?: boolean; disabled?: boolean };
   action?: ReactElement;
   result?: ReactNode;
+  drawerDescription?: ReactNode;
+  drawerResult?: ReactNode;
   pending?: boolean;
   error?: string;
   className?: string;
@@ -37,7 +39,7 @@ function Feedback({ result, pending, error, announce = true }: Pick<ListFilterBa
 
 const focusable = 'input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), button:not(:disabled), a[href]';
 
-export function ListFilterBar({ label, search, primary = [], filters = [], onReset, refresh, action, result, pending = false, error, className = '' }: ListFilterBarProps) {
+export function ListFilterBar({ label, search, primary = [], filters = [], onReset, refresh, action, result, drawerDescription = '更改后立即更新结果。', drawerResult, pending = false, error, className = '' }: ListFilterBarProps) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const drawerBody = useRef<HTMLDivElement>(null);
@@ -77,13 +79,13 @@ export function ListFilterBar({ label, search, primary = [], filters = [], onRes
         {(drawerFields.length > 0 || refresh || action) && <div className="rhine-list-filter-bar__actions">
           {drawerFields.length > 0 && <Drawer
             title={label}
-            description="更改后立即更新结果。"
+            description={drawerDescription}
             open={open}
             onOpenChange={setOpen}
             trigger={<Button variant="secondary" aria-label={activeDrawerCount > 0 ? `更多筛选，已选 ${activeDrawerCount} 项` : undefined}>更多筛选{activeDrawerCount > 0 && <span className="rhine-list-filter-bar__count" aria-hidden="true">{activeDrawerCount}</span>}</Button>}
           >
             <div ref={drawerBody} className="rhine-list-filter-bar__drawer">
-              <Feedback result={result} pending={pending} error={error} />
+              <Feedback result={drawerResult === undefined ? result : drawerResult} pending={pending} error={error} />
               {drawerFields.map(field => <div key={field.id} data-filter-id={field.id} className="rhine-list-filter-bar__field" role="group" aria-label={field.label}>{field.control}</div>)}
               {canReset && <div className="rhine-list-filter-bar__drawer-actions"><Button variant="quiet" onClick={reset}>重置筛选</Button></div>}
             </div>
