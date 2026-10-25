@@ -20,7 +20,7 @@
 .rhine-steps button { border:0; background:none; font:inherit; cursor:pointer; }
 .rhine-steps button:hover { background:var(--rhine-selected); }
 .rhine-steps strong,.rhine-steps small { display:block; overflow-wrap:anywhere; }
-.rhine-steps small { margin-top:4px; font-size:12px; font-weight:400; }
+.rhine-steps small { margin-top:4px; font-size:var(--rhine-text-caption); line-height:var(--rhine-leading-caption); font-weight:var(--rhine-weight-regular); }
 .rhine-steps__number { flex:0 0 28px; font:14px/24px var(--rhine-mono); }
 .rhine-steps li[data-state=current],.rhine-steps li[data-state=complete] { border-color:var(--rhine-green); }
 .rhine-steps li[data-state=current]>div { background:var(--rhine-selected); color:var(--rhine-green); animation:rhine-pattern-enter var(--rhine-duration-panel) var(--rhine-ease-standard); }
@@ -28,10 +28,10 @@
 .rhine-steps li[data-state=error]>div { color:var(--rhine-error); background:var(--rhine-error-bg); }
 .rhine-fieldset { background:var(--rhine-surface-bg); color:var(--rhine-surface-text); min-width:0; margin:0; padding:20px; border:1px solid var(--rhine-line); border-radius:var(--rhine-radius-card); }
 .rhine-fieldset legend { padding:0 8px; font-weight:600; }
-.rhine-fieldset>p { margin:0 0 20px; color:var(--rhine-muted); font-size:12px; }
+.rhine-fieldset>p { margin:0 0 20px; color:var(--rhine-muted); font-size:var(--rhine-text-caption); line-height:var(--rhine-leading-caption); font-weight:var(--rhine-weight-regular); }
 .rhine-fieldset__body { display:grid; gap:16px; }
 .rhine-error-summary { padding:20px; border:1px solid var(--rhine-error); border-inline-start:3px solid var(--rhine-error); background:var(--rhine-error-bg); }
-.rhine-error-summary h3 { margin:0 0 8px; font-size:16px; }
+.rhine-error-summary h3 { margin:0 0 8px; font-size:var(--rhine-text-heading); line-height:var(--rhine-leading-heading); font-weight:var(--rhine-weight-heading); }
 .rhine-error-summary ul { padding-inline-start:20px; margin:0; }
 .rhine-error-summary a { display:inline-block; padding:10px 0; color:var(--rhine-error); text-underline-offset:3px; overflow-wrap:anywhere; }
 .rhine-dialog.rhine-drawer { inset-block:0; inset-inline-end:0; inset-inline-start:auto; width:min(440px,100%); max-height:100dvh; margin:0; transform:none; border-radius:0; animation:rhine-drawer-enter var(--rhine-duration-overlay) var(--rhine-ease-standard); }
