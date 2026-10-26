@@ -14,6 +14,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Text hierarchy, line height, paragraphs, Chinese/Latin text, metrics | `components/TYPOGRAPHY.md` | `components/Typography.tsx`, `preview/LineHeightGallery.tsx`; `/#typography` |
 | Logo, light/dark variants, wordmark | `components/README.md` → 品牌标志 | `components/Logo.tsx`, `components/assets/logo.svg` |
 | Buttons, navigation, basic states | `components/README.md` → 组件契约 | `components/components.tsx` |
+| Tabs with identity summaries and per-object status | `docs/SUMMARY_TABS.md` (local candidate; verify installed API) | `Tabs.description/status`, `preview/SummaryTabsGallery.tsx`; `/#summary-tabs`; 12/8/4/16/24 spacing, stable labels and accessible descriptions |
 | Task-centered content reduction, borderless account summaries, credential actions, compact legends | `docs/COMPACT_ACCOUNT_PATTERNS.md` (source candidates; not npm 0.6.0) | `preview/CompactAccountGallery.tsx`; `/#compact-account`; ButtonLink + StatusTimelineList + TimelineLegend |
 | Forms, selection, combobox, data tables | `components/COMMON_COMPONENTS.md` | Use API_MAP for the source file |
 | Modal, menu, popover, tooltip, feedback | `components/COMMON_COMPONENTS.md` | `components/Overlays.tsx`, `components/Toast.tsx` |

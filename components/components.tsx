@@ -45,12 +45,12 @@ export function TextField({ label, hint, error, id: providedId, className, ...pr
   </div>;
 }
 export interface Choice { value: string; label: string; disabled?: boolean }
-export interface TabItem extends Choice { content: ReactNode }
+export interface TabItem extends Choice { content: ReactNode; description?: string; status?: ReactNode }
 export function Tabs({ label, items, value, onValueChange }: { label: string; items: TabItem[]; value: string; onValueChange: (value: string) => void }) {
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   return <div className="rhine-tabs">
-    <div role="tablist" aria-label={label} className="rhine-tabs__list" onKeyDown={event => {
+    <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       const available = items.map((item, index) => ({ ...item, index })).filter(item => !item.disabled);
       if (!available.length) return;
@@ -61,7 +61,11 @@ export function Tabs({ label, items, value, onValueChange }: { label: string; it
     }}>
       {items.map((item, index) => <button key={item.value} ref={node => { buttons.current[index] = node; }}
         type="button" role="tab" disabled={item.disabled} id={`${id}-tab-${index}`} aria-controls={`${id}-panel-${index}`}
-        aria-selected={value === item.value} tabIndex={value === item.value ? 0 : -1} onClick={() => onValueChange(item.value)}>{item.label}</button>)}
+        aria-label={item.label} aria-describedby={[item.description && `${id}-description-${index}`, item.status && `${id}-status-${index}`].filter(Boolean).join(' ') || undefined}
+        aria-selected={value === item.value} tabIndex={value === item.value ? 0 : -1} onClick={() => onValueChange(item.value)}>
+        {item.description || item.status ? <><span className="rhine-tabs__title">{item.label}{item.status && <span id={`${id}-status-${index}`} className="rhine-tabs__status">{item.status}</span>}</span>
+          {item.description && <span id={`${id}-description-${index}`} className="rhine-tabs__description">{item.description}</span>}</> : item.label}
+      </button>)}
     </div>
     {items.map((item, index) => <div key={item.value} role="tabpanel" id={`${id}-panel-${index}`} aria-labelledby={`${id}-tab-${index}`}
       hidden={value !== item.value} tabIndex={0} className="rhine-tabs__panel">{item.content}</div>)}

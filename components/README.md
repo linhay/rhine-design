@@ -64,7 +64,7 @@ export function Example() {
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
-| Tabs | label；items[{value,label,content,disabled?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树 |
+| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status为本地候选新增，见下文 |
 | SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth? | 原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
 | Notice | tone；title；children；action | error 使用 alert，其余 status；调用方决定显示/移除，不自动倒计时关闭错误 |
 | Progress | label；value:number/null；valueText? | null/NaN 为未知进度；数值钳制 0–100；组件不执行或估算真实进度 |
@@ -140,6 +140,14 @@ export function Example() {
 - 原生 details 保证完全关闭后隐藏内容不再接收 Tab。收起时把内部焦点送回 summary；卸载取消未完成动画。
 - 动画不承诺异步任务一定成功；不使用定时器模拟业务完成。预览中的 900ms 保存仅为明确标记的本地演示。
 - 组件不提供全局开启/关闭业务状态的开关；动画是视觉层的可选增强。
+
+### 带说明与状态的 Tabs（本地候选，未发布）
+
+完整规格见[带摘要的页签](../docs/SUMMARY_TABS.md)：名称14/22/600、摘要12/18/400，12px上下内距、8px名称/状态、4px摘要间隔、16px页签间距及24px面板间距。独立可交互展台 `/#summary-tabs` 提供局部宽度与状态切换；普通Tabs保持原有间距。
+
+`description?: string` 显示对象身份等辅助信息，`status?: ReactNode` 用只读 Badge 或纯文本表达状态，不嵌套按钮、链接等交互元素。存在这两项时页签等分可用宽度，标题/状态及辅助文字自然换行；普通纯标题 Tabs 布局保持不变。页签可访问名称始终为 `label`，描述和状态经 `aria-describedby` 关联；选中与焦点保持原语义和动效，减少动态沿用现有规则。
+
+状态由宿主持有，每项同时呈现自己的摘要，不能用当前选中项的摘要填充所有页签。身份变化不得改变 `value` 或重建焦点；状态变化不自动切页。展台 `/#selection` 保留普通Tabs，`/#summary-tabs` 集中提供摘要页签的正常、禁用/加载、错误和长说明，支持局部宽度、键盘、主题及减少动态控件。
 
 ## 页面采用顺序
 

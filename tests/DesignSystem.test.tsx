@@ -82,6 +82,21 @@ describe('reusable design components', () => {
     const tabs=screen.getAllByRole('tab'); expect(tabs[0].id).not.toBe(tabs[1].id);
     for(const tab of tabs) expect(document.getElementById(tab.getAttribute('aria-controls')!)).toHaveAttribute('aria-labelledby',tab.id);
   });
+  it('keeps tab names stable while associating independent descriptions and status', () => {
+    const { rerender } = render(<Tabs label="连接" value="a" onValueChange={()=>{}} items={[
+      {value:'a',label:'甲',description:'账号一',status:<span>同步中</span>,content:'甲内容'},
+      {value:'b',label:'乙',description:'账号二',status:<span>已停止</span>,content:'乙内容'},
+    ]}/>);
+    const first=screen.getByRole('tab',{name:'甲'}); first.focus();
+    expect(first).toHaveAccessibleDescription('账号一 同步中');
+    expect(screen.getByRole('tab',{name:'乙'})).toHaveAccessibleDescription('账号二 已停止');
+    rerender(<Tabs label="连接" value="a" onValueChange={()=>{}} items={[
+      {value:'a',label:'甲',description:'账号三',status:<span>已停止</span>,content:'甲内容'},
+      {value:'b',label:'乙',content:'乙内容'},
+    ]}/>);
+    expect(first).toHaveFocus(); expect(first).toHaveAccessibleDescription('账号三 已停止');
+    expect(screen.getByRole('tab',{name:'乙'})).not.toHaveAttribute('aria-describedby');
+  });
   it('keeps separate segmented controls in independent native radio groups', () => {
     render(<>{['a','b'].map(label=><SegmentedControl key={label} label={label} value="one" onValueChange={()=>{}} items={[{value:'one',label:'一'},{value:'two',label:'二'}]}/>)}</>);
     const radios=screen.getAllByRole('radio'); expect(radios[0].getAttribute('name')).not.toBe(radios[2].getAttribute('name'));

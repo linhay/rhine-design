@@ -70,6 +70,7 @@
 | 数据列表 | 同项说明4–8px | 列表项16px；筛选/表格/分页16–24px | Stack +DataTable/Pagination |
 | 浮层 | 标题/说明由浮层组件负责 | 正文组16px；操作区24px | Dialog/Drawer +Stack/Inline |
 | 反馈 | 提示内部由Notice负责 | 与前后内容16px | Notice放入Stack，不覆盖其内部样式 |
+| 带摘要的页签 | 名称/状态8px，名称组/身份4px，上下各12px | 页签16px；面板顶部24px | Tabs description/status；[完整规格](../docs/SUMMARY_TABS.md) |
 
 这些是组合默认值，不重新覆盖现有组件内部的padding、gap或状态样式。要改变组件密度，先在库中定义并验证，不能在业务页用后代选择器临时压缩。
 
