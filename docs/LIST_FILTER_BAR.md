@@ -61,7 +61,7 @@
 
 示例中的状态、函数与额外字段由宿主提供。使用受控 `search.value` 才能准确决定搜索是否需要重置；组件不解析其他控件的值。
 
-`drawerDescription` / `drawerResult` 是 0.9.1 之后的本地源码新增 API，须消费包含实现的精确快照或后续正式版本；不能认为 registry 的 0.9.1 已支持。紧凑示例见 `preview/CompactFilterBarGallery.tsx`。无必要解释时，标题后直接展示筛选字段，不以另一段帮助文字替代被移除的重复说明。
+`drawerDescription` / `drawerResult` 自 0.10.0 提供，0.9.1 不支持。紧凑示例见 `preview/CompactFilterBarGallery.tsx`。无必要解释时，标题后直接展示筛选字段，不以另一段帮助文字替代被移除的重复说明。
 
 ## 状态与查询边界
 

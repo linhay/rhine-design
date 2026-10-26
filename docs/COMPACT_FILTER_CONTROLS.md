@@ -1,6 +1,6 @@
 # 紧凑筛选控件
 
-未发布源码能力，尚不代表已发布的 0.9.1 API。真实组件组合为 `preview/CompactFilterBarGallery.tsx`。
+本节 API 自 0.10.0 提供，0.9.1 不包含这些选项。真实组件组合为 `preview/CompactFilterBarGallery.tsx`。
 
 统一展台入口 `#compact-filters`，同时运行 `preview/DenseFilterControlsGallery.tsx`：100 个候选、90 个已选项及一体日期区间。`RemoteMultiSelect maxVisibleTags={2}` 默认只显示两个标签与总数，展开后使用有界滚动，不将大量已选项常驻到筛选抽屉。`DateRangePicker compact` 将两端原生日期放在同一边框内，保留无障碍标签、原生日期键盘与错误关联；极窄容器允许内部换行，不能裁切日期。
 

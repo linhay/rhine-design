@@ -1,6 +1,6 @@
 # 侧栏双行多选
 
-`Checkbox layout="row"` 是未发布源码能力，npm 0.9.1 尚不包含。适用于侧栏、来源列表和筛选项；导航仍用 SideNav，需要内容卡片时用 SelectionCard。
+`Checkbox layout="row"` 自 0.10.0 提供，npm 0.9.1 尚不包含。适用于侧栏、来源列表和筛选项；导航仍用 SideNav，需要内容卡片时用 SelectionCard。
 
 ```tsx
 <Checkbox layout="row" label="示例项目 A" hint="内存卡 · 14 项"

@@ -1,12 +1,12 @@
 # 版本记录
 
-## Unreleased
+## 0.10.0（2026-10-26）
 
 - #31：MediaViewer 说明补齐 caption 12/18/400，EmptyState 标题采用 heading 16/24 与主题标题字重；同类复制反馈、步骤/表单组说明、错误摘要和主题预览状态补齐语义配对，保留既有密度例外。真实回归入口 `#component-typography`。
 - #29：Checkbox 新增可选 `layout="row"` 与公开 `CheckboxProps`，提供窄侧栏双行文字对齐、对称内距、整行原生点击和主题选择/焦点，保留默认表单布局；展台见 `#checkbox-rows`。
 - #27：SegmentedControl 新增等宽 `fullWidth`；ListFilterBar 支持用 `drawerDescription` / `drawerResult` 省略重复说明与摘要，保留加载和错误反馈。
 - DateRangePicker 新增 `compact` 一体日期边框，窄容器内部重排；RemoteMultiSelect 新增 `maxVisibleTags`、总数与有界展开，保留完整表单值和键盘移除，极窄容器标签换行，清空后重新选择恢复折叠。
-- 新增 `#compact-filters` 真实组件展台与回归。以上为未发布源码能力，npm 0.9.1 不包含这些选项。
+- 新增 `#compact-filters` 真实组件展台与回归。上述能力自 0.10.0 提供，默认行为保持兼容，无需迁移；启用新选项需升级。修复分别见 [PR #28](https://github.com/linhay/rhine-design/pull/28)、[PR #30](https://github.com/linhay/rhine-design/pull/30) 和 [PR #32](https://github.com/linhay/rhine-design/pull/32)。
 
 ## 0.9.1（2026-10-25）
 

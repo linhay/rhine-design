@@ -4,14 +4,14 @@ All paths are relative to the matching package root. `package.json` exports, `co
 
 | Exports | Source |
 | --- | --- |
-| Checkbox `layout="row"`, CheckboxProps（未发布） | `components/Forms.tsx`、`docs/CHECKBOX_ROWS.md`；整行双行多选，默认 form 保持兼容；npm 0.9.1 不含此选项 |
+| Checkbox `layout="row"`, CheckboxProps（自 0.10.0） | `components/Forms.tsx`、`docs/CHECKBOX_ROWS.md`；整行双行多选，默认 form 保持兼容；npm 0.9.1 不含此选项 |
 | TrendChart, StackedBar；StatusTimeline.detail（0.5.0） | `components/Charts.tsx`、`components/StatusTimeline.tsx`；`docs/APPLICATION_COMPONENTS.md`，未知不补零；键盘逐点查看、按ID受控高亮/详情、valueFormatter |
 | Background, AppShell（0.5.0）；AppShellToggle（0.8.0） | `components/Background.tsx`、`components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；桌面open与临时drawerOpen独立，断点为容器CSS布局宽度 |
 | AppShell.contentHeader（0.8.0） | `components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；正文列常驻导航插槽，与正文滚动区分离，组合 AppShellToggle / Inline / 标题与上下文操作 |
 | MediaCard, MediaViewer（0.5.0） | `components/Media.tsx`；中性画布，不嵌套主题 |
 | Media 主题重设计（0.8.0） | `components/media-parity.css`；`docs/APPLICATION_COMPONENTS.md`；卡片、标签与查看器操作/信息栏随宿主主题，仅媒体画布中性；选择与重试独立 |
 | DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
-| 紧凑筛选（未发布，npm 0.9.1 不含） | `docs/COMPACT_FILTER_CONTROLS.md`；SegmentedControl `fullWidth`、DateRangePicker `compact`、RemoteMultiSelect `maxVisibleTags`、ListFilterBar `drawerDescription` / `drawerResult`；保持默认兼容、完整选择值及加载/错误反馈 |
+| 紧凑筛选（自 0.10.0，npm 0.9.1 不含） | `docs/COMPACT_FILTER_CONTROLS.md`；SegmentedControl `fullWidth`、DateRangePicker `compact`、RemoteMultiSelect `maxVisibleTags`、ListFilterBar `drawerDescription` / `drawerResult`；保持默认兼容、完整选择值及加载/错误反馈 |
 | Date presets + confirmed custom range（组合，无新增导出） | `docs/DATE_RANGE_FILTER.md`、`preview/DateRangeFilterGallery.tsx`；复用 SegmentedControl + Button + Popover + DateRangePicker，宿主负责时区、预设和查询 |
 | ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
 | OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
