@@ -72,6 +72,8 @@
 .rhine-tooltip { overflow:auto; z-index:60; background:var(--rhine-ink); color:var(--rhine-surface); padding:8px 12px; border-radius:3px; max-width:min(280px,calc(100vw - 24px)); font-size:12px; line-height:18px; overflow-wrap:anywhere; }
 .rhine-toast-region { position:relative; }.rhine-toast { display:flex; align-items:start; gap:12px; justify-content:space-between; padding:16px; background:var(--rhine-tone-bg); border-left:3px solid var(--rhine-tone); color:var(--rhine-ink); animation:rhine-enter var(--rhine-duration-panel) var(--rhine-ease-standard); }
 .rhine-toast p { margin:4px 0 0; overflow-wrap:anywhere; }.rhine-toast strong { overflow-wrap:anywhere; }.rhine-toast>div { min-width:0; }
+.rhine-toast-region[data-placement="floating"] { position:fixed; z-index:60; inset-inline-end:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); width:min(400px,calc(100% - 32px)); pointer-events:none; }
+.rhine-toast-region[data-placement="floating"] .rhine-toast { pointer-events:auto; box-shadow:0 8px 24px #242b2820; }
 .rhine-dialog[data-state=open],.rhine-overlay[data-state=open] { animation:rhine-overlay-fade var(--rhine-duration-overlay) var(--rhine-ease-standard); }
 .rhine-popover[data-state=open],.rhine-menu[data-state=open],.rhine-combobox__list[data-state=open],.rhine-tooltip[data-state=delayed-open],.rhine-tooltip[data-state=instant-open] { animation:rhine-enter var(--rhine-duration-overlay) var(--rhine-ease-standard); }
 @keyframes rhine-overlay-fade { from { opacity:0; } to { opacity:1; } }

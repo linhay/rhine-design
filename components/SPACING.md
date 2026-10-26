@@ -52,6 +52,14 @@
 
 页面已有h1时卡片通常用h2；标题等级由结构决定，不能用字号决定。不要为布局引入空Text、空段落或连续br。
 
+### 卡片标题与局部指标切换
+
+卡片继续使用 Surface 24px 内距和 Stack gap=4 的头部/内容间距。头部用 Inline gap=4、justifyContent: space-between：标题使用 Text heading（通常 h2），操作靠右、按内容宽度排列；空间不足自然换行，不挤压标题或固定卡高。只有说明时才加标题/说明 8px 间距。
+
+局部指标切换采用 `SegmentedControl size="compact"`（本地候选，未发布）：可见选项最小32px高，文字12/18，水平内距8px；上下各6px透明命中区域保持44px操作高度，单项最小44px宽。控件不使用业务CSS缩放；默认尺寸和整行模式保持原契约。视觉大小与点击范围分别验收，透明命中区计入头部布局，不覆盖相邻内容。三主题沿用选中、禁用与焦点语义。
+
+真实组合见 `#spacing` 的“统计分布”卡片：默认、加载/禁用、错误、长标题与窄窗，以及键盘选择、200%缩放和减少动态。
+
 ### 只承载表格的 Surface
 
 纯表格使用 `<Surface padding="none"><DataTable … /></Surface>`，取消容器外围24px内距，表头和单元格仍使用 DataTable 自身的阅读间距。该公开 prop 自 0.9.1 提供，见 [#24](https://github.com/linhay/rhine-design/issues/24)；默认 `padding="default"` 保持原来行为。

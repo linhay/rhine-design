@@ -65,11 +65,11 @@ export function Example() {
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
 | Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status为本地候选新增，见下文 |
-| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth? | 原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
+| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth?；size=default/compact | compact为卡片局部操作的32px视觉/44px命中（本地候选）；原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
 | Notice | tone；title；children；action | error 使用 alert，其余 status；调用方决定显示/移除，不自动倒计时关闭错误 |
 | Progress | label；value:number/null；valueText? | null/NaN 为未知进度；数值钳制 0–100；组件不执行或估算真实进度 |
 | Skeleton | label；lines | 1–8 行，默认 3 行；单一可访问加载描述，装饰行隐藏 |
-| Disclosure | title；children；defaultOpen | 非受控原生 details；挂载后 defaultOpen 不作远程控制；支持开合中断与反向，关闭内容退出键盘顺序 |
+| Disclosure | title；children；defaultOpen | 非受控原生 details；挂载后 defaultOpen 不作远程控制；支持开合中断与反向，关闭内容退出键盘顺序；连续分组不加组间 gap，相邻 Disclosure 共用一条分隔线 |
 | EmptyState | title；description；action | 说明当前状态并可给一个下一步动作；不将错误伪装成空数据 |
 
 新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。

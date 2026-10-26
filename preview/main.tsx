@@ -140,7 +140,7 @@ function Gallery() {
       </section>}
 
       {section === 'disclosure' && <section id="disclosure"><div className="ds-section-title"><span>05</span><h2>逐步展开，保持可读</h2></div>
-        <div className="ds-grid"><Surface><div className="ds-component-title"><h3>Disclosure</h3><span>实测高度 / 200ms</span></div><Disclosure title="查看组件动画规则"><p>展开和收起都支持中途反向。关闭后内容不参与 Tab 导航。</p><Button variant="secondary" onClick={()=>setNotice(true)}>内容内操作</Button><p>减少动态模式直接到达最终状态，信息不会丢失。</p></Disclosure></Surface>
+        <div className="ds-grid"><Surface><div className="ds-component-title"><h3>Disclosure</h3><span>实测高度 / 200ms</span></div><Disclosure title="查看组件动画规则"><p>展开和收起都支持中途反向。关闭后内容不参与 Tab 导航。</p><Button variant="secondary" onClick={()=>setNotice(true)}>内容内操作</Button><p>减少动态模式直接到达最终状态，信息不会丢失。</p></Disclosure><Disclosure title="相邻分组共用一条分隔线"><p>分组连续排列，不加组间 gap；相邻边框合并，展开和收起各自独立。</p></Disclosure></Surface>
         <EmptyState title="暂无记录" description="用一句话说明当前状态，按业务需要提供一个下一步操作。" action={<Button variant="secondary" onClick={()=>setNotice(true)}>演示下一步</Button>} /></div>
       </section>}
       {['data','forms','utilities','overlays'].includes(section) && <CommonGallery key={section} section={section} />}

@@ -59,6 +59,14 @@ describe('common design components', () => {
     act(()=>vi.advanceTimersByTime(2000));fireEvent.mouseEnter(screen.getByRole('status'));act(()=>vi.advanceTimersByTime(10000));expect(close).not.toHaveBeenCalled();fireEvent.mouseLeave(screen.getByRole('status'));act(()=>vi.advanceTimersByTime(2999));expect(close).not.toHaveBeenCalled();act(()=>vi.advanceTimersByTime(1));expect(close).toHaveBeenCalledWith(false);
     close.mockClear();rerender(<Toast open onOpenChange={close} title="失败" tone="error" duration={1000}/>);act(()=>vi.advanceTimersByTime(10000));expect(close).not.toHaveBeenCalled();
   });
+  it('portals floating feedback outside the content panel while preserving theme and focus', () => {
+    const {container,unmount}=render(<div className="rhine-theme"><section><button>继续</button><Toast placement="floating" open onOpenChange={()=>{}} title="完成"/></section></div>);
+    const trigger=screen.getByRole('button',{name:'继续'});trigger.focus();
+    const region=screen.getByRole('status').parentElement!;
+    expect(region.parentElement).toBe(container.querySelector('.rhine-theme'));
+    expect(container.querySelector('section')).not.toContainElement(region);
+    expect(trigger).toHaveFocus();unmount();expect(screen.queryByText('完成')).toBeNull();
+  });
   it('resets toast countdown when reopening', () => {
     vi.useFakeTimers();function Demo(){const [open,setOpen]=useState(true);return <><button onClick={()=>setOpen(true)}>显示</button><Toast open={open} onOpenChange={setOpen} title="通知" duration={1000}/></>;}
     render(<Demo/>);act(()=>vi.advanceTimersByTime(1000));expect(screen.queryByText('通知')).not.toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'显示'}));act(()=>vi.advanceTimersByTime(999));expect(screen.getByText('通知')).toBeVisible();act(()=>vi.advanceTimersByTime(1));expect(screen.queryByText('通知')).not.toBeInTheDocument();

@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Button, DataTable, Grid, Inline, Notice, Select, Stack, Surface, Text, type Spacing } from '../components';
+import { Button, DataTable, Grid, Inline, Notice, SegmentedControl, Select, Stack, Surface, Text, type Spacing } from '../components';
 import './spacing.css';
 
 const scale: Spacing[] = [1, 2, 3, 4, 6, 8, 12];
 export function SpacingGallery() {
   const [state, setState] = useState('normal');
+  const [metric, setMetric] = useState('volume');
   const [selected, setSelected] = useState<string[]>(['research']);
   return <section id="spacing">
     <div className="ds-section-title"><span>SPACE</span><h2>间距与组合 · 让关系可见</h2></div>
@@ -12,6 +13,13 @@ export function SpacingGallery() {
       <Text tone="muted">同组紧、组间松。间距使用已有 token；gap 的数字是后缀，例如 gap=4 对应16px。</Text>
       <Surface><Stack gap={4}>{scale.map(space => <div className="ds-spacing-scale" key={space}><Text variant="code">space-{space}</Text><span className="ds-spacing-bar" style={{width:`var(--rhine-space-${space})`}} aria-hidden="true"/><Text numeric variant="caption">{space * 4}px</Text></div>)}</Stack></Surface>
       <Select label="卡片内容状态" value={state} onChange={event=>setState(event.target.value)}><option value="normal">默认</option><option value="loading">检查中</option><option value="error">读取失败</option><option value="long">长文案</option></Select>
+      <Surface><Stack gap={4}>
+        <Inline gap={4} style={{justifyContent:'space-between'}}>
+          <Stack gap={2}><Text as="h3" variant="heading">{state==='long'?'长标题示例：按业务维度查看统计分布':'统计分布'}</Text></Stack>
+          <SegmentedControl size="compact" label="统计维度" items={[{value:'volume',label:'用量'},{value:'count',label:'次数',disabled:state==='loading'}]} value={metric} onValueChange={setMetric}/>
+        </Inline>
+        {state==='error'?<Notice tone="error" title="统计暂不可用">保留所选维度，可重新读取。</Notice>:<Text tone="muted">{state==='loading'?'正在读取统计…':`当前维度：${metric==='volume'?'用量':'次数'}。紧凑视觉 32px，点击区域至少 44px；标题与操作居中对齐，窄窗自然换行。`}</Text>}
+      </Stack></Surface>
       <Grid gap={6} minWidth={280}>
         <Stack gap={3}>
           <Text variant="caption" tone="muted">24px 内边距 · 8px 标题/说明 · 16px 内容/操作</Text>
