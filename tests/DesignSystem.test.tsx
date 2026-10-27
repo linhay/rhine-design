@@ -128,7 +128,7 @@ describe('reusable design components', () => {
     const summary = screen.getByText('动画时长');
     const details = summary.closest('details')!;
     details.style.setProperty('--rhine-duration-notice', cssDuration);
-    const animate = vi.fn(() => ({ cancel: vi.fn(), onfinish: null }));
+    const animate = vi.fn(() => ({ cancel: vi.fn(), onfinish: null } as unknown as Animation));
     details.animate = animate;
     fireEvent.click(summary);
     if (milliseconds === 0) {
