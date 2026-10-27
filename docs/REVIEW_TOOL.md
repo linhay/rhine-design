@@ -1,6 +1,6 @@
-# 产品设计稿评审工具（未发布候选）
+# 产品设计稿评审工具（自 0.11.0）
 
-对应 [#40](https://github.com/linhay/rhine-design/issues/40)。`@linhey/rhine-design/review` 与 `/review/vite` 是本次源码新增入口，**npm 0.10.0 不包含它们**。本地包即使仍使用 0.10.0 字段也只是候选快照；发布前须固定候选 tarball 及摘要，不能直接执行 `npm install @linhey/rhine-design@0.10.0` 来获取此工具。
+对应 [#40](https://github.com/linhay/rhine-design/issues/40)。`@linhey/rhine-design/review` 与 `/review/vite` 自 **0.11.0** 提供；npm 0.10.0 不包含它们。安装时固定 `@linhey/rhine-design@0.11.0` 并提交 lockfile，确认 registry 已提供该版本。历史同为 0.10.0 字段的本地候选快照不等同 npm 正式制品。
 
 工具统一维护目录、搜索、评审控件、深链接、独立 iframe、模拟边界和静态构建。产品维护页面、路由、权限、状态维度、业务模拟、说明和验收记录。普通 React 设计稿、真实 App + HTTP mock、真实组件 + 平台 client 均可接入，不要求把平台接口转换成 HTTP。
 
@@ -23,7 +23,7 @@ HTTP 示例有正常、加载、空、错误、密集长文及只读角色；支
 
 ## 最小消费配置
 
-在消费项目安装已验证候选制品，并把 `vite`、`@vitejs/plugin-react` 放在开发依赖中。只在独立预览配置中导入 Node/Vite 入口，正式 App 不导入它：
+在消费项目安装固定的 0.11.0 正式制品，并把 `vite`、`@vitejs/plugin-react` 放在开发依赖中。只在独立预览配置中导入 Node/Vite 入口，正式 App 不导入它：
 
 ```ts
 // design/vite.config.ts

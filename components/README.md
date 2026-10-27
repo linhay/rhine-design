@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-当前主入口 `components/index.ts` 共 67 个组件（不含类型及独立 `/theme` 入口）；0.9.0 新增 ListFilterBar 后，0.10.0 保持此数量。0.8.0 为 66 个，包含 NeutronStarBackdrop、StatusTimelineList、AppShellToggle、ButtonLink、ThemePicker 与 ThemePreview；0.6.0 为 60 个，0.5.0 为 59 个，0.4.0 为 48 个，0.3.0 为 40 个。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[未发布记录](../CHANGELOG.md#未发布)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+当前主入口 `components/index.ts` 共 67 个组件（不含类型及独立 `/theme` 入口）；0.9.0 新增 ListFilterBar 后，0.10.0 保持此数量。0.8.0 为 66 个，包含 NeutronStarBackdrop、StatusTimelineList、AppShellToggle、ButtonLink、ThemePicker 与 ThemePreview；0.6.0 为 60 个，0.5.0 为 59 个，0.4.0 为 48 个，0.3.0 为 40 个。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[0.11.0 记录](../CHANGELOG.md#01102026-10-27)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 中子星艺术、主题物品和生命周期见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)与[轨道背景契约](../docs/ORBIT_BACKDROP.md)。安装版本与源码导出分别核对。
 
@@ -64,12 +64,12 @@ export function Example() {
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
-| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status为未发布新增，npm 0.10.0 不含，见下文 |
-| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth?；size=default/compact | compact为卡片局部操作的32px视觉/44px命中（未发布，npm 0.10.0 不含）；原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
+| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status自0.11.0新增，npm 0.10.0 不含，见下文 |
+| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth?；size=default/compact | compact为卡片局部操作的32px视觉/44px命中（自 0.11.0，npm 0.10.0 不含）；原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
 | Notice | tone；title；children；action | error 使用 alert，其余 status；调用方决定显示/移除，不自动倒计时关闭错误 |
 | Progress | label；value:number/null；valueText? | null/NaN 为未知进度；数值钳制 0–100；组件不执行或估算真实进度 |
 | Skeleton | label；lines | 1–8 行，默认 3 行；单一可访问加载描述，装饰行隐藏 |
-| Disclosure | title；children；defaultOpen | 非受控原生 details；挂载后 defaultOpen 不作远程控制；支持开合中断与反向，关闭内容退出键盘顺序；连续分组不加组间 gap，相邻 Disclosure 共用一条分隔线（未发布变更，npm 0.10.0 不含） |
+| Disclosure | title；children；defaultOpen | 非受控原生 details；挂载后 defaultOpen 不作远程控制；支持开合中断与反向，关闭内容退出键盘顺序；连续分组不加组间 gap，相邻 Disclosure 共用一条分隔线（自 0.11.0，npm 0.10.0 不含） |
 | EmptyState | title；description；action | 说明当前状态并可给一个下一步动作；不将错误伪装成空数据 |
 
 新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
@@ -141,7 +141,7 @@ export function Example() {
 - 动画不承诺异步任务一定成功；不使用定时器模拟业务完成。预览中的 900ms 保存仅为明确标记的本地演示。
 - 组件不提供全局开启/关闭业务状态的开关；动画是视觉层的可选增强。
 
-### 带说明与状态的 Tabs（未发布，npm 0.10.0 不含）
+### 带说明与状态的 Tabs（自 0.11.0，npm 0.10.0 不含）
 
 完整规格见[带摘要的页签](../docs/SUMMARY_TABS.md)：名称14/22/600、摘要12/18/400，12px上下内距、8px名称/状态、4px摘要间隔、16px页签间距及24px面板间距。独立可交互展台 `/#summary-tabs` 提供局部宽度与状态切换；普通Tabs保持原有间距。
 

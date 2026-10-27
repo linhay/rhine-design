@@ -34,7 +34,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | Toast | `components/Toast.tsx` |
 | Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState | `components/components.tsx`；Surface 的 `padding="none"` 仅取消表格容器外围内距，默认不变；此选项自 0.9.1 提供，见 `CHANGELOG.md` |
 
-Source-only additions after 0.10.0: `Tabs` / `TabItem` `description` and `status`, `Toast placement="floating"`, and `SegmentedControl size="compact"`. They are absent from npm 0.10.0 even though this checkout retains that version field. Read `CHANGELOG.md` → 未发布 and check the installed implementation before use.
+Additions in 0.11.0: `Tabs` / `TabItem` `description` and `status`, `Toast placement="floating"`, and `SegmentedControl size="compact"`. They are absent from npm 0.10.0. Pin 0.11.0 and read `CHANGELOG.md` before upgrading.
 
 Primary contracts: `components/README.md` and `components/COMMON_COMPONENTS.md`. Find behavioral evidence in `tests/` and composition examples in `preview/`.
 
@@ -58,4 +58,4 @@ API decisions that commonly matter:
 
 Available since 0.8.0 (check installed exports): `ThemePicker` / `ThemePreview` in `components/ThemePicker.tsx`, contract `docs/THEME_PICKER.md`; `Dialog.navigation` in `components/Overlays.tsx`, contract `docs/SETTINGS_DIALOG.md`; shared floating CSS zoom behavior in `docs/FLOATING_OVERLAYS.md`.
 
-Product review tooling (unpublished): `/review` exports `defineReview`, URL helpers and scene/session types from `review/index.ts`; `/review/vite` exports Node-only `reviewPlugin` and `reviewProductionGuard` from `review/vite.mjs`, types in `review/vite.d.mts`. Never import the Vite entry into production UI. Read `docs/REVIEW_TOOL.md`; npm 0.10.0 does not contain these entries.
+Product review tooling (since 0.11.0): `/review` exports `defineReview`, URL helpers and scene/session types from `review/index.ts`; `/review/vite` exports Node-only `reviewPlugin` and `reviewProductionGuard` from `review/vite.mjs`, types in `review/vite.d.mts`. Never import the Vite entry into production UI. Read `docs/REVIEW_TOOL.md`; npm 0.10.0 does not contain these entries.
