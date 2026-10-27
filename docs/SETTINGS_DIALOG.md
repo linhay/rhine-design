@@ -26,4 +26,4 @@
 
 提供height或footer时，主体使用有界内部滚动。双栏宽屏可独立滚动，窄屏上下排列在同一内容滚动区；主标题/关闭行在其滚动区顶端保持可达，footer持续固定在下方。根保持主题、焦点陷阱、Escape与onCloseAutoFocus，宿主仍拥有草稿和保存状态。短内容、末页、空组、未选择、预览加载/失败、保存中/成功/失败不改变同一视口的外框高度/位置；视口或缩放改变时可响应调整。
 
-`#compact-selection` 显式保存组合保留预览侧栏，底部保存不与说明或内容混排。保存期间宿主通过受控onOpenChange拒绝关闭，使用请求锁防重，并在卸载清理计时器。height/footer也可用于Drawer，默认Drawer与既有navigation/sidePanel均不因新增参数改变。
+`#compact-selection` 显式保存组合保留预览侧栏，底部保存不与说明或内容混排。保存期间宿主通过受控onOpenChange拒绝关闭，使用请求锁防重，并在卸载清理计时器。height/footer本轮限定Dialog；Drawer与既有navigation/sidePanel默认行为保持。
