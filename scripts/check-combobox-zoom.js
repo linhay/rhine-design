@@ -24,6 +24,11 @@ async page => {
       const list = page.getByRole('listbox', { name: label, exact: true });
       await list.getByRole('option', { name: '合成部门 99', exact: true }).waitFor();
       await page.waitForTimeout(200);
+      // Native Tab targets differ with browser/platform keyboard preferences.
+      // Compare the exit with the same input's ordinary closed-popup Tab path.
+      await input.press('Escape'); await input.press('Tab');
+      const naturalNext = await page.evaluateHandle(() => document.activeElement);
+      await input.click(); await list.waitFor();
       const popup = list.locator('..');
       const completion = popup.getByRole('button', { name: '完成选择', exact: true });
       await input.press('Tab');
@@ -32,8 +37,8 @@ async page => {
       const tabBack = await input.evaluate(element => element === document.activeElement);
       await input.press('Tab'); await completion.press('Tab');
       await list.waitFor({ state: 'detached' });
-      const fieldForTab = page.locator('.rhine-multi-select').filter({ has: input });
-      const tabOut = await fieldForTab.getByRole('list', { name: `${label}已选项`, exact: true }).getByRole('button').first().evaluate(element => element === document.activeElement);
+      const tabOut = await page.waitForFunction(element => element === document.activeElement, naturalNext, { timeout: 2000 }).then(() => true, () => false);
+      await naturalNext.dispose();
       await input.click(); await list.waitFor();
 
       const rect = await bounds(popup);
