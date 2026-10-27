@@ -22,7 +22,7 @@ async page => {
       const measure=()=>dialog.evaluate(d=>{
         const rect=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
         const body=d.querySelector('.rhine-dialog__settings-content'), nav=d.querySelector('.rhine-dialog__navigation'), footer=d.querySelector('.rhine-dialog__footer');
-        return {dialog:rect(d),head:rect(d.querySelector('.rhine-dialog__head')),close:rect(d.querySelector('.rhine-dialog__head button')),footer:rect(footer),buttons:[...footer.querySelectorAll('button')].map(rect),body:rect(body),nav:rect(nav),bodyScroll:body.scrollTop,navScroll:nav.scrollTop,overflow:body.scrollWidth>body.clientWidth+1,footerOverflow:footer.scrollHeight>footer.clientHeight+1,columns:getComputedStyle(d.querySelector('.rhine-dialog__settings-grid')).gridTemplateColumns,rootScroll:d.scrollTop};
+        return {dialog:rect(d),head:rect(d.querySelector('.rhine-dialog__head')),close:rect(d.querySelector('.rhine-dialog__head button')),footer:rect(footer),buttons:[...footer.querySelectorAll('button')].map(rect),labelsMatch:[...footer.querySelectorAll('button')].every(b=>(b.getAttribute('aria-label')||b.innerText).replace(/\s/g,'').includes(b.innerText.replace(/\s/g,''))),body:rect(body),nav:rect(nav),bodyScroll:body.scrollTop,navScroll:nav.scrollTop,overflow:body.scrollWidth>body.clientWidth+1,footerOverflow:footer.scrollHeight>footer.clientHeight+1,columns:getComputedStyle(d.querySelector('.rhine-dialog__settings-grid')).gridTemplateColumns,rootScroll:d.scrollTop};
       });
       const before=await measure();
       const body=dialog.getByRole('region',{name:'设置内容'});
@@ -38,7 +38,7 @@ async page => {
       const same=(a,b)=>['x','y','width','height'].every(k=>Math.abs(a[k]-b[k])<1);
       const stable=['dialog','head','close','footer'].every(k=>same(before[k],after[k])&&same(before[k],navAfter[k]));
       const expectedColumns=c.width>=880&&c.zoom===1?2:1;
-      const checks={stable,buttonsStable:before.buttons.every((r,i)=>same(r,after.buttons[i])),withinViewport:within(after.dialog,{x:0,y:0,right:c.width,bottom:c.height}),bodyNonzero:after.body.height>0,bodyScrolled:after.bodyScroll>0,lastReachable:within(lastRect,after.body),navReachable:within(navLastRect,navAfter.nav),footerVisible:after.buttons.every(r=>within(r,after.footer)),targets:after.buttons.every(r=>r.width/c.zoom>=44-.1&&r.height/c.zoom>=44-.1),noOverflow:!after.overflow&&!after.footerOverflow,columns:after.columns.split(' ').length===expectedColumns,noRootScroll:after.rootScroll===0};
+      const checks={labelsMatch:after.labelsMatch,stable,buttonsStable:before.buttons.every((r,i)=>same(r,after.buttons[i])),withinViewport:within(after.dialog,{x:0,y:0,right:c.width,bottom:c.height}),bodyNonzero:after.body.height>0,bodyScrolled:after.bodyScroll>0,lastReachable:within(lastRect,after.body),navReachable:within(navLastRect,navAfter.nav),footerVisible:after.buttons.every(r=>within(r,after.footer)),targets:after.buttons.every(r=>r.width/c.zoom>=44-.1&&r.height/c.zoom>=44-.1),noOverflow:!after.overflow&&!after.footerOverflow,columns:after.columns.split(' ').length===expectedColumns,noRootScroll:after.rootScroll===0};
       results.push({...c,pass:Object.values(checks).every(Boolean),checks,before,after});
       if(c.width===400&&c.zoom===2&&c.height===648) await page.screenshot({path:`output/playwright/settings-${c.theme}-400-200-short.png`});
     } catch(error) { results.push({...c,pass:false,error:String(error)}); }

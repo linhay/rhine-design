@@ -51,14 +51,14 @@ async page => {
       }
       await d.getByRole('link',{name:'异步栏目',exact:true}).click();await d.getByText('正在读取栏目', {exact:true}).waitFor({state:'attached'});await stable();await d.getByText('异步栏目已就绪').waitFor();await stable();
       await d.getByRole('link',{name:'账号',exact:true}).click();assert(await draft.inputValue()==='跨主题草稿','section lost draft');
-      await d.getByRole('button',{name:'保存设置',exact:true}).click();assert(await d.getByRole('button',{name:'保存设置'}).isDisabled(),'save is not busy');await stable();
+      await d.getByRole('button',{name:'保存当前工作区设置',exact:true}).click();assert(await d.getByRole('button',{name:'保存当前工作区设置'}).isDisabled(),'save is not busy');await stable();
       await d.getByText('已保存演示草稿').waitFor();await stable();
-      await draft.fill('将被撤销');await d.getByRole('button',{name:'取消草稿'}).click();assert(await draft.inputValue()==='跨主题草稿','undo failed');
+      await draft.fill('将被撤销');await d.getByRole('button',{name:'撤销全部未保存的修改'}).click();assert(await draft.inputValue()==='跨主题草稿','undo failed');
       await d.getByRole('button',{name:'关闭设置',exact:true}).click();await d.waitFor({state:'detached'});await page.waitForFunction(()=>document.activeElement?.textContent==='打开设置');
       assert(page.url()===url&&await host.inputValue()==='保留宿主查询','host state changed');
       await trigger.click();assert(await draft.inputValue()==='跨主题草稿','reopen lost saved data');await page.keyboard.press('Escape');await d.waitFor({state:'detached'});
       for(const outcome of ['error','conflict']) {
-        await page.getByRole('combobox',{name:'保存结果'}).selectOption(outcome);await trigger.click();await draft.fill('保留失败草稿');await d.getByRole('button',{name:'保存设置'}).click();
+        await page.getByRole('combobox',{name:'保存结果'}).selectOption(outcome);await trigger.click();await draft.fill('保留失败草稿');await d.getByRole('button',{name:'保存当前工作区设置'}).click();
         await d.getByText(outcome==='error'?'保存失败，草稿已保留':'内容已更新，请核对后重新保存').waitFor();assert(await draft.inputValue()==='保留失败草稿','failure discarded draft');await page.keyboard.press('Escape');await d.waitFor({state:'detached'});
       }
       await page.getByRole('button',{name:'普通短弹窗'}).click();const short=page.getByRole('dialog',{name:'短对话框'});assert(!(await short.getAttribute('class')).includes('--bounded'),'short dialog became bounded');await page.keyboard.press('Escape');await short.waitFor({state:'detached'});

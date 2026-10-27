@@ -38,9 +38,9 @@ export function SettingsDialogGallery() {
     <Select label="保存结果" value={outcome} onChange={event => setOutcome(event.target.value)}><option value="success">成功</option><option value="error">失败</option><option value="conflict">冲突</option></Select>
     <Dialog title="设置" height={640} trigger={<Button>打开设置</Button>} open={open} onOpenChange={next => { setOpen(next); if (next) { draftEdited.current = false; setDraft(saved); setMessage(''); } }}
       footer={<>
-        <Button variant="secondary" aria-label="取消草稿" disabled={busy} onClick={() => { draftEdited.current = false; setDraft(saved); setMessage('已撤销未保存修改'); }}><span className={longActions ? 'rhine-settings-action-full' : undefined}>{longActions ? '撤销全部未保存的修改' : '撤销'}</span>{longActions && <span className="rhine-settings-action-short">撤销</span>}</Button>
+        <Button variant="secondary" aria-label="撤销全部未保存的修改" disabled={busy} onClick={() => { draftEdited.current = false; setDraft(saved); setMessage('已撤销未保存修改'); }}><span className={longActions ? 'rhine-settings-action-full' : undefined}>{longActions ? '撤销全部未保存的修改' : '撤销'}</span>{longActions && <span className="rhine-settings-action-short">撤销</span>}</Button>
         <Button variant="secondary" aria-label="关闭设置" onClick={() => setOpen(false)}>关闭</Button>
-        <Button busy={busy} aria-label="保存设置" onClick={save}><span className={longActions ? 'rhine-settings-action-full' : undefined}>{longActions ? '保存当前工作区设置' : '保存'}</span>{longActions && <span className="rhine-settings-action-short">保存</span>}</Button>
+        <Button busy={busy} aria-label="保存当前工作区设置" onClick={save}><span className={longActions ? 'rhine-settings-action-full' : undefined}>{longActions ? '保存当前工作区设置' : '保存'}</span>{longActions && <span className="rhine-settings-action-short">保存</span>}</Button>
       </>}
       navigation={<SideNav aria-label="设置导航" currentId={section} groups={[{ label: '偏好与管理', items }]} onNavigate={(item, event) => { event.preventDefault(); navigate(item.id); }} />}>
       <Stack gap={4}>

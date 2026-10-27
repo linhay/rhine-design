@@ -14,7 +14,7 @@ it('keeps host state and URL while changing settings sections and explicitly sav
   fireEvent.click(screen.getByRole('link', {name:'账号'}));
   expect(screen.getByRole('textbox', {name:'工作区名称'})).toHaveValue('修改后的名称');
   expect(location.href).toBe(url);
-  fireEvent.click(screen.getByRole('button', {name:'保存设置'}));
+  fireEvent.click(screen.getByRole('button', {name:'保存当前工作区设置'}));
   await screen.findByText('已保存演示草稿');
   expect(screen.getByRole('dialog', {name:'设置'})).toBeVisible();
   fireEvent.click(screen.getByRole('button', {name:'关闭对话框'}));
@@ -23,7 +23,7 @@ it('keeps host state and URL while changing settings sections and explicitly sav
   fireEvent.click(screen.getByRole('button', {name:'打开设置'}));
   expect(screen.getByRole('textbox', {name:'工作区名称'})).toHaveValue('修改后的名称');
   fireEvent.change(screen.getByRole('textbox', {name:'工作区名称'}), {target:{value:'丢弃'}});
-  fireEvent.click(screen.getByRole('button', {name:'取消草稿'}));
+  fireEvent.click(screen.getByRole('button', {name:'撤销全部未保存的修改'}));
   expect(screen.getByRole('textbox', {name:'工作区名称'})).toHaveValue('修改后的名称');
 });
 
@@ -56,7 +56,7 @@ it.each([false, true])('reconciles pending saves on reopen without overwriting n
   render(<ThemeProvider><SettingsDialogGallery /></ThemeProvider>);
   fireEvent.click(screen.getByRole('button', {name:'打开设置'}));
   fireEvent.change(screen.getByRole('textbox', {name:'工作区名称'}), {target:{value:'保存中的名称'}});
-  fireEvent.click(screen.getByRole('button', {name:'保存设置'}));
+  fireEvent.click(screen.getByRole('button', {name:'保存当前工作区设置'}));
   fireEvent.click(screen.getByRole('button', {name:'关闭对话框'}));
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   fireEvent.click(screen.getByRole('button', {name:'打开设置'}));
@@ -100,7 +100,7 @@ it.each(['error', 'conflict'])('retains the host draft after %s and reconciles o
   const dialog = screen.getByRole('dialog');
   const draft = within(dialog).getByLabelText('工作区名称');
   fireEvent.change(draft, {target:{value:'未提交草稿'}});
-  const save = within(dialog).getByRole('button', {name:'保存设置'});
+  const save = within(dialog).getByRole('button', {name:'保存当前工作区设置'});
   fireEvent.click(save); fireEvent.click(save);
   expect(save).toHaveAttribute('aria-busy', 'true');
   expect(save).toHaveAttribute('aria-disabled', 'true');
@@ -120,7 +120,7 @@ it('cleans pending host requests and ignores an obsolete async section', () => {
   fireEvent.click(screen.getByRole('link', {name:'账号'}));
   act(() => vi.advanceTimersByTime(500));
   expect(screen.queryByText('异步栏目已就绪')).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', {name:'保存设置'}));
+  fireEvent.click(screen.getByRole('button', {name:'保存当前工作区设置'}));
   const hostTimers = timer.mock.calls.flatMap((call, i) => call[1] === 500 ? [timer.mock.results[i].value] : []);
   unmount();
   expect(hostTimers).toHaveLength(2);

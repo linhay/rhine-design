@@ -17,7 +17,7 @@ async page => {
     const outer = page.getByRole('dialog',{name:'设置',exact:true});
     const outerBounds = await box(outer);
     await outer.getByRole('textbox',{name:'工作区名称'}).fill('已保存草稿');
-    const save = outer.getByRole('button',{name:'保存设置',exact:true});
+    const save = outer.getByRole('button',{name:'保存当前工作区设置',exact:true});
     await save.scrollIntoViewIfNeeded(); const saveBounds=await box(save); await save.click();
     await outer.getByRole('status').getByText('已保存演示草稿').waitFor();
     await outer.getByRole('link',{name:'用户管理与权限',exact:true}).click();
