@@ -1,0 +1,47 @@
+// Run against the final static examples served on 18342. Chromium/Firefox/WebKit use the same checks.
+async page => {
+  const failures = [], errors = [];
+  const check = (value, name) => { if (!value) failures.push(name); };
+  page.on('pageerror', error => errors.push(String(error)));
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('http://127.0.0.1:18342/review-platform/');
+  const frame = page.frameLocator('iframe');
+  await frame.getByRole('heading', { name: '桌面工作区' }).waitFor();
+  check(await page.getByRole('combobox', { name: '动态偏好' }).count() === 0, 'advanced settings collapsed');
+  check((await page.getByLabel('画布尺寸').textContent()).includes('等效内容宽度'), 'canvas dimensions visible');
+  await page.getByRole('link', { name: '清理错误留存', exact: true }).click();
+  await frame.getByText('离开此场景后，合成清理错误应保留到显式确认。').waitFor();
+  await page.getByRole('link', { name: '桌面工作区', exact: true }).click();
+  await frame.getByRole('heading', { name: '桌面工作区' }).waitFor();
+  await page.getByRole('alert').filter({ hasText: '合成清理失败' }).waitFor();
+  await page.getByRole('combobox', { name: '界面主题' }).selectOption('arknights');
+  await frame.locator('.rhine-theme[data-rhine-theme=arknights]').waitFor();
+  check(await page.getByRole('alert').filter({ hasText: '合成清理失败' }).count() === 1, 'ready does not overwrite error');
+  await page.locator('.rhine-review-log summary').click();
+  check(await page.locator('.rhine-review-log li[data-kind=error] strong').textContent() === '清理错误留存', 'error retains origin scene');
+  await page.getByRole('button', { name: '确认并清除反馈' }).click();
+  check(await page.getByRole('alert').count() === 0, 'explicit acknowledgement clears errors');
+  await page.getByRole('link', { name: '清理挂起恢复', exact: true }).click();
+  await frame.getByText('此场景模拟清理挂起，请切换到桌面工作区验证恢复。').waitFor();
+  await page.getByRole('link', { name: '桌面工作区', exact: true }).click();
+  await page.getByRole('alert').filter({ hasText: '初始化或清理超过 10 秒' }).waitFor({ timeout: 15000 });
+  check(await frame.getByRole('heading', { name: '桌面工作区' }).count() === 0, 'never initializes in uncleared context');
+  const oldFrame = await page.locator('iframe').elementHandle();
+  await page.getByRole('button', { name: '重新载入画布' }).click();
+  await frame.getByRole('heading', { name: '桌面工作区' }).waitFor();
+  check(await oldFrame.evaluate(element => !element.isConnected), 'recovery replaces browsing context');
+  check(await page.getByRole('combobox', { name: '界面主题' }).inputValue() === 'arknights', 'recovery keeps URL preferences');
+  check(await page.getByRole('alert').count() === 1, 'recovery retains prior timeout record');
+  await page.locator('.rhine-review-options summary').click();
+  await page.getByRole('combobox', { name: 'CSS 缩放' }).selectOption('2');
+  await page.getByRole('combobox', { name: '画布宽度' }).selectOption('520');
+  await page.waitForFunction(() => document.querySelector('[aria-label="画布尺寸"]')?.textContent.includes('等效内容宽度约 259 CSS px'));
+  await page.route('**/review-platform/canvas.html', route => route.abort());
+  await page.goto('http://127.0.0.1:18342/review-platform/');
+  await page.getByRole('alert').filter({ hasText: '连接画布超时' }).waitFor({ timeout: 15000 });
+  await page.unroute('**/review-platform/canvas.html');
+  await page.getByRole('button', { name: '重新载入画布' }).click();
+  await frame.getByRole('heading', { name: '桌面工作区' }).waitFor();
+  check(await page.getByRole('status').filter({ hasText: '已就绪' }).count() === 1, 'initial load failure recovers');
+  return { failures, errors, browser: await page.evaluate(() => navigator.userAgent) };
+}

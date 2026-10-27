@@ -205,6 +205,12 @@ skill 中提供以下参考入口：
 
 升级组件时请同步更新 skill；如果已做本地定制，先比较差异再合并。其他工具请将同一 skill 目录放入其支持的技能路径。
 
+## 产品设计稿评审工具（未发布候选）
+
+新增独立 `/review` 与 `/review/vite` 入口，统一产品场景目录、主题/尺寸/状态控制、URL 分享、隔离画布和静态构建。产品保留页面、HTTP/平台模拟与业务知识，无需复制通用预览壳。**npm 0.10.0 尚不包含此工具**。
+
+源码可运行 `npm run review:http`、`npm run review:platform`，或 `npm run review:build` 构建两个合成消费示例。接入、生命周期、部署与迁移见[产品评审契约](docs/REVIEW_TOOL.md)，实际覆盖与剩余边界见[验收记录](docs/REVIEW_VERIFICATION.md)。
+
 ## 参与贡献
 
 欢迎提交问题、文档改进和组件提案。遇到问题时，请在 [Issues](https://github.com/linhay/rhine-design/issues) 提供组件名、版本、预期行为及最小复现。

@@ -1,0 +1,3 @@
+.review-product { padding: 24px; max-width: 840px; margin: 0 auto; overflow-wrap: anywhere; }
+.review-product canvas { display: block; max-width: 100%; border: 1px solid var(--rhine-line); }
+@media (max-width: 400px) { .review-product { padding: 12px; } }
