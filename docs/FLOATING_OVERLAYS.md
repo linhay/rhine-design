@@ -20,4 +20,6 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 
 验证记录（2026-10-27）：维护基线292项测试与全量构建/包清单通过。main 首次并行315项中中子星异步初始化用例一次未读到预期标签（loading），此前312项通过；保留首次日志，另以单worker复验，不据此推定根因。WebKit旧候选的36组边界/交互通过但有ResizeObserver告警，rAF试改无效并撤回；原0.11.0的400px动态缩放对照确认浮层越界，未把旧失败算作新版本验收。
 
-最终候选：Chromium 与 WebKit 各36组三主题×400/520/880px×100%/200% CSS zoom×页内/弹窗场景通过，包含打开时动态缩放、鼠标/键盘反选、空结果、长列表完成按钮、焦点/节点/草稿保留、打开/关闭两态清空后不展开，pageerror均0。main单worker315项、类型/全部构建/包清单复验通过；首次异步用例失败仍保留，未修改该用例或推定失败根因。浏览器回归使用 `scripts/check-combobox-zoom.js`，额外完成行为脚本为 `scripts/check-multiselect-completion.js`。
+首个候选（发布前被标签×修复取代）：Chromium 与 WebKit 各36组三主题×400/520/880px×100%/200% CSS zoom×页内/弹窗场景通过，包含打开时动态缩放、鼠标/键盘反选、空结果、长列表完成按钮、焦点/节点/草稿保留、打开/关闭两态清空后不展开，pageerror均0。main单worker315项、类型/全部构建/包清单复验通过；首次异步用例失败仍保留，未修改该用例或推定失败根因。浏览器回归使用 `scripts/check-combobox-zoom.js`，额外完成行为脚本为 `scripts/check-multiselect-completion.js`。
+
+标签移除收口：首个制品候选在发布前发现标签×也会因归焦重新展开，因此撤出发布，原制品与记录保留。RemoteMultiSelect 统一归焦策略：标签移除/清空收起，输入框空查询Backspace保留原状态；新单测覆盖原开/关两态、剩余值、查询、焦点与不提交。最终维护基线296项、main319项全量检查通过；发布制品和消费项目以最终registry摘要及#40回读为准。

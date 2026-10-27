@@ -66,9 +66,18 @@ async page => {
         await list.waitFor({ state: 'detached' });
         cleared = cleared && await input.evaluate(element => element === document.activeElement && element.value === '合成部门 99' && element.getAttribute('aria-expanded') === 'false') && await field.getByRole('button', { name: '清空选择', exact: true }).count() === 0;
       }
-      const pass = cleared && contained(rect) && contained(dynamic) && selected === 'true' && keyboardSelected === 'true' && focusRetained && stable && toggledOff && toggledOn && contained(doneBounds) && completed;
+      for (const name of ['合成部门 99', '合成部门 98']) {
+        await input.fill(name); await input.press('ArrowDown'); await input.press('Enter');
+      }
+      await popup.getByRole('button', { name: '完成选择', exact: true }).click();
+      await field.getByRole('button', { name: '移除合成部门 99', exact: true }).click();
+      const tagRemoved = await input.evaluate(element => element === document.activeElement && element.value === '合成部门 98' && element.getAttribute('aria-expanded') === 'false');
+      await input.fill(''); await input.press('Backspace');
+      const backspaceRetained = await input.getAttribute('aria-expanded') === 'true' && await field.getByRole('button', { name: '清空选择', exact: true }).count() === 0;
+      await input.press('Escape');
+      const pass = cleared && tagRemoved && backspaceRetained && contained(rect) && contained(dynamic) && selected === 'true' && keyboardSelected === 'true' && focusRetained && stable && toggledOff && toggledOn && contained(doneBounds) && completed;
       cases.push({ ...spec, pass });
-      if (!pass) failures.push({ ...spec, rect, dynamic, selected, keyboardSelected, focusRetained, stable, toggledOff, toggledOn, doneBounds, completed, cleared });
+      if (!pass) failures.push({ ...spec, rect, dynamic, selected, keyboardSelected, focusRetained, stable, toggledOff, toggledOn, doneBounds, completed, cleared, tagRemoved, backspaceRetained });
       if (modal) {
         await input.press('Escape');
         await page.getByRole('dialog', { name: '搜索多选', exact: true }).waitFor({ state: 'detached' });
