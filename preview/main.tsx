@@ -29,6 +29,7 @@ import { DenseFilterControlsGallery } from './DenseFilterControlsGallery';
 import { CheckboxRowGallery } from './CheckboxRowGallery';
 import { ComponentTypographyGallery } from './ComponentTypographyGallery';
 import { NavActionsGallery } from './NavActionsGallery';
+import { SingleSearchGallery } from './SingleSearchGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
 
 function Gallery() {
@@ -61,6 +62,7 @@ function Gallery() {
     {section === 'component-typography' && <ComponentTypographyGallery />}
     {section === 'nav-actions' && <NavActionsGallery />}
     {section === 'agent-chat' && <ChatGallery />}
+    {section === 'single-search' && <SingleSearchGallery />}
     {section === 'summary-tabs' && <SummaryTabsGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}

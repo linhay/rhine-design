@@ -33,13 +33,20 @@ export function SelectionCard({ label, selected, onSelectedChange, disabled = fa
     <span className="rhine-selection__content">{children}</span>
   </label>;
 }
-export function TextField({ label, hint, error, id: providedId, className, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string; error?: string }) {
+export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  labelVisibility?: 'visible' | 'hidden';
+  hint?: string;
+  error?: string;
+}
+export function TextField({ label, labelVisibility = 'visible', hint, error, id: providedId, className, ...props }: TextFieldProps) {
   const generatedId = useId();
   const id = providedId || generatedId;
+  if (!label.trim()) throw new Error('TextField requires a non-empty label.');
   const describedBy = [props['aria-describedby'], hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ');
   return <div className={classes('rhine-field', className)}>
-    <label htmlFor={id}>{label}</label>
-    <input {...props} id={id} aria-invalid={error ? true : props['aria-invalid']} aria-describedby={describedBy || undefined} />
+    <label htmlFor={id} className={labelVisibility === 'hidden' ? 'rhine-sr-only' : undefined}>{label}</label>
+    <input {...props} aria-label={props['aria-label']?.trim() || undefined} aria-labelledby={props['aria-labelledby']?.trim() || undefined} id={id} aria-invalid={error ? true : props['aria-invalid']} aria-describedby={describedBy || undefined} />
     {hint && <span id={`${id}-hint`} className="rhine-field__hint">{hint}</span>}
     {error && <span id={`${id}-error`} className="rhine-field__error" role="alert">{error}</span>}
   </div>;

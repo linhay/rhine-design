@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #42：TextField 新增 `labelVisibility` 与公开 `TextFieldProps`，默认可见；非空标签、正文级单输入搜索组合及异步/IME展台见[契约](docs/SINGLE_SEARCH.md)。此项不包含在 0.11.0 发布候选中。
+
 - #45：SideNav 支持可选行尾 actions，空动作不占位，复用 Menu/IconButton，提供受控 Dialog 归焦组合与真实展台；不包含在0.11.0中。
 - #43：新增 `ChatThread` / `ChatCard` 聊天组合候选，提供多成员分组、卡片状态与详情、只读动作约束、历史锚点和显式恢复跟随；附三组合成展台及[规范与参考取舍](docs/AGENT_CHAT.md)。不包含模型调用、消费迁移或依赖发布。Button 尊重 `aria-disabled` 并阻止激活，支持保留不可操作控件焦点。
 
