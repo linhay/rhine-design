@@ -1,6 +1,6 @@
 # #42 候选验收 · 2026-10-27（Asia/Shanghai）
 
-运行候选 `7607c5c`，基于 `fa2e6bc`；Node 24 / React 19.3.1 / Vite 8.3.4，macOS Chromium 155。所有内容为合成数据。证据位于忽略的 `output/playwright/`。
+初始运行候选 `7607c5c`，基于 `fa2e6bc`；Node 24 / React 19.3.1 / Vite 8.3.4，macOS Chromium 155。所有内容为合成数据。证据位于忽略的 `output/playwright/`。
 
 - PASS：38文件291测试；类型、主展台/两评审示例生产构建、CSS/SVG与包入口检查。
 - PASS：最终生产目录，三主题 × 400/520/880局部容器 × 100/200% CSS zoom，共18组；14/22/400正文及placeholder、44px或46px主题命中、长查询、Escape清空/焦点、加载/无结果/错误/禁用、系统及手动减少动态。脚本 `scripts/check-single-search.js`。
@@ -8,4 +8,6 @@
 - PASS：Chromium CDP `Input.imeSetComposition` 与 `Input.insertText` 真实引擎输入路径，组合时不查询，提交“中文”后查询；定向测试另覆盖防抖、过期响应取消、禁用/卸载清理。
 - SKIPPED：macOS系统中文候选窗与人工选词未测试。上述引擎输入不能外推该边界；issue保持OPEN直到原验收收口。
 - FAIL（保留）：首轮脚本误将Toolbar strong当heading，等待30秒超时；修正搜索框定位后18组PASS。一次隔离context不能打开Chrome设置页，改用独立持久profile后原生缩放PASS；未触碰其他会话浏览器。
-- N/A：npm发布、真实服务和消费产品迁移。本候选不进入已冻结0.11.0制品；发布回合尚待用户登录，暂不合并。
+- N/A：npm发布、真实服务和消费产品迁移。本候选不进入已冻结0.11.0制品；发布回合已结束，源码合并限制解除；npm登录不再阻塞本issue。
+
+后续对齐主线：在`791cf2c`重跑291项检查和18组生产矩阵PASS；在#45合并后再次合入最新main，待最终CI回读。系统输入法补证尝试：独立macOS Chrome148中通过CUA按键只能取得拉丁输入，未出现中文候选窗；输入菜单agent读取超时，未将这些尝试记为IME通过。真实系统候选窗仍SKIPPED，issue不关闭。
