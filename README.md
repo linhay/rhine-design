@@ -190,6 +190,8 @@ mkdir -p .agents/skills
 cp -R node_modules/@linhey/rhine-design/skills/rhine-design .agents/skills/
 ```
 
+复制后，skill 内部链接仍以 skill 目录为基准；以代码格式列出的 `docs/`、`components/` 等路径以已核对版本的组件包根目录为基准。独立安装 skill 且尚未安装组件包时，可使用其标明固定提交的在线契约后备链接；该快照不会跟随 main，也不代表当前安装版本的 API。
+
 然后向助手提出具体任务，例如：
 
 > 使用 $rhine-design 设计一个设置页面，包含搜索、选项开关和保存反馈；复用现有组件，并提供键盘操作与减少动态效果。

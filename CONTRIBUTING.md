@@ -35,6 +35,8 @@ README 面向首次接触项目的开发者，优先解释用途、安装、示�
 
 组件 API 变更时，更新契约、示例以及 skill 的 `references/API_MAP.md` 或 `TASK_MAP.md`。索引指向真实源码，不复制第二份 API 定义；skill 的版本信息随包版本更新。
 
+skill 会被单独复制安装，Markdown 相对链接必须留在 `skills/rhine-design/` 内。包根路径使用代码格式；在线契约链接固定提交或版本，并说明与已安装包的关系。运行 `npm test -- tests/SkillInstallation.test.tsx`，在仓库外的临时空目录验证 README 复制安装与独立 skill 安装，检查内部文件/标题链接、越界路径及浮动源码链接。此检查不发网络请求，新增在线快照仍需核对对应远端文件可访问。
+
 展台包版本由 `preview/packageInfo.ts` 从 `package.json` 读取；组件数量只统计 `components/index.ts` 的公开组件，不计类型与独立主题入口。新增导出时同步该数量、README 完整清单与组件入口。发布后的源码新增能力写入 CHANGELOG 的“未发布”部分，并在相关契约标明旧包不包含；不要因为源码仍使用同一版本字段，就将新能力归入已发布版本。历史版本介绍与验收记录保留原时点。
 
 ## 提交 Pull Request
