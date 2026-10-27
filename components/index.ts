@@ -48,3 +48,6 @@ export { Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedContro
 export type { ButtonProps, SurfaceProps, Tone, Choice, TabItem } from './components';
 
 export { ThemePicker, ThemePreview, type ThemePickerProps, type ThemePickerOption, type ThemePreviewProps } from './ThemePicker';
+
+export { ChatThread, ChatCard } from './Chat';
+export type { ChatThreadProps, ChatCardProps, ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus } from './Chat';

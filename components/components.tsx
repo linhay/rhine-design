@@ -9,9 +9,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   busyLabel?: string;
 }
 export function Button({ variant = 'primary', busy = false, busyLabel = '处理中', disabled, className, children, onClick, type = 'button', ...props }: ButtonProps) {
-  return <button {...props} type={type} disabled={disabled} aria-disabled={busy || disabled || undefined}
+  return <button {...props} type={type} disabled={disabled} aria-disabled={busy || disabled || props['aria-disabled'] || undefined}
     aria-busy={busy || undefined} className={classes('rhine-button', `rhine-button--${variant}`, className)}
-    onClick={event => { if (busy) { event.preventDefault(); return; } onClick?.(event); }}>
+    onClick={event => { if (busy || props['aria-disabled'] === true || props['aria-disabled'] === 'true') { event.preventDefault(); return; } onClick?.(event); }}>
     <span className={busy ? 'rhine-button__ghost' : undefined}>{children}</span>
     {busy && <span className="rhine-button__busy"><span className="rhine-spinner" aria-hidden="true" /><span className="rhine-sr-only">{busyLabel}</span></span>}
   </button>;

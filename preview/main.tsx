@@ -1,3 +1,4 @@
+import { ChatGallery } from './ChatGallery';
 import { BackgroundFiltersFixture } from './BackgroundFiltersFixture';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -59,6 +60,7 @@ function Gallery() {
     {section === 'checkbox-rows' && <CheckboxRowGallery />}
     {section === 'component-typography' && <ComponentTypographyGallery />}
     {section === 'nav-actions' && <NavActionsGallery />}
+    {section === 'agent-chat' && <ChatGallery />}
     {section === 'summary-tabs' && <SummaryTabsGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}

@@ -16,10 +16,10 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、67 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、69 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **67 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **69 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
@@ -27,8 +27,9 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 ## 版本与源码范围
 
-- **本源码包版本：0.11.0**。主入口导出 67 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。发布是否可安装以 npm registry 为准。
+- **本源码包版本：0.11.0**。0.11.0 制品主入口为 67 个组件；当前源码含未发布 ChatThread / ChatCard，共 69 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。发布是否可安装以 npm registry 为准。
 - **0.11.0 新增**：产品评审 `/review`、`/review/vite`，摘要页签 `Tabs description/status`、`Toast placement="floating"`、`SegmentedControl size="compact"` 及相邻 Disclosure 分隔线与生产动效修正。npm 0.10.0 不包含这些新增 API。
+- **未发布聊天组合**：消息分组、结构化卡片及历史跟随见 [Agent Chat](docs/AGENT_CHAT.md)，不在 0.11.0 制品中。
 - **展台随源码更新**，在线部署跟随 main；安装包的能力以精确版本和实际导出/实现为准。上述源码变更、历史版本与接入边界统一见[版本记录](CHANGELOG.md)。
 
 三套主题、轨道艺术、设置导航与主题选择等已有能力见下方组件和规范入口；应用组件的 Ant Design / MUI 对照见[对标清单](docs/ANTD_MUI_AUDIT.md)。
@@ -133,6 +134,7 @@ export function App() {
 | 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · AppShellToggle⁴ · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
 | 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² · ThemePicker⁴ · ThemePreview⁴ |
 | 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
+| 聊天组合（源码候选） | ChatThread · ChatCard |
 | 搜索与筛选组合 | ListFilterBar⁵ |
 | 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · StatusTimelineList⁴ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
 | 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
@@ -150,6 +152,7 @@ export function App() {
 
 | 主题 | 文档 | 在线预览 |
 | --- | --- | --- |
+| 聊天消息、卡片与历史（源码候选） | [Agent Chat](docs/AGENT_CHAT.md) | [聊天消息与记录](https://linhay.github.io/rhine-design/#agent-chat) |
 | 视觉基础与组合原则 | [设计规范](docs/DESIGN_SYSTEM.md) | [视觉基础](https://linhay.github.io/rhine-design/#foundation) |
 | 间距、分组与卡片组合 | [Spacing](components/SPACING.md) | [间距与组合](https://linhay.github.io/rhine-design/#spacing) |
 | 字体、文字层级与数值 | [Typography](components/TYPOGRAPHY.md) | [字体与文字](https://linhay.github.io/rhine-design/#typography) |
