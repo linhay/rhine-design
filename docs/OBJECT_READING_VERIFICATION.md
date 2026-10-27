@@ -2,14 +2,14 @@
 
 采集日期：2026-10-28，Asia/Shanghai。仅合成文件、笔记、目标与对话。
 
-- 实现源码：`eb8917f11eebceb85adc4c2725df0bc383e1b226`；后续验收文档提交不改变运行实现。
-- 固定本地包 SHA-256：`aa5e015f002d88ddaf81cbf4dadd980683fe0b1beed33e637fe1aa10b5e77df7`。包字段为 0.11.1，**不是 registry 0.11.1，未发布 npm**。
+- 实现源码：`3783ec0c543d9f1ff9f06242fb92c9bc58a6994e`；后续验收文档提交不改变运行实现。
+- 固定本地包 SHA-256：`d6bc4909a5d95d91540bae9a09f037586b54b63a0ab68d3fe545fab82a8c1bc4`。包字段为 0.11.1，**不是 registry 0.11.1，未发布 npm**。
 - 环境：macOS、Node 24.21.0、Vite 8.3.4、React 19.3.1、Chromium 155.0.8059.85、Playwright CLI 0.1.22。
-- 生产展台 `#object-reading` 与独立 fixture；合成消费者仅改导入为包公开主入口和 `/theme`，另后置导入公开 `/styles.css`。安装目录 304 个文件逐项与 tarball 一致，未修改 node_modules。
+- 生产展台 `#object-reading` 与独立 fixture；合成消费者仅改导入为包公开主入口和 `/theme`，另后置导入公开 `/styles.css`。安装目录 310 个文件逐项与 tarball 一致，未修改 node_modules。
 
 | 验证 | 结果 | 证明范围 |
 | --- | --- | --- |
-| Node 24 `npm run check` | PASS | 44 文件、335 项测试，类型、展台生产 build、两个 review build、CSS/SVG 和包入口检查；新增对象阅读测试 11 项 |
+| Node 24 `npm run check` | PASS | 44 文件、346 项测试，类型、展台生产 build、两个 review build、CSS/SVG 和包入口检查；新增对象阅读测试 11 项 |
 | 展台阅读闭环 | PASS | 三主题 × 400/520/880 × 100/200% CSS zoom，共18组；单居中 Dialog、唯一关闭、长标题/路径/正文、末段及关闭可达、Enter/Tab/ShiftTab/Escape、目标/对话交接与返回 |
 | 阅读位置与上下文 | PASS | 每组实际记录并比较 scrollTop，查询/类型/目录/对象/页签保留；末尾切页签聚焦可见“关联”页签，返回列表聚焦原入口 |
 | 展台状态 | PASS | 每组空目录、无结果及7类加载/异常，共162个状态；受限正文不渲染，不可用来源/关联无绕过链接，错误可重试；阅读不修改合成版本与收件状态 |
@@ -19,6 +19,10 @@
 | 原生网页缩放、屏幕阅读器、Firefox/WebKit | SKIPPED | 本次为 Chromium 与明确要求的 CSS zoom；不外推其他浏览器或辅助技术 |
 | 真实文件/模型/权限/已读服务、iOS、消费产品升级 | N/A | 本任务只做通用合成组合 |
 | npm 发布 | N/A | 未授权且非本 issue 完成前置；只完成源码 |
+
+已整合 #18 / PR #62 的主线提交 `539bdce203b61b4310e4aaa132d4f025c1cfaa55`，上述整套展台与固定包矩阵均在整合后重跑。普通 Dialog 仍整体滚动，本组合未调用其有界 height/footer。早期独立候选 `eb8917f` 的335项检查与旧制品证据单独保留，不替代此整合结果。
+
+CodeRabbit 与 Copilot 自动审阅均因配额不足未执行（SKIPPED），其状态不表示已审阅代码；已检查实际讨论、逐文件自审和最新 head 的 CI，未发现未处理的代码意见。
 
 ## 失败与修正
 
