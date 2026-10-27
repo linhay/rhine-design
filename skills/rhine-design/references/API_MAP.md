@@ -68,3 +68,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 #41未发布：Button.contentAlign、Tabs.layout/TabsProps、Dialog.height/footer；先读 `docs/COMPACT_ACCOUNT_PATTERNS.md`、`docs/SETTINGS_DIALOG.md`、`docs/SUMMARY_TABS.md`，展台 `#compact-selection`。
 
 #46未发布：Button.size="standard" | "large"；动作语义先读 `docs/BUTTON_ACTIONS.md`，展台 `#button-actions`。
+
+#18 未发布：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。

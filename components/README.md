@@ -195,3 +195,5 @@ export function Example() {
 #41 未发布：Button `contentAlign="center" | "between"`，Tabs `layout="content" | "fill"`及TabsProps，Dialog `height`/`footer`；见[紧凑选择组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)与[稳定弹窗](../docs/SETTINGS_DIALOG.md)。
 
 Button.size="standard" | "large"（未发布），标准14/22、44px最小高度，大尺寸16/24、52px最小高度；[动作语义与尺寸](../docs/BUTTON_ACTIONS.md)。
+
+#18 未发布：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。
