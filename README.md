@@ -16,28 +16,24 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、66 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、67 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **66 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **67 个可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
-**0.4.0 新增能力：**主题 API、三套内置主题，以及导航、表单流程与健康时间轴组件；在线展台跟随 main，安装前请核对[版本记录](CHANGELOG.md)。新增组件及选型见[交互规范](docs/INTERACTION_PATTERNS.md)，参考项目见[GitHub 调研](docs/REFERENCE_RESEARCH.md)。
-
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
-**0.5.0 新增能力**：新增背景与多侧栏、复杂表单、受控数据表、媒体与监控图表，共 59 个组件。API、最小接入与版本边界见[应用组件契约](docs/APPLICATION_COMPONENTS.md)。npm 0.4.0 不含这些能力。
+## 版本与源码范围
 
-**0.8.0 新增能力**：三主题 Three.js 艺术分别为折纸鸟、源石晶簇与草莓甜甜圈，保留原始轨道切换；新增 `NeutronStarBackdrop`、`StatusTimelineList` 、`AppShellToggle` 与 `ButtonLink`，公共组件总数为 66。包含暂停、减少动态、静态降级与资源清理。安装前核对[版本记录](CHANGELOG.md)与 registry；在线展台跟随 main。
+- **发布基线：0.10.0**。2026-10-27 核对 npm registry 的 latest 为 0.10.0；该版本的主入口与当前源码均导出 67 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。
+- **当前源码包含未发布变更**：摘要页签 `Tabs description/status`、`Toast placement="floating"`、`SegmentedControl size="compact"` 及相邻 Disclosure 分隔线调整。包版本字段仍为 0.10.0，不能用它判断这些能力是否存在。
+- **展台随源码更新**，在线部署跟随 main；安装包的能力以精确版本和实际导出/实现为准。上述源码变更、历史版本与接入边界统一见[版本记录](CHANGELOG.md)。
 
-0.8.0 同时提供 `ButtonLink` 与可传规则的一行 `TimelineLegend`；[紧凑摘要与凭证操作规范](docs/COMPACT_ACCOUNT_PATTERNS.md)说明无框摘要、历史详情与必要操作的组合。真实展台为 `/#compact-account`。
-
-本轮新增 API 与交互已逐项核对 Ant Design / MUI，修复及明确保留的差异见[对标清单](docs/ANTD_MUI_AUDIT.md)。
+三套主题、轨道艺术、设置导航与主题选择等已有能力见下方组件和规范入口；应用组件的 Ant Design / MUI 对照见[对标清单](docs/ANTD_MUI_AUDIT.md)。
 
 <a id="quick-start"></a>
-
-**0.8.0 新增**：新增 [主题预览与选择](docs/THEME_PICKER.md)、[设置弹窗导航](docs/SETTINGS_DIALOG.md)及[浮层缩放修复](docs/FLOATING_OVERLAYS.md)。0.7.0 候选未发布；本版承接其全部已接受功能。
 
 ## 快速接入
 
@@ -135,13 +131,14 @@ export function App() {
 | 品牌与文字 | Logo · Text |
 | 操作 | Button · ButtonLink⁴ · Icon · IconButton · Link · CopyButton |
 | 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · AppShellToggle⁴ · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
-| 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² |
+| 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² · ThemePicker⁴ · ThemePreview⁴ |
 | 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
+| 搜索与筛选组合 | ListFilterBar⁵ |
 | 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · StatusTimelineList⁴ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
 | 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
 | 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
 
-¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。⁴ 自 0.8.0 提供。
+¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。⁴ 自 0.8.0 提供。⁵ 自 0.9.0 提供。
 
 参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 

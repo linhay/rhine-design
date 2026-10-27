@@ -144,4 +144,4 @@ import { Background, Surface } from '@linhey/rhine-design';
 
 兼容已有源码调用：`roleTone` 的原有三种值与显式 `theme` / `none` 均保留；省略 `decoration` 的正文及 `AppShell` 改为 `auto`，默认纯色。需要旧版正文纹理的调用方显式传入 `decoration="theme"`。侧栏显式传入 `theme` 现在也会开启纹理；默认仍关闭。以上能力自 0.5.0 提供，不属于 npm 0.4.0。
 
-主题选择的新候选组合见 [ThemePicker / ThemePreview](THEME_PICKER.md)；静态预览避免嵌套 Provider，未发布能力需核对源码与实际安装包。
+主题选择组件 [ThemePicker / ThemePreview](THEME_PICKER.md) 自 0.8.0 提供；静态预览避免嵌套 Provider。接入时核对源码与实际安装包，不由 main 展台推断发布范围。

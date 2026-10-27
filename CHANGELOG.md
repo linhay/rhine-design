@@ -1,5 +1,15 @@
 # 版本记录
 
+## 未发布
+
+以下是 0.10.0 之后的源码变更；`package.json` 仍声明 0.10.0，不代表 npm 同版本包含这些能力。2026-10-27 核对 registry 的 latest 为 0.10.0，并读取该版本 tarball 确认下列新增 API 不在其中。接入这些变更需固定包含它们的源码提交或已验证快照，不能只凭展台或版本字段判断。
+
+- `Tabs` / `TabItem` 新增 `description`、`status`，提供带身份摘要与只读状态的页签；契约见[Summary Tabs](docs/SUMMARY_TABS.md)，展台为 `#summary-tabs`。
+- `Toast` 新增 `placement="floating"`，通过主题根 Portal 呈现浮动通知；默认 inline 保持兼容，见[通知契约](components/COMMON_COMPONENTS.md)。
+- `SegmentedControl` 新增 `size="compact"`，支持卡片局部指标切换；见[间距规范](components/SPACING.md)。0.10.0 已有的 `fullWidth` 不受影响。
+- 相邻 `Disclosure` 共用分隔线；补充上下文帮助与主题背景/文字配对规范。
+- 展台首页和页脚按当前主入口统一为 67 个组件，源码包版本改从 `package.json` 读取；修正轨道主题艺术的版本标记及文档中的旧数量、候选状态。
+
 ## 0.10.0（2026-10-26）
 
 - #31：MediaViewer 说明补齐 caption 12/18/400，EmptyState 标题采用 heading 16/24 与主题标题字重；同类复制反馈、步骤/表单组说明、错误摘要和主题预览状态补齐语义配对，保留既有密度例外。真实回归入口 `#component-typography`。

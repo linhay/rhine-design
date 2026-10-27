@@ -12,7 +12,7 @@ export function OrbitGallery() {
     <div className="ds-section-title"><span>ORBIT</span><h2>轨道星空 · 品牌艺术背景</h2></div>
     <p className="ds-caption">莱茵的折纸鸟、战术的悬浮源石晶簇、橙趣的草莓甜甜圈。每个主题都有自己的物件，也可以切换到原始深色星空。</p>
     <Inline gap={3}>
-      <Badge>0.7.0</Badge>
+      <Badge>主题艺术自 0.8.0 提供</Badge>
       <SegmentedControl label="画面风格" value={appearance} onValueChange={value => setAppearance(value as 'theme' | 'original')} items={[{ value: 'theme', label: '跟随主题' }, { value: 'original', label: '原始深色' }]} />
       <Button variant="secondary" onClick={() => setReplay(value => value + 1)}>重播轨道</Button>
       <Switch label="减少轨道动态" checked={reduced} onCheckedChange={setReduced} />

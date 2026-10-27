@@ -1,6 +1,6 @@
 # 莱茵设计 · 主流系统对照与补齐顺序
 
-本页保留早期组件基线与补齐顺序。2026-10-24 对 issues #1–#6 的 11 个新增组件及 3 个扩展另有[Ant Design / MUI 逐项审计](ANTD_MUI_AUDIT.md)，包含本轮修复、验证和有意差异；当前候选 API 见[应用组件契约](APPLICATION_COMPONENTS.md)。
+本页保留早期组件基线与补齐顺序。2026-10-24 对 issues #1–#6 的 11 个新增组件及 3 个扩展另有[Ant Design / MUI 逐项审计](ANTD_MUI_AUDIT.md)，包含当时修复、验证和有意差异。下文 V1.3 / V1.4 是历史文档阶段编号，不是 npm 版本；数量、优先级与接入状态均保留当时语境。当前 67 个主入口组件及发布/源码边界见[组件入口](../components/README.md)，应用 API 见[应用组件契约](APPLICATION_COMPONENTS.md)。
 
 初次调研：2026-10-22；2026-10-23追加[GitHub项目与skills调研](./REFERENCE_RESEARCH.md)，main新增六个组件、14类场景指南和两组动效。对照[莱茵设计](../README.md)的`components/`与通用表单、数据展示、反馈和导航场景。以下优先级是本项目判断；引用用于说明参考系统的原则，不代表它们要求采用我们的尺寸、配色或组件清单。独立展台使用18309的`/#…`入口。
 
@@ -15,7 +15,7 @@
 | [Carbon Data table](https://www.carbondesignsystem.com/building-blocks/core/components/data-table/guidelines) | 明确表头、工具栏、数据行和分页的职责 | 后续优先提取请求明细与分页；不预建电子表格、批量编辑或表格引擎 |
 | [Radix Accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility) | 标签、键盘和焦点管理是组件契约 | 每个控件写清语义和焦点行为；复杂浮层出现时评估成熟基础实现，不手写只在鼠标下有效的弹层 |
 
-## 当前已经落地
+## 历史基线：当时已经落地
 
 2026-10-22追加用户指定的[Transitions.dev](https://transitions.dev/)参考，具体UX、动效映射和已实现/候选边界见[MOTION.md](../components/MOTION.md)。随后按用户授权在`/#motion`实现10组可播放/重播、4倍慢放及减少动态对照；新动画限定在展台，组件数量仍为40，未迁移App。
 
@@ -23,7 +23,7 @@ V1.4共40个React组件。原16项为Button、Badge、Surface、SelectionCard、
 
 V1.3新增Text/Select/Toolbar、9档文字样式和[字体/文案规范](../components/TYPOGRAPHY.md)。静态样稿工具栏复用同源CSS，修正箭头并移除App内重复品牌顶栏。已有Logo深浅版本不等于完整深色主题。
 
-## 还需要补什么
+## 历史补齐顺序
 
 | 优先级 | 补充项 | 具体范围与验收 | 状态 |
 | --- | --- | --- | --- |
@@ -60,6 +60,6 @@ V1.3新增Text/Select/Toolbar、9档文字样式和[字体/文案规范](../comp
 
 ## 消融与范围
 
-- 独立通用库现已提供SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary，不再沿用原产品仅有两个页面的限制。命令面板、日期选择器、拖拽、富文本与图表引擎仍需具体交互需求后再补。
+- 独立通用库现已提供SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary，不再沿用原产品仅有两个页面的限制。DateField / DateRangePicker 与 TrendChart / StackedBar 自 0.5.0 已提供，见[应用组件契约](APPLICATION_COMPONENTS.md)；命令面板、拖拽、富文本与通用图表引擎仍需具体需求后评估。
 - 不引入动画框架、主题生成器或整体UI库。V1.4用户已授权完整浮层能力，采用Radix的5个无样式primitive包处理焦点/键盘/边缘避让；视觉和动效仍使用Rhine Design CSS。
 - 不把每种视觉模式封装成组件：先出现稳定复用，再抽取；业务数据契约与服务端状态继续保留在调用方。

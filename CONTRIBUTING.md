@@ -35,6 +35,8 @@ README 面向首次接触项目的开发者，优先解释用途、安装、示�
 
 组件 API 变更时，更新契约、示例以及 skill 的 `references/API_MAP.md` 或 `TASK_MAP.md`。索引指向真实源码，不复制第二份 API 定义；skill 的版本信息随包版本更新。
 
+展台包版本由 `preview/packageInfo.ts` 从 `package.json` 读取；组件数量只统计 `components/index.ts` 的公开组件，不计类型与独立主题入口。新增导出时同步该数量、README 完整清单与组件入口。发布后的源码新增能力写入 CHANGELOG 的“未发布”部分，并在相关契约标明旧包不包含；不要因为源码仍使用同一版本字段，就将新能力归入已发布版本。历史版本介绍与验收记录保留原时点。
+
 ## 提交 Pull Request
 
 说明解决的问题、变更后的行为，以及已执行的验证。涉及视觉或动效时附上截图或录屏；涉及破坏性 API 变更时提供迁移说明并更新 [CHANGELOG](CHANGELOG.md)。

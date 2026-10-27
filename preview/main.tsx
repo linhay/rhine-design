@@ -1,7 +1,7 @@
 import { BackgroundFiltersFixture } from './BackgroundFiltersFixture';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Badge, Button, Checkbox, Disclosure, EmptyState, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
+import { Badge, Button, Checkbox, Disclosure, EmptyState, Link, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
 import './preview.css';
 import { OverlayBoundsFixture, OverlayBoundsGallery } from './OverlayBoundsGallery';
 import { SettingsDialogGallery, SettingsDialogFixture } from './SettingsDialogGallery';
@@ -11,6 +11,7 @@ import { MotionGallery } from './MotionGallery';
 import { StartupGallery } from './StartupGallery';
 import { PatternGallery } from './PatternGallery';
 import { GalleryShell } from './GalleryShell';
+import { componentCount } from './packageInfo';
 import { SpacingGallery } from './SpacingGallery';
 import { LineHeightGallery } from './LineHeightGallery';
 import { SubscriptionGallery } from './SubscriptionGallery';
@@ -66,7 +67,7 @@ function Gallery() {
     {section === 'media' && <MediaGallery />}
     {section === 'subscriptions' && <SubscriptionGallery />}
     {section === 'top' && <>
-      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>60 个通用组件，共用一套视觉变量和动效规则。<br />这里运行的就是后续业务页面可直接导入的 React 组件。</p></div></div>
+      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>{componentCount} 个通用组件，共用一套视觉变量和动效规则。<br />展台运行当前源码，可能包含未发布能力；接入前请核对安装版本与<Link href="https://github.com/linhay/rhine-design/blob/main/CHANGELOG.md">版本记录</Link>。</p></div></div>
       <div className="ds-overview-links">{[
         ['foundation','视觉基础','从色彩、间距与材质开始。'],
         ['typography','字体与文字','清晰的层级，稳定的阅读节奏。'],
