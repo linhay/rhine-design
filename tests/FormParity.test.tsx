@@ -106,6 +106,36 @@ describe('number field parity', () => {
 });
 
 describe('remote multi-select parity', () => {
+  it.each([false, true])('removes a tag without reopening candidates (initially open: %s)', initiallyOpen => {
+    const query = vi.fn(), submit = vi.fn(event => event.preventDefault());
+    function Demo() {
+      const [value, setValue] = useState([{ value: 'a', label: 'Alpha' }, { value: 'b', label: 'Beta' }]);
+      return <form onSubmit={submit}><RemoteMultiSelect label="成员" query="保留查询" onQueryChange={query} value={value} onValueChange={setValue} options={[{ value: 'a', label: 'Alpha' }, { value: 'b', label: 'Beta' }]} /></form>;
+    }
+    render(<Demo />); const input = screen.getByRole('combobox');
+    if (initiallyOpen) act(() => input.focus());
+    fireEvent.click(screen.getByRole('button', { name: '移除Beta' }));
+    expect(screen.queryByRole('button', { name: '移除Beta' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '移除Alpha' })).toBeVisible();
+    expect(input).toHaveFocus(); expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(input).toHaveValue('保留查询'); expect(query).not.toHaveBeenCalled(); expect(submit).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '移除Alpha' }));
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('button', { name: '清空选择' })).not.toBeInTheDocument();
+  });
+
+  it.each([false, true])('Backspace retains the current candidate state (open: %s)', initiallyOpen => {
+    function Demo() {
+      const [value, setValue] = useState([{ value: 'a', label: 'Alpha' }]);
+      return <RemoteMultiSelect label="成员" query="" onQueryChange={() => {}} value={value} onValueChange={setValue} options={[{ value: 'a', label: 'Alpha' }]} />;
+    }
+    render(<Demo />); const input = screen.getByRole('combobox'); act(() => input.focus());
+    if (!initiallyOpen) fireEvent.keyDown(input, { key: 'Escape' });
+    fireEvent.keyDown(input, { key: 'Backspace' });
+    expect(screen.queryByRole('button', { name: '移除Alpha' })).not.toBeInTheDocument();
+    expect(input).toHaveAttribute('aria-expanded', String(initiallyOpen)); expect(input).toHaveFocus();
+  });
+
   it.each([false, true])('clears without opening candidates (initially open: %s) and hides empty actions', initiallyOpen => {
     const query = vi.fn(), submit = vi.fn(event => event.preventDefault());
     function Demo() {
