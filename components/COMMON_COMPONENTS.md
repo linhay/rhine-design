@@ -26,7 +26,7 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 | Combobox | 受控查询与选中值；候选由调用方返回；方向键/Enter/Escape，IME保护，加载/无结果/错误 |
 | Tooltip | 鼠标与键盘说明、Escape、可悬停；不可放交互控件或关键信息 |
 | Toast | 单条通知、关闭；成功可定时、警告错误持久；hover/focus/页面隐藏暂停计时，无全局队列 |
-| Dialog / ConfirmDialog | 标题描述、焦点限制及归还、Escape、滚动；确认默认聚焦取消，异步失败保留内容 |
+| Dialog / ConfirmDialog | 必填标题（Dialog说明可省略）、焦点限制及归还、Escape、滚动；确认默认聚焦取消，异步失败保留内容 |
 | Popover | 按钮触发非模态详情、边缘避让、Escape与焦点归还；不替代Tooltip |
 | Menu | 操作项/禁用/危险项；方向键/Home/End/输入字符跳转；不是表单选择器 |
 | Divider / Stack / Inline / Grid | 语义分隔线、纵排、可换行横排、自适应网格；只消费间距tokens |

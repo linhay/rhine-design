@@ -1,5 +1,12 @@
 # 版本记录
 
+## 未发布 · 设置 Dialog（#18）
+
+- settings宽度不再被后置公共CSS覆盖；复用height/footer，固定标题/关闭与右对齐底部动作，正文和长导航独立有界滚动。
+- Dialog.description类型可省略，省略时没有说明占位或悬空aria-describedby；默认短Dialog、Drawer及sidePanel策略保留。
+- 真实展台补齐30行、长导航/按钮、异步栏目、错误/冲突、嵌套搜索多选与草稿行为；新增生产与固定tarball消费者回归。未发布，不更改0.11.1制品。
+
+
 ## 未发布
 
 - #61：新增[工作空间对象阅读规范](docs/OBJECT_READING.md)与 `#object-reading` 合成展台；尊重产品居中 Dialog 偏好，同窗切换正文/来源/关联，导航交接焦点并恢复目录、筛选与阅读位置。复用现有公共组件，无新增公共 API，不改 Drawer 默认行为；此项未 npm 发布。

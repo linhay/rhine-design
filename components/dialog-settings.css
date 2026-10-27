@@ -1,4 +1,4 @@
-.rhine-dialog--settings { width:min(960px,calc(100% - 32px)); max-height:calc(100% - 32px); container-type:inline-size; }
+.rhine-dialog.rhine-dialog--settings { width:min(960px,calc(100% - 32px)); max-height:calc(100% - 32px); container-type:inline-size; }
 .rhine-dialog__settings-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
 .rhine-dialog__navigation { min-width:0; padding-bottom:16px; border-bottom:1px solid var(--rhine-line); }
 .rhine-dialog__settings-content { min-width:0; overflow-wrap:anywhere; }
@@ -20,4 +20,43 @@
 @media(min-width:721px) {
  .rhine-dialog--bounded.rhine-dialog--split .rhine-dialog__scroll { grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:24px; overflow:hidden; }
  .rhine-dialog--bounded.rhine-dialog--split .rhine-dialog__main,.rhine-dialog--bounded.rhine-dialog--split .rhine-dialog__side { overflow:auto; min-height:0; }
+}
+
+/* A bounded single-pane/settings dialog keeps its head outside both scroll areas.
+   Keep the legacy auxiliary sidePanel layout independent. */
+.rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__scroll { overflow:hidden; }
+.rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__main { display:flex; flex-direction:column; overflow:hidden; }
+.rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__head { position:static; flex:none; }
+.rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__main > p { flex:none; }
+.rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__body { min-height:0; overflow:auto; overscroll-behavior:contain; }
+.rhine-dialog--bounded.rhine-dialog--settings .rhine-dialog__body { display:flex; flex:1; overflow:hidden; }
+.rhine-dialog--bounded .rhine-dialog__settings-grid { flex:1; min-height:0; grid-template-rows:minmax(64px,1fr) minmax(0,3fr); gap:12px; }
+.rhine-dialog--bounded .rhine-dialog__navigation { min-height:0; max-height:112px; overflow:auto; overscroll-behavior:contain; padding-bottom:0; }
+.rhine-dialog--bounded .rhine-dialog__settings-content { min-height:0; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; }
+.rhine-dialog__footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; max-height:var(--rhine-dialog-footer-limit,40%); overflow:auto; overscroll-behavior:contain; }
+.rhine-dialog__footer > * { max-width:100%; }
+@container (min-width:560px) {
+ .rhine-dialog--bounded .rhine-dialog__settings-grid { grid-template-rows:minmax(0,1fr); gap:24px; }
+ .rhine-dialog--bounded .rhine-dialog__navigation { max-height:none; padding-bottom:0; }
+}
+@container (max-width:559px) {
+ .rhine-dialog--bounded .rhine-dialog__body { margin-top:8px; }
+ .rhine-dialog--bounded .rhine-dialog__navigation { max-height:64px; }
+ .rhine-dialog--bounded .rhine-dialog__settings-grid { gap:8px; }
+ .rhine-dialog__footer { padding-top:8px; margin-top:8px; }
+}
+/* Root padding follows the available viewport; descendants use the real container. */
+@media (max-width:560px) {
+ .rhine-dialog.rhine-dialog--bounded { padding:12px; }
+}
+@container (max-width:300px) {
+ .rhine-dialog__footer { gap:4px; }
+ .rhine-dialog__footer > .rhine-button { padding-inline:2px; }
+}
+
+.rhine-dialog.rhine-dialog--settings.rhine-dialog--bounded { padding-block:12px; }
+/* Keep theme focus rings and offset shadows inside the footer's scroll bounds. */
+.rhine-dialog__footer { padding-inline:4px; padding-bottom:4px; }
+@media (max-width:560px) {
+ .rhine-dialog.rhine-dialog--settings.rhine-dialog--bounded { padding-inline:8px; }
 }
