@@ -91,7 +91,7 @@ it('keeps optional descriptions associated and ordinary Dialog/Drawer natural', 
 });
 
 
-afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
+afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); document.documentElement.style.zoom = ''; });
 it.each(['error', 'conflict'])('retains the host draft after %s and reconciles only explicit success', outcome => {
   vi.useFakeTimers();
   render(<ThemeProvider><SettingsDialogGallery /></ThemeProvider>);
@@ -125,4 +125,35 @@ it('cleans pending host requests and ignores an obsolete async section', () => {
   unmount();
   expect(hostTimers).toHaveLength(2);
   for (const id of hostTimers) expect(clear).toHaveBeenCalledWith(id);
+});
+
+
+it('gives only the actual bounded body a named keyboard entry', () => {
+  const props = {trigger:<Button>Open</Button>, title:'Read', height:400, open:true, onOpenChange:() => {}};
+  const {rerender} = render(<Dialog {...props}><p>Long text</p></Dialog>);
+  expect(screen.getByRole('region', {name:'Read内容'})).toHaveClass('rhine-dialog__body');
+  expect(screen.getByRole('region')).toHaveAttribute('tabindex', '0');
+  rerender(<Dialog {...props} navigation={<a href="#a">Account</a>}><p>Long text</p></Dialog>);
+  expect(screen.getAllByRole('region')).toHaveLength(1);
+  expect(screen.getByRole('region')).toHaveClass('rhine-dialog__settings-content');
+  expect(screen.getByRole('dialog').querySelector('.rhine-dialog__body')).not.toHaveAttribute('tabindex');
+});
+
+it.each([undefined, 'auto'] as const)('caps an auto-height footer (%s) against the zoomed viewport and cleans observation', async initialHeight => {
+  vi.stubGlobal('innerHeight', 800);
+  const remove = vi.spyOn(window, 'removeEventListener');
+  const fixture = (height?: number | 'auto') => <Dialog trigger={<Button>Open</Button>} title="Auto" open onOpenChange={() => {}} height={height} footer={<Button>Action</Button>}><p>Text</p></Dialog>;
+  const {rerender,unmount} = render(fixture(initialHeight));
+  const dialog = screen.getByRole('dialog');
+  const limit = () => parseFloat(dialog.style.getPropertyValue('--rhine-dialog-footer-limit'));
+  expect(limit()).toBeCloseTo(307.2);
+  document.documentElement.style.zoom = '2';
+  fireEvent(window, new Event('resize'));
+  expect(limit()).toBeCloseTo(147.2);
+  vi.stubGlobal('innerHeight', 600); fireEvent(window, new Event('resize'));
+  expect(limit()).toBeCloseTo(107.2);
+  rerender(fixture(400));
+  expect(dialog.style.getPropertyValue('--rhine-dialog-footer-limit')).toBe('');
+  expect(remove).toHaveBeenCalledWith('resize', expect.any(Function));
+  unmount();
 });

@@ -59,6 +59,8 @@ export function SettingsDialogGallery() {
     <Drawer title="普通抽屉" trigger={<Button variant="secondary">普通抽屉示例</Button>}><TextField label="抽屉输入" /></Drawer>
     <Dialog title="辅助分栏" trigger={<Button variant="secondary">辅助分栏示例</Button>} sidePanel={<Text>辅助内容</Text>}><TextField label="分栏输入" /></Dialog>
     <Dialog title="有界普通表单" height={640} trigger={<Button variant="secondary">有界普通表单示例</Button>} footer={<Button>确认</Button>}><Stack>{Array.from({length:30}, (_,i)=><TextField key={i} label={`表单字段 ${i+1}`} />)}</Stack></Dialog>
+    <Dialog title="自动高度操作区" trigger={<Button variant="secondary">自动高度操作区示例</Button>} footer={<>{Array.from({length:20}, (_,i)=><Button key={i}>长操作 {i+1}</Button>)}</>}><Text>短正文仍然可读。</Text></Dialog>
+    <Dialog title="纯文本长正文" height={400} trigger={<Button variant="secondary">纯文本长正文示例</Button>} footer={<Button>阅读完成</Button>}><Stack>{Array.from({length:30}, (_,i)=><Text key={i}>合成说明第 {i+1} 段，仅用于键盘滚动验证。</Text>)}</Stack></Dialog>
     <Dialog title="短对话框" trigger={<Button variant="secondary">普通短弹窗</Button>}><TextField label="简短输入" /></Dialog>
   </Stack>;
 }

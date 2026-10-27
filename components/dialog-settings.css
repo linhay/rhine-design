@@ -33,7 +33,7 @@
 .rhine-dialog--bounded .rhine-dialog__settings-grid { flex:1; min-height:0; grid-template-rows:minmax(64px,1fr) minmax(0,3fr); gap:12px; }
 .rhine-dialog--bounded .rhine-dialog__navigation { min-height:0; max-height:112px; overflow:auto; overscroll-behavior:contain; padding-bottom:0; }
 .rhine-dialog--bounded .rhine-dialog__settings-content { min-height:0; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; }
-.rhine-dialog__footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; max-height:40%; overflow:auto; overscroll-behavior:contain; }
+.rhine-dialog__footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; max-height:var(--rhine-dialog-footer-limit,40%); overflow:auto; overscroll-behavior:contain; }
 .rhine-dialog__footer > * { max-width:100%; }
 @container (min-width:560px) {
  .rhine-dialog--bounded .rhine-dialog__settings-grid { grid-template-rows:minmax(0,1fr); gap:24px; }
