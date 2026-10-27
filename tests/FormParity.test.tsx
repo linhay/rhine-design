@@ -144,7 +144,11 @@ describe('remote multi-select parity', () => {
     }
     render(<Demo />); const input = screen.getByRole('combobox');
     if (initiallyOpen) act(() => input.focus());
-    const clear = screen.getByRole('button', { name: '清空选择' }); act(() => clear.focus()); fireEvent.click(clear);
+    const clear = screen.getByRole('button', { name: '清空选择' });
+    fireEvent.pointerDown(clear); act(() => clear.focus());
+    if (initiallyOpen) expect(screen.getByRole('listbox', { name: '成员' })).toBeVisible();
+    else expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    fireEvent.pointerUp(clear); fireEvent.click(clear);
     expect(screen.getByText('已选 0 项')).toBeVisible();
     expect(screen.queryByRole('button', { name: '清空选择' })).not.toBeInTheDocument();
     expect(input).toHaveFocus(); expect(input).toHaveAttribute('aria-expanded', 'false');
