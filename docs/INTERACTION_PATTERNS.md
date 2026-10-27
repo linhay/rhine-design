@@ -151,3 +151,5 @@ function submit(event: FormEvent) {
 参考来源与取舍见 [GitHub 调研](./REFERENCE_RESEARCH.md)。
 
 紧凑选择卡片与草稿预览＋显式保存见[紧凑组合](COMPACT_ACCOUNT_PATTERNS.md)，其标准14/22密度与64/112实例动作宽度不应外推全库默认。
+
+退出登录/断开/停止/取消/重置/移除/删除的variant、确认和尺寸选择见[动作语义矩阵](BUTTON_ACTIONS.md)；不要只因醒目就使用danger。

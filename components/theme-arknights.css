@@ -130,8 +130,8 @@
   outline: none;
   box-shadow: inset 0 0 0 2px var(--rhine-ink);
 }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger { background: var(--rhine-error); border-color: var(--rhine-error); color: var(--rhine-ink); }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #c93a32; border-color: #c93a32; }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger { background: var(--rhine-error); border-color: var(--rhine-error); color: var(--ak-accent-ink); }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #e74b40; border-color: #e74b40; }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform:none; }
 
 /* 图标按钮保持方形小切角 */
@@ -304,3 +304,5 @@
 .rhine-theme[data-rhine-theme="arknights"][data-rhine-motion=reduced] .rhine-button {
   transition: none;
 }
+
+.rhine-theme[data-rhine-theme="arknights"] .rhine-button:focus-visible:not(.rhine-button--secondary):not(.rhine-button--quiet) { box-shadow:inset 0 0 0 2px var(--ak-accent-ink); }

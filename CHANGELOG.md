@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #46：战术主题danger按钮使用可读的深色文字/红底配对（修复原默认约2.77:1文字对比）；Button新增size="standard"（默认）/"large"，补动作语义→variant矩阵和真实并排展台；退出登录不自动等同不可逆删除，large为16/24、至少52px。未包含在0.11.0。
+
 - #41：紧凑选择组合，Button内容两端对齐、Tabs显式content/fill布局（新默认content）、Dialog实例height/footer及内部滚动，草稿预览/保存契约和展台；不进入冻结0.11.0制品。摘要Tabs若需保持旧隐式铺满，显式传layout="fill"。
 
 - #42：TextField 新增 `labelVisibility` 与公开 `TextFieldProps`，默认可见；非空标签、正文级单输入搜索组合及异步/IME展台见[契约](docs/SINGLE_SEARCH.md)。此项不包含在 0.11.0 发布候选中。

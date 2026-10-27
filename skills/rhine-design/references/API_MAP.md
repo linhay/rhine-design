@@ -66,3 +66,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 单输入即时搜索：TextField / TextFieldProps 的 `labelVisibility="hidden"` 保留非空名称；参见 `docs/SINGLE_SEARCH.md` 与 `#single-search`，未发布。搜索/异步与IME由宿主管理。
 
 #41未发布：Button.contentAlign、Tabs.layout/TabsProps、Dialog.height/footer；先读 `docs/COMPACT_ACCOUNT_PATTERNS.md`、`docs/SETTINGS_DIALOG.md`、`docs/SUMMARY_TABS.md`，展台 `#compact-selection`。
+
+#46未发布：Button.size="standard" | "large"；动作语义先读 `docs/BUTTON_ACTIONS.md`，展台 `#button-actions`。
