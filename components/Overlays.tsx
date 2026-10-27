@@ -77,11 +77,12 @@ export function ConfirmDialog({ trigger, title, description, confirmLabel = '确
   </AlertBase.Content></AlertBase.Portal></AlertBase.Root></span>;
 }
 interface OverlayControl { open?: boolean; onOpenChange?: (open: boolean) => void; side?: 'top' | 'right' | 'bottom' | 'left' }
-export function Popover({ trigger, title, children, open, onOpenChange, side }: OverlayControl & { trigger: ReactElement; title: string; children: ReactNode }) {
+export interface PopoverProps extends OverlayControl { trigger: ReactElement; title: string; children: ReactNode; showHeader?: boolean }
+export function Popover({ trigger, title, children, open, onOpenChange, side, showHeader = true }: PopoverProps) {
   const { ref, container } = useScope();
   const floatingRef = useFloatingScale(undefined, 'popover');
   const floatingSide = useFloatingSide(ref, side, 300);
-  return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}><div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
+  return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
 }
 export interface MenuItem { id: string; label: string; disabled?: boolean; danger?: boolean; onSelect: () => void }
 export function Menu({ trigger, label, items, open, onOpenChange, side }: OverlayControl & { trigger: ReactElement; label: string; items: MenuItem[] }) {
