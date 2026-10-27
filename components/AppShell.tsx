@@ -15,6 +15,7 @@ export interface AppShellProps {
   header?: ReactNode; contentHeader?: ReactNode; children: ReactNode; label?: string; decoration?: BackgroundDecoration;
   className?: string; style?: CSSProperties;
   controls?: 'header' | 'inline';
+  collapseEmptyContentHeader?: boolean;
 }
 
 interface PanelControl { panel: ShellPanel; overlay: boolean; side: 'left' | 'right'; id: string; drawerOpen: boolean; setDrawerOpen: (open: boolean) => void }
@@ -45,7 +46,7 @@ function Panel({ panel, overlay, side, id, drawerOpen, setDrawerOpen, hidden = f
   </div>;
 }
 
-export function AppShell({ layout, navigation, secondary, header, contentHeader, children, label = '应用工作区', decoration = 'auto', className = '', style, controls = 'header' }: AppShellProps) {
+export function AppShell({ layout, navigation, secondary, header, contentHeader, children, label = '应用工作区', decoration = 'auto', className = '', style, controls = 'header', collapseEmptyContentHeader = false }: AppShellProps) {
   const ref = useRef<HTMLDivElement>(null);
   const focusedPanel = useRef<'nav' | 'secondary' | null>(null);
   const focusedToggle = useRef<string | null>(null);
@@ -93,7 +94,7 @@ export function AppShell({ layout, navigation, secondary, header, contentHeader,
     <div className="rhine-shell__body">
       <aside id={`${id}-nav`} className="rhine-shell__nav" style={{ flexBasis: navigation.width }} aria-label={navigation.label} hidden={navOverlay || navigationDrawer || !navigation.open}>{!navigationDrawer && navigation.content}</aside>
       <aside id={`${id}-secondary`} className="rhine-shell__secondary" style={{ flexBasis: secondary?.width }} aria-label={secondary?.label} hidden={!hasSecondary || secondaryOverlay || secondaryDrawer || !secondary?.open}>{hasSecondary && !secondaryDrawer && secondary?.content}</aside>
-      <div className="rhine-shell__main">{contentHeader != null && <header className="rhine-shell__content-header">{contentHeader}</header>}
+      <div className="rhine-shell__main">{contentHeader != null && <header className="rhine-shell__content-header" data-collapse-empty={collapseEmptyContentHeader || undefined}>{contentHeader}</header>}
       <Background className="rhine-shell__content" decoration={decoration} tabIndex={0} role="region" aria-label="正文">{children}</Background></div>
     </div>
   </div></ShellControls.Provider>;

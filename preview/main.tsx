@@ -1,3 +1,4 @@
+import { SettingsCompositionGallery, SettingsCompositionFixture } from './SettingsCompositionGallery';
 import { ChatGallery } from './ChatGallery';
 import { BackgroundFiltersFixture } from './BackgroundFiltersFixture';
 import { StrictMode, useEffect, useRef, useState } from 'react';
@@ -53,6 +54,7 @@ function Gallery() {
   const simulate = () => { setBusy(true); timer.current = setTimeout(() => { setBusy(false); setNotice(true); }, 900); };
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => <>
     {section === 'theme-picker' && <ThemePickerGallery />}
+    {section === 'settings-composition' && <SettingsCompositionGallery />}
     {section === 'settings-dialog' && <SettingsDialogGallery />}
     {section === 'overlay-bounds' && <OverlayBoundsGallery />}
     {section === 'monitoring' && <MonitoringGallery />}
@@ -159,4 +161,4 @@ function Gallery() {
 
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode>{['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : <Gallery />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-composition' ? <SettingsCompositionFixture /> : <Gallery />}</StrictMode>);

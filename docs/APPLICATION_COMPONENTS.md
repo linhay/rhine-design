@@ -56,6 +56,8 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 </AppShell>
 ```
 
+仅含动作的顶部可选 `collapseEmptyContentHeader`（未发布，默认false），直传恢复控件与条件动作，按hidden可见性折叠；具体结构限制和设置页组合见[设置页组合](SETTINGS_DIALOG.md#设置页组合53未发布)。
+
 ### 工作区导航栏（0.8.0）
 
 参考 [Ant Design Layout](https://ant.design/components/layout/) 的 Header / Sider / Content 分工与 [MUI App Bar](https://mui.com/material-ui/react-app-bar/) 的标题、导航和操作组合，工作区顶部承载当前位置与导航入口。用可选 `contentHeader` 将导航栏放在正文滚动区外，与侧栏并列；它不会随正文滚走，不需要宿主另写 sticky。既有 `header` 仍位于整个外壳顶部，不传新插槽时保持原有行为。
