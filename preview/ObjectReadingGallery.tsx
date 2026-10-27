@@ -33,7 +33,7 @@ function ObjectReader({ object, scenario, tab, onTab, positions, navigate, retry
     : scenario === 'error' ? <Notice tone="error" title="正文加载失败" action={<Button onClick={retry}>重试正文</Button>}>元信息仍可查看，也可以关闭后返回目录。</Notice>
     : scenario === 'restricted' ? <Notice title="正文受限">当前仅可查看元信息。归属共享资料库不代表拥有正文权限。</Notice>
     : scenario === 'unsupported' ? <Notice title="格式不可预览">已保留对象信息；请返回目录选择其他文件。</Notice>
-    : <Stack gap={4}><Text as="h3" variant="heading">观察正文</Text>{paragraphs.map((text, i) => <Text key={i}>{text}</Text>)}<Text data-testid="reading-end">正文末段 · 本次阅读到此结束。</Text><Button variant="secondary" onClick={() => onTab('related')}>查看关联</Button></Stack>;
+    : <Stack gap={4}><Text as="h3" variant="heading">观察正文</Text>{paragraphs.map((text, i) => <Text key={i}>{text}</Text>)}<Text data-testid="reading-end">正文末段 · 本次阅读到此结束。</Text><Button variant="secondary" onClick={() => { onTab('related'); root.current?.querySelector<HTMLElement>('[role="tab"][aria-label="关联"]')?.focus({ preventScroll: true }); }}>查看关联</Button></Stack>;
   return <div ref={root} className="rhine-reading-content"><Stack gap={4}>
     <KeyValue items={[
       { key: 'owner', label: '归属', value: object.owner },

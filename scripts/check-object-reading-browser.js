@@ -39,6 +39,7 @@ async page => {
     const endBounds = await end.boundingBox();
     assert(endBounds && endBounds.y >= 0 && endBounds.y + endBounds.height <= 901, 'last paragraph reachable');
     await dialog.getByRole('button', { name: '查看关联', exact: true }).click();
+    assert(await dialog.getByRole('tab', { name: '关联', exact: true }).evaluate(el => el === document.activeElement && !el.closest('[hidden]')), 'bottom jump has visible tab focus');
     const target = width === 520 ? '对话' : '目标';
     await dialog.getByRole('button', { name: `打开关联${target}` }).click();
     const heading = page.getByRole('heading', { name: target === '目标' ? '目标：河谷资料整理' : '对话：河谷观察讨论' });

@@ -62,3 +62,14 @@ it('distinguishes an empty folder from no matching results and provides recovery
   fireEvent.click(screen.getByRole('button', { name: '清除筛选' }));
   expect(screen.getAllByRole('button', { name: /^阅读：/ })).toHaveLength(2);
 });
+
+
+it('moves focus to the visible related tab when leaving the bottom of the body', () => {
+  render(<ObjectReadingGallery />);
+  openNote();
+  const jump = screen.getByRole('button', { name: '查看关联' });
+  jump.focus();
+  fireEvent.click(jump);
+  expect(screen.getByRole('tab', { name: '关联' })).toHaveFocus();
+  expect(document.activeElement?.closest('[hidden]')).toBeNull();
+});
