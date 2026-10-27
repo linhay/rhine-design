@@ -31,3 +31,5 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 ## 可选可见Popover头部（#56，未发布）
 
 `showHeader={false}` 省略可见标题和关闭按钮整行，但必填title继续命名浮层；默认true兼容现有内容。保持图标切换、外点/Escape关闭和键盘归焦。账号与用量的组合、稳定反馈及宿主状态职责见[托盘用量](TRAY_USAGE.md)。
+
+快速键盘退出嵌套下拉时，Radix在异步卸载回调后恢复父FocusScope；这一间隙用临时focusin保护维持最近的Modal内焦点，父约束恢复即清理，组件卸载也清理。快速连续键可能保持当前内部焦点，但不能落到背景；正常Tab循环随后恢复。check-combobox-modal-focus.js先断言即时包含关系，再单独检查恢复后的循环，不用预先延时掩盖失败。

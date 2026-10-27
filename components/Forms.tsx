@@ -55,6 +55,8 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
   const generatedId = useId(), id = suppliedId || generatedId; const composing = useRef(false);
   const floatingRef = useFloatingScale(undefined, 'popover', 240);
   const exitingWithTab = useRef(false);
+  const releaseTabGuard = useRef<(() => void) | undefined>(undefined);
+  useEffect(() => () => releaseTabGuard.current?.(), []);
   const root = useRef<HTMLDivElement>(null);
   const [container, setContainer] = useState<HTMLElement>();
   useLayoutEffect(() => { setContainer((root.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
@@ -71,6 +73,28 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
   // Keep a multiselect action in place until its click finishes. Closing on
   // pointerdown/blur can shift a zoomed page before pointerup reaches the button.
   const containsInteractionTarget = (target: EventTarget | null) => target instanceof Node && (root.current?.closest('.rhine-multi-select') ?? root.current)?.contains(target);
+  const beginTabExit = () => {
+    exitingWithTab.current = true;
+    releaseTabGuard.current?.();
+    const dialog = root.current?.closest<HTMLElement>('.rhine-dialog[data-state="open"]');
+    if (!dialog) return;
+    const doc = dialog.ownerDocument;
+    let lastInside = doc.activeElement instanceof HTMLElement && dialog.contains(doc.activeElement) ? doc.activeElement : document.getElementById(id);
+    // The nested Radix scope resumes its parent asynchronously on unmount.
+    // Keep that short interval contained even for repeated keyboard events.
+    const guard = (event: FocusEvent) => {
+      if (!dialog.isConnected || dialog.dataset.state !== 'open') return;
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (dialog.contains(target)) lastInside = target;
+      else if (!document.getElementById(`${id}-popup`)?.contains(target) && lastInside?.isConnected) {
+        lastInside.focus({ preventScroll: true });
+        if (lastInside.id === id) { setOpen(false); setActive(null); }
+      }
+    };
+    doc.addEventListener('focusin', guard);
+    releaseTabGuard.current = () => { doc.removeEventListener('focusin', guard); releaseTabGuard.current = undefined; };
+  };
   const complete = () => { document.getElementById(id)?.focus(); setOpen(false); setActive(null); };
   return <div ref={root} className="rhine-combobox rhine-field" onBlur={event => { if (!containsInteractionTarget(event.relatedTarget) && !document.getElementById(`${id}-popup`)?.contains(event.relatedTarget)) setOpen(false); }}><label htmlFor={id}>{label}</label>
     <PopoverBase.Root open={visibleOpen} onOpenChange={setOpen}><PopoverBase.Anchor asChild><div className="rhine-combobox__input"><input id={id} role="combobox" aria-autocomplete="list" aria-expanded={visibleOpen} aria-controls={visibleOpen ? `${id}-list` : undefined} aria-activedescendant={visibleOpen ? activeId : undefined} aria-invalid={!!error || undefined} aria-describedby={[`${id}-status`, hint && `${id}-hint`].filter(Boolean).join(' ')} value={draft ?? query} disabled={disabled} readOnly={readOnly} placeholder={placeholder}
@@ -78,9 +102,12 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
       onCompositionStart={() => { if (!readOnly && !disabled) { composing.current = true; setDraft(query); } }} onCompositionEnd={event => { composing.current = false; setDraft(null); if (!readOnly && !disabled) onQueryChange(event.currentTarget.value); }}
       onKeyDown={event => {
         if (readOnly || disabled || composing.current || event.nativeEvent.isComposing || event.keyCode === 229) return;
-        if (event.key === 'Tab' && !event.shiftKey && open && completionLabel) {
-          const completion = document.getElementById(`${id}-complete`);
-          if (completion) { event.preventDefault(); completion.focus(); return; }
+        if (event.key === 'Tab' && open) {
+          if (!event.shiftKey && completionLabel) {
+            const completion = document.getElementById(`${id}-complete`);
+            if (completion) { event.preventDefault(); completion.focus(); return; }
+          }
+          beginTabExit();
         }
         if (event.key === 'Backspace' && !event.currentTarget.value && onEmptyBackspace) { event.preventDefault(); onEmptyBackspace(); }
         if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); setOpen(false); setActive(null); }
@@ -90,11 +117,15 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
       }} /><span className="rhine-combobox__arrow"><Icon name="chevronDown" size={16} /></span></div></PopoverBase.Anchor>
     <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => {
       event.preventDefault();
+      releaseTabGuard.current?.();
       if (!exitingWithTab.current) return;
       exitingWithTab.current = false;
-      // A nested WebKit FocusScope can leave native Tab on its guard while
-      // the parent scope resumes. Guards must never retain user focus.
-      if (document.activeElement?.hasAttribute('data-radix-focus-guard')) complete();
+      // Radix resumes the parent scope after this callback. Rapid Tab can
+      // reach a guard or the background during that interval; restore focus
+      // only for a keyboard exit from a still-open Rhine modal.
+      const dialog = root.current?.closest('.rhine-dialog[data-state="open"]');
+      const active = document.activeElement;
+      if (active?.hasAttribute('data-radix-focus-guard') || (dialog && !dialog.contains(active))) complete();
     }} onInteractOutside={event => { if (containsInteractionTarget(event.target)) event.preventDefault(); }}>
       <div ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); complete(); } }}>
         <div role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{selectedValues && <span className="rhine-combobox__check" aria-hidden="true">{selectedValues.includes(option.value) ? '✓' : ''}</span>}{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
@@ -102,7 +133,7 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
           if (event.key !== 'Tab') return;
           if (event.shiftKey) { event.preventDefault(); document.getElementById(id)?.focus(); }
           // Restore the input as the origin of the browser's normal forward Tab.
-          else { exitingWithTab.current = true; complete(); }
+          else { beginTabExit(); complete(); }
         }}>{completionLabel}</Button></div>}
       </div>
     </PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root>
