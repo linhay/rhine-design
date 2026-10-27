@@ -25,6 +25,17 @@ async page => {
       await list.getByRole('option', { name: '合成部门 99', exact: true }).waitFor();
       await page.waitForTimeout(200);
       const popup = list.locator('..');
+      const completion = popup.getByRole('button', { name: '完成选择', exact: true });
+      await input.press('Tab');
+      const tabIn = await completion.evaluate(element => element === document.activeElement);
+      await completion.press('Shift+Tab');
+      const tabBack = await input.evaluate(element => element === document.activeElement);
+      await input.press('Tab'); await completion.press('Tab');
+      await list.waitFor({ state: 'detached' });
+      const fieldForTab = page.locator('.rhine-multi-select').filter({ has: input });
+      const tabOut = await fieldForTab.getByRole('list', { name: `${label}已选项`, exact: true }).getByRole('button').first().evaluate(element => element === document.activeElement);
+      await input.click(); await list.waitFor();
+
       const rect = await bounds(popup);
       await list.getByRole('option', { name: '合成部门 99', exact: true }).click();
       const selected = await list.getByRole('option', { name: '合成部门 99', exact: true }).getAttribute('aria-selected');
@@ -75,9 +86,9 @@ async page => {
       await input.fill(''); await input.press('Backspace');
       const backspaceRetained = await input.getAttribute('aria-expanded') === 'true' && await field.getByRole('button', { name: '清空选择', exact: true }).count() === 0;
       await input.press('Escape');
-      const pass = cleared && tagRemoved && backspaceRetained && contained(rect) && contained(dynamic) && selected === 'true' && keyboardSelected === 'true' && focusRetained && stable && toggledOff && toggledOn && contained(doneBounds) && completed;
+      const pass = tabIn && tabBack && tabOut && cleared && tagRemoved && backspaceRetained && contained(rect) && contained(dynamic) && selected === 'true' && keyboardSelected === 'true' && focusRetained && stable && toggledOff && toggledOn && contained(doneBounds) && completed;
       cases.push({ ...spec, pass });
-      if (!pass) failures.push({ ...spec, rect, dynamic, selected, keyboardSelected, focusRetained, stable, toggledOff, toggledOn, doneBounds, completed, cleared, tagRemoved, backspaceRetained });
+      if (!pass) failures.push({ ...spec, rect, dynamic, selected, keyboardSelected, focusRetained, stable, toggledOff, toggledOn, doneBounds, completed, cleared, tagRemoved, backspaceRetained, tabIn, tabBack, tabOut });
       if (modal) {
         await input.press('Escape');
         await page.getByRole('dialog', { name: '搜索多选', exact: true }).waitFor({ state: 'detached' });

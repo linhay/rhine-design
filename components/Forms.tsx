@@ -74,6 +74,10 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
       onCompositionStart={() => { if (!readOnly && !disabled) { composing.current = true; setDraft(query); } }} onCompositionEnd={event => { composing.current = false; setDraft(null); if (!readOnly && !disabled) onQueryChange(event.currentTarget.value); }}
       onKeyDown={event => {
         if (readOnly || disabled || composing.current || event.nativeEvent.isComposing || event.keyCode === 229) return;
+        if (event.key === 'Tab' && !event.shiftKey && open && completionLabel) {
+          const completion = document.getElementById(`${id}-complete`);
+          if (completion) { event.preventDefault(); completion.focus(); return; }
+        }
         if (event.key === 'Backspace' && !event.currentTarget.value && onEmptyBackspace) { event.preventDefault(); onEmptyBackspace(); }
         if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); setOpen(false); setActive(null); }
         if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); setOpen(true); const index = available.findIndex(option => option.value === active); const next = event.key === 'ArrowDown' ? (index + 1) % available.length : (index <= 0 ? available.length : index) - 1; setActive(available[next]?.value ?? null); }
@@ -83,7 +87,12 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
     <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => event.preventDefault()} onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
       <div ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); complete(); } }}>
         <div role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{selectedValues && <span className="rhine-combobox__check" aria-hidden="true">{selectedValues.includes(option.value) ? '✓' : ''}</span>}{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
-        {completionLabel && <div className="rhine-combobox__completion"><Button type="button" variant="quiet" onMouseDown={event => event.preventDefault()} onClick={complete}>{completionLabel}</Button></div>}
+        {completionLabel && <div className="rhine-combobox__completion"><Button id={`${id}-complete`} type="button" variant="quiet" onMouseDown={event => event.preventDefault()} onClick={complete} onKeyDown={event => {
+          if (event.key !== 'Tab') return;
+          if (event.shiftKey) { event.preventDefault(); document.getElementById(id)?.focus(); }
+          // Restore the input as the origin of the browser's normal forward Tab.
+          else complete();
+        }}>{completionLabel}</Button></div>}
       </div>
     </PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root>
     <span id={`${id}-status`} role="status" className={`rhine-text rhine-text--caption ${error ? 'rhine-text--error' : 'rhine-text--muted'}`}>{loading ? '正在读取候选项…' : error || (options.length ? `${options.length} 个候选项` : '暂无匹配结果')}</span>
