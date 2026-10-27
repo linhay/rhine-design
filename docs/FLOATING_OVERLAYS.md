@@ -27,3 +27,7 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 完成按钮的Tab路径由#57补齐：输入Tab进入、Shift+Tab返回、继续Tab沿输入框原后继前进；嵌套WebKit关闭时如停在Radix焦点保护节点才归焦恢复，普通外点关闭不抢焦点。浏览器断言按本机原生Tab顺序比对，不能假定各平台都将标签按钮纳入原生Tab。Combobox保留240px内容高度上限并按视口缩放约束，不把Radix可用高度变量反馈到候选列表尺寸；其他浮层默认策略保持原样。
 
 多选的标签和清空按钮属于同一交互区域：pointerdown/焦点转移不提前销毁浮层，等按钮click完成后收起。否则窄屏缩放时滚动布局可能在按下与抬起之间移动，让click落在公共祖先而丢失清空动作；浏览器用真实指针路径验证。
+
+## 可选可见Popover头部（#56，未发布）
+
+`showHeader={false}` 省略可见标题和关闭按钮整行，但必填title继续命名浮层；默认true兼容现有内容。保持图标切换、外点/Escape关闭和键盘归焦。账号与用量的组合、稳定反馈及宿主状态职责见[托盘用量](TRAY_USAGE.md)。

@@ -37,7 +37,7 @@ export type { DataColumn, DataTableProps, TableSort, PaginationProps } from './D
 export { Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox } from './Forms';
 export type { ComboboxProps } from './Forms';
 export { Dialog, Drawer, ConfirmDialog, Popover, Menu, Tooltip } from './Overlays';
-export type { DialogProps, MenuItem } from './Overlays';
+export type { DialogProps, PopoverProps, MenuItem } from './Overlays';
 export { Toast } from './Toast';
 export { SideNav, Breadcrumbs, Steps } from './Navigation';
 export type { NavAction, NavItem, NavGroup, SideNavProps, BreadcrumbItem, BreadcrumbsProps, StepItem, StepsProps } from './Navigation';

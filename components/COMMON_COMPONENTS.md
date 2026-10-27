@@ -77,3 +77,5 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 Toast 浮动通知（自 0.11.0，npm 0.10.0 不含，见[版本记录](../CHANGELOG.md#01102026-10-27)）：`placement="floating"` 通过 Portal 挂到最近主题根，位于视口右下角，距边缘 16px、最大宽度 400px，窄窗两侧各留 16px。默认 inline 行为保持；浮动通知不占内容流、不抢焦点，关闭后不拦截点击；继承主题与减少动态。反馈展台使用浮动模式。成功沿用 5 秒关闭及悬停/聚焦/隐藏暂停，关键错误仍持久。
 
 SideNav 可选 `NavItem.actions` / `NavAction`，空数组无按钮/空位；菜单触发器与链接为兄弟。菜单到受控 Dialog 的归焦见[导航行操作](../docs/SIDE_NAV_ACTIONS.md)（未发布）。
+
+Popover可选 `showHeader={false}`（未发布，默认true）省略可见标题/关闭行；非空title仍为可访问名称，触发器必须具名可聚焦。适用范围、退出与组合契约见[托盘用量](../docs/TRAY_USAGE.md)。

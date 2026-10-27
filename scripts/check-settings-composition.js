@@ -42,6 +42,7 @@ async page => {
   await page.goto(`${origin}/?fixture=settings-composition&motion=system`);
   await page.getByRole('combobox',{name:'更新状态'}).selectOption('checking');
   const system = await page.locator('.rhine-spinner').evaluate(e=>getComputedStyle(e).animationDuration);
+  await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto(`${origin}/?fixture=settings-composition&motion=reduced`);
   await page.getByRole('combobox',{name:'更新状态'}).selectOption('checking');
   const manual = await page.locator('.rhine-spinner').evaluate(e=>getComputedStyle(e).animationDuration);
