@@ -7,3 +7,17 @@
   .rhine-dialog__settings-grid { grid-template-columns:minmax(160px,1fr) minmax(0,3fr); }
   .rhine-dialog__navigation { padding:0 24px 0 0; border-bottom:0; border-right:1px solid var(--rhine-line); }
 }
+
+/* Opt-in stable outer frame; footer never participates in content scrolling. */
+.rhine-dialog.rhine-dialog--bounded { display:flex; flex-direction:column; gap:0; height:var(--rhine-dialog-height,auto); max-height:calc(100% - 32px); overflow:hidden; }
+.rhine-dialog.rhine-dialog--bounded.rhine-dialog--split { width:min(960px,calc(100% - 32px)); }
+.rhine-dialog__scroll { min-height:0; min-width:0; overflow:auto; flex:1 1 auto; display:grid; grid-template-columns:minmax(0,1fr); }
+.rhine-dialog--bounded .rhine-dialog__main { min-height:0; }
+.rhine-dialog--bounded .rhine-dialog__head { position:sticky; top:0; z-index:1; background:var(--rhine-overlay-bg); }
+.rhine-dialog--bounded .rhine-dialog__head>.rhine-icon-button { position:static; flex:none; }
+.rhine-dialog--bounded .rhine-dialog__side { padding-top:0; }
+.rhine-dialog__footer { flex:none; min-width:0; padding-top:var(--rhine-space-4); margin-top:var(--rhine-space-4); border-top:1px solid var(--rhine-line); }
+@media(min-width:721px) {
+ .rhine-dialog--bounded.rhine-dialog--split .rhine-dialog__scroll { grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:24px; overflow:hidden; }
+ .rhine-dialog--bounded.rhine-dialog--split .rhine-dialog__main,.rhine-dialog--bounded.rhine-dialog--split .rhine-dialog__side { overflow:auto; min-height:0; }
+}

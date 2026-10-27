@@ -149,3 +149,5 @@ function submit(event: FormEvent) {
 6. 分别检查内容刚好装下、仅溢出少量、明显超出窗口三种高度；确认滚动归属，末条详情不裁切、不遮挡分页。间距同时测可见边界和命中区，不只读gap配置。
 
 参考来源与取舍见 [GitHub 调研](./REFERENCE_RESEARCH.md)。
+
+紧凑选择卡片与草稿预览＋显式保存见[紧凑组合](COMPACT_ACCOUNT_PATTERNS.md)，其标准14/22密度与64/112实例动作宽度不应外推全库默认。

@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { Badge, KeyValue, Select, Stack, Surface, Tabs, Text, TextField, Toolbar } from '../components';
 
 export function SummaryTabsGallery() {
+  const [layout, setLayout] = useState<'content' | 'fill'>('content');
+  const [single, setSingle] = useState(false);
   const [width, setWidth] = useState('520');
   const [scenario, setScenario] = useState('normal');
   const [selected, setSelected] = useState('primary');
   const pending = scenario === 'loading', failed = scenario === 'error';
   return <section id="summary-tabs"><Stack gap={6}>
     <Toolbar title="带摘要的页签" description="名称与状态在同一组，身份摘要紧随；每个对象的状态始终可见。">
+      <Select label="摘要布局" value={layout} onChange={e=>setLayout(e.target.value as 'content'|'fill')}><option value="content">内容宽度左对齐</option><option value="fill">均分铺满</option></Select>
+      <Select label="摘要行数" value={single?'single':'double'} onChange={e=>setSingle(e.target.value==='single')}><option value="single">名称与短状态</option><option value="double">双行摘要</option></Select>
       <Select label="局部容器宽度" value={width} onChange={event => setWidth(event.target.value)}>
         <option value="320">320px · 窄容器</option><option value="520">520px · 标准</option><option value="100%">自适应</option>
       </Select>
@@ -17,11 +21,11 @@ export function SummaryTabsGallery() {
     </Toolbar>
     <Surface><Stack gap={6}>
       <div style={{width: width === '100%' ? width : `${width}px`, maxWidth:'100%'}}>
-        <Tabs label="摘要页签规范示例" value={selected} onValueChange={setSelected} items={[
-          {value:'primary',label:scenario === 'long' ? '跨部门联合研究工作区' : '主工作区',description:pending ? '尚未读取当前身份' : scenario === 'long' ? '研究项目 · 跨区域联合研发与长期设计验证团队' : '研发 · 研究项目',
+        <Tabs layout={layout} label="摘要页签规范示例" value={selected} onValueChange={setSelected} items={[
+          {value:'primary',label:scenario === 'long' ? '跨部门联合研究工作区' : '主工作区',description:single ? undefined : pending ? '尚未读取当前身份' : scenario === 'long' ? '研究项目 · 跨区域联合研发与长期设计验证团队' : '研发 · 研究项目',
             status:<Badge tone={failed ? 'error' : pending ? 'neutral' : 'success'}>{failed ? '读取失败' : pending ? '读取中' : '同步中'}</Badge>,
             content:<Stack gap={4}><Text>主工作区内容</Text><TextField label="主工作区草稿" placeholder="切换后保留已输入内容"/></Stack>},
-          {value:'team',label:'协作工作区',description:'协作 · 设计项目',disabled:scenario === 'disabled',status:<Badge>{scenario === 'disabled' ? '暂不可用' : '已停止'}</Badge>,
+          {value:'team',label:'协作工作区',description:single ? undefined : '协作 · 设计项目',disabled:scenario === 'disabled',status:<Badge>{scenario === 'disabled' ? '暂不可用' : '已停止'}</Badge>,
             content:<Stack gap={4}><Text>协作工作区内容</Text><TextField label="协作工作区草稿" placeholder="与另一页签独立"/></Stack>},
         ]}/>
       </div>

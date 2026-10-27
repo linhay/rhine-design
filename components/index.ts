@@ -45,7 +45,7 @@ export { Fieldset, ErrorSummary } from './FormWorkflow';
 export type { FieldsetProps, FieldError, ErrorSummaryProps } from './FormWorkflow';
 
 export { Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState } from './components';
-export type { ButtonProps, SurfaceProps, Tone, Choice, TabItem } from './components';
+export type { ButtonProps, TabsProps, SurfaceProps, Tone, Choice, TabItem } from './components';
 
 export { ThemePicker, ThemePreview, type ThemePickerProps, type ThemePickerOption, type ThemePreviewProps } from './ThemePicker';
 

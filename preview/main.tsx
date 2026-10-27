@@ -30,6 +30,7 @@ import { CheckboxRowGallery } from './CheckboxRowGallery';
 import { ComponentTypographyGallery } from './ComponentTypographyGallery';
 import { NavActionsGallery } from './NavActionsGallery';
 import { SingleSearchGallery } from './SingleSearchGallery';
+import { CompactSelectionGallery } from './CompactSelectionGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
 
 function Gallery() {
@@ -63,6 +64,7 @@ function Gallery() {
     {section === 'nav-actions' && <NavActionsGallery />}
     {section === 'agent-chat' && <ChatGallery />}
     {section === 'single-search' && <SingleSearchGallery />}
+    {section === 'compact-selection' && <CompactSelectionGallery />}
     {section === 'summary-tabs' && <SummaryTabsGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}

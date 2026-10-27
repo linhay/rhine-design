@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #41：紧凑选择组合，Button内容两端对齐、Tabs显式content/fill布局（新默认content）、Dialog实例height/footer及内部滚动，草稿预览/保存契约和展台；不进入冻结0.11.0制品。摘要Tabs若需保持旧隐式铺满，显式传layout="fill"。
+
 - #42：TextField 新增 `labelVisibility` 与公开 `TextFieldProps`，默认可见；非空标签、正文级单输入搜索组合及异步/IME展台见[契约](docs/SINGLE_SEARCH.md)。此项不包含在 0.11.0 发布候选中。
 
 - #45：SideNav 支持可选行尾 actions，空动作不占位，复用 Menu/IconButton，提供受控 Dialog 归焦组合与真实展台；不包含在0.11.0中。
