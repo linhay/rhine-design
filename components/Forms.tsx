@@ -2,6 +2,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, type InputHTMLAttr
 import * as PopoverBase from '@radix-ui/react-popover';
 import { Button, type Choice } from './components';
 import { Icon, IconButton } from './Actions';
+import { useFloatingScale } from './useFloatingScale';
 import './checkbox-row.css';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
@@ -47,14 +48,18 @@ export interface ComboboxProps {
   value: string | null; onValueChange: (option: Choice) => void; options: Choice[];
   loading?: boolean; error?: string; disabled?: boolean;
   readOnly?: boolean; placeholder?: string; hint?: string; id?: string;
-  selectedValues?: string[]; closeOnSelect?: boolean; onEmptyBackspace?: () => void;
+  selectedValues?: string[]; closeOnSelect?: boolean; onEmptyBackspace?: () => void; completionLabel?: string;
+  open?: boolean; onOpenChange?: (open: boolean) => void;
 }
-export function Combobox({ label, query, onQueryChange, value, onValueChange, options, loading = false, error, disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace }: ComboboxProps) {
+export function Combobox({ label, query, onQueryChange, value, onValueChange, options, loading = false, error, disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace, completionLabel, open: controlledOpen, onOpenChange }: ComboboxProps) {
   const generatedId = useId(), id = suppliedId || generatedId; const composing = useRef(false);
+  const floatingRef = useFloatingScale(undefined, 'popover');
   const root = useRef<HTMLDivElement>(null);
   const [container, setContainer] = useState<HTMLElement>();
   useLayoutEffect(() => { setContainer((root.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
-  const [open, setOpen] = useState(false), [active, setActive] = useState<string | null>(null), [draft, setDraft] = useState<string | null>(null);
+  const [internalOpen, setInternalOpen] = useState(false), [active, setActive] = useState<string | null>(null), [draft, setDraft] = useState<string | null>(null);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = (next: boolean) => { if (controlledOpen === undefined) setInternalOpen(next); onOpenChange?.(next); };
   useEffect(() => { if (disabled || readOnly) { setOpen(false); setActive(null); setDraft(null); composing.current = false; } }, [disabled, readOnly]);
   const available = loading || error ? [] : options.filter(option => !option.disabled);
   const activeIndex = options.findIndex(option => option.value === active && !option.disabled);
@@ -62,7 +67,8 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
   useEffect(() => { if (!open || !activeId) return; document.getElementById(activeId)?.scrollIntoView?.({ block: 'nearest' }); }, [activeId, open]);
   const choose = (option: Choice) => { if (readOnly || disabled || loading || error) return; onValueChange(option); if (closeOnSelect) setOpen(false); setActive(null); };
   const visibleOpen = open && !disabled && !readOnly;
-  return <div ref={root} className="rhine-combobox rhine-field" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}><label htmlFor={id}>{label}</label>
+  const complete = () => { document.getElementById(id)?.focus(); setOpen(false); setActive(null); };
+  return <div ref={root} className="rhine-combobox rhine-field" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget) && !document.getElementById(`${id}-popup`)?.contains(event.relatedTarget)) setOpen(false); }}><label htmlFor={id}>{label}</label>
     <PopoverBase.Root open={visibleOpen} onOpenChange={setOpen}><PopoverBase.Anchor asChild><div className="rhine-combobox__input"><input id={id} role="combobox" aria-autocomplete="list" aria-expanded={visibleOpen} aria-controls={visibleOpen ? `${id}-list` : undefined} aria-activedescendant={visibleOpen ? activeId : undefined} aria-invalid={!!error || undefined} aria-describedby={[`${id}-status`, hint && `${id}-hint`].filter(Boolean).join(' ')} value={draft ?? query} disabled={disabled} readOnly={readOnly} placeholder={placeholder}
       onClick={() => { if (!readOnly && !disabled) setOpen(true); }} onFocus={() => { if (!readOnly && !disabled) setOpen(true); }} onChange={event => { if (readOnly || disabled) return; if (composing.current) setDraft(event.target.value); else onQueryChange(event.target.value); setActive(null); setOpen(true); }}
       onCompositionStart={() => { if (!readOnly && !disabled) { composing.current = true; setDraft(query); } }} onCompositionEnd={event => { composing.current = false; setDraft(null); if (!readOnly && !disabled) onQueryChange(event.currentTarget.value); }}
@@ -74,8 +80,11 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
         if (open && ['Home', 'End'].includes(event.key)) { event.preventDefault(); setActive((event.key === 'Home' ? available[0] : available.at(-1))?.value ?? null); }
         if (open && event.key === 'Enter') { event.preventDefault(); const option = available.find(item => item.value === active); if (option) choose(option); }
       }} /><span className="rhine-combobox__arrow"><Icon name="chevronDown" size={16} /></span></div></PopoverBase.Anchor>
-    <PopoverBase.Portal container={container}><PopoverBase.Content asChild sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => event.preventDefault()} onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
-      <div className="rhine-combobox__list" role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
+    <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => event.preventDefault()} onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
+      <div ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); complete(); } }}>
+        <div role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{selectedValues && <span className="rhine-combobox__check" aria-hidden="true">{selectedValues.includes(option.value) ? '✓' : ''}</span>}{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
+        {completionLabel && <div className="rhine-combobox__completion"><Button type="button" variant="quiet" onMouseDown={event => event.preventDefault()} onClick={complete}>{completionLabel}</Button></div>}
+      </div>
     </PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root>
     <span id={`${id}-status`} role="status" className={`rhine-text rhine-text--caption ${error ? 'rhine-text--error' : 'rhine-text--muted'}`}>{loading ? '正在读取候选项…' : error || (options.length ? `${options.length} 个候选项` : '暂无匹配结果')}</span>
     {hint && <span id={`${id}-hint`} className="rhine-field__hint">{hint}</span>}

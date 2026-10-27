@@ -132,25 +132,33 @@ export interface RemoteMultiSelectProps {
 }
 export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, maxVisibleTags, ...props }: RemoteMultiSelectProps) {
   const inputId = useId();
+  const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const limit = maxVisibleTags !== undefined && Number.isFinite(maxVisibleTags) ? Math.max(0, Math.floor(maxVisibleTags)) : undefined;
   const collapsible = limit !== undefined && value.length > limit;
   // Clearing or replacing the selection below the limit starts a new compact view.
   if (expanded && !collapsible) setExpanded(false);
   const shown = collapsible && !expanded ? value.slice(0, limit) : value;
-  const focusInput = () => document.getElementById(inputId)?.focus();
-  const remove = (key: string) => {
+  const focusInput = (nextOpen = false) => { document.getElementById(inputId)?.focus(); setOpen(nextOpen); };
+  const remove = (key: string, nextOpen = false) => {
     if (props.disabled || readOnly || value.find(item => item.value === key)?.disabled) return;
-    onValueChange(value.filter(item => item.value !== key)); focusInput();
+    onValueChange(value.filter(item => item.value !== key)); focusInput(nextOpen);
   };
   return <div className={`rhine-multi-select${limit !== undefined ? ' rhine-multi-select--compact' : ''}`}>
-    <Combobox {...props} id={inputId} readOnly={readOnly} selectedValues={value.map(item => item.value)} closeOnSelect={closeOnSelect} onEmptyBackspace={() => { const last = [...value].reverse().find(item => !item.disabled); if (last) remove(last.value); }} options={options.map(option => ({ ...option, disabled: option.disabled || value.some(item => item.value === option.value) }))} value={null} onValueChange={option => { const original = options.find(item => item.value === option.value); if (original && !value.some(item => item.value === original.value)) { onValueChange([...value, original]); if (clearQueryOnSelect) props.onQueryChange(''); } }} />
+    <Combobox {...props} id={inputId} open={open} onOpenChange={setOpen} readOnly={readOnly} selectedValues={value.map(item => item.value)} closeOnSelect={closeOnSelect} completionLabel={closeOnSelect ? undefined : '完成选择'} onEmptyBackspace={() => { const last = [...value].reverse().find(item => !item.disabled); if (last) remove(last.value, open); }} options={options.map(option => ({ ...option, disabled: option.disabled || value.some(item => item.value === option.value && item.disabled) }))} value={null} onValueChange={option => {
+      const original = options.find(item => item.value === option.value);
+      if (!original || original.disabled || props.disabled || readOnly) return;
+      const selected = value.find(item => item.value === original.value);
+      if (selected?.disabled) return;
+      onValueChange(selected ? value.filter(item => item.value !== original.value) : [...value, original]);
+      if (clearQueryOnSelect) props.onQueryChange('');
+    }} />
     {name && value.map(item => <input key={item.value} type="hidden" name={name} value={item.value} disabled={props.disabled} />)}
     <ul id={`${inputId}-tags`} className="rhine-multi-select__tags" aria-label={`${props.label}已选项`} data-expanded={collapsible && expanded || undefined}>{shown.map(item => <li key={item.value}><span>{item.label}</span><Button variant="quiet" disabled={props.disabled || readOnly || item.disabled} aria-label={`移除${item.label}`} onClick={() => remove(item.value)}>×</Button></li>)}</ul>
     <div className="rhine-multi-select__actions">
       {limit !== undefined && <span className="rhine-text rhine-text--caption rhine-text--muted">已选 {value.length} 项</span>}
       {collapsible && <Button variant="quiet" aria-expanded={expanded} aria-controls={`${inputId}-tags`} onClick={() => setExpanded(current => !current)}>{expanded ? '收起已选项' : '展开已选项'}</Button>}
-      {clearable && <Button variant="quiet" disabled={props.disabled || readOnly || !value.some(item => !item.disabled)} onClick={() => { onValueChange(value.filter(item => item.disabled)); focusInput(); }}>清空选择</Button>}
+      {clearable && value.some(item => !item.disabled) && <Button type="button" variant="quiet" disabled={props.disabled || readOnly} onClick={() => { onValueChange(value.filter(item => item.disabled)); focusInput(); }}>清空选择</Button>}
     </div>
   </div>;
 }
