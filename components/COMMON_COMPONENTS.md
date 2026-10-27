@@ -75,3 +75,5 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 展台使用当前源码的真实组件；本页重点覆盖数据、表单、操作/布局、反馈/浮层四组。合成数据只演示事件与状态；Clipboard仅复制明确的演示字符串。测试覆盖分页边界、请求状态、异步复制失败、IME、候选列表、通知计时、浮层焦点/Escape与窄窗；原生宿主原生平台和屏幕阅读器仍需App接入后单独验收。
 
 Toast 浮动通知（自 0.11.0，npm 0.10.0 不含，见[版本记录](../CHANGELOG.md#01102026-10-27)）：`placement="floating"` 通过 Portal 挂到最近主题根，位于视口右下角，距边缘 16px、最大宽度 400px，窄窗两侧各留 16px。默认 inline 行为保持；浮动通知不占内容流、不抢焦点，关闭后不拦截点击；继承主题与减少动态。反馈展台使用浮动模式。成功沿用 5 秒关闭及悬停/聚焦/隐藏暂停，关键错误仍持久。
+
+SideNav 可选 `NavItem.actions` / `NavAction`，空数组无按钮/空位；菜单触发器与链接为兄弟。菜单到受控 Dialog 的归焦见[导航行操作](../docs/SIDE_NAV_ACTIONS.md)（未发布）。
