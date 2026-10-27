@@ -27,3 +27,5 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 完成按钮的Tab路径由#57补齐：输入Tab进入、Shift+Tab返回、继续Tab沿输入框原后继前进；嵌套WebKit关闭时如停在Radix焦点保护节点才归焦恢复，普通外点关闭不抢焦点。浏览器断言按本机原生Tab顺序比对，不能假定各平台都将标签按钮纳入原生Tab。Combobox保留240px内容高度上限并按视口缩放约束，不把Radix可用高度变量反馈到候选列表尺寸；其他浮层默认策略保持原样。
 
 多选的标签和清空按钮属于同一交互区域：pointerdown/焦点转移不提前销毁浮层，等按钮click完成后收起。否则窄屏缩放时滚动布局可能在按下与抬起之间移动，让click落在公共祖先而丢失清空动作；浏览器用真实指针路径验证。
+
+快速键盘退出嵌套下拉时，Radix在异步卸载回调后恢复父FocusScope；这一间隙用临时focusin保护维持最近的Modal内焦点，父约束恢复即清理，组件卸载也清理。快速连续键可能保持当前内部焦点，但不能落到背景；正常Tab循环随后恢复。check-combobox-modal-focus.js先断言即时包含关系，再单独检查恢复后的循环，不用预先延时掩盖失败。
