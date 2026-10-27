@@ -17,6 +17,8 @@ Package: `@linhey/rhine-design`. GitHub: `linhay/rhine-design` (different accoun
 
 Find the package in the host's dependencies, normally `node_modules/@linhey/rhine-design/`, or its registered source checkout. Verify `package.json` name/version before using the paths below. Paths in references are relative to that package root, not the copied skill directory. Read installed types and source when versions differ; do not infer a new API from this skill. If the package is unavailable, use the task's supplied design sources and identify the missing implementation evidence.
 
+Relative Markdown links stay inside this portable skill folder. Package-root paths are written as code, not as links relative to the installed skill. Any online contract fallback identifies a fixed source revision; it does not follow main or replace the installed version's contract.
+
 ## Route the task
 
 - Screen design, interaction, typography, motion: start with [TASK_MAP.md](references/TASK_MAP.md), then read only the relevant contract.
