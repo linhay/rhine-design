@@ -19,7 +19,7 @@ function useScope() {
   useLayoutEffect(() => { setContainer((ref.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
   return { ref, container };
 }
-export interface DialogProps { height?: CSSProperties['height']; footer?: ReactNode; trigger: ReactElement; title: string; description: ReactNode; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; navigation?: ReactNode; sidePanel?: ReactNode | ((closeButton: ReactElement) => ReactNode); onCloseAutoFocus?: (event: Event) => void }
+export interface DialogProps { height?: CSSProperties['height']; footer?: ReactNode; trigger: ReactElement; title: string; description?: ReactNode; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; navigation?: ReactNode; sidePanel?: ReactNode | ((closeButton: ReactElement) => ReactNode); onCloseAutoFocus?: (event: Event) => void }
 export function Dialog(props: DialogProps) {
   return <DialogFrame {...props}/>;
 }
@@ -50,7 +50,7 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
   const closeButton = <DialogBase.Close asChild><IconButton label={drawer ? '关闭抽屉' : '关闭对话框'} icon="close" /></DialogBase.Close>;
   const hasFooter = footer != null && footer !== false && footer !== '';
   const bounded = height != null || hasFooter;
-  const panes = <><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div>{hasDescription && <DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description>}<div className="rhine-dialog__body">{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content">{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</>;
+  const panes = <><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div>{hasDescription && <DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description>}<div className="rhine-dialog__body">{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content" tabIndex={bounded ? 0 : undefined} role={bounded ? 'region' : undefined} aria-label={bounded ? `${title}内容` : undefined}>{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</>;
   return <span className="rhine-overlay-anchor" ref={ref}><DialogBase.Root open={open ?? localOpen} onOpenChange={changeOpen}><DialogBase.Trigger asChild>{trigger}</DialogBase.Trigger><DialogBase.Portal container={container}>
     <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={onCloseAutoFocus} {...(!hasDescription ? { 'aria-describedby': undefined } : {})} data-side={drawer ? side : undefined}
       style={height == null ? undefined : { '--rhine-dialog-height': typeof height === 'number' ? `${height}px` : height } as CSSProperties}

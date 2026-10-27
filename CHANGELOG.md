@@ -1,5 +1,12 @@
 # 版本记录
 
+## 未发布 · 设置 Dialog（#18）
+
+- settings宽度不再被后置公共CSS覆盖；复用height/footer，固定标题/关闭与右对齐底部动作，正文和长导航独立有界滚动。
+- Dialog.description类型可省略，省略时没有说明占位或悬空aria-describedby；默认短Dialog、Drawer及sidePanel策略保留。
+- 真实展台补齐30行、长导航/按钮、异步栏目、错误/冲突、嵌套搜索多选与草稿行为；新增生产与固定tarball消费者回归。未发布，不更改0.11.1制品。
+
+
 ## 未发布
 
 - #46：战术主题danger按钮使用可读的深色文字/红底配对（修复原默认约2.77:1文字对比）；Button新增size="standard"（默认）/"large"，补动作语义→variant矩阵和真实并排展台；退出登录不自动等同不可逆删除，large为16/24、至少52px。未包含在0.11.0。

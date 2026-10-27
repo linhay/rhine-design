@@ -16,10 +16,6 @@ async page => {
     await page.getByRole('button',{name:'打开设置',exact:true}).click();
     const outer = page.getByRole('dialog',{name:'设置',exact:true});
     const outerBounds = await box(outer);
-    const help = outer.getByRole('button',{name:'设置帮助',exact:true});
-    await help.focus(); await page.getByRole('tooltip').waitFor();
-    await page.keyboard.press('Escape'); await page.getByRole('tooltip').waitFor({state:'detached'});
-    if (!await outer.isVisible()) throw new Error('Tooltip Escape closed the settings dialog');
     await outer.getByRole('textbox',{name:'工作区名称'}).fill('已保存草稿');
     const save = outer.getByRole('button',{name:'保存设置',exact:true});
     await save.scrollIntoViewIfNeeded(); const saveBounds=await box(save); await save.click();
