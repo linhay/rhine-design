@@ -2,6 +2,8 @@
 
 ## 0.11.1（2026-10-27）
 
+- 候选列表保持240px上限并按视口缩放约束，避免可用高度反馈；多选内部动作等click完成再收起，避免窄屏缩放中pointerdown/抬起之间位置移动丢失清空。
+
 - 修复 Combobox / RemoteMultiSelect 在祖先 CSS zoom 下的候选浮层定位与视口边界，复用既有浮层缩放处理；保留主题 Portal、搜索、多选与键盘行为。
 - RemoteMultiSelect 可再次点击或方向键+Enter取消已选项，保留真正禁用/锁定项；“完成选择”只收起候选并归焦，不提交宿主表单；支持输入框Tab进入完成、Shift+Tab返回及继续Tab到后继控件；标签×移除和清空后保持收起，输入框Backspace保留原展开态，无可移除项时隐藏清空按钮。
 - `#compact-filters` 补充弹窗内多选与真实浏览器回归；参见[浮层契约](docs/FLOATING_OVERLAYS.md)。

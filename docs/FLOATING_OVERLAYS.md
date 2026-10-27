@@ -23,3 +23,7 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 首个候选（发布前被标签×修复取代）：Chromium 与 WebKit 各36组三主题×400/520/880px×100%/200% CSS zoom×页内/弹窗场景通过，包含打开时动态缩放、鼠标/键盘反选、空结果、长列表完成按钮、焦点/节点/草稿保留、打开/关闭两态清空后不展开，pageerror均0。main单worker315项、类型/全部构建/包清单复验通过；首次异步用例失败仍保留，未修改该用例或推定失败根因。浏览器回归使用 `scripts/check-combobox-zoom.js`，额外完成行为脚本为 `scripts/check-multiselect-completion.js`。
 
 标签移除收口：首个制品候选在发布前发现标签×也会因归焦重新展开，因此撤出发布，原制品与记录保留。RemoteMultiSelect 统一归焦策略：标签移除/清空收起，输入框空查询Backspace保留原状态；新单测覆盖原开/关两态、剩余值、查询、焦点与不提交。最终维护基线296项、main319项全量检查通过；发布制品和消费项目以最终registry摘要及#40回读为准。
+
+完成按钮的Tab路径由#57补齐：输入Tab进入、Shift+Tab返回、继续Tab沿输入框原后继前进；嵌套WebKit关闭时如停在Radix焦点保护节点才归焦恢复，普通外点关闭不抢焦点。浏览器断言按本机原生Tab顺序比对，不能假定各平台都将标签按钮纳入原生Tab。Combobox保留240px内容高度上限并按视口缩放约束，不把Radix可用高度变量反馈到候选列表尺寸；其他浮层默认策略保持原样。
+
+多选的标签和清空按钮属于同一交互区域：pointerdown/焦点转移不提前销毁浮层，等按钮click完成后收起。否则窄屏缩放时滚动布局可能在按下与抬起之间移动，让click落在公共祖先而丢失清空动作；浏览器用真实指针路径验证。

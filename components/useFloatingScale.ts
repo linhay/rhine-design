@@ -29,7 +29,7 @@ export function useFloatingSide(anchor: RefObject<HTMLSpanElement | null>, side:
 }
 
 /** Keep Radix's viewport coordinates unscaled while preserving the user's content zoom. */
-export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 'popover') {
+export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 'popover', maxHeight?: number) {
   const [content, setContent] = useState<HTMLDivElement | null>(null);
   const attach = useCallback((element: HTMLDivElement | null) => {
     if (ref) ref.current = element;
@@ -62,7 +62,11 @@ export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 
       content.style.zoom = String(scale);
       const width = `calc((100vw - 24px) / ${scale})`;
       content.style.maxWidth = kind === 'tooltip' ? `min(280px, ${width})` : width;
-      content.style.maxHeight = `calc(var(--radix-${kind}-content-available-height) / ${scale})`;
+      // Bounded suggestion lists retain their own height cap. Feeding Radix's
+      // available-height variable back into their size can cause resize loops.
+      content.style.maxHeight = maxHeight === undefined
+        ? `calc(var(--radix-${kind}-content-available-height) / ${scale})`
+        : `min(${maxHeight}px, calc((100vh - 24px) / ${scale}))`;
       if (kind === 'dropdown-menu') content.style.minWidth = `min(180px, ${width})`;
       constrain();
     };
@@ -91,6 +95,6 @@ export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 
       content.style.maxHeight = original.maxHeight;
       content.style.minWidth = original.minWidth;
     };
-  }, [content, kind]);
+  }, [content, kind, maxHeight]);
   return attach;
 }
