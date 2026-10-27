@@ -57,3 +57,5 @@ API decisions that commonly matter:
 - Components in `preview/` are demonstrations. Public API must resolve through a `package.json` export; theme APIs use the separate `/theme` entry.
 
 Available since 0.8.0 (check installed exports): `ThemePicker` / `ThemePreview` in `components/ThemePicker.tsx`, contract `docs/THEME_PICKER.md`; `Dialog.navigation` in `components/Overlays.tsx`, contract `docs/SETTINGS_DIALOG.md`; shared floating CSS zoom behavior in `docs/FLOATING_OVERLAYS.md`.
+
+Product review tooling (unpublished): `/review` exports `defineReview`, URL helpers and scene/session types from `review/index.ts`; `/review/vite` exports Node-only `reviewPlugin` and `reviewProductionGuard` from `review/vite.mjs`, types in `review/vite.d.mts`. Never import the Vite entry into production UI. Read `docs/REVIEW_TOOL.md`; npm 0.10.0 does not contain these entries.

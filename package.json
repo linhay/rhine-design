@@ -23,7 +23,12 @@
     "./styles.css": "./components/styles.css",
     "./theme-arknights.css": "./components/theme-arknights.css",
     "./theme-neo-brutalism.css": "./components/theme-neo-brutalism.css",
-    "./logo.svg": "./components/assets/logo.svg"
+    "./logo.svg": "./components/assets/logo.svg",
+    "./review": "./review/index.ts",
+    "./review/vite": {
+      "types": "./review/vite.d.mts",
+      "import": "./review/vite.mjs"
+    }
   },
   "sideEffects": [
     "./components/index.ts",
@@ -47,15 +52,22 @@
     "vitest.config.ts",
     "package-lock.json",
     "scripts",
-    "skills"
+    "skills",
+    "review",
+    "examples/review/*/*.ts",
+    "examples/review/*/*.tsx",
+    "examples/review/*.css"
   ],
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 18309 --strictPort",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "npm run typecheck && vite build && node scripts/check-build.mjs",
-    "check": "npm run test && npm run build",
-    "prepublishOnly": "npm run check"
+    "check": "npm run test && npm run build && npm run review:build && node scripts/check-review-package.mjs",
+    "prepublishOnly": "npm run check",
+    "review:http": "vite --config examples/review/http/vite.config.ts --host 127.0.0.1 --port 18340 --strictPort",
+    "review:platform": "vite --config examples/review/platform/vite.config.ts --host 127.0.0.1 --port 18341 --strictPort",
+    "review:build": "vite build --config examples/review/http/vite.config.ts && vite build --config examples/review/platform/vite.config.ts"
   },
   "peerDependencies": {
     "react": "^19.0.0",

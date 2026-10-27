@@ -25,7 +25,7 @@ npm run dev
 npm run check
 ```
 
-它包含测试、类型检查、展台构建和 CSS/SVG 产物检查。视觉变化还需检查 400/520/880 宽度、200% 缩放和相关交互。纯文档修改检查链接与示例即可。
+它包含测试、类型检查、展台构建和 CSS/SVG 产物检查，并构建两个独立产品评审示例。产品评审入口、模拟生命周期与浏览器脚本见 [评审工具](docs/REVIEW_TOOL.md) 和 [验收记录](docs/REVIEW_VERIFICATION.md)。视觉变化还需检查 400/520/880 宽度、200% 缩放和相关交互。纯文档修改检查链接与示例即可。
 
 `dist/` 是展台构建结果；包导出源码。修改打包配置时，请在仓库外安装实际 tarball 验证。不要删除入口和 CSS 的 `sideEffects`；Logo 依赖 SVG `?no-inline`。本地链接消费项目时，Vite 使用 `resolve.dedupe: ['react', 'react-dom']` 避免重复 React。
 
