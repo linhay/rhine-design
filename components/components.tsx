@@ -5,12 +5,13 @@ const classes = (...parts: (string | false | undefined)[]) => parts.filter(Boole
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'quiet' | 'danger';
+  contentAlign?: 'center' | 'between';
   busy?: boolean;
   busyLabel?: string;
 }
-export function Button({ variant = 'primary', busy = false, busyLabel = '处理中', disabled, className, children, onClick, type = 'button', ...props }: ButtonProps) {
+export function Button({ variant = 'primary', contentAlign = 'center', busy = false, busyLabel = '处理中', disabled, className, children, onClick, type = 'button', ...props }: ButtonProps) {
   return <button {...props} type={type} disabled={disabled} aria-disabled={busy || disabled || props['aria-disabled'] || undefined}
-    aria-busy={busy || undefined} className={classes('rhine-button', `rhine-button--${variant}`, className)}
+    aria-busy={busy || undefined} className={classes('rhine-button', `rhine-button--${variant}`, contentAlign === 'between' && 'rhine-button--between', className)}
     onClick={event => { if (busy || props['aria-disabled'] === true || props['aria-disabled'] === 'true') { event.preventDefault(); return; } onClick?.(event); }}>
     <span className={busy ? 'rhine-button__ghost' : undefined}>{children}</span>
     {busy && <span className="rhine-button__busy"><span className="rhine-spinner" aria-hidden="true" /><span className="rhine-sr-only">{busyLabel}</span></span>}
@@ -53,11 +54,12 @@ export function TextField({ label, labelVisibility = 'visible', hint, error, id:
 }
 export interface Choice { value: string; label: string; disabled?: boolean }
 export interface TabItem extends Choice { content: ReactNode; description?: string; status?: ReactNode }
-export function Tabs({ label, items, value, onValueChange }: { label: string; items: TabItem[]; value: string; onValueChange: (value: string) => void }) {
+export interface TabsProps { label: string; items: TabItem[]; value: string; onValueChange: (value: string) => void; layout?: 'content' | 'fill' }
+export function Tabs({ label, items, value, onValueChange, layout = 'content' }: TabsProps) {
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   return <div className="rhine-tabs">
-    <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
+    <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', `rhine-tabs__list--${layout}`, items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       const available = items.map((item, index) => ({ ...item, index })).filter(item => !item.disabled);
       if (!available.length) return;

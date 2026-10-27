@@ -64,3 +64,5 @@ Product review tooling (since 0.11.0): `/review` exports `defineReview`, URL hel
 SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTIONS.md`，真实展台 `#nav-actions`；未发布。
 
 单输入即时搜索：TextField / TextFieldProps 的 `labelVisibility="hidden"` 保留非空名称；参见 `docs/SINGLE_SEARCH.md` 与 `#single-search`，未发布。搜索/异步与IME由宿主管理。
+
+#41未发布：Button.contentAlign、Tabs.layout/TabsProps、Dialog.height/footer；先读 `docs/COMPACT_ACCOUNT_PATTERNS.md`、`docs/SETTINGS_DIALOG.md`、`docs/SUMMARY_TABS.md`，展台 `#compact-selection`。

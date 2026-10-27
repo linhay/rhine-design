@@ -19,3 +19,11 @@
 嵌套编辑继续使用 Radix 的焦点陷阱和焦点归还；Dialog 在布局阶段按焦点所属弹窗接管 Escape，避免快速打开内层时旧监听误关外层：先关闭内层并归还其触发器，外层仍保持打开。`onCloseAutoFocus` 仍可处理触发器已被宿主删除的场景。
 
 展台 `#settings-dialog` 包含账号草稿/异步保存/取消、长用户列表、嵌套编辑，以及项目加载/错误/空态。浏览器回归在 `scripts/check-settings-theme.js`，覆盖三主题、400/520/880/1440px、100%/200% CSS zoom、实际按钮边界、嵌套 Escape、焦点与宿主查询/URL 保持。
+
+## 稳定预览与底部操作区（#41，未发布）
+
+`Dialog.height?: CSSProperties['height']` 显式指定实例期望高度，数字按CSS px解释，默认不指定、保持原内容自适应行为；实际高度受可用视口减32px限制。`footer?: ReactNode` 是独立操作区，不参与内容滚动；单独提供footer也启用有界滚动，不强迫固定高度。两者不能作为全库560px默认，560仅为展台比较参数。
+
+提供height或footer时，主体使用有界内部滚动。双栏宽屏可独立滚动，窄屏上下排列在同一内容滚动区；主标题/关闭行在其滚动区顶端保持可达，footer持续固定在下方。根保持主题、焦点陷阱、Escape与onCloseAutoFocus，宿主仍拥有草稿和保存状态。短内容、末页、空组、未选择、预览加载/失败、保存中/成功/失败不改变同一视口的外框高度/位置；视口或缩放改变时可响应调整。
+
+`#compact-selection` 显式保存组合保留预览侧栏，底部保存不与说明或内容混排。保存期间宿主通过受控onOpenChange拒绝关闭，使用请求锁防重，并在卸载清理计时器。height/footer本轮限定Dialog；Drawer与既有navigation/sidePanel默认行为保持。
