@@ -54,6 +54,7 @@ export interface ComboboxProps {
 export function Combobox({ label, query, onQueryChange, value, onValueChange, options, loading = false, error, disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace, completionLabel, open: controlledOpen, onOpenChange }: ComboboxProps) {
   const generatedId = useId(), id = suppliedId || generatedId; const composing = useRef(false);
   const floatingRef = useFloatingScale(undefined, 'popover');
+  const exitingWithTab = useRef(false);
   const root = useRef<HTMLDivElement>(null);
   const [container, setContainer] = useState<HTMLElement>();
   useLayoutEffect(() => { setContainer((root.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
@@ -84,14 +85,21 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
         if (open && ['Home', 'End'].includes(event.key)) { event.preventDefault(); setActive((event.key === 'Home' ? available[0] : available.at(-1))?.value ?? null); }
         if (open && event.key === 'Enter') { event.preventDefault(); const option = available.find(item => item.value === active); if (option) choose(option); }
       }} /><span className="rhine-combobox__arrow"><Icon name="chevronDown" size={16} /></span></div></PopoverBase.Anchor>
-    <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => event.preventDefault()} onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
+    <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => {
+      event.preventDefault();
+      if (!exitingWithTab.current) return;
+      exitingWithTab.current = false;
+      // A nested WebKit FocusScope can leave native Tab on its guard while
+      // the parent scope resumes. Guards must never retain user focus.
+      if (document.activeElement?.hasAttribute('data-radix-focus-guard')) complete();
+    }} onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
       <div ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); complete(); } }}>
         <div role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{selectedValues && <span className="rhine-combobox__check" aria-hidden="true">{selectedValues.includes(option.value) ? '✓' : ''}</span>}{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
         {completionLabel && <div className="rhine-combobox__completion"><Button id={`${id}-complete`} type="button" variant="quiet" onMouseDown={event => event.preventDefault()} onClick={complete} onKeyDown={event => {
           if (event.key !== 'Tab') return;
           if (event.shiftKey) { event.preventDefault(); document.getElementById(id)?.focus(); }
           // Restore the input as the origin of the browser's normal forward Tab.
-          else complete();
+          else { exitingWithTab.current = true; complete(); }
         }}>{completionLabel}</Button></div>}
       </div>
     </PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root>
