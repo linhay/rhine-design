@@ -15,17 +15,19 @@ export interface ChatCardProps {
   /** Keep error/recovery or unknown-state context here, outside the disclosure. */
   summary: ReactNode;
   children?: ReactNode;
+  /** Short visible label for the optional detail disclosure; the card title remains in its accessible name. */
+  detailLabel?: string;
   actions?: ReactNode;
   readOnly?: boolean;
 }
 /** Structured content only. Business transitions and permissions belong to the host. */
-export function ChatCard({ title, status, summary, children, actions, readOnly = false }: ChatCardProps) {
+export function ChatCard({ title, status, summary, children, detailLabel = '详情', actions, readOnly = false }: ChatCardProps) {
   const observing = useContext(ReadOnlyContext) || readOnly;
   const [label, tone] = Object.hasOwn(statuses, status) ? statuses[status] : statuses.unknown;
   return <Surface className="rhine-chat-card" padding="none">
     <div className="rhine-chat-card__heading"><strong>{title}</strong><Badge tone={tone}>{label}</Badge></div>
     <div className="rhine-chat-card__summary">{summary}</div>
-    {children && <Disclosure title={`${title} · 详情`}>{children}</Disclosure>}
+    {children && <Disclosure title={detailLabel} ariaLabel={`${title} · ${detailLabel}`}>{children}</Disclosure>}
     {!observing && actions && <div className="rhine-chat-actions">{actions}</div>}
   </Surface>;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button, ChatCard, ChatThread, Checkbox, Inline, Select, Stack, Surface, Text, Toolbar, type ChatEntry, type ChatStatus } from '../components';
+import { Badge, Button, ChatCard, ChatThread, Checkbox, Dialog, Inline, Select, Stack, Surface, Text, Toolbar, type ChatEntry, type ChatStatus } from '../components';
 import './chat-gallery.css';
 
 const members = [{ id: 'a', name: '成员 A' }, { id: 'b', name: '成员 B' }, { id: 'c', name: '成员 C' }];
@@ -19,6 +19,23 @@ const states: [ChatStatus, string][] = [
   ['unknown', '来源没有提供最终状态，不能推断成功。'], ['cancelled', '成员停止了该分支，已有内容保留。'],
   ['expired', '请求超过有效期，后续操作由宿主决定。'], ['succeeded', '独立的摘要归档已确认完成。'],
 ];
+const readingObjects = [
+  { title: '河谷观察笔记：跨季节采样、长期维护与共享资料的整理方法', kind: '笔记', owner: '个人空间' },
+  { title: '共享文件：河谷生态观察与协作记录说明.txt', kind: '文件', owner: '共享资料库' },
+];
+
+function ReadonlyObjectCard({ object, status, summary }: { object: typeof readingObjects[number]; status: ChatStatus; summary: string }) {
+  return <ChatCard title={object.title} status={status} readOnly summary={<>
+    <p>{summary}</p>
+    <Dialog title={object.title} description="只读对象阅读；正文、来源与关联在同一窗口查看。"
+      trigger={<Button variant="secondary" aria-label={`阅读对象：${object.title}`}>阅读对象</Button>}>
+      <Stack gap={4}><Text as="h3" variant="heading">{object.kind} · {object.owner}</Text>
+        <Text>此窗口只提供阅读入口。内容版本、来源与关联保持原样，不产生接受、拒绝或其他写入动作。</Text>
+        <Text>当前状态：{status === 'failed' ? '部分结果，来源暂不可用。' : status === 'unknown' ? '状态未知，不能推断成功。' : '保留摘要与对象身份，正文由宿主继续提供。'}</Text>
+      </Stack>
+    </Dialog>
+  </>} />;
+}
 
 /** A host example using public exports only; all timers and transitions are synthetic host state. */
 export function ChatGallery() {
@@ -63,7 +80,7 @@ export function ChatGallery() {
     message('c1', 2, 25, <><p>我补充一份公开来源，成员身份没有左右主从之分。</p><blockquote>{paragraph}</blockquote></>), pair[2], pair[3], pair[4], pair[5]];
   const observing = scene === 'observer';
   const observation: ChatEntry[] = states.map(([status, summary], index) => message(`observation-${status}`, index % 3, index + 20,
-    <ChatCard title={`记录 ${index + 1} · 资料核对`} status={status} summary={summary}><p>{paragraph}</p><pre><code>{`{ "state": "${status}", "synthetic": true }`}</code></pre></ChatCard>));
+    <ReadonlyObjectCard object={readingObjects[index % readingObjects.length]} status={status} summary={summary} />));
   const entries = [ ...(older ? history : []), ...(observing ? observation : scene === 'team' ? team : pair),
     ...Array.from({ length: arrivals }, (_, i) => message(`arrival-${i}`, 2, 40, <p>新到达的合成消息 {i + 1}。上翻历史时不会强制回到这里。</p>)),
     ...(chunks || running || streamState === 'cancelled' || streamState === 'failed' ? [message('stream', 1, 45,

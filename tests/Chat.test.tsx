@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Button, ChatCard, ChatThread, type ChatEntry, type ChatMessage, type ChatStatus } from '../components';
 import { ChatGallery } from '../preview/ChatGallery';
@@ -19,7 +19,7 @@ describe('Chat composition', () => {
     expect(screen.queryByRole('button', { name: '接受' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '重试' })).not.toBeInTheDocument();
     expect(screen.getByText('来源不可用，请稍后核对')).toBeVisible();
-    fireEvent.click(screen.getByText('请求 · 详情'));
+    fireEvent.click(screen.getByText('详情', { selector: 'summary' }));
     expect(screen.getByText('完整依据')).toBeVisible();
     rerender(<ChatThread label="聊天" entries={entries} />);
     expect(screen.getByRole('button', { name: '接受' })).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe('Chat composition', () => {
   });
   it('pauses on a disclosure and resumes only through the persistent follow control', () => {
     render(<ChatThread label="聊天" entries={[{ ...msg('a', 10), content: <ChatCard title="详情" status="unknown" summary="尚未确认"><p>证据</p></ChatCard> }]} />);
-    fireEvent.click(screen.getByText('详情 · 详情'));
+    fireEvent.click(screen.getByText('详情', { selector: 'summary' }));
     const follow = screen.getByRole('button', { name: '回到最新并跟随' });
     expect(follow).toHaveAttribute('aria-pressed', 'false'); follow.focus(); fireEvent.click(follow);
     expect(follow).toHaveAttribute('aria-pressed', 'true'); expect(follow).toHaveFocus();
@@ -61,6 +61,27 @@ describe('Chat composition', () => {
     expect(screen.getByText('已接受')).toBeVisible(); unmount();
     render(<ChatCard title="外部状态" status={'constructor' as ChatStatus} summary="未知来源" />);
     expect(screen.getByText('状态未知')).toBeVisible();
+  });
+  it('uses a short visible detail label while retaining the object name for assistive technology', () => {
+    const title = '河谷观察笔记：跨季节采样、长期维护与共享资料的整理方法';
+    const { container } = render(<ChatCard title={title} status="partial" summary="部分结果已保留。"><p>完整依据</p></ChatCard>);
+    expect(screen.getByText('详情')).toBeVisible();
+    expect(container.querySelector('summary')).toHaveAttribute('aria-label', `${title} · 详情`);
+    expect(screen.queryByText(`${title} · 详情`)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('详情', { selector: 'summary' }));
+    expect(screen.getByText('完整依据')).toBeVisible();
+  });
+  it('lets read-only cards open object reading directly without a disclosure or write actions', async () => {
+    render(<ChatGallery />);
+    fireEvent.change(screen.getByRole('combobox', { name: '聊天场景' }), { target: { value: 'observer' } });
+    const region = screen.getByRole('region', { name: '合成聊天消息' });
+    const firstReading = within(region).getAllByRole('button', { name: /^阅读对象：河谷观察笔记/ })[0];
+    expect(region.querySelectorAll('details')).toHaveLength(0);
+    expect(within(region).queryByRole('button', { name: '接受请求' })).not.toBeInTheDocument();
+    fireEvent.click(firstReading);
+    expect(screen.getByRole('dialog', { name: /^河谷观察笔记/ })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: '关闭对话框' }));
+    await waitFor(() => expect(firstReading).toHaveFocus());
   });
   it('disconnects ResizeObserver on unmount', () => {
     const disconnect = vi.fn();

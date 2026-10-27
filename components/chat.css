@@ -24,7 +24,9 @@
 .rhine-chat-card.rhine-surface { padding:var(--rhine-space-3); margin-block:var(--rhine-space-2); max-width:64ch; box-shadow:none; }
 .rhine-chat-card__heading { display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--rhine-space-2); margin-bottom:var(--rhine-space-2); }
 .rhine-chat-card__heading > strong { font:var(--rhine-weight-label) var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); }
-.rhine-chat-card__summary { overflow-wrap:anywhere; }
+.rhine-chat-card__summary { overflow-wrap:anywhere; font:var(--rhine-weight-regular) var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); }
+.rhine-chat-card__summary :is(p,ul,ol,pre,blockquote) { margin:0 0 var(--rhine-space-3); }
+.rhine-chat-card__summary > :last-child { margin-bottom:0; }
 .rhine-chat-card .rhine-disclosure { margin-top:var(--rhine-space-2); }
 .rhine-chat-card .rhine-disclosure summary { padding:var(--rhine-space-2) 0; min-height:44px; }
 .rhine-chat-card .rhine-disclosure__content { padding:var(--rhine-space-2) 0; }
