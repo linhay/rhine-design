@@ -190,7 +190,7 @@ export function Example() {
 
 ## 聊天组合（源码候选）
 
-`ChatThread`、`ChatCard` 提供成员分组、摘要/详情、状态呈现、只读动作约束与历史锚点。契约及公开接入见 [Agent Chat](../docs/AGENT_CHAT.md)，展台 `#agent-chat`；不在 npm 0.11.0 内。
+`ChatThread`、`ChatCard` 提供成员分组、摘要/详情、状态呈现、只读动作约束与历史锚点。`ChatCard` 的 `detailLabel` 只控制短的可见详情标签；对象标题仍保留在折叠控件的可访问名称中。只读对象可把 `Dialog` 阅读入口放在 `summary`，没有 `children` 时不生成折叠层。契约及公开接入见 [Agent Chat](../docs/AGENT_CHAT.md)，展台 `#agent-chat`；不在 npm 0.11.0 内。
 
 #41 未发布：Button `contentAlign="center" | "between"`，Tabs `layout="content" | "fill"`及TabsProps，Dialog `height`/`footer`；见[紧凑选择组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)与[稳定弹窗](../docs/SETTINGS_DIALOG.md)。
 

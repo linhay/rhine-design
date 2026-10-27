@@ -26,7 +26,21 @@
 
 ## 卡片与状态所有权
 
-`ChatCard({title, status, summary, children?, actions?, readOnly?})`：标题和状态同层，摘要始终显示；children 是可开合详情，错误原因/恢复建议不得只放在 children。支持请求、工具过程、等待依据、结果/产物与来源卡片，无业务种类枚举。详情不默认展开。
+`ChatCard({title, status, summary, children?, detailLabel?, actions?, readOnly?})`：标题和状态同层，摘要始终显示；children 是可开合详情，错误原因/恢复建议不得只放在 children。详情默认显示短标签“详情”，可用 `detailLabel` 改成“查看依据”等短文案；折叠控件的无障碍名称仍包含对象标题，多个卡片可以区分。支持请求、工具过程、等待依据、结果/产物与来源卡片，无业务种类枚举。详情不默认展开。
+
+只读对象卡片优先把阅读入口放进 `summary`，使用公共 `Button` 作为 `Dialog` 的 trigger，并把对象标题用于按钮的可访问名称，例如：
+
+```tsx
+<ChatCard title="河谷观察笔记：跨季节采样、长期维护与共享资料的整理方法" status="partial" readOnly
+  summary={<><p>已保留部分结果，来源仍待核对。</p>
+    <Dialog title="河谷观察笔记：跨季节采样、长期维护与共享资料的整理方法"
+      trigger={<Button variant="secondary" aria-label="阅读对象：河谷观察笔记：跨季节采样、长期维护与共享资料的整理方法">阅读对象</Button>}>
+      <p>这里是只读对象阅读内容。</p>
+    </Dialog>
+  </>} />
+```
+
+没有 `children` 时不会生成多余的折叠层；阅读动作与接受、拒绝、重试等业务写入动作分开，`readOnly` 继续隐藏 `actions` 和消息动作。
 
 | status | 含义 |
 | --- | --- |

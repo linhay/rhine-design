@@ -111,7 +111,7 @@ export function Skeleton({ label = '正在加载', lines = 3 }: { label?: string
     {Array.from({ length: Math.max(1, Math.min(8, Math.floor(lines) || 1)) }, (_, index) => <span aria-hidden="true" key={index} />)}
   </div>;
 }
-export function Disclosure({ title, children, defaultOpen = false }: { title: string; children: ReactNode; defaultOpen?: boolean }) {
+export function Disclosure({ title, children, defaultOpen = false, ariaLabel }: { title: string; children: ReactNode; defaultOpen?: boolean; ariaLabel?: string }) {
   const node = useRef<HTMLDetailsElement>(null);
   const animation = useRef<Animation | null>(null);
   const intent = useRef(defaultOpen);
@@ -161,7 +161,7 @@ export function Disclosure({ title, children, defaultOpen = false }: { title: st
     };
   }
   return <details ref={node} open={open} data-expanded={open} className="rhine-disclosure">
-    <summary onClick={event => { event.preventDefault(); toggle(); }}>{title}<span aria-hidden="true">+</span></summary>
+    <summary aria-label={ariaLabel} onClick={event => { event.preventDefault(); toggle(); }}>{title}<span aria-hidden="true">+</span></summary>
     <div className="rhine-disclosure__content">{children}</div>
   </details>;
 }
