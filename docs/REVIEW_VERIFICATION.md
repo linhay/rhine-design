@@ -45,6 +45,12 @@
 
 12. Firefox 首轮矩阵有两项脚本失败：同步读取 frame URL 早于 hash 跳转，以及预期合成渲染异常的 console 文本仅为 `Error`。诊断确认 hash 随后完成，Error 参数的 message 为预期合成异常；脚本改为有界等待 hash，并读取实际 Error 参数，未泛化忽略所有 Error。修正后 Firefox 静态 25 组通过；Chromium/WebKit 用同版脚本复核。
 
+## 合并前增量验证
+
+2026-10-27 在 `9f010f7` 基础上核对现有 Pages 工作流，发现示例的绝对 `/review-http/`、`/review-platform/` 资源路径不适用于项目站点 `/rhine-design/`。示例改为构建时使用 `./` 相对资源，dev/preview 保留各自目录前缀；工具运行代码和场景协议未改。构建集成测试同时覆盖绝对嵌套 base 与相对 base，全库 `npm run check` 为 288 项测试及全部构建/包清单 PASS。
+
+最终静态产物放在 `/rhine-design/review-http/`、`/rhine-design/review-platform/` 后，Chromium/WebKit 各 25 组矩阵 PASS：样式、动态模块、主题/Portal/草稿、表单、hash 刷新、动效和无业务出站。该增量验证不把此前固定 tarball 摘要改称新源码的包摘要；尚未重新发布 npm 制品。实际线上部署另以对应主线工作流和真实 URL 复验为准。
+
 ## 交付边界
 
 评审接口和通用壳已有本地可运行候选，两个示例无需复制壳、URL 或工具栏。尚不能关闭 #40：固定版本发布、稳定在线部署与真实消费项目迁移仍需各自授权和证据。专用静态源、合成数据、host Provider 所有权、显式动效适配和异步关闭边界见[工具契约](REVIEW_TOOL.md)。

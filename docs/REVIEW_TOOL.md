@@ -15,7 +15,7 @@ npm run review:build      # dist/review-http 与 dist/review-platform
 python3 -m http.server 18342 --bind 127.0.0.1 --directory dist
 ```
 
-构建后访问 `/review-http/`、`/review-platform/`。这是本地进程地址，不是已部署的持久在线服务。关闭进程后链接失效。也可以使用 `vite preview --config examples/review/http/vite.config.ts --host 127.0.0.1` 预览对应制品；以启动输出为准。
+示例开发服务保留各自 `/review-http/`、`/review-platform/` 路径；构建产物使用相对资源路径，可放在任意嵌套目录（例如项目型 GitHub Pages）。构建后访问 `/review-http/`、`/review-platform/`。这是本地进程地址，不是已部署的持久在线服务。关闭进程后链接失效。也可以使用 `vite preview --config examples/review/http/vite.config.ts --host 127.0.0.1` 预览对应制品；以启动输出为准。
 
 HTTP 示例有正常、加载、空、错误、密集长文及只读角色；支持搜索、弹窗保存与延迟模块。平台示例注入内存 client，覆盖独立连接/用量维度、慢初始化、渲染异常、清理错误/挂起恢复和 Canvas 动效。示例只展示工具契约，不代表桌面原生或 iOS 验收。
 

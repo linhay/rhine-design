@@ -11,25 +11,28 @@ const directories: string[] = [];
 async function fixture() { const path = await mkdtemp(join(tmpdir(), 'rhine-review-test-')); directories.push(path); return path; }
 afterEach(async () => { await Promise.all(directories.splice(0).map(path => rm(path, { recursive: true, force: true }))); });
 describe('review build integration', () => {
-  it('emits both HTML documents with real final CSS and nested-base assets', async () => {
+  it.each(['/nested/review/', './'])('emits final CSS and usable preview for base %s', async base => {
     const root = await fixture();
-    await build({ configFile: false, root, base: '/nested/review/', logLevel: 'silent', plugins: [react(), reviewPlugin({ catalog: resolve('examples/review/http/catalog.tsx') })] });
+    await build({ configFile: false, root, base, logLevel: 'silent', plugins: [react(), reviewPlugin({ catalog: resolve('examples/review/http/catalog.tsx') })] });
     for (const name of ['index.html', 'canvas.html']) {
       const html = await readFile(join(root, 'dist', name), 'utf8');
-      const css = html.match(/rel="stylesheet" href="\/nested\/review\/([^\"]+\.css)"/)?.[1];
+      const stylesheet = html.match(/rel="stylesheet" href="([^\"]+\.css)"/)?.[1];
+      expect(stylesheet?.startsWith(base)).toBe(true);
+      const css = stylesheet?.slice(base.length);
       expect(css).toBeTruthy();
       expect(await readFile(join(root, 'dist', css!), 'utf8')).toContain('.rhine-review-header');
       expect(html).toContain("connect-src 'none'");
-      expect(html).toMatch(/src="\/nested\/review\/assets\/.+\.js"/);
+      expect(html).toContain(`src="${base}assets/`);
     }
-    const server = await preview({ configFile: false, root, base: '/nested/review/', logLevel: 'silent', plugins: [reviewPlugin({ catalog: resolve('examples/review/http/catalog.tsx') })], preview: { host: '127.0.0.1', port: 0 } });
+    const server = await preview({ configFile: false, root, base, logLevel: 'silent', plugins: [reviewPlugin({ catalog: resolve('examples/review/http/catalog.tsx') })], preview: { host: '127.0.0.1', port: 0 } });
     try {
       const address = server.httpServer.address();
       if (!address || typeof address === 'string') throw new Error('Missing preview port');
-      const response = await fetch(`http://127.0.0.1:${address.port}/nested/review/`);
+      const url = `http://127.0.0.1:${address.port}${base === './' ? '/' : base}`;
+      const response = await fetch(url);
       expect(response.status).toBe(200);
       expect(await response.text()).toContain('Rhine Review');
-      expect((await fetch(`http://127.0.0.1:${address.port}/nested/review/api/missing`)).status).toBe(404);
+      expect((await fetch(`${url}api/missing`)).status).toBe(404);
     } finally { await new Promise<void>((resolve, reject) => server.httpServer.close(error => error ? reject(error) : resolve())); }
   }, 20000);
   it('allows production theme directories but rejects explicit fixture paths', async () => {
