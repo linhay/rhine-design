@@ -14,7 +14,7 @@
 ## 0.11.1（2026-10-27）
 
 - 修复 Combobox / RemoteMultiSelect 在祖先 CSS zoom 下的候选浮层定位与视口边界，复用既有浮层缩放处理；保留主题 Portal、搜索、多选与键盘行为。
-- RemoteMultiSelect 可再次点击或方向键+Enter取消已选项，保留真正禁用/锁定项；“完成选择”只收起候选并归焦，不提交宿主表单。
+- RemoteMultiSelect 可再次点击或方向键+Enter取消已选项，保留真正禁用/锁定项；“完成选择”只收起候选并归焦，不提交宿主表单；清空后保持收起，无可移除项时隐藏清空按钮。
 - `#compact-filters` 补充弹窗内多选与真实浏览器回归；参见[浮层契约](docs/FLOATING_OVERLAYS.md)。
 - 补丁制品从 `v0.11.0` 回补上述修复，主入口仍为67项；本节上方的未发布新功能不包含在0.11.1中。消费方固定版本并提交 registry lockfile。
 

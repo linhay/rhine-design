@@ -49,14 +49,17 @@ export interface ComboboxProps {
   loading?: boolean; error?: string; disabled?: boolean;
   readOnly?: boolean; placeholder?: string; hint?: string; id?: string;
   selectedValues?: string[]; closeOnSelect?: boolean; onEmptyBackspace?: () => void; completionLabel?: string;
+  open?: boolean; onOpenChange?: (open: boolean) => void;
 }
-export function Combobox({ label, query, onQueryChange, value, onValueChange, options, loading = false, error, disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace, completionLabel }: ComboboxProps) {
+export function Combobox({ label, query, onQueryChange, value, onValueChange, options, loading = false, error, disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace, completionLabel, open: controlledOpen, onOpenChange }: ComboboxProps) {
   const generatedId = useId(), id = suppliedId || generatedId; const composing = useRef(false);
   const floatingRef = useFloatingScale(undefined, 'popover');
   const root = useRef<HTMLDivElement>(null);
   const [container, setContainer] = useState<HTMLElement>();
   useLayoutEffect(() => { setContainer((root.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
-  const [open, setOpen] = useState(false), [active, setActive] = useState<string | null>(null), [draft, setDraft] = useState<string | null>(null);
+  const [internalOpen, setInternalOpen] = useState(false), [active, setActive] = useState<string | null>(null), [draft, setDraft] = useState<string | null>(null);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = (next: boolean) => { if (controlledOpen === undefined) setInternalOpen(next); onOpenChange?.(next); };
   useEffect(() => { if (disabled || readOnly) { setOpen(false); setActive(null); setDraft(null); composing.current = false; } }, [disabled, readOnly]);
   const available = loading || error ? [] : options.filter(option => !option.disabled);
   const activeIndex = options.findIndex(option => option.value === active && !option.disabled);
@@ -77,7 +80,7 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
         if (open && ['Home', 'End'].includes(event.key)) { event.preventDefault(); setActive((event.key === 'Home' ? available[0] : available.at(-1))?.value ?? null); }
         if (open && event.key === 'Enter') { event.preventDefault(); const option = available.find(item => item.value === active); if (option) choose(option); }
       }} /><span className="rhine-combobox__arrow"><Icon name="chevronDown" size={16} /></span></div></PopoverBase.Anchor>
-    <PopoverBase.Portal container={container}><PopoverBase.Content asChild sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => event.preventDefault()} onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
+    <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => event.preventDefault()} onInteractOutside={event => { if (root.current?.contains(event.target as Node)) event.preventDefault(); }}>
       <div ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); complete(); } }}>
         <div role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{selectedValues && <span className="rhine-combobox__check" aria-hidden="true">{selectedValues.includes(option.value) ? '✓' : ''}</span>}{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
         {completionLabel && <div className="rhine-combobox__completion"><Button type="button" variant="quiet" onMouseDown={event => event.preventDefault()} onClick={complete}>{completionLabel}</Button></div>}

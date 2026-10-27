@@ -56,9 +56,19 @@ async page => {
       await done.click();
       await list.waitFor({ state: 'detached' });
       const completed = await input.evaluate(element => element === document.activeElement && element.value === '' && element.getAttribute('aria-expanded') === 'false');
-      const pass = contained(rect) && contained(dynamic) && selected === 'true' && keyboardSelected === 'true' && focusRetained && stable && toggledOff && toggledOn && contained(doneBounds) && completed;
+      const field = page.locator('.rhine-multi-select').filter({ has: input });
+      let cleared = true;
+      for (const initiallyOpen of [false, true]) {
+        await input.fill('合成部门 99');
+        await input.press('ArrowDown'); await input.press('Enter');
+        if (!initiallyOpen) await popup.getByRole('button', { name: '完成选择', exact: true }).click();
+        await field.getByRole('button', { name: '清空选择', exact: true }).click();
+        await list.waitFor({ state: 'detached' });
+        cleared = cleared && await input.evaluate(element => element === document.activeElement && element.value === '合成部门 99' && element.getAttribute('aria-expanded') === 'false') && await field.getByRole('button', { name: '清空选择', exact: true }).count() === 0;
+      }
+      const pass = cleared && contained(rect) && contained(dynamic) && selected === 'true' && keyboardSelected === 'true' && focusRetained && stable && toggledOff && toggledOn && contained(doneBounds) && completed;
       cases.push({ ...spec, pass });
-      if (!pass) failures.push({ ...spec, rect, dynamic, selected, keyboardSelected, focusRetained, stable, toggledOff, toggledOn, doneBounds, completed });
+      if (!pass) failures.push({ ...spec, rect, dynamic, selected, keyboardSelected, focusRetained, stable, toggledOff, toggledOn, doneBounds, completed, cleared });
       if (modal) {
         await input.press('Escape');
         await page.getByRole('dialog', { name: '搜索多选', exact: true }).waitFor({ state: 'detached' });

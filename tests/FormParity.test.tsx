@@ -106,6 +106,30 @@ describe('number field parity', () => {
 });
 
 describe('remote multi-select parity', () => {
+  it.each([false, true])('clears without opening candidates (initially open: %s) and hides empty actions', initiallyOpen => {
+    const query = vi.fn(), submit = vi.fn(event => event.preventDefault());
+    function Demo() {
+      const [value, setValue] = useState([{ value: 'a', label: 'Alpha' }]);
+      return <form onSubmit={submit}><RemoteMultiSelect label="成员" query="保留查询" onQueryChange={query} value={value} onValueChange={setValue} options={[{ value: 'a', label: 'Alpha' }]} maxVisibleTags={2} /></form>;
+    }
+    render(<Demo />); const input = screen.getByRole('combobox');
+    if (initiallyOpen) act(() => input.focus());
+    const clear = screen.getByRole('button', { name: '清空选择' }); act(() => clear.focus()); fireEvent.click(clear);
+    expect(screen.getByText('已选 0 项')).toBeVisible();
+    expect(screen.queryByRole('button', { name: '清空选择' })).not.toBeInTheDocument();
+    expect(input).toHaveFocus(); expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(input).toHaveValue('保留查询'); expect(query).not.toHaveBeenCalled(); expect(submit).not.toHaveBeenCalled();
+    fireEvent.keyDown(input, { key: 'ArrowDown' }); fireEvent.keyDown(input, { key: 'Enter' });
+    expect(screen.getByRole('button', { name: '清空选择' })).toBeVisible();
+  });
+
+  it('hides clear when only locked choices remain', () => {
+    render(<RemoteMultiSelect label="成员" query="" onQueryChange={() => {}} value={[{ value: 'locked', label: '固定', disabled: true }]} onValueChange={vi.fn()} options={[]} />);
+    expect(screen.queryByRole('button', { name: '清空选择' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '移除固定' })).toBeDisabled();
+  });
+
   it('keeps the list open for consecutive selection and exposes the selected list semantics', () => {
     const query = vi.fn();
     function Demo() {
