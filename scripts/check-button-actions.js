@@ -26,8 +26,8 @@ async page=>{
   const dialog=page.getByRole('alertdialog',{name:'删除合成记录'});await dialog.waitFor();await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});
   if(width===880&&zoom===1)await demo.screenshot({path:`output/playwright/buttons-${theme}.png`});
  }
- for(const mode of ['system','manual']){
-  await page.emulateMedia({reducedMotion:mode==='system'?'reduce':'no-preference'});await page.goto(`${origin}/?proof=${Date.now()}#button-actions`);
+ for(const theme of ['rhine','arknights','neo-brutalism'])for(const mode of ['system','manual']){
+  await page.emulateMedia({reducedMotion:mode==='system'?'reduce':'no-preference'});await page.goto(`${origin}/?theme=${theme}&proof=${Date.now()}#button-actions`);
   if(mode==='manual')await page.getByRole('radio',{name:'减少动态',exact:true}).check();await page.locator('[data-button-actions]').getByRole('button',{name:'退出登录',exact:true}).first().press('Enter');await page.getByRole('status').filter({hasText:'合成操作完成'}).waitFor();
  }
  return {pass:!failures.length&&!errors.length,failures,errors,samples};
