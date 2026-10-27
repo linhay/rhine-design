@@ -62,3 +62,5 @@ Available since 0.8.0 (check installed exports): `ThemePicker` / `ThemePreview` 
 Product review tooling (since 0.11.0): `/review` exports `defineReview`, URL helpers and scene/session types from `review/index.ts`; `/review/vite` exports Node-only `reviewPlugin` and `reviewProductionGuard` from `review/vite.mjs`, types in `review/vite.d.mts`. Never import the Vite entry into production UI. Read `docs/REVIEW_TOOL.md`; npm 0.10.0 does not contain these entries.
 
 SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTIONS.md`，真实展台 `#nav-actions`；未发布。
+
+单输入即时搜索：TextField / TextFieldProps 的 `labelVisibility="hidden"` 保留非空名称；参见 `docs/SINGLE_SEARCH.md` 与 `#single-search`，未发布。搜索/异步与IME由宿主管理。

@@ -51,3 +51,5 @@ export { ThemePicker, ThemePreview, type ThemePickerProps, type ThemePickerOptio
 
 export { ChatThread, ChatCard } from './Chat';
 export type { ChatThreadProps, ChatCardProps, ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus } from './Chat';
+
+export type { TextFieldProps } from './components';
