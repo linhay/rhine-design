@@ -4,6 +4,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 
 | Task | First reference (relative to package root) | Implementation / example |
 | --- | --- | --- |
+| Agent chat, member grouping, inline cards, observation and history scrolling | `docs/AGENT_CHAT.md` (source candidate after 0.11.0) | `components/Chat.tsx`, `preview/ChatGallery.tsx`; `/#agent-chat`; host owns transitions, requests and permissions |
 | Application shell, backgrounds, media, advanced inputs, controlled tables | `docs/APPLICATION_COMPONENTS.md` (0.5.0) | `preview/ExtensionsGallery.tsx`; `/#app-shell`, `/#advanced-forms`, `/#advanced-data`, `/#media` |
 | Workspace header, duplicate page titles, optional breadcrumbs | `docs/APPLICATION_COMPONENTS.md` → 平级工作区顶部操作区 (source guideline) | `preview/ExtensionsGallery.tsx`; `/#app-shell`; keep status/actions, navigation restore and accessible page identity |
 | Product design review shell, synthetic HTTP/platform scenes, static deployment | `docs/REVIEW_TOOL.md` (since 0.11.0; not npm 0.10.0) | `review/`, `examples/review/http`, `examples/review/platform`; separate `/review` and `/review/vite` exports |

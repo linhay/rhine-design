@@ -187,3 +187,7 @@ export function Example() {
 - [浮层缩放与边界](../docs/FLOATING_OVERLAYS.md)：Popover、Menu、Tooltip 与时间轴共享 CSS zoom 修正。
 - [设置 Dialog](../docs/SETTINGS_DIALOG.md)：`navigation` 插槽及窄窗/缩放重排。
 - [主题选择](../docs/THEME_PICKER.md)：`ThemePicker` / `ThemePreview`，自 0.8.0 提供，当时组件总数增至 66；0.9.0 新增 ListFilterBar 后为 67。
+
+## 聊天组合（源码候选）
+
+`ChatThread`、`ChatCard` 提供成员分组、摘要/详情、状态呈现、只读动作约束与历史锚点。契约及公开接入见 [Agent Chat](../docs/AGENT_CHAT.md)，展台 `#agent-chat`；不在 npm 0.11.0 内。
