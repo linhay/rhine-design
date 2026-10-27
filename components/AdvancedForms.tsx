@@ -144,7 +144,14 @@ export function RemoteMultiSelect({ value, onValueChange, options, readOnly = fa
     onValueChange(value.filter(item => item.value !== key)); focusInput();
   };
   return <div className={`rhine-multi-select${limit !== undefined ? ' rhine-multi-select--compact' : ''}`}>
-    <Combobox {...props} id={inputId} readOnly={readOnly} selectedValues={value.map(item => item.value)} closeOnSelect={closeOnSelect} onEmptyBackspace={() => { const last = [...value].reverse().find(item => !item.disabled); if (last) remove(last.value); }} options={options.map(option => ({ ...option, disabled: option.disabled || value.some(item => item.value === option.value) }))} value={null} onValueChange={option => { const original = options.find(item => item.value === option.value); if (original && !value.some(item => item.value === original.value)) { onValueChange([...value, original]); if (clearQueryOnSelect) props.onQueryChange(''); } }} />
+    <Combobox {...props} id={inputId} readOnly={readOnly} selectedValues={value.map(item => item.value)} closeOnSelect={closeOnSelect} completionLabel={closeOnSelect ? undefined : '完成选择'} onEmptyBackspace={() => { const last = [...value].reverse().find(item => !item.disabled); if (last) remove(last.value); }} options={options.map(option => ({ ...option, disabled: option.disabled || value.some(item => item.value === option.value && item.disabled) }))} value={null} onValueChange={option => {
+      const original = options.find(item => item.value === option.value);
+      if (!original || original.disabled || props.disabled || readOnly) return;
+      const selected = value.find(item => item.value === original.value);
+      if (selected?.disabled) return;
+      onValueChange(selected ? value.filter(item => item.value !== original.value) : [...value, original]);
+      if (clearQueryOnSelect) props.onQueryChange('');
+    }} />
     {name && value.map(item => <input key={item.value} type="hidden" name={name} value={item.value} disabled={props.disabled} />)}
     <ul id={`${inputId}-tags`} className="rhine-multi-select__tags" aria-label={`${props.label}已选项`} data-expanded={collapsible && expanded || undefined}>{shown.map(item => <li key={item.value}><span>{item.label}</span><Button variant="quiet" disabled={props.disabled || readOnly || item.disabled} aria-label={`移除${item.label}`} onClick={() => remove(item.value)}>×</Button></li>)}</ul>
     <div className="rhine-multi-select__actions">

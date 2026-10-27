@@ -117,10 +117,39 @@ describe('remote multi-select parity', () => {
     expect(input).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByRole('listbox')).toHaveAttribute('aria-multiselectable', 'true');
     expect(screen.getByRole('option', { name: 'Alpha' })).toHaveAttribute('aria-selected', 'true');
-    fireEvent.keyDown(input, { key: 'ArrowDown' }); fireEvent.keyDown(input, { key: 'Enter' });
+    fireEvent.keyDown(input, { key: 'End' }); fireEvent.keyDown(input, { key: 'Enter' });
     expect(screen.getByRole('button', { name: '移除Beta' })).toBeVisible();
     expect(container.querySelectorAll('input[type="hidden"][name="member"]')).toHaveLength(3);
     expect(query).not.toHaveBeenCalled();
+  });
+
+  it('toggles selected candidates with pointer and keyboard, then completes without submitting', () => {
+    const submit = vi.fn(event => event.preventDefault());
+    function Demo() {
+      const [value, setValue] = useState([{ value: 'a', label: 'Alpha' }, { value: 'locked', label: 'Locked', disabled: true }]);
+      return <form onSubmit={submit}><RemoteMultiSelect label="成员" query="查询" onQueryChange={() => {}} value={value} onValueChange={setValue} options={[{ value: 'a', label: 'Alpha' }, { value: 'locked', label: 'Locked' }, { value: 'off', label: 'Disabled', disabled: true }]} /></form>;
+    }
+    render(<Demo />);
+    const input = screen.getByRole('combobox'); act(() => input.focus());
+    fireEvent.click(screen.getByRole('option', { name: 'Alpha' }));
+    expect(screen.getByRole('option', { name: 'Alpha' })).toHaveAttribute('aria-selected', 'false');
+    expect(screen.queryByRole('button', { name: '移除Alpha' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('option', { name: 'Locked' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Disabled' }));
+    expect(screen.getByRole('button', { name: '移除Locked' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: '移除Disabled' })).not.toBeInTheDocument();
+    fireEvent.keyDown(input, { key: 'ArrowDown' }); fireEvent.keyDown(input, { key: 'Enter' });
+    expect(screen.getByRole('option', { name: 'Alpha' })).toHaveAttribute('aria-selected', 'true');
+    fireEvent.keyDown(input, { key: 'ArrowDown' }); fireEvent.keyDown(input, { key: 'Enter' });
+    expect(screen.getByRole('option', { name: 'Alpha' })).toHaveAttribute('aria-selected', 'false');
+    const done = screen.getByRole('button', { name: '完成选择' }); act(() => done.focus());
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.click(done);
+    expect(input).toHaveAttribute('aria-expanded', 'false'); expect(input).toHaveFocus();
+    expect(input).toHaveValue('查询'); expect(submit).not.toHaveBeenCalled();
+    fireEvent.click(input); act(() => screen.getByRole('button', { name: '完成选择' }).focus());
+    fireEvent.keyDown(screen.getByRole('button', { name: '完成选择' }), { key: 'Escape' });
+    expect(input).toHaveAttribute('aria-expanded', 'false'); expect(input).toHaveFocus();
   });
 
   it('removes the last removable tag with Backspace while respecting IME and locked values', () => {

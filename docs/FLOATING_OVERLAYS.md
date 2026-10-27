@@ -12,4 +12,6 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 
 真实展台 `#overlay-bounds` 使用独立 iframe，提供三主题、400/520/880px、100%/200%、文档/主题根/正文、四角锚点和四个优先方向。账号长文本、日期字段、取消/应用、菜单末项均为合成数据。
 
+0.11.1 补丁：Combobox/RemoteMultiSelect也接入同一useFloatingScale，修正0.11.0直接使用Radix Content遗漏坐标归一化的问题。`#compact-filters`增加弹窗内多选，核对400/520/880px与100/200% CSS zoom时列表边界、鼠标选择及Escape。旧0.11.0不包含此修复；产品查询、分页和取消仍由宿主负责。追踪 #16 / #40。回归脚本 `scripts/check-combobox-zoom.js` 使用当前 Playwright 页面 origin，需先打开该版本的构建展台；结果必须 `pass: true`，不能只检查 CLI 退出码。CSS zoom 证据不外推浏览器原生缩放。
+
 浏览器回归入口为 `scripts/check-overlay-bounds.js`，使用 Playwright CLI 的 `run-code --filename`。先运行 `npm run build && npx vite preview --host 127.0.0.1 --port 18480 --strictPort`；脚本固定使用 18480，并非 `npm run dev` 的默认端口。检查实际浮层和操作边界、内部滚动后的真实点击、焦点归还，以及打开期间动态缩放的输入节点与草稿保持；仅 `document.scrollWidth` 无法证明浮层没有越界。

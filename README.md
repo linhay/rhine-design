@@ -43,7 +43,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install --save-exact @linhey/rhine-design@0.11.0
+npm install --save-exact @linhey/rhine-design@0.11.1
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。

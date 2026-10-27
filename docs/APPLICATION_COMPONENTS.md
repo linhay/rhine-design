@@ -108,7 +108,7 @@ SideNav 继续负责当前项、长名称和 aria-current；Drawer 继续负责 
 | DateRangePicker | 上述范围 + `value={start,end}`、`presets=[{label,value}]`、`compact?` | 两个原生日期输入，自定义范围、受控预设、清空；compact 合并为一体区间框；结束日期下界取 start/min 较晚者；反向范围显示错误，不静默调换 |
 | NumberField | `value: number\|null`、`onValueChange/min/max/step/precision/disabled/error` | 编辑中保存字符串；失焦/Enter 提交；无效及越界输入保留并报错；上下键/按钮步进与钳制边界；空字符串提交 null |
 | TreeSelect | `nodes/value/onValueChange/expandedKeys/onExpandedChange/multiple`、loading/error/disabled | 节点为 `{id,label,disabled?,children?}`；父子独立选择，默认单选；调用方提供搜索后的树，不做全量过滤 |
-| RemoteMultiSelect | `query/onQueryChange/value/onValueChange/options`、loading/error/disabled、`maxVisibleTags?` | value 是完整 `{value,label,disabled?}[]`，已选标签不依赖本次结果；不重复选中；清空保留禁选标签；maxVisibleTags 限制常显数量并提供展开/收起，展开区域有界滚动 |
+| RemoteMultiSelect | `query/onQueryChange/value/onValueChange/options`、loading/error/disabled、`maxVisibleTags?` | value 是完整 `{value,label,disabled?}[]`，已选标签不依赖本次结果；再次点击已选候选取消；清空保留禁选标签；maxVisibleTags 限制常显数量并提供展开/收起，展开区域有界滚动 |
 
 日期 min/max 约束原生日历和表单有效性；手动编辑、业务校验及最终提交由宿主验证。原生日期面板位于浏览器 UI，不放在受裁剪的自定义浮层。日历外观、屏幕阅读器和移动 WebView 行为由具体浏览器决定，不声称提供自绘日历。预设必须使用宿主计算好的日期；不得以本机时区代替产品时区。没有“今天”隐式计算。
 
@@ -126,7 +126,7 @@ TreeSelect 使用 tree/treeitem/group，Tab 进入一个可见节点，上下/Ho
 
 首次进入优先已选可见节点；字符前缀定位不改变选择，`*` 展开同层分支，Ctrl/⌘+A 仅切换可见可选节点。外部收起时焦点回可见祖先。节点 `selectable=false` 用于结构分组；readOnly 允许浏览展开而禁止选择。`name` 为选中 key 生成同名 hidden inputs，disabled 不提交。
 
-RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误提交。加载或失败时禁止选择旧候选，已选项仍显示且可移除；默认选中后保持候选列表打开，`closeOnSelect=true` 恢复选完关闭。`clearQueryOnSelect` 默认 false；新增 readOnly/clearable/placeholder/hint/name。空查询 Backspace 删除最后一个可移除标签，标签删除/清空后回输入框；锁定标签保留。name 以同名 hidden inputs 提交受控 keys。单选 Combobox 的默认关闭行为不变。异步取消、序列检查、服务端查询和时区解释全部归宿主。展台有可取消的本地延迟结果演示，但不是生产数据层。
+RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误提交。加载或失败时禁止选择旧候选，已选项仍显示且可移除；默认选中后保持候选列表打开，可再次点击或方向键+Enter取消已选候选；真正禁用/锁定项不可更改。面板底部“完成选择”只收起候选并归焦输入框，保留查询和值，不提交宿主表单；最终保存由宿主负责。Escape或点击外部也保留草稿。`closeOnSelect=true` 恢复选完关闭。`clearQueryOnSelect` 默认 false；新增 readOnly/clearable/placeholder/hint/name。空查询 Backspace 删除最后一个可移除标签，标签删除/清空后回输入框；锁定标签保留。name 以同名 hidden inputs 提交受控 keys。单选 Combobox 的默认关闭行为不变。异步取消、序列检查、服务端查询和时区解释全部归宿主。展台有可取消的本地延迟结果演示，但不是生产数据层。
 
 分组底色 `--rhine-field-group-bg`；树缩进 `--rhine-tree-indent`；其余输入、选择、错误和焦点继续用既有语义 tokens，字号不低于 12px。
 
