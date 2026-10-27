@@ -16,7 +16,7 @@
 .rhine-theme [hidden] { display:none!important; }
 .rhine-theme :is(button,input,select,textarea,summary,a,[tabindex]):focus-visible { outline:2px solid var(--rhine-green); outline-offset:3px; }
 .rhine-sr-only { position:absolute!important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
-.rhine-button { position:relative; display:inline-flex; align-items:center; justify-content:center; min-height:44px; min-width:44px; padding:10px 16px; border:1px solid var(--rhine-ink); border-radius:var(--rhine-radius-control); font:var(--rhine-weight-label) var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); background:var(--rhine-ink); color:var(--rhine-surface); cursor:pointer; overflow-wrap:anywhere; transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard),border-color var(--rhine-duration-hover) var(--rhine-ease-standard),transform var(--rhine-duration-press) var(--rhine-ease-standard); }
+.rhine-button { max-width:100%; position:relative; display:inline-flex; align-items:center; justify-content:center; min-height:44px; min-width:44px; padding:10px 16px; border:1px solid var(--rhine-ink); border-radius:var(--rhine-radius-control); font:var(--rhine-weight-label) var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); background:var(--rhine-ink); color:var(--rhine-surface); cursor:pointer; overflow-wrap:anywhere; transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard),border-color var(--rhine-duration-hover) var(--rhine-ease-standard),transform var(--rhine-duration-press) var(--rhine-ease-standard); }
 .rhine-button:hover:not(:disabled):not([aria-disabled=true]) { background:var(--rhine-green); border-color:var(--rhine-green); }
 .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform:translateY(1px); }
 .rhine-button--secondary { background:var(--rhine-surface); color:var(--rhine-ink); border-color:var(--rhine-control); }
@@ -140,3 +140,5 @@
 .rhine-tabs__list--content { width:max-content; max-width:100%; }
 .rhine-tabs__list--content>button { flex:0 1 auto; min-width:0; max-width:100%; overflow-wrap:anywhere; }
 .rhine-tabs__list--fill>button { flex:1 1 0; min-width:0; overflow-wrap:anywhere; }
+
+.rhine-button--large { font-size:var(--rhine-text-heading); line-height:var(--rhine-leading-heading); min-height:52px; padding:12px 24px; max-width:100%; }

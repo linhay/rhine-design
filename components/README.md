@@ -193,3 +193,5 @@ export function Example() {
 `ChatThread`、`ChatCard` 提供成员分组、摘要/详情、状态呈现、只读动作约束与历史锚点。契约及公开接入见 [Agent Chat](../docs/AGENT_CHAT.md)，展台 `#agent-chat`；不在 npm 0.11.0 内。
 
 #41 未发布：Button `contentAlign="center" | "between"`，Tabs `layout="content" | "fill"`及TabsProps，Dialog `height`/`footer`；见[紧凑选择组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)与[稳定弹窗](../docs/SETTINGS_DIALOG.md)。
+
+Button.size="standard" | "large"（未发布），标准14/22、44px最小高度，大尺寸16/24、52px最小高度；[动作语义与尺寸](../docs/BUTTON_ACTIONS.md)。

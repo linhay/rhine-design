@@ -31,6 +31,7 @@ import { ComponentTypographyGallery } from './ComponentTypographyGallery';
 import { NavActionsGallery } from './NavActionsGallery';
 import { SingleSearchGallery } from './SingleSearchGallery';
 import { CompactSelectionGallery } from './CompactSelectionGallery';
+import { ButtonActionsGallery } from './ButtonActionsGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
 
 function Gallery() {
@@ -65,6 +66,7 @@ function Gallery() {
     {section === 'agent-chat' && <ChatGallery />}
     {section === 'single-search' && <SingleSearchGallery />}
     {section === 'compact-selection' && <CompactSelectionGallery />}
+    {section === 'button-actions' && <ButtonActionsGallery />}
     {section === 'summary-tabs' && <SummaryTabsGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}

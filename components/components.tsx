@@ -5,13 +5,14 @@ const classes = (...parts: (string | false | undefined)[]) => parts.filter(Boole
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'quiet' | 'danger';
+  size?: 'standard' | 'large';
   contentAlign?: 'center' | 'between';
   busy?: boolean;
   busyLabel?: string;
 }
-export function Button({ variant = 'primary', contentAlign = 'center', busy = false, busyLabel = '处理中', disabled, className, children, onClick, type = 'button', ...props }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'standard', contentAlign = 'center', busy = false, busyLabel = '处理中', disabled, className, children, onClick, type = 'button', ...props }: ButtonProps) {
   return <button {...props} type={type} disabled={disabled} aria-disabled={busy || disabled || props['aria-disabled'] || undefined}
-    aria-busy={busy || undefined} className={classes('rhine-button', `rhine-button--${variant}`, contentAlign === 'between' && 'rhine-button--between', className)}
+    aria-busy={busy || undefined} className={classes('rhine-button', `rhine-button--${variant}`, size === 'large' && 'rhine-button--large', contentAlign === 'between' && 'rhine-button--between', className)}
     onClick={event => { if (busy || props['aria-disabled'] === true || props['aria-disabled'] === 'true') { event.preventDefault(); return; } onClick?.(event); }}>
     <span className={busy ? 'rhine-button__ghost' : undefined}>{children}</span>
     {busy && <span className="rhine-button__busy"><span className="rhine-spinner" aria-hidden="true" /><span className="rhine-sr-only">{busyLabel}</span></span>}
