@@ -40,7 +40,7 @@ export { Dialog, Drawer, ConfirmDialog, Popover, Menu, Tooltip } from './Overlay
 export type { DialogProps, MenuItem } from './Overlays';
 export { Toast } from './Toast';
 export { SideNav, Breadcrumbs, Steps } from './Navigation';
-export type { NavItem, NavGroup, SideNavProps, BreadcrumbItem, BreadcrumbsProps, StepItem, StepsProps } from './Navigation';
+export type { NavAction, NavItem, NavGroup, SideNavProps, BreadcrumbItem, BreadcrumbsProps, StepItem, StepsProps } from './Navigation';
 export { Fieldset, ErrorSummary } from './FormWorkflow';
 export type { FieldsetProps, FieldError, ErrorSummaryProps } from './FormWorkflow';
 

@@ -27,6 +27,7 @@ import { CompactFilterBarGallery } from './CompactFilterBarGallery';
 import { DenseFilterControlsGallery } from './DenseFilterControlsGallery';
 import { CheckboxRowGallery } from './CheckboxRowGallery';
 import { ComponentTypographyGallery } from './ComponentTypographyGallery';
+import { NavActionsGallery } from './NavActionsGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
 
 function Gallery() {
@@ -57,6 +58,7 @@ function Gallery() {
     {section === 'compact-filters' && <><CompactFilterBarGallery /><DenseFilterControlsGallery /></>}
     {section === 'checkbox-rows' && <CheckboxRowGallery />}
     {section === 'component-typography' && <ComponentTypographyGallery />}
+    {section === 'nav-actions' && <NavActionsGallery />}
     {section === 'summary-tabs' && <SummaryTabsGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'app-shell' && <ShellGallery />}

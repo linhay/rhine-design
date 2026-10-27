@@ -1,7 +1,9 @@
-import type { HTMLAttributes, MouseEvent } from 'react';
-import { Icon, type IconName } from './Actions';
+import { useRef, type HTMLAttributes, type MouseEvent } from 'react';
+import { Menu, type MenuItem } from './Overlays';
+import { Icon, IconButton, type IconName } from './Actions';
 
-export interface NavItem { id: string; label: string; href: string; icon?: IconName }
+export interface NavAction extends Omit<MenuItem, 'onSelect'> { onSelect: (trigger: HTMLButtonElement) => void }
+export interface NavItem { id: string; label: string; href: string; icon?: IconName; actions?: readonly NavAction[] }
 export interface NavGroup { label: string; items: readonly NavItem[] }
 export interface SideNavProps extends HTMLAttributes<HTMLElement> {
   groups: readonly NavGroup[]; currentId: string;
@@ -10,9 +12,18 @@ export interface SideNavProps extends HTMLAttributes<HTMLElement> {
 export function SideNav({ groups, currentId, onNavigate, className = '', 'aria-label': label = '主导航', ...props }: SideNavProps) {
   return <nav {...props} aria-label={label} className={`rhine-side-nav ${className}`}>
     {groups.map(group => <div className="rhine-side-nav__group" key={group.label}><p>{group.label}</p><ul>
-      {group.items.map(item => <li key={item.id}><a href={item.href} aria-current={currentId === item.id ? 'page' : undefined} onClick={event => onNavigate?.(item, event)}>{item.icon && <Icon name={item.icon} size={20}/>}<span className="rhine-side-nav__label">{item.label}</span></a></li>)}
+      {group.items.map(item => <SideNavRow key={item.id} item={item} current={currentId === item.id} onNavigate={onNavigate} />)}
     </ul></div>)}
   </nav>;
+}
+
+function SideNavRow({ item, current, onNavigate }: { item: NavItem; current: boolean; onNavigate?: SideNavProps['onNavigate'] }) {
+  const trigger = useRef<HTMLButtonElement>(null);
+  const hasActions = !!item.actions?.length;
+  return <li className={hasActions ? 'rhine-side-nav__row--actions' : undefined}>
+    <a href={item.href} aria-current={current ? 'page' : undefined} onClick={event => onNavigate?.(item, event)}>{item.icon && <Icon name={item.icon} size={20}/>}<span className="rhine-side-nav__label">{item.label}</span></a>
+    {hasActions && <Menu label={`${item.label}：操作`} trigger={<IconButton ref={trigger} label={`${item.label}：更多操作`} icon="more" />} items={item.actions!.map(action => ({ ...action, onSelect: () => { if (trigger.current) action.onSelect(trigger.current); } }))} />}
+  </li>;
 }
 
 export interface BreadcrumbItem { label: string; href?: string }
