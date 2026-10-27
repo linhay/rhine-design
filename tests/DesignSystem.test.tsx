@@ -123,4 +123,21 @@ describe('reusable design components', () => {
     expect(details.open).toBe(false);fireEvent.click(summary);expect(details.open).toBe(true);
     fireEvent.click(summary);expect(details.open).toBe(false);expect(screen.getByText('内部按钮')).not.toBeVisible();
   });
+  it.each([['200ms', 200], ['.2s', 200], ['0ms', 0], ['0s', 0]])('disclosure respects CSS duration %s after production normalization', (cssDuration, milliseconds) => {
+    render(<Disclosure title="动画时长">内容</Disclosure>);
+    const summary = screen.getByText('动画时长');
+    const details = summary.closest('details')!;
+    details.style.setProperty('--rhine-duration-notice', cssDuration);
+    const animate = vi.fn(() => ({ cancel: vi.fn(), onfinish: null } as unknown as Animation));
+    details.animate = animate;
+    fireEvent.click(summary);
+    if (milliseconds === 0) {
+      expect(animate).not.toHaveBeenCalled();
+      expect(details.open).toBe(true);
+      fireEvent.click(summary);
+      expect(details.open).toBe(false);
+    } else {
+      expect(animate).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ duration: milliseconds }));
+    }
+  });
 });

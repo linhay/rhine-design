@@ -137,8 +137,10 @@ export function Disclosure({ title, children, defaultOpen = false }: { title: st
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (reduced || !el.animate) { el.open = expanded; setOpen(expanded); return; }
     const style = getComputedStyle(el);
-    const parsedDuration = parseFloat(style.getPropertyValue('--rhine-duration-notice'));
-    const duration = Number.isFinite(parsedDuration) ? parsedDuration : 200;
+    // Production CSS may normalize 200ms to .2s; Web Animations always takes milliseconds.
+    const durationValue = style.getPropertyValue('--rhine-duration-notice').trim();
+    const parsedDuration = parseFloat(durationValue);
+    const duration = Number.isFinite(parsedDuration) ? parsedDuration * (durationValue.endsWith('s') && !durationValue.endsWith('ms') ? 1000 : 1) : 200;
     if (duration === 0) { el.open = expanded; setOpen(expanded); return; }
     const to = expanded ? el.getBoundingClientRect().height : summary.getBoundingClientRect().height + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
     const next = el.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration, easing: style.getPropertyValue(expanded ? '--rhine-ease-standard' : '--rhine-ease-exit').trim() || 'ease' });

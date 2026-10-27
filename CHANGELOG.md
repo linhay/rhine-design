@@ -8,6 +8,7 @@
 - `Toast` 新增 `placement="floating"`，通过主题根 Portal 呈现浮动通知；默认 inline 保持兼容，见[通知契约](components/COMMON_COMPONENTS.md)。
 - `SegmentedControl` 新增 `size="compact"`，支持卡片局部指标切换；见[间距规范](components/SPACING.md)。0.10.0 已有的 `fullWidth` 不受影响。
 - 相邻 `Disclosure` 共用分隔线；补充上下文帮助与主题背景/文字配对规范。
+- 修复 `Disclosure` 在生产 CSS 将 `200ms` 压缩为 `.2s` 时误用 0.2ms 动画的问题；按单位换算为毫秒，保持 200ms 开合、快速反向和减少动态行为。
 - 展台首页和页脚按当前主入口统一为 67 个组件，源码包版本改从 `package.json` 读取；修正轨道主题艺术的版本标记及文档中的旧数量、候选状态。
 
 ## 0.10.0（2026-10-26）
