@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { Combobox, DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect } from '../components';
+import { Combobox, Dialog, DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect } from '../components';
 
 describe('date field parity', () => {
   it('reports controlled invalid dates and changed bounds without rewriting the value', () => {
@@ -268,5 +268,20 @@ describe('tree keyboard parity', () => {
     rerender(<TreeSelect {...props} expandedKeys={[]} />);
     const group = screen.getByRole('treeitem', { name: 'Group' }); expect(group).toHaveFocus();
     fireEvent.keyDown(group, { key: 'ArrowRight' }); expect(expand).toHaveBeenLastCalledWith(['root']);
+  });
+});
+
+
+describe('combobox modal keyboard exit', () => {
+  it('keeps focus inside while the nested scope is resuming its parent', () => {
+    render(<><button data-testid="background-action">背景动作</button><Dialog trigger={<button>打开选择</button>} title="成员选择" description="合成测试" open><RemoteMultiSelect label="弹窗成员" query="" onQueryChange={() => {}} value={[]} onValueChange={() => {}} options={[{ value: 'a', label: 'Alpha' }]} /></Dialog></>);
+    const input = screen.getByRole('combobox', { name: '弹窗成员' });
+    act(() => input.focus());
+    fireEvent.keyDown(input, { key: 'Tab', shiftKey: true });
+    const close = screen.getByRole('button', { name: '关闭对话框' });
+    act(() => close.focus());
+    act(() => screen.getByTestId('background-action').focus());
+    expect(close).toHaveFocus();
+    expect(input).toHaveAttribute('aria-expanded', 'false');
   });
 });
