@@ -4,6 +4,8 @@
 
 工具统一维护目录、搜索、评审控件、深链接、独立 iframe、模拟边界和静态构建。产品维护页面、路由、权限、状态维度、业务模拟、说明和验收记录。普通 React 设计稿、真实 App + HTTP mock、真实组件 + 平台 client 均可接入，不要求把平台接口转换成 HTTP。
 
+评审外壳把视口分成固定头部和剩余工作区：桌面目录与右侧主区各自纵向滚动，目录搜索在滚动时保持可见；短目录不会被强制显示滚动条。窄屏目录由“场景目录”展开，展开区域有自己的滚动边界，主区仍保留独立阅读滚动；Escape 会关闭目录并把焦点归还触发按钮。消费方不需要复制或覆盖外壳 CSS。
+
 ## 运行两个合成例子
 
 在源码仓使用 Node 24 安装依赖。两个 dev 命令分别在独立终端运行；构建/静态服务是另一种运行方式：
@@ -14,6 +16,8 @@ npm run review:platform   # http://127.0.0.1:18341/review-platform/
 npm run review:build      # dist/review-http 与 dist/review-platform
 python3 -m http.server 18342 --bind 127.0.0.1 --directory dist
 ```
+
+构建后可用 `playwright-cli run-code --filename scripts/check-review-scroll.js` 验证长目录、目录/主区独立 `scrollTop`、搜索定位，以及 520/400px 窄屏目录的 Escape 焦点归还。该脚本使用真实 review 展台，并在运行时加入合成目录项以覆盖长目录边界。
 
 示例开发服务保留各自 `/review-http/`、`/review-platform/` 路径；构建产物使用相对资源路径，可放在任意嵌套目录（例如项目型 GitHub Pages）。构建后访问 `/review-http/`、`/review-platform/`。这是本地进程地址，不是已部署的持久在线服务。关闭进程后链接失效。也可以使用 `vite preview --config examples/review/http/vite.config.ts --host 127.0.0.1` 预览对应制品；以启动输出为准。
 
