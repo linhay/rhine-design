@@ -54,3 +54,19 @@
 ## 交付边界
 
 评审接口和通用壳已有本地可运行候选，两个示例无需复制壳、URL 或工具栏。尚不能关闭 #40：固定版本发布、稳定在线部署与真实消费项目迁移仍需各自授权和证据。专用静态源、合成数据、host Provider 所有权、显式动效适配和异步关闭边界见[工具契约](REVIEW_TOOL.md)。
+
+## Issue #66 增量：目录独立滚动（2026-10-28）
+
+本节绑定 Web 隔离检出 `worktrees/web-issue-66` 的实际源码与 `dist/review-platform` 制品；数据为平台示例合成数据。CSS zoom 仍只表示 CSS 等效缩放，不代表浏览器原生缩放。
+
+| 项目 | 结果与范围 |
+| --- | --- |
+| 外壳布局 | PASS：`review/review.css` 将头部与剩余视口分行，桌面目录与主区设置 `min-height: 0` 和独立 `overflow-y: auto`；目录搜索使用 sticky 定位；短目录不强制产生溢出。 |
+| 窄屏目录 | PASS：真实 Chromium 155 与 WebKit 26.4 在 520/400px、900px 高度展开目录；目录有 `max-height: min(70vh, 520px)` 和自身滚动，主区保持独立滚动，Escape 关闭并恢复“场景目录”按钮焦点。 |
+| 长目录与定位 | PASS：`scripts/check-review-scroll.js` 在真实平台评审展台运行时加入 36 条合成目录项，验证目录/主区 `scrollTop` 独立、搜索保持可见、当前场景滚动后可定位。 |
+| 主题、宽度与缩放回归 | PASS：现有 `scripts/check-review.js` 在 Chromium 155 完成 26 组（开发/静态入口、三主题、400/520/880/1280 宽度、100%/200% CSS zoom），失败项 0；主题、长文、深链、过滤无结果、场景切换、Portal/焦点与无业务出站均通过。 |
+| Node/npm 检查 | PASS：Node 24.21.0、npm 11.19.0；`npm run check` 完成 348 项测试、类型检查、主展台构建、两个评审构建与包清单检查。 |
+| Firefox | SKIPPED：本增量未重跑 Firefox；既有验证记录保留 Firefox 157 静态矩阵及本机 Firefox 156 启动失败，不把 Chromium/WebKit 结果外推为 Firefox。 |
+| iOS、消费迁移、发布 | N/A：本 issue 只改 Web 评审外壳；未修改 iOS、消费项目或 npm/Pages 发布状态。 |
+
+证据脚本使用的浏览器 UA、请求和失败数组均来自本轮真实运行；脚本返回 `failures: []`。首次 Chromium 脚本等待了错误的顶层 heading，修正为 iframe heading 后重跑通过；该首次失败保留在本地命令输出，不以重试覆盖原因边界。
