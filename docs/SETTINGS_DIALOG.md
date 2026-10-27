@@ -27,3 +27,13 @@
 提供height或footer时，主体使用有界内部滚动。双栏宽屏可独立滚动，窄屏上下排列在同一内容滚动区；主标题/关闭行在其滚动区顶端保持可达，footer持续固定在下方。根保持主题、焦点陷阱、Escape与onCloseAutoFocus，宿主仍拥有草稿和保存状态。短内容、末页、空组、未选择、预览加载/失败、保存中/成功/失败不改变同一视口的外框高度/位置；视口或缩放改变时可响应调整。
 
 `#compact-selection` 显式保存组合保留预览侧栏，底部保存不与说明或内容混排。保存期间宿主通过受控onOpenChange拒绝关闭，使用请求锁防重，并在卸载清理计时器。height/footer本轮限定Dialog；Drawer与既有navigation/sidePanel默认行为保持。
+
+## 设置页组合（#53，未发布）
+
+`Icon name="settings"` 使用20px滑杆几何，沿用1.5px线宽、currentColor、装饰性SVG；SideNav通过文字命名，独立IconButton必须提供label。省略号仍只表示更多操作。
+
+关于卡片用 `Inline` 可换行排列产品身份和更新 `Stack`：两列均设 `minWidth:0`，更新列 `alignItems:'flex-end'`、`textAlign:'end'`，长文 `overflowWrap:'anywhere'`。状态与按钮共享逻辑末端；检查中保留busy反馈，失败保留重试。更新请求和安装由宿主负责，不新增产品更新组件。
+
+仅含操作的 `AppShell` 显式设置 `collapseEmptyContentHeader`（默认false，保留既有头部），`contentHeader` 直接传Fragment，里面放 `AppShellToggle placement="content"` 与按实际权限/状态条件渲染的动作，不套空Inline/nav。共享样式在所有直接子元素均有hidden或没有元素时收起整个头部（含背景、内距和分隔线）；不能以React节点或DOM节点存在代替可见动作。这个有限规则不检测任意深层包装或display:none；自定义组合须条件省略整个包装，文字标题应放入元素。隐藏的恢复控件保持挂载；侧栏收起或窄窗时恢复控件出现，头部随之恢复，焦点沿用AppShell。
+
+真实展台 `#settings-composition` / `?fixture=settings-composition` 包含长文、更新四态、可选顶部动作、侧栏与重置。此能力未进入npm版本，不修改0.11.1冻结制品。
