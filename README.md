@@ -161,6 +161,7 @@ export function App() {
 | 启动动画与就绪衔接 | [Startup](components/STARTUP.md) | [启动动画](https://linhay.github.io/rhine-design/#startup) |
 | 轨道装饰、暂停与静态降级 | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | [轨道星空](https://linhay.github.io/rhine-design/#orbit) |
 | 中子星艺术、主题与 WebGL 生命周期 | [NeutronStarBackdrop（0.8.0）](docs/NEUTRON_STAR_BACKDROP.md) | [中子星展台](https://linhay.github.io/rhine-design/#neutron-star) |
+| 工作空间文件/笔记与关联往返 | [对象阅读组合](docs/OBJECT_READING.md) | [对象阅读](https://linhay.github.io/rhine-design/#object-reading) |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
 | 日期快捷项、范围草稿与确认 | [日期筛选组合](docs/DATE_RANGE_FILTER.md) | [日期筛选](https://linhay.github.io/rhine-design/#date-range-filter) |
 | 无框摘要、一行图例与凭证操作消融 | [紧凑组合](docs/COMPACT_ACCOUNT_PATTERNS.md) | [紧凑账号](https://linhay.github.io/rhine-design/#compact-account) |

@@ -9,6 +9,8 @@
 
 ## 未发布
 
+- #61：新增[工作空间对象阅读规范](docs/OBJECT_READING.md)与 `#object-reading` 合成展台；尊重产品居中 Dialog 偏好，同窗切换正文/来源/关联，导航交接焦点并恢复目录、筛选与阅读位置。复用现有公共组件，无新增公共 API，不改 Drawer 默认行为；此项未 npm 发布。
+
 - #46：战术主题danger按钮使用可读的深色文字/红底配对（修复原默认约2.77:1文字对比）；Button新增size="standard"（默认）/"large"，补动作语义→variant矩阵和真实并排展台；退出登录不自动等同不可逆删除，large为16/24、至少52px。未包含在0.11.0。
 
 - #41：紧凑选择组合，Button内容两端对齐、Tabs显式content/fill布局（新默认content）、Dialog实例height/footer及内部滚动，草稿预览/保存契约和展台；不进入冻结0.11.0制品。摘要Tabs若需保持旧隐式铺满，显式传layout="fill"。

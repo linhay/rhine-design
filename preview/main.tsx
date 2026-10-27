@@ -1,3 +1,4 @@
+import { ObjectReadingGallery, ObjectReadingFixture } from './ObjectReadingGallery';
 import { SettingsCompositionGallery, SettingsCompositionFixture } from './SettingsCompositionGallery';
 import { TrayUsageGallery, TrayUsageFixture } from './TrayUsageGallery';
 import { ChatGallery } from './ChatGallery';
@@ -57,6 +58,7 @@ function Gallery() {
     {section === 'theme-picker' && <ThemePickerGallery />}
     {section === 'tray-usage' && <TrayUsageGallery />}
     {section === 'settings-composition' && <SettingsCompositionGallery />}
+    {section === 'object-reading' && <ObjectReadingGallery />}
     {section === 'settings-dialog' && <SettingsDialogGallery />}
     {section === 'overlay-bounds' && <OverlayBoundsGallery />}
     {section === 'monitoring' && <MonitoringGallery />}
@@ -163,4 +165,4 @@ function Gallery() {
 
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode>{['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-composition' ? <SettingsCompositionFixture /> : new URLSearchParams(location.search).get('fixture') === 'tray-usage' ? <TrayUsageFixture /> : <Gallery />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('fixture') === 'object-reading' ? <ObjectReadingFixture /> : ['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-composition' ? <SettingsCompositionFixture /> : new URLSearchParams(location.search).get('fixture') === 'tray-usage' ? <TrayUsageFixture /> : <Gallery />}</StrictMode>);
