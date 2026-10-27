@@ -27,8 +27,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 ## 版本与源码范围
 
-- **发布基线：0.10.0**。2026-10-27 核对 npm registry 的 latest 为 0.10.0；该版本的主入口与当前源码均导出 67 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。
-- **当前源码包含未发布变更**：摘要页签 `Tabs description/status`、`Toast placement="floating"`、`SegmentedControl size="compact"` 及相邻 Disclosure 分隔线调整。包版本字段仍为 0.10.0，不能用它判断这些能力是否存在。
+- **本源码包版本：0.11.0**。主入口导出 67 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。发布是否可安装以 npm registry 为准。
+- **0.11.0 新增**：产品评审 `/review`、`/review/vite`，摘要页签 `Tabs description/status`、`Toast placement="floating"`、`SegmentedControl size="compact"` 及相邻 Disclosure 分隔线与生产动效修正。npm 0.10.0 不包含这些新增 API。
 - **展台随源码更新**，在线部署跟随 main；安装包的能力以精确版本和实际导出/实现为准。上述源码变更、历史版本与接入边界统一见[版本记录](CHANGELOG.md)。
 
 三套主题、轨道艺术、设置导航与主题选择等已有能力见下方组件和规范入口；应用组件的 Ant Design / MUI 对照见[对标清单](docs/ANTD_MUI_AUDIT.md)。
@@ -42,7 +42,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install --save-exact @linhey/rhine-design@0.10.0
+npm install --save-exact @linhey/rhine-design@0.11.0
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
@@ -205,7 +205,7 @@ skill 中提供以下参考入口：
 
 升级组件时请同步更新 skill；如果已做本地定制，先比较差异再合并。其他工具请将同一 skill 目录放入其支持的技能路径。
 
-## 产品设计稿评审工具（未发布候选）
+## 产品设计稿评审工具（自 0.11.0）
 
 新增独立 `/review` 与 `/review/vite` 入口，统一产品场景目录、主题/尺寸/状态控制、URL 分享、隔离画布和静态构建。产品保留页面、HTTP/平台模拟与业务知识，无需复制通用预览壳。**npm 0.10.0 尚不包含此工具**。
 

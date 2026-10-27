@@ -1,10 +1,10 @@
 # 版本记录
 
-## 未发布
+## 0.11.0（2026-10-27）
 
-以下是 0.10.0 之后的源码变更；`package.json` 仍声明 0.10.0，不代表 npm 同版本包含这些能力。2026-10-27 核对 registry 的 latest 为 0.10.0，并读取该版本 tarball 确认下列新增 API 不在其中。接入这些变更需固定包含它们的源码提交或已验证快照，不能只凭展台或版本字段判断。
+本版本新增产品评审工具及以下已合并能力；npm 0.10.0 不包含这些新增 API。组件主入口仍为 67 项，默认行为保持兼容；消费方固定 0.11.0 并提交 lockfile。实际发布可用性以 registry 为准。
 
-- #40：新增未发布 `/review`、`/review/vite` 产品评审工具候选，提供场景协议、目录/控件、URL 状态、合成 iframe、生命周期、独立静态构建与正式包排除检查；附 HTTP 与平台 client 两类例子，静态资源支持项目型站点的嵌套部署路径；补充连接/清理超时恢复、持久错误反馈、折叠高级设置与实际画布尺寸。已在两类真实 App 的隔离副本试用，没有发布或迁移原消费项目，见[契约](docs/REVIEW_TOOL.md)。
+- #40：新增 `/review`、`/review/vite` 产品评审工具，提供场景协议、目录/控件、URL 状态、合成 iframe、生命周期、独立静态构建与正式包排除检查；附 HTTP 与平台 client 两类例子，静态资源支持项目型站点的嵌套部署路径；补充连接/清理超时恢复、持久错误反馈、折叠高级设置与实际画布尺寸。已在两类真实 App 的隔离副本试用，消费迁移按产品分别验证，见[契约](docs/REVIEW_TOOL.md)。
 
 - `Tabs` / `TabItem` 新增 `description`、`status`，提供带身份摘要与只读状态的页签；契约见[Summary Tabs](docs/SUMMARY_TABS.md)，展台为 `#summary-tabs`。
 - `Toast` 新增 `placement="floating"`，通过主题根 Portal 呈现浮动通知；默认 inline 保持兼容，见[通知契约](components/COMMON_COMPONENTS.md)。
