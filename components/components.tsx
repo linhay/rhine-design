@@ -55,12 +55,17 @@ export function TextField({ label, labelVisibility = 'visible', hint, error, id:
 }
 export interface Choice { value: string; label: string; disabled?: boolean }
 export interface TabItem extends Choice { content: ReactNode; description?: string; status?: ReactNode }
-export interface TabsProps { label: string; items: TabItem[]; value: string; onValueChange: (value: string) => void; layout?: 'content' | 'fill' }
-export function Tabs({ label, items, value, onValueChange, layout = 'content' }: TabsProps) {
+export interface TabsProps {
+  label: string; items: TabItem[]; value: string; onValueChange: (value: string) => void;
+  layout?: 'content' | 'fill';
+  /** Stretch the tab bar without changing content-sized options. Defaults to false; fill already stretches. */
+  fullWidth?: boolean;
+}
+export function Tabs({ label, items, value, onValueChange, layout = 'content', fullWidth = false }: TabsProps) {
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   return <div className="rhine-tabs">
-    <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', `rhine-tabs__list--${layout}`, items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
+    <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', `rhine-tabs__list--${layout}`, fullWidth && 'rhine-tabs__list--full-width', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       const available = items.map((item, index) => ({ ...item, index })).filter(item => !item.disabled);
       if (!available.length) return;
