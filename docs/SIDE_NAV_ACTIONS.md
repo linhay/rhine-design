@@ -1,4 +1,4 @@
-# 导航行操作（#45，未发布）
+# 导航行操作（#45，0.11.2）
 
 `NavItem.actions?: readonly NavAction[]` 为可选命令列表，复用 Menu 和常显 IconButton。每项提供 id、label、disabled、danger 和 `onSelect(trigger: HTMLButtonElement)`。缺省或空数组不渲染按钮、包装或空白；调用方过滤不可见动作，库不判断身份或权限。
 

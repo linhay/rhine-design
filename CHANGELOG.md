@@ -1,28 +1,34 @@
 # 版本记录
 
-## 未发布 · 设置 Dialog（#18）
-
-- settings宽度不再被后置公共CSS覆盖；复用height/footer，固定标题/关闭与右对齐底部动作，正文和长导航独立有界滚动。
-- Dialog.description类型可省略，省略时没有说明占位或悬空aria-describedby；默认短Dialog、Drawer及sidePanel策略保留。
-- 真实展台补齐30行、长导航/按钮、异步栏目、错误/冲突、嵌套搜索多选与草稿行为；新增生产与固定tarball消费者回归。未发布，不更改0.11.1制品。
-
-
 ## 未发布
 
-- #18：极窄 Dialog footer 间距采用 2px，覆盖 400px 带边框 iframe 的实际 398px / 200% CSS zoom；三项短动作不再因边框差值换行挤压正文，保留 44px 点击目标。布局矩阵增加此真实消费边界。
+- #61：工作空间对象阅读规范与合成展台。
+- #64：ChatCard.detailLabel、Disclosure.ariaLabel 与只读正文排版。
+- #66：评审壳目录独立有界滚动。
 
-- #61：新增[工作空间对象阅读规范](docs/OBJECT_READING.md)与 `#object-reading` 合成展台；尊重产品居中 Dialog 偏好，同窗切换正文/来源/关联，导航交接焦点并恢复目录、筛选与阅读位置。复用现有公共组件，无新增公共 API，不改 Drawer 默认行为；此项未 npm 发布。
+以上在 main 保留，未进入 0.11.2 制品。#69 标签激活仍独立推进，不在 0.11.2 中。
 
-- #46：战术主题danger按钮使用可读的深色文字/红底配对（修复原默认约2.77:1文字对比）；Button新增size="standard"（默认）/"large"，补动作语义→variant矩阵和真实并排展台；退出登录不自动等同不可逆删除，large为16/24、至少52px。未包含在0.11.0。
+## 0.11.2（2026-10-28）
 
-- #41：紧凑选择组合，Button内容两端对齐、Tabs显式content/fill布局（新默认content）、Dialog实例height/footer及内部滚动，草稿预览/保存契约和展台；不进入冻结0.11.0制品。摘要Tabs若需保持旧隐式铺满，显式传layout="fill"。
+#18 设置 Dialog 修复基于精确候选 `02cc2c2`，npm registry 已核对，制品与冻结候选逐字节一致。
 
-- #42：TextField 新增 `labelVisibility` 与公开 `TextFieldProps`，默认可见；非空标签、正文级单输入搜索组合及异步/IME展台见[契约](docs/SINGLE_SEARCH.md)。此项不包含在 0.11.0 发布候选中。
+- settings宽度不再被后置公共CSS覆盖；复用 `height` / `footer`，固定标题/关闭与右对齐底部动作，正文和长导航独立有界滚动。
+- 极窄容器的底部操作间距压缩至 2px，覆盖 400px 带边框 iframe 实际 398px / 200% CSS zoom；保留 44px 点击目标，避免三项短动作仅因边框差值换行挤压正文。
+- `Dialog.description` 可省略，省略时没有说明占位或悬空 `aria-describedby`；普通短 Dialog、Drawer 及 sidePanel 策略保留。
+- 自动高度 footer 按可用视口及祖先 CSS zoom 限制，纯文本有界正文提供命名键盘滚动入口；长操作末项保持可达。
+- 真实展台覆盖30行、长导航/按钮、异步栏目、错误/冲突、嵌套搜索多选与草稿行为；补充生产构建次序、固定 tarball 消费和短屏回归。
+- npm 制品：`@linhey/rhine-design@0.11.2`；消费方仍需固定版本并提交 lockfile。正式发布与 registry 回读见本次发布记录。
 
-- #45：SideNav 支持可选行尾 actions，空动作不占位，复用 Menu/IconButton，提供受控 Dialog 归焦组合与真实展台；不包含在0.11.0中。
-- #43：新增 `ChatThread` / `ChatCard` 聊天组合候选，提供多成员分组、卡片状态与详情、只读动作约束、历史锚点和显式恢复跟随；附三组合成展台及[规范与参考取舍](docs/AGENT_CHAT.md)。不包含模型调用、消费迁移或依赖发布。Button 尊重 `aria-disabled` 并阻止激活，支持保留不可操作控件焦点。
+- #46：战术主题danger按钮使用可读的深色文字/红底配对（修复原默认约2.77:1文字对比）；Button新增size="standard"（默认）/"large"，补动作语义→variant矩阵和真实并排展台；退出登录不自动等同不可逆删除，large为16/24、至少52px。自 0.11.2 提供。
 
-包版本字段为 0.11.1；以上源码候选不在 0.11.0/0.11.1 发布制品内，接入需固定包含变更的修订。
+- #41：紧凑选择组合，Button内容两端对齐、Tabs显式content/fill布局（新默认content）、Dialog实例height/footer及内部滚动，草稿预览/保存契约和展台；自 0.11.2 提供。摘要Tabs若需保持旧隐式铺满，显式传layout="fill"。
+
+- #42：TextField 新增 `labelVisibility` 与公开 `TextFieldProps`，默认可见；非空标签、正文级单输入搜索组合及异步/IME展台见[契约](docs/SINGLE_SEARCH.md)。自 0.11.2 提供。
+
+- #45：SideNav 支持可选行尾 actions，空动作不占位，复用 Menu/IconButton，提供受控 Dialog 归焦组合与真实展台；自 0.11.2 提供。
+- #43：新增 `ChatThread` / `ChatCard` 聊天组合，提供多成员分组、卡片状态与详情、只读动作约束、历史锚点和显式恢复跟随；附三组合成展台及[规范与参考取舍](docs/AGENT_CHAT.md)。不包含模型调用或消费产品迁移。Button 尊重 `aria-disabled` 并阻止激活，支持保留不可操作控件焦点。
+
+正式制品来源、摘要与验收边界见 [0.11.2 发布记录](docs/releases/0.11.2.md)。
 
 ## 0.11.1（2026-10-27）
 
