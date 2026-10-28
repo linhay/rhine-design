@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { afterEach, expect, it, vi } from 'vitest';
 import { SettingsDialogGallery } from '../preview/SettingsDialogGallery';
 import { ThemeProvider } from '../components/theme';
-import { Button, Dialog, Drawer, Tooltip } from '../components';
+import { Button, ConfirmDialog, Dialog, Drawer, Tooltip } from '../components';
 
 it('keeps host state and URL while changing settings sections and explicitly saving', async () => {
   render(<ThemeProvider><SettingsDialogGallery /></ThemeProvider>);
@@ -91,7 +91,7 @@ it('keeps optional descriptions associated and ordinary Dialog/Drawer natural', 
 });
 
 
-afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); document.documentElement.style.zoom = ''; });
+afterEach(() => { vi.restoreAllMocks(); vi.useRealTimers(); vi.unstubAllGlobals(); document.documentElement.style.zoom = ''; });
 it.each(['error', 'conflict'])('retains the host draft after %s and reconciles only explicit success', outcome => {
   vi.useFakeTimers();
   render(<ThemeProvider><SettingsDialogGallery /></ThemeProvider>);
@@ -156,4 +156,21 @@ it.each([undefined, 'auto'] as const)('caps an auto-height footer (%s) against t
   expect(dialog.style.getPropertyValue('--rhine-dialog-footer-limit')).toBe('');
   expect(remove).toHaveBeenCalledWith('resize', expect.any(Function));
   unmount();
+});
+
+
+it('closes a newly focused nested confirmation before its drawer on immediate Escape', async () => {
+  const confirm = vi.fn();
+  render(<ThemeProvider><Drawer title="Tools" trigger={<Button>Open tools</Button>}><ConfirmDialog title="Clear feedback" description="Confirm records" trigger={<Button>Clear</Button>} onConfirm={confirm} /></Drawer></ThemeProvider>);
+  fireEvent.click(screen.getByRole('button', { name: 'Open tools' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+  const cancel = screen.getByRole('button', { name: '取消' });
+  cancel.focus(); fireEvent.keyDown(cancel, { key: 'Escape' });
+  await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument());
+  expect(screen.getByRole('dialog', { name: 'Tools' })).toBeVisible();
+  expect(confirm).not.toHaveBeenCalled();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Clear' })).toHaveFocus());
+  fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Open tools' })).toHaveFocus());
 });

@@ -70,3 +70,24 @@
 | iOS、消费迁移、发布 | N/A：本 issue 只改 Web 评审外壳；未修改 iOS、消费项目或 npm/Pages 发布状态。 |
 
 证据脚本使用的浏览器 UA、请求和失败数组均来自本轮真实运行；脚本返回 `failures: []`。首次 Chromium 脚本等待了错误的顶层 heading，修正为 iframe heading 后重跑通过；该首次失败保留在本地命令输出，不以重试覆盖原因边界。
+
+## Issue #74 增量：画布优先辅助侧栏（2026-10-28）
+
+本节随 #74 实现提交维护；对照基线为 `c1fd551f67284884fd5dbbeabd4053bd9aeda1d9`。运行环境为 Node 24.21.0、npm 11.19.0、React 19.3.1、Vite 8.3.4，全部为合成场景。精确候选提交、tarball SHA-256 和隔离消费者结果由关联 issue 的交付记录绑定，不把版本字段 0.11.3 当作 npm 已含修复。
+
+| 项目 | 结果与范围 |
+| --- | --- |
+| 主区高度 | PASS：同一平台示例、1033×954、莱茵主题、fit/100%，iframe 顶部从基线 381px 变为 207px，释放 174px；尺寸与所有辅助信息从主工具栏和 iframe 之间移除。 |
+| 画布 CSS zoom 矩阵 | PASS：Chromium 155、WebKit 26.4 各 24 组，三主题 × 400/520/880/1280 外窗 × 100/200% **iframe 内容 CSS zoom**。侧栏边界、Tab 限制、关闭卸载、Escape 归焦、iframe/输入身份、草稿与主区滚动保持。 |
+| 外壳 CSS zoom 补验 | PASS：两引擎各 6 组，三主题 × 400/520 外窗，给外层 `documentElement` 设置 CSS zoom=2、画布 URL zoom=1。侧栏与确认框在视口内，长且无空格的合成反馈完整换行，无横向溢出，逐层关闭和归焦正常。这两类 CSS zoom 都不代表浏览器原生页面缩放。 |
+| 就绪后稳定性 | PASS：400px 下真实合成保存新增反馈，前后 header=125px、主区 scrollTop=80px、iframe top=301px；就绪后不主动抢输入焦点。首次连接成功会首次显示场景主工具栏，不承诺初始化前后零布局变化。 |
+| 反馈与恢复 | PASS：两引擎验证连接中可访问恢复、初始加载故障/10 秒超时、清理挂起、渲染失败重试、显式重建 iframe、旧错误跨就绪/主题/重载留存、来源、长/空反馈、取消/确认清除。请求拦截仅模拟初始资源失败，其余来自真实合成场景生命周期。 |
+| 减少动态与滚动 | PASS：两引擎验证系统与手动减少动态下实际 Canvas 停帧、Drawer 不播放动画；长目录与主区独立滚动及窄屏目录 Escape。短屏滚动断言改用 600px 高度，避免将释放空间后不再溢出的主区误判为滚动失效。 |
+| 既有评审回归 | PASS：Chromium 开发/静态共 26 组，HTTP 表单/Portal、主题、草稿、深链、状态、平台暂停/恢复、网络边界；无非预期 console/page error 或业务出站。 |
+| 全库检查 | PASS：358 项测试、类型检查、主展台 CSS/SVG 检查、两个评审示例构建与包清单检查。 |
+| Firefox、原生浏览器缩放、屏幕阅读器语音实测 | SKIPPED：本增量未测；ARIA/live region 与真实键盘证据不外推语音播报效果。 |
+| npm 发布、产品升级、原生平台 | N/A：本任务交付固定源码与候选 tarball，不发布新 npm 版本、不修改产品或 iOS。 |
+
+复验入口：既有 `check-review.js`、`check-review-recovery.js`、`check-review-scroll.js`，以及 `check-review-tools.js`、`check-review-shell-zoom.js`。后两者使用当前页面的 loopback origin，可对固定 tarball 的消费者构建复验。脚本、日志和截图绑定实际候选；原始日志仅保存在本地忽略证据目录。
+
+失败保留：第一轮确认框单测在异步关闭前断言；全库曾因测试 locator 使用 Playwright 的 `exact` 参数而类型失败；新嵌套测试暴露旧 fake-timer spy 恢复顺序导致超时，调整为先恢复 spy 再恢复真实计时器。真实浏览器发现立即 Escape 时外层 Dialog 的关闭委派没有登记 ConfirmDialog，已登记并保留忙碌保护；清除后原生 disabled 入口无法接回焦点，改用 Button 已支持的 aria-disabled。早期布局采样处于 3px 入场动画中，改为等待真实动画完成。新增错误重试使旧单条来源 locator 变为多条，改为按来源过滤；隔离端口导致旧请求白名单误报，改为精确源列表。外壳缩放首次复验在同页 hash 导航时保留了此前已打开的 Drawer，改用独立 query 强制新文档；原超时保留，未据此修改产品行为。

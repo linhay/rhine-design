@@ -84,6 +84,14 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
 export function ConfirmDialog({ trigger, title, description, confirmLabel = '确认操作', danger = false, onConfirm }: { trigger: ReactElement; title: string; description: string; confirmLabel?: string; danger?: boolean; onConfirm: () => Promise<void> | void }) {
   const { ref, container } = useScope(); const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState(false);
   const pending = useRef(false), mounted = useRef(true);
+  const [content, setContent] = useState<HTMLDivElement | null>(null);
+  useLayoutEffect(() => {
+    if (!content) return;
+    // A newly focused alert can precede Radix's top-layer registration, just
+    // like a nested Dialog. Let the outer dialog delegate Escape to it.
+    dialogDismiss.set(content, () => { if (!pending.current) setOpen(false); });
+    return () => { dialogDismiss.delete(content); };
+  }, [content]);
   useLayoutEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const run = async () => {
     if (pending.current) return;
@@ -92,7 +100,7 @@ export function ConfirmDialog({ trigger, title, description, confirmLabel = '确
     catch { if (mounted.current) setError(true); }
     finally { pending.current = false; if (mounted.current) setBusy(false); }
   };
-  return <span className="rhine-overlay-anchor" ref={ref}><AlertBase.Root open={open} onOpenChange={next => { if (!pending.current) { setOpen(next); setError(false); } }}><AlertBase.Trigger asChild>{trigger}</AlertBase.Trigger><AlertBase.Portal container={container}><AlertBase.Overlay className="rhine-overlay" /><AlertBase.Content className="rhine-dialog" aria-busy={busy} onEscapeKeyDown={event => { if (busy) event.preventDefault(); }}>
+  return <span className="rhine-overlay-anchor" ref={ref}><AlertBase.Root open={open} onOpenChange={next => { if (!pending.current) { setOpen(next); setError(false); } }}><AlertBase.Trigger asChild>{trigger}</AlertBase.Trigger><AlertBase.Portal container={container}><AlertBase.Overlay className="rhine-overlay" /><AlertBase.Content ref={setContent} className="rhine-dialog" aria-busy={busy} onEscapeKeyDown={event => { if (busy) event.preventDefault(); }}>
     <AlertBase.Title className="rhine-text rhine-text--section">{title}</AlertBase.Title><AlertBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</AlertBase.Description>{error && <Notice tone="error" title="操作未完成">请重试，或取消后检查。</Notice>}
     <div className="rhine-dialog__actions"><AlertBase.Cancel asChild><Button variant="secondary" disabled={busy}>取消</Button></AlertBase.Cancel><Button variant={danger ? 'danger' : 'primary'} busy={busy} onClick={run}>{confirmLabel}</Button></div>
   </AlertBase.Content></AlertBase.Portal></AlertBase.Root></span>;

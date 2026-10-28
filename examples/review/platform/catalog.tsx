@@ -40,6 +40,13 @@ export default defineReview({
     id: 'cleanup-error', title: '清理错误留存', group: '故障恢复',
     setup: () => ({ render: () => <p>离开此场景后，合成清理错误应保留到显式确认。</p>, dispose() { throw new Error('合成清理失败'); } }),
   }, {
+    id: 'long-feedback', title: '长反馈与辅助工具', group: '故障恢复',
+    description: '头部评审工具承载完整反馈与尺寸。关闭侧栏后继续评审画布；记录只在确认清除后移除。',
+    setup(context) {
+      context.report(`合成长反馈：${'请核对场景条件与资源状态；详细记录应在侧栏换行并完整可读。'.repeat(30)} trace=${'synthetic'.repeat(40)}`);
+      return { render: () => <p>从头部打开评审工具，检查长反馈、确认清除和逐层 Escape 归焦。</p>, dispose() {} };
+    },
+  }, {
     id: 'failure', title: '渲染错误边界', group: '生命周期',
     setup: () => ({ render() { throw new Error('合成渲染失败'); }, dispose() {} }),
   }],
