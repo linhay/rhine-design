@@ -229,3 +229,7 @@ skill 中提供以下参考入口：
 ## 许可证
 
 [Apache License 2.0](LICENSE)。版权声明见 [NOTICE](NOTICE)。第三方依赖遵循各自的许可证。
+
+### 多栏目设置工作区（源码候选）
+
+短任务 Dialog 默认自然高度；多栏目编辑推荐显式 `height`、`footer`、`navigation`，保持空态、长表单、加载/错误和栏目切换时的外框稳定。footer直接传按钮或Fragment，description仅在帮助决策时提供。窄导航轨道与短屏修复尚未发布，接入前固定候选并验证实际操作空间，见[设置契约](docs/SETTINGS_DIALOG.md)和展台 `#settings-dialog`。

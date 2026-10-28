@@ -4,7 +4,15 @@ async page => {
   const base=page.url().split('/').slice(0,3).join('/'), results=[],errors=[];
   page.on('pageerror',error=>errors.push(String(error)));
   const assert=(ok,message)=>{if(!ok)throw new Error(message)};
-  const trapped=async dialog=>assert(await dialog.evaluate(e=>e.contains(document.activeElement)),'focus escaped settings');
+  const trapped=async dialog=>assert(await dialog.evaluate(e=>{
+    if(e.contains(document.activeElement)) return true;
+    // Tab may reopen an owned combobox and enter its portaled completion button.
+    // Accept only the popup referenced by an expanded input in this dialog.
+    return [...e.querySelectorAll('[role="combobox"][aria-expanded="true"]')].some(input=>{
+      const list=document.getElementById(input.getAttribute('aria-controls'));
+      return list?.closest('.rhine-combobox__list')?.contains(document.activeElement);
+    });
+  }),'focus escaped settings and its owned popup');
   for(const theme of ['rhine','arknights','neo-brutalism']) for(const width of [400,520,880,1280]) for(const zoom of [1,2]) {
     const c={theme,width,zoom};
     try {

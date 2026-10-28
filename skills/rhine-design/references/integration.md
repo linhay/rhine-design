@@ -42,3 +42,7 @@ Await actual copy/confirm outcomes. Errors remain actionable; busy state preserv
 Check the installed version against this skill's metadata, then consult `CHANGELOG.md`. Refresh the copied skill together with the package; keep local customizations when comparing versions. If types and docs disagree, use source for the immediate API and repair the stale reference when in scope.
 
 For reproducible feedback record package version, component/API, relevant source or reference path, expected and actual behavior, and the smallest reproduction. Public reports must exclude private host payloads and credentials. For missing components, styles or states, follow [Report missing components and styles](../SKILL.md#report-missing-components-and-styles): check for duplicates and directly file or supplement an issue in `linhay/rhine-design`, without asking for confirmation each time.
+
+## 设置工作区选型
+
+短任务使用自然高度 Dialog。多栏目设置/编辑优先组合 `height`、`footer`、`navigation`，由宿主指定期望高度并持有跨栏目草稿。footer 直接传按钮或 Fragment；description 仅提供决策所需说明。空态、增删行、加载和错误应保持外框稳定；标题/关闭和操作区固定、正文与长导航分别滚动，不添加 wheel 转发。验收短屏正文的实际操作空间、44px目标和末项可达，不只看外框或正文非零。窄导航轨道修复为未发布源码能力，固定候选消费后才删除适配，见源码/安装包中的 `docs/SETTINGS_DIALOG.md`。
