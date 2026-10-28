@@ -123,14 +123,17 @@ export function NumberField({ label, value, onValueChange, min, max, step = 1, p
 }
 
 export interface RemoteMultiSelectProps {
+  hasMore?: boolean; onLoadMore?: () => void; loadingMore?: boolean; loadMoreError?: string; onRetry?: () => void;
   label: string; query: string; onQueryChange: (query: string) => void;
   value: Choice[]; onValueChange: (value: Choice[]) => void; options: Choice[];
   loading?: boolean; error?: string; disabled?: boolean;
   readOnly?: boolean; clearable?: boolean; closeOnSelect?: boolean; clearQueryOnSelect?: boolean;
   placeholder?: string; hint?: string; name?: string;
   maxVisibleTags?: number;
+  activeValue?: string;
+  onActivateValue?: (option: Choice) => void;
 }
-export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, maxVisibleTags, ...props }: RemoteMultiSelectProps) {
+export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, maxVisibleTags, activeValue, onActivateValue, ...props }: RemoteMultiSelectProps) {
   const inputId = useId();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -154,7 +157,10 @@ export function RemoteMultiSelect({ value, onValueChange, options, readOnly = fa
       if (clearQueryOnSelect) props.onQueryChange('');
     }} />
     {name && value.map(item => <input key={item.value} type="hidden" name={name} value={item.value} disabled={props.disabled} />)}
-    <ul id={`${inputId}-tags`} className="rhine-multi-select__tags" aria-label={`${props.label}已选项`} data-expanded={collapsible && expanded || undefined}>{shown.map(item => <li key={item.value}><span>{item.label}</span><Button variant="quiet" disabled={props.disabled || readOnly || item.disabled} aria-label={`移除${item.label}`} onClick={() => remove(item.value)}>×</Button></li>)}</ul>
+    <ul id={`${inputId}-tags`} className="rhine-multi-select__tags" aria-label={`${props.label}已选项`} data-expanded={collapsible && expanded || undefined}>{shown.map(item => <li key={item.value} data-active={Boolean(onActivateValue) && activeValue === item.value || undefined} data-activatable={Boolean(onActivateValue) || undefined}>
+      {onActivateValue ? <Button type="button" variant="quiet" className="rhine-multi-select__activate" disabled={props.disabled || item.disabled} aria-pressed={activeValue === item.value} onClick={() => { setOpen(false); onActivateValue(item); }}>{item.label}</Button> : <span>{item.label}</span>}
+      <Button variant="quiet" disabled={props.disabled || readOnly || item.disabled} aria-label={`移除${item.label}`} onClick={() => remove(item.value)}>×</Button>
+    </li>)}</ul>
     <div className="rhine-multi-select__actions">
       {limit !== undefined && <span className="rhine-text rhine-text--caption rhine-text--muted">已选 {value.length} 项</span>}
       {collapsible && <Button variant="quiet" aria-expanded={expanded} aria-controls={`${inputId}-tags`} onClick={() => setExpanded(current => !current)}>{expanded ? '收起已选项' : '展开已选项'}</Button>}
