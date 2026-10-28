@@ -7,6 +7,8 @@ async page => {
   const cases = [];
   for (const theme of ['rhine','arknights','neo-brutalism']) {
     for (const width of [400,520,880,1280]) for (const zoom of [1,2]) for (const height of [900,648]) cases.push({theme,width,zoom,height});
+    // A 400px bordered iframe has 398px inner width; include that real consumer boundary.
+    cases.push({theme,width:398,zoom:2,height:648});
     for (const [width,height] of [[390,680],[889,480],[1440,900]]) cases.push({theme,width,zoom:1,height});
   }
   const rect = e => {const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
