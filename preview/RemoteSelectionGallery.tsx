@@ -9,7 +9,7 @@ export function RemoteSelectionGallery() {
   const [mounted, setMounted] = useState(true);
   return <Stack gap={3}>
     <Text as="h2" variant="heading">已选对象与远程分页</Text>
-    <Text tone="muted">未发布主线示例；全部为合成数据，宿主负责查询、游标、取消和独立草稿。</Text>
+    <Text tone="muted">0.11.3 远程选择示例；全部为合成数据，宿主负责查询、游标、取消和独立草稿。</Text>
     <Select label="模拟响应" value={scenario} onChange={event => setScenario(event.target.value)}>
       <option value="normal">正常分页</option><option value="first-error">首次失败</option><option value="page-error">下一页失败一次</option><option value="slow">慢响应与取消</option><option value="late">忽略取消的迟到响应</option>
     </Select>
