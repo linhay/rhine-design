@@ -14,20 +14,21 @@ html, body, #root { margin: 0; min-height: 100%; }
 .rhine-review-main { min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .rhine-review-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 20px; }
 .rhine-review-controls > .rhine-field { flex: 1 1 140px; min-width: 0; }
-.rhine-review-feedback, .rhine-review-notes { padding: 12px 20px; font-size: 13px; line-height: 20px; font-weight: 400; overflow-wrap: anywhere; }
-.rhine-review-feedback[role=alert] { border-left: 3px solid var(--rhine-error); }
-.rhine-review-feedback p { margin: 0 0 8px; }
-.rhine-review-feedback [role=alert] { border-left: 3px solid var(--rhine-error); padding-left: 10px; }
-.rhine-review-options { margin: 0 20px; padding: 0 0 8px; font-size: 13px; line-height: 20px; font-weight: 400; }
-.rhine-review-options summary, .rhine-review-log summary { cursor: pointer; padding: 10px 0; }
-.rhine-review-options .rhine-review-controls { padding: 12px 0; }
-.rhine-review-options p { color: var(--rhine-muted); margin: 0; }
-.rhine-review-recovery { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
-.rhine-review-log ol { max-height: 240px; overflow: auto; padding-left: 24px; }
+.rhine-review-notes { padding: 12px 20px; font-size: 13px; line-height: 20px; font-weight: 400; overflow-wrap: anywhere; }
+.rhine-review-tools-trigger[data-error=true] { color: var(--rhine-error); }
+.rhine-review-tools-indicator { white-space: nowrap; }
+.rhine-review-tools { min-width: 0; font-size: 13px; line-height: 20px; font-weight: 400; overflow-wrap: anywhere; }
+.rhine-review-tools > p { margin: 0 0 16px; }
+.rhine-review-options { display: grid; gap: 16px; }
+.rhine-review-options .rhine-field { min-width: 0; }
+.rhine-review-recovery { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.rhine-review-recovery p { flex-basis: 100%; margin: 0; color: var(--rhine-muted); }
+.rhine-review-log ol { padding-left: 24px; }
 .rhine-review-log li { padding: 8px 0; }
 .rhine-review-log li strong, .rhine-review-log li span { display: block; }
 .rhine-review-log li[data-kind=error] { color: var(--rhine-error); }
-.rhine-review-size { margin: 0; padding: 8px 20px; color: var(--rhine-muted); font-size: 12px; line-height: 18px; font-weight: 400; }
+.rhine-review-size { margin: 0; color: var(--rhine-muted); font-size: 12px; line-height: 18px; font-weight: 400; }
+.rhine-review-announcements { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .rhine-review-viewport { overflow: auto; padding: 16px; background: var(--rhine-surface); }
 .rhine-review-viewport iframe { display: block; border: 1px solid var(--rhine-line); min-height: 650px; height: 72vh; margin: 0 auto; background: var(--rhine-bg); box-sizing: border-box; }
 .rhine-review-notes summary { cursor: pointer; min-height: 32px; }

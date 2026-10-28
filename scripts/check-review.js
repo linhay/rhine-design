@@ -13,8 +13,8 @@ async page => {
   page.on('pageerror', error => errors.push(String(error)));
   page.on('request', request => requests.push(request.url()));
   const http = 'http://127.0.0.1:18342/review-http/';
-  const advanced = async () => { const details = page.locator('.rhine-review-options'); if (!await details.evaluate(element => element.open)) await details.locator('summary').click(); };
-  const motion = async value => { await advanced(); await page.getByRole('combobox', { name: '动态偏好' }).selectOption(value); };
+  const advanced = async () => { if (!await page.getByRole('dialog', { name: '评审工具', exact: true }).count()) await page.getByRole('button', { name: /^评审工具/ }).click(); };
+  const motion = async value => { await advanced(); await page.getByRole('combobox', { name: '动态偏好' }).selectOption(value); await page.getByRole('button', { name: '关闭抽屉' }).click(); };
   let cases = 0;
   for (const base of [http, 'http://127.0.0.1:18340/review-http/']) {
     await page.goto(base);
@@ -143,7 +143,7 @@ async page => {
   await page.getByRole('link', { name: '桌面工作区', exact: true }).click();
   await frame.getByRole('heading', { name: '桌面工作区' }).waitFor();
   await page.screenshot({ path: 'output/playwright/review-platform.png', fullPage: true });
-  const outbounds = requests.filter(url => !url.startsWith('http://127.0.0.1:1834') && !url.startsWith('data:'));
+  const outbounds = requests.filter(url => !['http://127.0.0.1:18342/', 'http://127.0.0.1:18340/'].some(origin => url.startsWith(origin)) && !url.startsWith('data:'));
   const businessRequests = requests.filter(url => /\/api\//.test(url));
   check(!outbounds.length && !businessRequests.length, 'no real business/network egress');
   check(!errors.length, `page errors: ${errors}`);

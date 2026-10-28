@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Button, Logo, Select, TextField } from '../components';
+import { Button, ConfirmDialog, Disclosure, Drawer, Logo, Select, TextField } from '../components';
 import { ThemeProvider, themes } from '../components/theme';
 import { defaultWidths, parseReviewState, serializeReviewState } from './state';
 import { isReviewMessage, sendReview } from './protocol';
@@ -108,15 +108,47 @@ export function ReviewShell() {
   const trouble = phase === 'failed' || phase === 'timed-out';
   const lastError = [...log.entries].reverse().find(entry => entry.kind === 'error');
   const phaseLabel = { connecting: '正在连接场景画布…', loading: '正在初始化或清理合成场景…', ready: '合成场景已就绪 · 无业务后端', failed: '场景未能完成，请查看反馈或重新载入画布。', 'timed-out': '画布响应较慢，尚未确认完成。' }[phase];
-  return <ThemeProvider theme={state?.theme ?? 'rhine'} className="rhine-review-shell">
+  const errorAnnouncement = log.errors > 0 ? `${log.errors} 条错误待确认${lastError ? ` · ${lastError.message}` : ''}` : trouble ? phaseLabel : '';
+  return <ThemeProvider theme={state?.theme ?? 'rhine'} className="rhine-review-shell" data-rhine-motion={state?.motion === 'reduced' ? 'reduced' : undefined}>
     <header className="rhine-review-header">
       <div className="rhine-review-brand"><Logo size={28} /><div><strong>{catalog?.title ?? 'Rhine Review'}</strong><small>产品设计评审 · 合成数据</small></div></div>
       <Button id="review-menu" className="rhine-review-menu" variant="secondary" aria-expanded={menu} aria-controls="review-directory" onClick={() => setMenu(!menu)}>场景目录</Button>
+      <Drawer title="评审工具" trigger={<Button variant="secondary" className="rhine-review-tools-trigger" data-phase={phase} data-error={log.errors > 0 || trouble}>
+        评审工具<span className="rhine-review-tools-indicator">{log.errors > 0 ? ` · ${log.errors} 条错误` : phase === 'ready' ? (log.entries.length ? ` · ${log.entries.length} 条反馈` : '') : ` · ${{ connecting: '连接中', loading: '初始化中', failed: '失败', 'timed-out': '超时' }[phase]}`}</span>
+      </Button>}>
+        <div className="rhine-review-tools">
+          <p role="status">{phaseLabel}</p>
+          <p className="rhine-review-announcements" role="alert">{errorAnnouncement}</p>
+          {state && <Disclosure title="更多设置" defaultOpen>
+            <div className="rhine-review-options">
+              <Select label="CSS 缩放" value={state.zoom} onChange={event => update({ zoom: Number(event.target.value) as 1 | 2 })}><option value="1">100%</option><option value="2">200%（CSS zoom）</option></Select>
+              <Select label="动态偏好" value={state.motion} onChange={event => update({ motion: event.target.value as ReviewSelection['motion'] })}><option value="system">跟随系统</option>{scene?.motionControls?.includes('full') && <option value="full">完整动态</option>}<option value="reduced">减少动态</option>{scene?.motionControls?.includes('paused') && <option value="paused">暂停</option>}</Select>
+              <p className="rhine-review-size" aria-label="画布尺寸">画布 {size.width} × {size.height} px · {state.zoom * 100}% CSS zoom · 等效内容宽度约 {Math.round(size.width / state.zoom)} CSS px</p>
+            </div>
+          </Disclosure>}
+          <div className="rhine-review-recovery">
+            {phase === 'failed' && state && <Button variant="secondary" onClick={() => select(state, true)}>重试场景</Button>}
+            <Button variant="secondary" onClick={reload}>重新载入画布</Button>
+            <p>重新载入会清空未保存草稿，并保留当前评审条件。</p>
+          </div>
+          <Disclosure title={`评审反馈 · ${log.entries.length} 条记录${log.errors ? ` · ${log.errors} 条错误待确认` : ''}`} defaultOpen>
+            <div className="rhine-review-log">
+              {log.entries.length ? <ol>{log.entries.map(entry => <li key={entry.id} data-kind={entry.kind}><strong>{catalog?.scenes.find(item => item.id === entry.scene)?.title ?? entry.scene}</strong><span>{entry.message}</span></li>)}</ol> : <p>暂无评审反馈</p>}
+              {log.omittedErrors > 0 && <p>另有 {log.omittedErrors} 条较早错误未展示，仍计入待确认数量。</p>}
+              <ConfirmDialog title="确认清除评审反馈" description="清除全部记录并确认待处理错误。此操作不会重置场景或草稿。" confirmLabel="确认清除" trigger={<Button variant="secondary" aria-disabled={!log.entries.length && !log.errors}>确认并清除反馈</Button>} onConfirm={() => setLog(emptyFeedback())} />
+            </div>
+          </Disclosure>
+        </div>
+      </Drawer>
       <Button variant="secondary" disabled={!state} onClick={async () => {
         try { await navigator.clipboard.writeText(location.href); record('评审链接已复制'); }
         catch { record('复制未完成，请复制浏览器地址', 'error'); }
       }}>复制链接</Button>
     </header>
+    <div className="rhine-review-announcements">
+      <p role="status">{phaseLabel}</p>
+      <p role="alert">{errorAnnouncement}</p>
+    </div>
     <div className="rhine-review-body">
       <aside id="review-directory" className="rhine-review-directory" data-open={menu} onKeyDown={event => {
         if (event.key === 'Escape' && menu) { setMenu(false); document.getElementById('review-menu')?.focus(); }
@@ -133,25 +165,7 @@ export function ReviewShell() {
             {scene?.dimensions?.map(dimension => <Select key={dimension.id} label={dimension.label} value={state.dimensions[dimension.id]} onChange={event => update({ dimensions: { ...state.dimensions, [dimension.id]: event.target.value } })}>{dimension.options.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}</Select>)}
             <Button variant="secondary" onClick={() => select(state, true)}>重置场景</Button>
           </div>
-          <details className="rhine-review-options"><summary>更多设置 · {state.zoom * 100}% CSS zoom · {{ system: '跟随系统', full: '完整动态', reduced: '减少动态', paused: '暂停' }[state.motion]}</summary>
-            <div className="rhine-review-controls">
-              <Select label="CSS 缩放" value={state.zoom} onChange={event => update({ zoom: Number(event.target.value) as 1 | 2 })}><option value="1">100%</option><option value="2">200%（CSS zoom）</option></Select>
-              <Select label="动态偏好" value={state.motion} onChange={event => update({ motion: event.target.value as ReviewSelection['motion'] })}><option value="system">跟随系统</option>{scene?.motionControls?.includes('full') && <option value="full">完整动态</option>}<option value="reduced">减少动态</option>{scene?.motionControls?.includes('paused') && <option value="paused">暂停</option>}</Select>
-              {!trouble && <Button variant="secondary" onClick={reload}>重新载入画布</Button>}
-            </div><p>重新载入会清空未保存草稿，并保留当前评审条件。</p>
-          </details>
         </>}
-        <div className="rhine-review-feedback">
-          <p role="status">{phaseLabel}</p>
-          {trouble && <div className="rhine-review-recovery"><Button variant="secondary" onClick={reload}>重新载入画布</Button><span>清空未保存草稿，保留当前评审条件。</span></div>}
-          {log.errors > 0 && <p role="alert">{log.errors} 条错误待确认{lastError ? ` · ${lastError.message}` : ''}</p>}
-          {log.entries.length > 0 && <details className="rhine-review-log"><summary>评审反馈 · {log.entries.length} 条记录{log.errors ? ` · ${log.errors} 条错误待确认` : ''}</summary>
-            <ol>{log.entries.map(entry => <li key={entry.id} data-kind={entry.kind}><strong>{catalog?.scenes.find(item => item.id === entry.scene)?.title ?? entry.scene}</strong><span>{entry.message}</span></li>)}</ol>
-            {log.omittedErrors > 0 && <p>另有 {log.omittedErrors} 条较早错误未展示，仍计入待确认数量。</p>}
-            <Button variant="secondary" onClick={() => setLog(emptyFeedback())}>确认并清除反馈</Button>
-          </details>}
-        </div>
-        <p className="rhine-review-size" aria-label="画布尺寸">画布 {size.width} × {size.height} px · {(state?.zoom ?? 1) * 100}% CSS zoom · 等效内容宽度约 {Math.round(size.width / (state?.zoom ?? 1))} CSS px</p>
         <div className="rhine-review-viewport">
           <iframe key={frameEpoch} ref={frame} title="产品场景画布" src={new URL('canvas.html', location.href).href} sandbox="allow-scripts allow-same-origin allow-forms" referrerPolicy="no-referrer" onLoad={() => {
             if (frame.current?.contentWindow) sendReview(frame.current.contentWindow, { type: 'hello' });

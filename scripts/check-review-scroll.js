@@ -51,12 +51,12 @@ async page => {
     };
   });
 
-  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.setViewportSize({ width: 1280, height: 600 });
   await page.goto(base);
   await page.frameLocator('iframe').getByRole('heading', { name: '桌面工作区' }).waitFor();
   await addLongDirectory();
   const desktop = await regions();
-  check(desktop?.shellHeight === 900 && desktop.shellScrollHeight === desktop.shellHeight, 'desktop shell stays within the viewport');
+  check(desktop?.shellHeight === 600 && desktop.shellScrollHeight === desktop.shellHeight, 'desktop shell stays within the viewport');
   check(desktop?.headerTop >= 0 && desktop.headerBottom <= desktop.shellHeight, 'desktop header remains visible');
   check(desktop?.bodyTop >= desktop.headerBottom - 1 && desktop.bodyBottom <= desktop.shellHeight + 1, 'desktop body uses remaining viewport');
   check(desktop?.directoryOverflow === 'auto' && desktop.directoryScrollHeight > desktop.directoryClientHeight, 'desktop directory has bounded independent scrolling');
