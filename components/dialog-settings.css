@@ -50,7 +50,7 @@
  .rhine-dialog.rhine-dialog--bounded { padding:12px; }
 }
 @container (max-width:300px) {
- .rhine-dialog__footer { gap:4px; }
+ .rhine-dialog__footer { gap:2px; }
  .rhine-dialog__footer > .rhine-button { padding-inline:2px; }
 }
 
