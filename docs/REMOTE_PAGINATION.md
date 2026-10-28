@@ -1,6 +1,6 @@
 # Remote choice pagination
 
-Issue: https://github.com/linhay/rhine-design/issues/71
+Available in 0.11.3. Issues: #69 / https://github.com/linhay/rhine-design/issues/71
 
 Combobox and RemoteMultiSelect accept `hasMore`, `onLoadMore`, `loadingMore`, `loadMoreError`, and `onRetry`. The caller owns server search, cursor, cancellation and stale-response rejection. Use `loading`/`error` for the first page and separate incremental states for later pages so existing choices remain usable.
 
@@ -25,4 +25,4 @@ Use `scripts/check-remote-selection.js` and `scripts/check-remote-selection-stat
 - PASS: existing `check-multiselect-completion.js` 18-combination regression. Its first run exposed old-close restoration racing with an immediate new query; an open-revision guard prevents a stale teardown callback from closing the fresh popup. Both existing and new matrices passed again after the correction.
 - Review correction: the Tab fallback inside `onCloseAutoFocus` must consume its restoration flag immediately. Otherwise the next outside close can steal focus. The 18-combination matrix now checks Tab exit → reopen → click another field, including focus after teardown; full checks and the extended matrix passed.
 - SKIPPED: native browser zoom, WebKit/Firefox and screen-reader speech in this change; CSS zoom/DOM semantics do not prove them.
-- N/A: animation playback/pause (these controls introduce no animation loop); npm release and consumer deployment are outside this source change. Published 0.11.2 remains unchanged; these APIs are unreleased main capabilities.
+- N/A: animation playback/pause (these controls introduce no animation loop); npm release and consumer deployment are outside this source change. Published 0.11.2 remains unchanged; these APIs are included in the 0.11.3 maintenance release. The checks above describe the original main acceptance; release-specific evidence is recorded separately.

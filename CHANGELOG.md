@@ -1,5 +1,13 @@
 # 版本记录
 
+## 0.11.3（2026-10-28）
+
+- #69：RemoteMultiSelect 的 activeValue/onActivateValue 独立激活标签，保留只读查看，禁用时禁止激活；与移除、选择变化和宿主草稿分离。
+- #71：Combobox/RemoteMultiSelect 的 hasMore/onLoadMore/loadingMore/loadMoreError/onRetry 在浮层内承接分页和失败重试，保留旧结果、末页焦点和键盘路径。
+- 修复嵌套 Escape、快速重新输入和 Tab 退出后的迟到归焦；公开请求、游标及过期响应仍由宿主管理。
+- 本版本从 v0.11.2 回补 PR #72 的三个提交，不包含 #61/#64/#66；不会修改已发布 0.11.2。
+
+
 ## 0.11.2（2026-10-28）
 
 #18 设置 Dialog 修复基于精确候选 `02cc2c2`，默认行为保持兼容；正式发布状态以 registry 回读为准。

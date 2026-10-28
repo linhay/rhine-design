@@ -128,7 +128,7 @@ TreeSelect 使用 tree/treeitem/group，Tab 进入一个可见节点，上下/Ho
 
 首次进入优先已选可见节点；字符前缀定位不改变选择，`*` 展开同层分支，Ctrl/⌘+A 仅切换可见可选节点。外部收起时焦点回可见祖先。节点 `selectable=false` 用于结构分组；readOnly 允许浏览展开而禁止选择。`name` 为选中 key 生成同名 hidden inputs，disabled 不提交。
 
-RemoteMultiSelect 可选 `activeValue/onActivateValue` 让已选标签正文成为查看详情的按钮，与移除按钮并列。激活仅收起搜索并通知宿主，不改变选择或提交表单；当前项使用主题描边与 `aria-pressed`。原生按钮支持 Enter/Space。disabled（含单项 disabled）禁止激活；readOnly 禁止修改选择但允许激活查看。未传回调保留原标签行为。宿主负责当前对象、独立草稿和移除后的回退。见 [#69](https://github.com/linhay/rhine-design/issues/69)。
+RemoteMultiSelect 自 0.11.3 提供可选 `activeValue/onActivateValue` 让已选标签正文成为查看详情的按钮，与移除按钮并列。激活仅收起搜索并通知宿主，不改变选择或提交表单；当前项使用主题描边与 `aria-pressed`。原生按钮支持 Enter/Space。disabled（含单项 disabled）禁止激活；readOnly 禁止修改选择但允许激活查看。未传回调保留原标签行为。宿主负责当前对象、独立草稿和移除后的回退。见 [#69](https://github.com/linhay/rhine-design/issues/69)。
 
 RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误提交。加载或失败时禁止选择旧候选，已选项仍显示且可移除；默认选中后保持候选列表打开，可再次点击或方向键+Enter取消已选候选；真正禁用/锁定项不可更改。打开多选候选时，输入框Tab进入“完成选择”，Shift+Tab返回输入框；从完成按钮继续Tab关闭候选并沿输入框后的正常控件前进。面板底部“完成选择”只收起候选并归焦输入框，保留查询和值，不提交宿主表单；最终保存由宿主负责。Escape或点击外部也保留草稿。`closeOnSelect=true` 恢复选完关闭。`clearQueryOnSelect` 默认 false；新增 readOnly/clearable/placeholder/hint/name。空查询 Backspace 删除最后一个可移除标签，标签×移除与清空统一归焦输入框并收起候选；输入框内空查询Backspace删除则保留原展开/收起状态，不因归焦改变候选状态。仅重新点击、输入或方向键才展开。没有可移除项（含0项或只有锁定项）时隐藏“清空选择”；锁定标签保留。name 以同名 hidden inputs 提交受控 keys。单选 Combobox 的默认关闭行为不变。异步取消、序列检查、服务端查询和时区解释全部归宿主。展台有可取消的本地延迟结果演示，但不是生产数据层。
 

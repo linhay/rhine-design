@@ -27,7 +27,9 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 ## 版本与源码范围
 
-- **本源码包版本：0.11.2**。0.11.0 制品主入口为 67 个组件；当前源码含未发布 ChatThread / ChatCard，共 69 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。发布是否可安装以 npm registry 为准。
+0.11.3 在已发布 0.11.2 上加入 #69 已选对象激活、#71 浮层分页/重试，以及连续键盘与快速重开的焦点修复。基于固定维护分支构建，不包含 main 后续 #61/#64/#66 能力。
+
+- **本源码包版本：0.11.3**。0.11.0 制品主入口为 67 个组件；当前源码含未发布 ChatThread / ChatCard，共 69 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。发布是否可安装以 npm registry 为准。
 - **0.11.0 新增**：产品评审 `/review`、`/review/vite`，摘要页签 `Tabs description/status`、`Toast placement="floating"`、`SegmentedControl size="compact"` 及相邻 Disclosure 分隔线与生产动效修正。npm 0.10.0 不包含这些新增 API。
 - **未发布聊天组合**：消息分组、结构化卡片及历史跟随见 [Agent Chat](docs/AGENT_CHAT.md)，不在 0.11.0 制品中。
 - **展台随源码更新**，在线部署跟随 main；安装包的能力以精确版本和实际导出/实现为准。上述源码变更、历史版本与接入边界统一见[版本记录](CHANGELOG.md)。
@@ -43,7 +45,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 在你的 React 项目中安装：
 
 ```sh
-npm install --save-exact @linhey/rhine-design@0.11.2
+npm install --save-exact @linhey/rhine-design@0.11.3
 ```
 
 包与版本信息见 [npm](https://www.npmjs.com/package/@linhey/rhine-design)。如需使用未发版的源码，可安装 `git+https://github.com/linhay/rhine-design.git#<commit>`；建议固定版本并提交 lockfile。
