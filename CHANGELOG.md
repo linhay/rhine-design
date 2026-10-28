@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #76：Tabs 新增 `fullWidth`，与 content 布局组合让栏及分隔线铺满、文字和指示线按内容靠左；content/fill默认兼容。规范、三布局展台及[验收边界](docs/TABS_LAYOUT_VERIFICATION.md)同步更新，npm0.11.3不含此属性。
+
 - #61：工作空间对象阅读规范与合成展台。
 - #64：ChatCard.detailLabel、Disclosure.ariaLabel 与只读正文排版。
 - #66：评审壳目录独立有界滚动。

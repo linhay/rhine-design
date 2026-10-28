@@ -64,7 +64,7 @@ export function Example() {
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | 非空 label；labelVisibility="visible"（默认）/"hidden"；hint；error；原生 input 属性 | label 与 id 自动关联；隐藏只影响视觉；错误与提示组成 aria-describedby；输入值由调用方管理；[单搜索契约](../docs/SINGLE_SEARCH.md)（显隐能力自 0.11.2 提供） |
-| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status自0.11.0新增，npm 0.10.0 不含，见下文 |
+| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange；layout=content/fill；fullWidth=false | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status自0.11.0新增，npm 0.10.0 不含，见下文 |
 | SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth?；size=default/compact | compact为卡片局部操作的32px视觉/44px命中（自 0.11.0，npm 0.10.0 不含）；原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
 | Notice | tone；title；children；action | error 使用 alert，其余 status；调用方决定显示/移除，不自动倒计时关闭错误 |
 | Progress | label；value:number/null；valueText? | null/NaN 为未知进度；数值钳制 0–100；组件不执行或估算真实进度 |
@@ -197,3 +197,8 @@ export function Example() {
 Button.size="standard" | "large"（0.11.2），标准14/22、44px最小高度，大尺寸16/24、52px最小高度；[动作语义与尺寸](../docs/BUTTON_ACTIONS.md)。
 
 #18 自 0.11.2 提供：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。
+
+
+### Tabs 栏宽与选项分配（#76，未发布）
+
+`fullWidth` 默认 `false`，保持现有布局；`layout="content" fullWidth` 将栏和底部分隔线撑满正文，选项仍按内容靠左，长标签自然换行。`layout="fill"` 始终均分可用宽度，`fullWidth={false}` 不取消其原有铺满行为。文字和指示线规则、直接接入例子及版本边界见[页签布局](../docs/SUMMARY_TABS.md#满栏靠左76未发布)。不需要覆盖内部 class。

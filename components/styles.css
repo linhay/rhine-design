@@ -139,6 +139,8 @@
 .rhine-button--between>span:first-child>.rhine-icon { flex:none; }
 .rhine-tabs__list--content { width:max-content; max-width:100%; }
 .rhine-tabs__list--content>button { flex:0 1 auto; min-width:0; max-width:100%; overflow-wrap:anywhere; }
+.rhine-tabs__list--full-width { width:100%; }
+.rhine-tabs__list--content.rhine-tabs__list--full-width>button { text-align:start; }
 .rhine-tabs__list--fill>button { flex:1 1 0; min-width:0; overflow-wrap:anywhere; }
 
 .rhine-button--large { font-size:var(--rhine-text-heading); line-height:var(--rhine-leading-heading); min-height:52px; padding:12px 24px; max-width:100%; }
