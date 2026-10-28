@@ -149,7 +149,11 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
       // only for a keyboard exit from a still-open Rhine modal.
       const dialog = root.current?.closest('.rhine-dialog[data-state="open"]');
       const active = document.activeElement;
-      if (active?.hasAttribute('data-radix-focus-guard') || (dialog && !dialog.contains(active))) complete();
+      if (active?.hasAttribute('data-radix-focus-guard') || (dialog && !dialog.contains(active))) {
+        complete();
+        // This close callback is already consuming the focus restoration.
+        restoreInputOnClose.current = false;
+      }
     }} onInteractOutside={event => { if (containsInteractionTarget(event.target)) event.preventDefault(); }}>
       <div ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); complete(); } }}>
         <div role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading || loadingMore}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{selectedValues && <span className="rhine-combobox__check" aria-hidden="true">{selectedValues.includes(option.value) ? '✓' : ''}</span>}{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
