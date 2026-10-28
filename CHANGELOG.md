@@ -6,7 +6,14 @@
 - #64：ChatCard.detailLabel、Disclosure.ariaLabel 与只读正文排版。
 - #66：评审壳目录独立有界滚动。
 
-以上在 main 保留，未进入 0.11.2 制品。#69 标签激活仍独立推进，不在 0.11.2 中。
+以上在 main 保留，未进入 0.11.3 制品。
+
+## 0.11.3（2026-10-28）
+
+- #69：RemoteMultiSelect 已选标签通过 `activeValue/onActivateValue` 激活详情；激活与移除、选择及宿主独立草稿分离，readOnly 可查看，disabled 不可激活。
+- #71：Combobox / RemoteMultiSelect 增量分页状态、错误重试和受控加载回调；宿主负责请求、游标、去重与取消。
+- 修复快速重开时旧浮层清理夺焦，以及 Tab 退出后残留的归焦标志；保留嵌套 Dialog 的 Escape 分层与输入归焦。
+- 从 v0.11.2 回补 PR #72 的三项提交，不混入 #61/#64/#66。固定制品与正式 npm 验证见 [0.11.3 发布记录](docs/releases/0.11.3.md)。
 
 ## 0.11.2（2026-10-28）
 
