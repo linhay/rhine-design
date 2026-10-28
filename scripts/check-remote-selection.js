@@ -49,6 +49,15 @@ async page => {
     await done.press('Escape'); assert(await dialog.isVisible(),'Escape closed host');
     await page.waitForFunction(id => document.activeElement?.id === id, await nested.getAttribute('id'));
     assert(await nested.evaluate(el=>el===document.activeElement),'Escape lost focus');
+    // A Tab exit must not leave restoration state that steals a later outside click.
+    await nested.click(); await nested.press('Tab'); await more.press('Tab'); await done.press('Tab');
+    await page.getByRole('listbox').waitFor({state:'hidden'});
+    await nested.click();
+    const otherField=dialog.getByLabel('当前对象草稿',{exact:true});
+    await otherField.click(); await page.getByRole('listbox').waitFor({state:'hidden'});
+    await page.waitForTimeout(100);
+    assert(await otherField.evaluate(el=>el===document.activeElement),'Tab exit left stale focus restoration');
+    await nested.click(); await nested.press('Escape');
     await nested.press('Escape'); await dialog.waitFor({state:'hidden'});
     rows.push({theme,width,zoom,status:'PASS'});
   }
