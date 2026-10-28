@@ -30,8 +30,8 @@
 .rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__main > p { flex:none; }
 .rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__body { min-height:0; overflow:auto; overscroll-behavior:contain; }
 .rhine-dialog--bounded.rhine-dialog--settings .rhine-dialog__body { display:flex; flex:1; overflow:hidden; }
-.rhine-dialog--bounded .rhine-dialog__settings-grid { flex:1; min-height:0; grid-template-rows:minmax(64px,1fr) minmax(0,3fr); gap:12px; }
-.rhine-dialog--bounded .rhine-dialog__navigation { min-height:0; max-height:112px; overflow:auto; overscroll-behavior:contain; padding-bottom:0; }
+.rhine-dialog--bounded .rhine-dialog__settings-grid { flex:1; min-height:0; grid-template-rows:fit-content(25%) minmax(0,1fr); gap:12px; }
+.rhine-dialog--bounded .rhine-dialog__navigation { min-height:64px; overflow:auto; overscroll-behavior:contain; padding-bottom:0; }
 .rhine-dialog--bounded .rhine-dialog__settings-content { min-height:0; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; }
 .rhine-dialog__footer { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; max-height:var(--rhine-dialog-footer-limit,40%); overflow:auto; overscroll-behavior:contain; }
 .rhine-dialog__footer > * { max-width:100%; }
@@ -41,7 +41,6 @@
 }
 @container (max-width:559px) {
  .rhine-dialog--bounded .rhine-dialog__body { margin-top:8px; }
- .rhine-dialog--bounded .rhine-dialog__navigation { max-height:64px; }
  .rhine-dialog--bounded .rhine-dialog__settings-grid { gap:8px; }
  .rhine-dialog__footer { padding-top:8px; margin-top:8px; }
 }

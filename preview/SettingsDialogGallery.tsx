@@ -56,6 +56,7 @@ export function SettingsDialogGallery() {
       </Stack>
     </Dialog>
     <Text>已保存名称：{saved}</Text>
+    <StableWorkspaceExample />
     <Drawer title="普通抽屉" trigger={<Button variant="secondary">普通抽屉示例</Button>}><TextField label="抽屉输入" /></Drawer>
     <Dialog title="辅助分栏" trigger={<Button variant="secondary">辅助分栏示例</Button>} sidePanel={<Text>辅助内容</Text>}><TextField label="分栏输入" /></Dialog>
     <Dialog title="有界普通表单" height={640} trigger={<Button variant="secondary">有界普通表单示例</Button>} footer={<Button>确认</Button>}><Stack>{Array.from({length:30}, (_,i)=><TextField key={i} label={`表单字段 ${i+1}`} />)}</Stack></Dialog>
@@ -70,4 +71,28 @@ export function SettingsDialogFixture() {
   const zoom = Number(params.get('zoom')) || 1;
   useEffect(() => { document.documentElement.style.zoom = String(zoom); return () => { document.documentElement.style.zoom = ''; }; }, [zoom]);
   return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') || 'reduced'}><div style={{padding:16}}><SettingsDialogGallery /></div></ThemeProvider>;
+}
+
+// Layout example only: template ownership and persistence remain in the host.
+function StableWorkspaceExample() {
+  const [open, setOpen] = useState(false), [section, setSection] = useState('apply');
+  const [state, setState] = useState('empty'), [draft, setDraft] = useState('合成模板');
+  const [rows, setRows] = useState(0), [message, setMessage] = useState('');
+  const items = [{id:'apply', label:'应用配置', href:'#apply'}, {id:'edit', label:'模板编辑', href:'#edit'}, {id:'other', label:'其他设置', href:'#other'}];
+  return <>
+    <Select label="工作区内容状态" value={state} onChange={e => setState(e.target.value)}><option value="empty">空模板</option><option value="eight">八行编辑</option><option value="loading">加载</option><option value="error">错误</option></Select>
+    <Dialog title="配置工作区" height={760} open={open} onOpenChange={setOpen} trigger={<Button>打开稳定工作区</Button>}
+      navigation={<SideNav aria-label="工作区栏目" currentId={section} groups={[{label:'配置',items}]} onNavigate={(item,e) => { e.preventDefault(); setSection(item.id); }} />}
+      footer={<><Button variant="secondary" onClick={() => {setDraft('合成模板');setMessage('已撤销');}}>撤销</Button><Button variant="secondary" onClick={() => setOpen(false)}>关闭</Button><Button onClick={() => setMessage('已保存演示草稿')}>保存</Button></>}>
+      <Stack gap={4}>
+        {message && <Text role="status">{message}</Text>}
+        {state === 'loading' ? <Skeleton label="正在读取配置" /> : state === 'error' ? <Notice tone="error" title="读取失败，草稿已保留" action={<Button onClick={() => setState('eight')}>重试</Button>} /> : section === 'edit' ? <>
+          <TextField label="模板名称" value={draft} onChange={e => setDraft(e.target.value)} />
+          {Array.from({length:state === 'eight' ? 8 : rows}, (_,i) => <TextField key={i} label={`编辑条目 ${i+1}`} defaultValue={`合成条目 ${i+1}`} />)}
+          {state === 'empty' && rows === 0 && <EmptyState title="模板暂无规则" description="" />}
+          <Button onClick={() => {setState('empty');setRows(n => n+1);}}>添加条目</Button>
+        </> : section === 'apply' ? <EmptyState title="尚未选择模板" description="" /> : <Checkbox label="保留现有配置" defaultChecked />}
+      </Stack>
+    </Dialog>
+  </>;
 }
