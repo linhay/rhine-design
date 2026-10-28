@@ -1,6 +1,6 @@
 # 设置导航 Dialog
 
-`navigation` 自 0.8.0 提供，对应 #18。下例的 `height/footer`、可省略 `description` 类型及固定头尾修复为 **main 未发布能力**，正式 0.11.1 不包含；不要据展台推断已安装包。默认 Dialog、Drawer 和 `sidePanel` 用法保持兼容。
+`navigation` 自 0.8.0 提供，对应 #18。下例的 `height/footer`、可省略 `description` 类型及固定头尾修复自 **0.11.2** 正式提供，0.11.1 不包含；不要据展台推断已安装包。默认 Dialog、Drawer 和 `sidePanel` 用法保持兼容。
 
 ```tsx
 <Dialog title="设置" height={640} open={open} onOpenChange={setOpen} trigger={<Button>设置</Button>}
@@ -23,7 +23,7 @@
 
 展台 `#settings-dialog` / `?fixture=settings-dialog` 包含账号草稿、异步保存、撤销、失败/冲突、30行成员、异步栏目、长导航/长操作文案、嵌套搜索多选和编辑 Dialog，以及项目加载/错误/空态。短动作保留完整可访问名称；主题切换保持草稿与节点。宿主例允许保存中关闭，迟到成功只更新已提交值，不覆盖重新打开后的新编辑；计时器在卸载清理。
 
-## 稳定预览与底部操作区（#41，未发布）
+## 稳定预览与底部操作区（#41，0.11.2）
 
 `Dialog.height?: CSSProperties['height']` 显式指定实例期望高度，数字按CSS px解释，默认不指定、保持原内容自适应行为；实际高度受可用视口减32px限制。`footer?: ReactNode` 是独立操作区，不参与内容滚动；单独提供footer也启用有界滚动，不强迫固定高度。两者不能作为全库560px默认，560仅为展台比较参数。
 
@@ -39,10 +39,10 @@
 
 仅含操作的 `AppShell` 显式设置 `collapseEmptyContentHeader`（默认false，保留既有头部），`contentHeader` 直接传Fragment，里面放 `AppShellToggle placement="content"` 与按实际权限/状态条件渲染的动作，不套空Inline/nav。共享样式在所有直接子元素均有hidden或没有元素时收起整个头部（含背景、内距和分隔线）；不能以React节点或DOM节点存在代替可见动作。这个有限规则不检测任意深层包装或display:none；自定义组合须条件省略整个包装，文字标题应放入元素。隐藏的恢复控件保持挂载；侧栏收起或窄窗时恢复控件出现，头部随之恢复，焦点沿用AppShell。
 
-真实展台 `#settings-composition` / `?fixture=settings-composition` 包含长文、更新四态、可选顶部动作、侧栏与重置。此能力未进入npm版本，不修改0.11.1冻结制品。
+真实展台 `#settings-composition` / `?fixture=settings-composition` 包含长文、更新四态、可选顶部动作、侧栏与重置。此能力自 0.11.2 提供，不修改 0.11.1 冻结制品。
 
 
-## 操作区与短屏（#18，未发布）
+## 操作区与短屏（#18，0.11.2）
 
 `footer` 默认是右对齐、可换行的 flex 操作区；直接传按钮或 Fragment，避免再套整宽、不换行的包装。设置展台使用「撤销 / 关闭 / 保存」，通过 aria-label 保留完整动作名。窄容器收紧间距和横向按钮内距，字号不变、目标至少44×44 CSS px；长可见文案可由宿主在窄容器替换为明确短标签。操作区预留焦点环/主题硬阴影空间。
 

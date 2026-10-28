@@ -1,6 +1,6 @@
 # Agent Chat：消息、卡片与历史
 
-源码候选，关联 #43；不属于 npm 0.11.0。以包含本规范的精确源码或后续已验证版本接入。入口：`ChatThread`、`ChatCard`，展台 `#agent-chat`。不引入模型、聊天运行时、Markdown 解析器或业务流程。
+基础聊天组合自 npm 0.11.2 提供，关联 #43；不属于 0.11.0/0.11.1。后续 #64 的 detailLabel、Disclosure.ariaLabel 与正文排版尚未发布，需固定包含该改动的源码。入口：`ChatThread`、`ChatCard`，展台 `#agent-chat`。不引入模型、聊天运行时、Markdown 解析器或业务流程。
 
 ## 参考与采用决策（2026-10-27）
 
