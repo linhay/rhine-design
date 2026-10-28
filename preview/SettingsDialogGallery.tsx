@@ -90,7 +90,7 @@ function StableWorkspaceExample() {
           <TextField label="模板名称" value={draft} onChange={e => setDraft(e.target.value)} />
           {Array.from({length:state === 'eight' ? 8 : rows}, (_,i) => <TextField key={i} label={`编辑条目 ${i+1}`} defaultValue={`合成条目 ${i+1}`} />)}
           {state === 'empty' && rows === 0 && <EmptyState title="模板暂无规则" description="" />}
-          <Button onClick={() => {setState('empty');setRows(n => n+1);}}>添加条目</Button>
+          <Button onClick={() => {setState('empty');setRows(n => state === 'eight' ? 9 : n+1);}}>添加条目</Button>
         </> : section === 'apply' ? <EmptyState title="尚未选择模板" description="" /> : <Checkbox label="保留现有配置" defaultChecked />}
       </Stack>
     </Dialog>
