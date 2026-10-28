@@ -39,6 +39,9 @@ async page => {
         if(state==='eight') {
           const last=d.getByRole('textbox',{name:'编辑条目 8',exact:true});await last.focus();const r=await last.boundingBox(), body=(await measure()).body;
           assert(r.y>=body.y-1&&r.y+r.height<=body.bottom+1,'last row unreachable');await stable();
+          await d.getByRole('textbox',{name:'编辑条目 3',exact:true}).fill('跨栏目保留条目');
+          await d.getByRole('link',{name:'其他设置',exact:true}).click();await d.getByRole('link',{name:'模板编辑',exact:true}).click();
+          assert(await d.getByRole('textbox',{name:'编辑条目 3',exact:true}).inputValue()==='跨栏目保留条目','row draft lost on section switch');
           await d.getByRole('button',{name:'添加条目'}).click();await d.getByRole('textbox',{name:'编辑条目 9',exact:true}).waitFor();await stable();
           for(const key of ['Tab','Shift+Tab']) for(let i=0;i<16;i++){await page.keyboard.press(key);assert(await d.evaluate(e=>e.contains(document.activeElement)),'focus escaped');}
         }

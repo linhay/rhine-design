@@ -77,10 +77,11 @@ export function SettingsDialogFixture() {
 function StableWorkspaceExample() {
   const [open, setOpen] = useState(false), [section, setSection] = useState('apply');
   const [state, setState] = useState('empty'), [draft, setDraft] = useState('合成模板');
-  const [rows, setRows] = useState(0), [message, setMessage] = useState('');
+  const [rows, setRows] = useState<{id: number; value: string}[]>([]), [message, setMessage] = useState('');
+  const nextRowId = useRef(0);
   const items = [{id:'apply', label:'应用配置', href:'#apply'}, {id:'edit', label:'模板编辑', href:'#edit'}, {id:'other', label:'其他设置', href:'#other'}];
   return <>
-    <Select label="工作区内容状态" value={state} onChange={e => setState(e.target.value)}><option value="empty">空模板</option><option value="eight">八行编辑</option><option value="loading">加载</option><option value="error">错误</option></Select>
+    <Select label="工作区内容状态" value={state} onChange={e => {const next=e.target.value;setState(next);if(next === 'eight') setRows(Array.from({length:8},(_,i)=>({id:nextRowId.current++,value:`合成条目 ${i+1}`})));if(next === 'empty') setRows([]);}}><option value="empty">空模板</option><option value="eight">八行编辑</option><option value="loading">加载</option><option value="error">错误</option></Select>
     <Dialog title="配置工作区" height={760} open={open} onOpenChange={setOpen} trigger={<Button>打开稳定工作区</Button>}
       navigation={<SideNav aria-label="工作区栏目" currentId={section} groups={[{label:'配置',items}]} onNavigate={(item,e) => { e.preventDefault(); setSection(item.id); }} />}
       footer={<><Button variant="secondary" onClick={() => {setDraft('合成模板');setMessage('已撤销');}}>撤销</Button><Button variant="secondary" onClick={() => setOpen(false)}>关闭</Button><Button onClick={() => setMessage('已保存演示草稿')}>保存</Button></>}>
@@ -88,9 +89,9 @@ function StableWorkspaceExample() {
         {message && <Text role="status">{message}</Text>}
         {state === 'loading' ? <Skeleton label="正在读取配置" /> : state === 'error' ? <Notice tone="error" title="读取失败，草稿已保留" action={<Button onClick={() => setState('eight')}>重试</Button>} /> : section === 'edit' ? <>
           <TextField label="模板名称" value={draft} onChange={e => setDraft(e.target.value)} />
-          {Array.from({length:state === 'eight' ? 8 : rows}, (_,i) => <TextField key={i} label={`编辑条目 ${i+1}`} defaultValue={`合成条目 ${i+1}`} />)}
-          {state === 'empty' && rows === 0 && <EmptyState title="模板暂无规则" description="" />}
-          <Button onClick={() => {setState('empty');setRows(n => state === 'eight' ? 9 : n+1);}}>添加条目</Button>
+          {rows.map((row,i) => <TextField key={row.id} label={`编辑条目 ${i+1}`} value={row.value} onChange={e => setRows(current => current.map(item => item.id === row.id ? {...item,value:e.target.value} : item))} />)}
+          {rows.length === 0 && <EmptyState title="模板暂无规则" description="" />}
+          <Button onClick={() => {const id=nextRowId.current++;setRows(current => [...current,{id,value:''}]);}}>添加条目</Button>
         </> : section === 'apply' ? <EmptyState title="尚未选择模板" description="" /> : <Checkbox label="保留现有配置" defaultChecked />}
       </Stack>
     </Dialog>
