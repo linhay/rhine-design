@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-当前主入口 `components/index.ts` 共 67 个组件（不含类型及独立 `/theme` 入口）；0.9.0 新增 ListFilterBar 后，0.10.0 保持此数量。0.8.0 为 66 个，包含 NeutronStarBackdrop、StatusTimelineList、AppShellToggle、ButtonLink、ThemePicker 与 ThemePreview；0.6.0 为 60 个，0.5.0 为 59 个，0.4.0 为 48 个，0.3.0 为 40 个。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[0.11.0 记录](../CHANGELOG.md#01102026-10-27)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+当前源码主入口 `components/index.ts` 共70个组件（不含类型及独立 `/theme` 入口），其中MappingEditor为未发布候选；正式0.11.3为69个。历史0.9.0新增ListFilterBar后为67个，0.10.0保持67个。0.8.0 为 66 个，包含 NeutronStarBackdrop、StatusTimelineList、AppShellToggle、ButtonLink、ThemePicker 与 ThemePreview；0.6.0 为 60 个，0.5.0 为 59 个，0.4.0 为 48 个，0.3.0 为 40 个。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[0.11.0 记录](../CHANGELOG.md#01102026-10-27)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 中子星艺术、主题物品和生命周期见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)与[轨道背景契约](../docs/ORBIT_BACKDROP.md)。安装版本与源码导出分别核对。
 
@@ -202,3 +202,7 @@ Button.size="standard" | "large"（0.11.2），标准14/22、44px最小高度，
 ### Tabs 栏宽与选项分配（#76，未发布）
 
 `fullWidth` 默认 `false`，保持现有布局；`layout="content" fullWidth` 将栏和底部分隔线撑满正文，选项仍按内容靠左，长标签自然换行。`layout="fill"` 始终均分可用宽度，`fullWidth={false}` 不取消其原有铺满行为。文字和指示线规则、直接接入例子及版本边界见[页签布局](../docs/SUMMARY_TABS.md#满栏靠左76未发布)。不需要覆盖内部 class。
+
+## 来源→目标编辑（#78，未发布）
+
+`MappingEditor` 与 `MappingEditorProps / MappingEditorRow` 从主入口公开。受控稳定行id、双侧选项及回调、禁用/只读/逐行错误、空态与增删焦点见[完整契约](../docs/TEMPLATE_SETTINGS.md)。模板管理使用现有组件组合，不新增业务数据库或权限服务。

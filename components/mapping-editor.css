@@ -1,0 +1,17 @@
+.rhine-mapping-editor { min-width:0; container-type:inline-size; }
+.rhine-mapping-editor__list { display:grid; gap:var(--rhine-space-3); margin:0 0 var(--rhine-space-3); padding:0; list-style:none; }
+.rhine-mapping-editor__row { min-width:0; }
+.rhine-mapping-editor__fields { display:grid; grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr) auto; gap:var(--rhine-space-2); align-items:center; }
+.rhine-mapping-editor__fields:not(:has(>button)) { grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr); }
+.rhine-mapping-editor__field { min-width:0; }
+.rhine-mapping-editor__field>label { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.rhine-mapping-editor__field select { min-width:0; width:100%; min-height:44px; text-overflow:ellipsis; }
+.rhine-mapping-editor__arrow { text-align:center; color:var(--rhine-muted); }
+.rhine-mapping-editor__value { min-width:0; overflow-wrap:anywhere; font-size:var(--rhine-text-body); line-height:var(--rhine-leading-body); }
+.rhine-mapping-editor__empty { margin-bottom:var(--rhine-space-3); color:var(--rhine-muted); }
+.rhine-mapping-editor__row>.rhine-field__error { margin:var(--rhine-space-1) 0 0; overflow-wrap:anywhere; }
+@container (max-width:479px) {
+ .rhine-mapping-editor__fields,.rhine-mapping-editor__fields:not(:has(>button)) { grid-template-columns:minmax(0,1fr); gap:var(--rhine-space-1); }
+ .rhine-mapping-editor__arrow { justify-self:start; transform:rotate(90deg); }
+ .rhine-mapping-editor__fields>button { justify-self:end; }
+}
