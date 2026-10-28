@@ -57,6 +57,7 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
   const floatingRef = useFloatingScale(undefined, 'popover', 240);
   const exitingWithTab = useRef(false);
   const restoreInputOnClose = useRef(false);
+  const openRevision = useRef(0), restoreRevision = useRef(0);
   const releaseTabGuard = useRef<(() => void) | undefined>(undefined);
   useEffect(() => () => releaseTabGuard.current?.(), []);
   const root = useRef<HTMLDivElement>(null);
@@ -64,7 +65,7 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
   useLayoutEffect(() => { setContainer((root.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
   const [internalOpen, setInternalOpen] = useState(false), [active, setActive] = useState<string | null>(null), [draft, setDraft] = useState<string | null>(null);
   const open = controlledOpen ?? internalOpen;
-  const setOpen = (next: boolean) => { if (controlledOpen === undefined) setInternalOpen(next); onOpenChange?.(next); };
+  const setOpen = (next: boolean) => { if (next) openRevision.current++; if (controlledOpen === undefined) setInternalOpen(next); onOpenChange?.(next); };
   useEffect(() => { if (disabled || readOnly) { setOpen(false); setActive(null); setDraft(null); composing.current = false; } }, [disabled, readOnly]);
   const available = loading || error ? [] : options.filter(option => !option.disabled);
   const activeIndex = options.findIndex(option => option.value === active && !option.disabled);
@@ -105,7 +106,7 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
     doc.addEventListener('focusin', guard);
     releaseTabGuard.current = () => { doc.removeEventListener('focusin', guard); releaseTabGuard.current = undefined; };
   };
-  const complete = () => { restoreInputOnClose.current = true; document.getElementById(id)?.focus(); setOpen(false); setActive(null); };
+  const complete = () => { document.getElementById(id)?.focus(); restoreInputOnClose.current = true; restoreRevision.current = openRevision.current; setOpen(false); setActive(null); };
   return <div ref={root} className="rhine-combobox rhine-field" onBlur={event => { if (!containsInteractionTarget(event.relatedTarget) && !document.getElementById(`${id}-popup`)?.contains(event.relatedTarget)) setOpen(false); }}><label htmlFor={id}>{label}</label>
     <PopoverBase.Root open={visibleOpen} onOpenChange={setOpen}><PopoverBase.Anchor asChild><div className="rhine-combobox__input"><input id={id} role="combobox" aria-autocomplete="list" aria-expanded={visibleOpen} aria-controls={visibleOpen ? `${id}-list` : undefined} aria-activedescendant={visibleOpen ? activeId : undefined} aria-invalid={!!error || undefined} aria-describedby={[`${id}-status`, hint && `${id}-hint`].filter(Boolean).join(' ')} value={draft ?? query} disabled={disabled} readOnly={readOnly} placeholder={placeholder}
       onClick={() => { if (!readOnly && !disabled) setOpen(true); }} onFocus={() => { if (!readOnly && !disabled) setOpen(true); }} onChange={event => { if (readOnly || disabled) return; if (composing.current) setDraft(event.target.value); else onQueryChange(event.target.value); setActive(null); setOpen(true); }}
@@ -131,8 +132,10 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
       // A parent Dialog can re-focus the disappearing popup before its scope unmounts.
       // Restore explicit completion/Escape focus after that scope has been removed.
       if (restoreInputOnClose.current && !exitingWithTab.current) {
+        const revision = restoreRevision.current;
         queueMicrotask(() => {
-          if (!root.current?.isConnected) return;
+          // A fresh click/query can reopen before the old scope finishes closing.
+          if (!root.current?.isConnected || revision !== openRevision.current) return;
           const dialog = root.current.closest('.rhine-dialog');
           if (dialog && dialog.getAttribute('data-state') !== 'open') return;
           document.getElementById(id)?.focus({ preventScroll: true }); setOpen(false); setActive(null);
