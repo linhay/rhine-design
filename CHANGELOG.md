@@ -1,11 +1,14 @@
 # 版本记录
 
-## 未发布 · 设置 Dialog（#18）
+## 0.11.2（2026-10-28）
 
-- settings宽度不再被后置公共CSS覆盖；复用height/footer，固定标题/关闭与右对齐底部动作，正文和长导航独立有界滚动。
-- Dialog.description类型可省略，省略时没有说明占位或悬空aria-describedby；默认短Dialog、Drawer及sidePanel策略保留。
-- 真实展台补齐30行、长导航/按钮、异步栏目、错误/冲突、嵌套搜索多选与草稿行为；新增生产与固定tarball消费者回归。未发布，不更改0.11.1制品。
+#18 设置 Dialog 修复已从精确候选 `02cc2c2` 发布为 patch 版本；默认行为保持兼容。
 
+- settings宽度不再被后置公共CSS覆盖；复用 `height` / `footer`，固定标题/关闭与右对齐底部动作，正文和长导航独立有界滚动。
+- `Dialog.description` 可省略，省略时没有说明占位或悬空 `aria-describedby`；普通短 Dialog、Drawer 及 sidePanel 策略保留。
+- 自动高度 footer 按可用视口及祖先 CSS zoom 限制，纯文本有界正文提供命名键盘滚动入口；长操作末项保持可达。
+- 真实展台覆盖30行、长导航/按钮、异步栏目、错误/冲突、嵌套搜索多选与草稿行为；补充生产构建次序、固定 tarball 消费和短屏回归。
+- npm 制品：`@linhey/rhine-design@0.11.2`；消费方仍需固定版本并提交 lockfile。正式发布与 registry 回读见本次发布记录。
 
 ## 未发布
 
@@ -18,7 +21,7 @@
 - #45：SideNav 支持可选行尾 actions，空动作不占位，复用 Menu/IconButton，提供受控 Dialog 归焦组合与真实展台；不包含在0.11.0中。
 - #43：新增 `ChatThread` / `ChatCard` 聊天组合候选，提供多成员分组、卡片状态与详情、只读动作约束、历史锚点和显式恢复跟随；附三组合成展台及[规范与参考取舍](docs/AGENT_CHAT.md)。不包含模型调用、消费迁移或依赖发布。Button 尊重 `aria-disabled` 并阻止激活，支持保留不可操作控件焦点。
 
-包版本字段为 0.11.1；以上源码候选不在 0.11.0/0.11.1 发布制品内，接入需固定包含变更的修订。
+其余候选仍按各自发布记录管理；消费方应固定精确版本并提交 registry lockfile。
 
 ## 0.11.1（2026-10-27）
 

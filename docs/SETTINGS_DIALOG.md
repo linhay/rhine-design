@@ -1,6 +1,6 @@
 # 设置导航 Dialog
 
-`navigation` 自 0.8.0 提供，对应 #18。下例的 `height/footer`、可省略 `description` 类型及固定头尾修复为 **main 未发布能力**，正式 0.11.1 不包含；不要据展台推断已安装包。默认 Dialog、Drawer 和 `sidePanel` 用法保持兼容。
+`navigation` 自 0.8.0 提供，对应 #18。下例的 `height/footer`、可省略 `description` 类型及固定头尾修复随 **0.11.2** 发布；使用前固定 `@linhey/rhine-design@0.11.2`，不要据未固定的展台源码推断安装包能力。默认 Dialog、Drawer 和 `sidePanel` 用法保持兼容。
 
 ```tsx
 <Dialog title="设置" height={640} open={open} onOpenChange={setOpen} trigger={<Button>设置</Button>}
@@ -23,7 +23,7 @@
 
 展台 `#settings-dialog` / `?fixture=settings-dialog` 包含账号草稿、异步保存、撤销、失败/冲突、30行成员、异步栏目、长导航/长操作文案、嵌套搜索多选和编辑 Dialog，以及项目加载/错误/空态。短动作保留完整可访问名称；主题切换保持草稿与节点。宿主例允许保存中关闭，迟到成功只更新已提交值，不覆盖重新打开后的新编辑；计时器在卸载清理。
 
-## 稳定预览与底部操作区（#41，未发布）
+## 稳定预览与底部操作区（#41，0.11.2）
 
 `Dialog.height?: CSSProperties['height']` 显式指定实例期望高度，数字按CSS px解释，默认不指定、保持原内容自适应行为；实际高度受可用视口减32px限制。`footer?: ReactNode` 是独立操作区，不参与内容滚动；单独提供footer也启用有界滚动，不强迫固定高度。两者不能作为全库560px默认，560仅为展台比较参数。
 
@@ -42,7 +42,7 @@
 真实展台 `#settings-composition` / `?fixture=settings-composition` 包含长文、更新四态、可选顶部动作、侧栏与重置。此能力未进入npm版本，不修改0.11.1冻结制品。
 
 
-## 操作区与短屏（#18，未发布）
+## 操作区与短屏（#18，0.11.2）
 
 `footer` 默认是右对齐、可换行的 flex 操作区；直接传按钮或 Fragment，避免再套整宽、不换行的包装。设置展台使用「撤销 / 关闭 / 保存」，通过 aria-label 保留完整动作名。窄容器收紧间距和横向按钮内距，字号不变、目标至少44×44 CSS px；长可见文案可由宿主在窄容器替换为明确短标签。操作区预留焦点环/主题硬阴影空间。
 
@@ -54,6 +54,6 @@
 - `scripts/check-settings-interactions.js`：24组主题/宽度/缩放的保存、撤销、失败/冲突、异步栏目、嵌套搜索多选/编辑、快速Tab/ShiftTab、Escape、归焦、宿主URL/查询/草稿及主题节点保留；系统/手动减少动态独立检查。
 - `scripts/prepare-settings-consumer.mjs <tarball> <new-directory> [--late-css]`：从固定tarball全新安装、构建合成消费者。后置公共 `styles.css?late` 真实构建可重现旧基线480px覆盖，修复候选须在同一条件通过；普通导入构建也要检查。启动该目录的vite preview后，前两脚本使用当前页面origin。
 
-以上是CSS zoom与Chromium行为，不外推原生网页缩放、其他引擎或真实业务服务。正式版本发布、原消费者删除局部适配并复验仍是 #18 关闭条件；本轮候选不修改或替换0.11.1发布制品。
+以上是CSS zoom与Chromium行为，不外推原生网页缩放、其他引擎或真实业务服务。正式版本发布、原消费者删除局部适配并复验仍是 #18 关闭条件；0.11.2 已包含本节设置 Dialog 修复；更换版本仍须重新固定制品并执行消费验证。
 
 - `scripts/check-dialog-scroll-boundaries.js`：三主题×400/880×100/200%、648px短屏，验证无height的长footer有界且末项可达，以及纯文本有界正文的Tab/End滚动。自动高度footer监听视口及祖先zoom/主题变化，卸载时清理。
