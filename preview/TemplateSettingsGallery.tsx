@@ -134,7 +134,7 @@ export function TemplateSettingsGallery({keyboardLabels=false}:{keyboardLabels?:
             onRemove={id=>update({rows:draft.rows.filter(r=>r.id!==id)})}
             onAdd={()=>{const id=`rule-${nextId.current++}`;update({rows:[...draft.rows,{id,source:'',target:''}]});return id;}} emptyContent="模板暂无规则" />
         </>}
-        {section==='other' && <Switch label="启用调度" checked={intent==='keep'?allEnabled:intent==='on'} disabled={!targetIds.length} hint={intent==='keep' && mixed?'部分对象已开启':undefined} onCheckedChange={checked=>{setIntent(checked?'on':'off');setMessage('');}} />}
+        {section==='other' && <Switch layout="row" label="启用调度" checked={intent==='keep'?allEnabled:intent==='on'} disabled={!targetIds.length} hint={intent==='keep' && mixed?'部分对象已开启':undefined} onCheckedChange={checked=>{setIntent(checked?'on':'off');setMessage('');}} />}
         {section==='apply' && (plan ? <>
           <Text as="h3" variant="heading">确认逐目标差异</Text><Text>{plan.template?`${plan.template.name} · v${plan.template.version}`:'规则保持原值'}；{plan.intent==='keep'?'开关保持各自原值':plan.intent==='on'?'全部开启':'全部关闭'}</Text>
           {plan.targets.map(target=><Stack key={target.id} gap={1}><Text>{target.name}</Text>{changes(target,plan.template,plan.intent).map((change,index)=><Text key={index}>{change}</Text>)}</Stack>)}
@@ -168,8 +168,20 @@ export function TemplateSettingsGallery({keyboardLabels=false}:{keyboardLabels?:
   </Stack>;
 }
 
+export function SwitchRowsExample() {
+  const [draft,setDraft]=useState(false),[applied,setApplied]=useState(false),[long,setLong]=useState(true);
+  return <section aria-label="开关行样例"><Stack gap={3}>
+    <Switch layout="row" label="接收提醒" checked={draft} onCheckedChange={setDraft} />
+    <Switch layout="row" label="较长设置名称：保留完整说明并在窄容器中自然换行" hint="仅修改草稿，确认后才生效。较长提示也应完整换行。" checked={long} onCheckedChange={setLong} />
+    <Switch layout="row" label="不可更改的设置" checked disabled onCheckedChange={()=>{}} />
+    <Switch layout="row" label="只读设置" checked readOnly hint="可以聚焦查看当前值" onCheckedChange={()=>{}} />
+    <Switch label="默认内联开关" checked onCheckedChange={()=>{}} />
+    <Button onClick={()=>setApplied(draft)}>确认开关草稿</Button><Text aria-label="已提交开关">{applied?'已开启':'已关闭'}</Text>
+  </Stack></section>;
+}
+
 export function TemplateSettingsFixture() {
   const params=new URLSearchParams(location.search), zoom=Number(params.get('zoom')) || 1;
   useEffect(()=>{document.documentElement.style.zoom=String(zoom);return()=>{document.documentElement.style.zoom='';};},[zoom]);
-  return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') || 'reduced'}><div style={{padding:16}}><TemplateSettingsGallery keyboardLabels={params.get('keyboard')==='latin'} /></div></ThemeProvider>;
+  return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') || 'reduced'}><div dir={params.get('dir')==='rtl'?'rtl':'ltr'} style={{padding:16}}>{params.get('switches')==='1' && <SwitchRowsExample />}<TemplateSettingsGallery keyboardLabels={params.get('keyboard')==='latin'} /></div></ThemeProvider>;
 }

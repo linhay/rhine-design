@@ -71,3 +71,9 @@ const nextId = useRef(0);
 `check-template-context.js`覆盖单/批量对象上下文、查询分页、跨栏目保留、预览锁目标/返回恢复、Switch真实空格键草稿与确认、对象栏宽窄重排及固定footer。`check-mapping-add-focus.js`以真实Enter/字母键覆盖普通提交、flushSync、宿主主动移焦、取消/拒绝新增。
 
 对象选择Portal关闭后的归焦尊重用户/宿主已转到Switch等外部控件，不因旧scope延迟卸载重新抢焦点；快速重开继续按打开代次保护。实际回归包含关闭后立即Space、Tab离开及快速重开。
+
+## 满宽设置开关行（#78新增，未发布）
+
+`Switch layout="row"`让label占满可用宽度，标题位于逻辑起端、36×22px开关图形位于逻辑末端；RTL对调方向，图形不拉伸。标题及hint自然换行，整行原生label至少44px高。默认`layout="inline"`保持开关在前、标题在后的原用法。`readOnly`保留焦点与`aria-readonly`，阻止点击及Space更改；disabled使用原生禁用。原生input/label、完整名称、hint关联和focus-visible保留。
+
+模板工作区使用row；专用真实入口`?fixture=template-settings&switches=1`覆盖长短标题、hint、disabled/readOnly、LTR/RTL、开关状态和显式草稿确认，未确认前不改变已应用值。系统/手动减少动态保留同一路径。npm0.11.3无此新增契约，原消费固定制品验收后才删除局部反转/space-between适配。
