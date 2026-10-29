@@ -1,5 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { Button, Checkbox, Dialog, Inline, MappingEditor, Notice, RemoteMultiSelect, Stack, Tabs, Text, TextField, Toast, type Choice, type MappingEditorRow } from '../components';
+import { Button, Checkbox, Dialog, Inline, MappingEditor, Notice, RemoteMultiSelect, SettingsNavigation, Stack, Tabs, Text, TextField, Toast, type Choice, type MappingEditorRow } from '../components';
 import { ThemeProvider, type ThemeName } from '../components/theme';
 
 export const compactChoices: Choice[] = [
@@ -30,7 +30,7 @@ type Draft = {name:string;values:Choice[];rows:MappingEditorRow[]};
 type Problem = {message:string;field:'name'|'source'|'target';row?:number};
 const empty:Draft={name:'',values:[],rows:[]};
 const canonical=(draft:Draft)=>JSON.stringify({...draft,name:draft.name.trim()});
-export function CompleteTemplateExample() {
+export function CompleteTemplateExample({settings=false,autoHeight=false}:{settings?:boolean;autoHeight?:boolean}={}) {
   const nameId=useId(),root=useRef<HTMLDivElement>(null),nextId=useRef(0);
   const [open,setOpen]=useState(false),[tab,setTab]=useState('models'),[draft,setDraft]=useState<Draft>(empty),[saved,setSaved]=useState<Draft|null>(null);
   const [problems,setProblems]=useState<Problem[]>([]),[message,setMessage]=useState(''),[toast,setToast]=useState(false),[busy,setBusy]=useState(false),[fail,setFail]=useState(false),[writes,setWrites]=useState(0);
@@ -63,12 +63,12 @@ export function CompleteTemplateExample() {
     draft.rows.forEach((row,index)=>{if(!row.source)errors.push({field:'source',row:index,message:`第${index+1}行请选择来源`});else if(!row.target)errors.push({field:'target',row:index,message:`第${index+1}行请选择目标`});});
     setProblems(errors);
     if(errors.length){locate(errors[0]);return;}
-    if(saved && canonical(saved)===canonical(draft)){setMessage('无需保存');return;}
+    if(saved && canonical(saved)===canonical(draft)){setMessage(settings?'模板未修改，无需保存':'无需保存');return;}
     const snapshot={...draft,name:draft.name.trim(),values:[...draft.values],rows:draft.rows.map(row=>({...row}))};
     pending.current=true;setBusy(true);
     timer.current=setTimeout(()=>{
       timer.current=null;pending.current=false;setBusy(false);
-      if(fail && !failed.current){failed.current=true;setMessage('保存失败，请重试');return;}
+      if(fail && !failed.current){failed.current=true;setMessage(settings?'模板保存失败，草稿已保留。请重试。':'保存失败，请重试');return;}
       setSaved(snapshot);setWrites(count=>count+1);setToast(true);
     },350);
   };
@@ -78,13 +78,13 @@ export function CompleteTemplateExample() {
     <Checkbox label="首次目录获取失败" checked={directoryFailure} onChange={e=>{setDirectoryFailure(e.target.checked);directoryFailed.current=false;}}/>
     <Text role="status" aria-label="模板写入次数">写入 {writes} 次</Text>
     <Text aria-label="已保存模板">{saved ? `${saved.name} · ${saved.values.length} 个模型 · ${saved.rows.length} 条映射` : '尚未保存模板'}</Text>
-    <Dialog title="编辑完整模板" height={720} open={open} onOpenChange={next=>{if(!pending.current)setOpen(next);}} trigger={<Button variant="secondary">新建完整模板</Button>}
+    <Dialog title={settings?"账号设置 · 合成主账号":"编辑完整模板"} height={autoHeight?"auto":720} navigation={settings?<SettingsNavigation label="设置功能" currentId="templates" items={[{id:"templates",label:"模板编辑"}]} onNavigate={()=>{}}/>:undefined} open={open} onOpenChange={next=>{if(!pending.current)setOpen(next);}} trigger={<Button variant="secondary">新建完整模板</Button>}
       footer={<>
         {problems.length>0 && <div style={{width:'100%'}}><Notice tone="error" title={problems[0].message}/></div>}
-        {message && <div style={{width:'100%'}}><Notice tone={message.startsWith('保存失败')?'error':'neutral'} title={message}/></div>}
-        {toast && <div style={{width:'100%'}}><Toast open={toast} onOpenChange={setToast} title="已保存"/></div>}
-        {problems.length>0 ? <Button variant="quiet" aria-label="定位错误" onClick={()=>locate(problems[0])}>定位</Button> : <Button variant="secondary" disabled={busy} onClick={()=>setOpen(false)}>关闭</Button>}
-        <Button aria-label="保存完整模板" busy={busy} onClick={save}>保存</Button>
+        {message && <div style={{width:'100%'}}><Notice tone={message.includes('保存失败')?'error':'neutral'} title={message}/></div>}
+        {toast && <div style={{width:'100%'}}><Toast open={toast} onOpenChange={setToast} title={settings?"模板已保存":"已保存"}/></div>}
+        {settings ? <Button variant="secondary" disabled={busy} onClick={()=>{update(saved ? {...saved,values:[...saved.values],rows:saved.rows.map(row=>({...row}))} : empty);}}>撤销编辑</Button> : problems.length>0 ? <Button variant="quiet" aria-label="定位错误" onClick={()=>locate(problems[0])}>定位</Button> : <Button variant="secondary" disabled={busy} onClick={()=>setOpen(false)}>关闭</Button>}
+        <Button aria-label="保存完整模板" busy={busy} onClick={save}>{settings?"保存模板":"保存"}</Button>
       </>}>
       <div ref={root}><Stack gap={3}>
         <TextField id={nameId} label="完整模板名称" value={draft.name} disabled={busy} error={problems.find(problem=>problem.field==='name')?.message} onChange={e=>update({name:e.target.value})}/>
@@ -100,5 +100,5 @@ export function CompactTemplateGallery(){return <Stack gap={6}><CompactTagsExamp
 export function CompactTemplateFixture(){
   const params=new URLSearchParams(location.search),zoom=Number(params.get('zoom'))||1;
   useEffect(()=>{document.documentElement.style.zoom=String(zoom);return()=>{document.documentElement.style.zoom='';};},[zoom]);
-  return <ThemeProvider theme={(params.get('theme')||'rhine') as ThemeName} data-rhine-motion={params.get('motion')||'system'}><div style={{padding:12}}><CompactTemplateGallery/></div></ThemeProvider>;
+  return <ThemeProvider theme={(params.get('theme')||'rhine') as ThemeName} data-rhine-motion={params.get('motion')||'system'}><div style={{padding:12}}><Stack gap={6}><CompactTagsExample/><CompleteTemplateExample settings={params.has("settings")} autoHeight={params.has("auto")}/></Stack></div></ThemeProvider>;
 }

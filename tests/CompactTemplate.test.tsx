@@ -44,3 +44,12 @@ it('directory failure and retry change only candidates, retaining selection, sav
  expect(screen.getByRole('list',{name:'模板模型已选项'}).children).toHaveLength(1);fireEvent.focus(input);expect(screen.getAllByRole('option')).toHaveLength(11);fireEvent.click(screen.getByRole('button',{name:'完成选择'}));fireEvent.click(save);
  expect(screen.getByText('无需保存')).toBeVisible();expect(screen.getByLabelText('模板写入次数')).toHaveTextContent('写入 1 次');
 });
+
+it('settings undo restores the saved snapshot and clears validation without closing or writing',async()=>{
+ render(<CompleteTemplateExample settings/>);fireEvent.click(screen.getByRole('button',{name:'新建完整模板'}));
+ const name=screen.getByLabelText('完整模板名称'),save=screen.getByRole('button',{name:'保存完整模板'}),undo=screen.getByRole('button',{name:'撤销编辑'});
+ fireEvent.click(save);expect(name).toHaveAttribute('aria-invalid','true');fireEvent.click(undo);expect(name).not.toHaveAttribute('aria-invalid','true');expect(name).toHaveValue('');
+ fireEvent.change(name,{target:{value:'已保存合成模板'}});fireEvent.click(save);await screen.findByText('模板已保存');
+ fireEvent.change(name,{target:{value:'临时草稿'}});fireEvent.click(undo);expect(name).toHaveValue('已保存合成模板');expect(screen.queryByText('模板已保存')).toBeNull();
+ expect(screen.getByRole('dialog',{name:'账号设置 · 合成主账号'})).toBeVisible();expect(screen.getByLabelText('模板写入次数')).toHaveTextContent('写入 1 次');
+});
