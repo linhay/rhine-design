@@ -206,3 +206,7 @@ Button.size="standard" | "large"（0.11.2），标准14/22、44px最小高度，
 ## 来源→目标编辑（#78，未发布）
 
 `MappingEditor` 与 `MappingEditorProps / MappingEditorRow` 从主入口公开。受控稳定行id、双侧选项及回调、禁用/只读/逐行错误、空态与增删焦点见[完整契约](../docs/TEMPLATE_SETTINGS.md)。模板管理使用现有组件组合，不新增业务数据库或权限服务。
+
+## 时间线语义与结果构成（未发布）
+
+`StatusTimeline` / `TimelineLegend` / `StatusTimelineList` 支持共享 `statusLabels` 与独立 `mode="composition"` 等高结果构成。输入、比例、未知与兼容边界见[时间线契约](../docs/TIMELINE_COMPOSITION.md)。npm 0.11.3 不包含这些属性。

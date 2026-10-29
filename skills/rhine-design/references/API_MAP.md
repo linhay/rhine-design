@@ -73,3 +73,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 #18 未发布：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。
 
 - Combobox / RemoteMultiSelect 标题动作（未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`；契约 `docs/FIELD_LABEL_ACTION.md`，真实组合 `preview/LabelActionGallery.tsx`。保持 string label，动作/异步状态由宿主控制。
+
+未发布 #97：`StatusTimeline` / `TimelineLegend` 共享 `statusLabels`；`mode="composition"` 使用四类互斥计数与 coverage，等高精确比例、缺失/不完整/无请求整桶未知；`StatusTimelineList` 透传。源码与契约为 `components/StatusTimeline.tsx`、`docs/TIMELINE_COMPOSITION.md`，展台 `/#monitoring`。npm 0.11.3 不含这些属性。
