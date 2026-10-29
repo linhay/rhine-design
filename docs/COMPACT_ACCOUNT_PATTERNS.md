@@ -98,6 +98,6 @@ Dialog的高度/footer契约见[稳定预览弹窗](SETTINGS_DIALOG.md#稳定预
 </Stack>
 ```
 
-两者的 `density` 默认均为 `default`。列表紧凑密度将尾部从space-2改为space-1；单行图例紧凑密度只移除上下padding，保留横向padding和内部焦点轮廓。`TimelineLegend` 的密度选项仅作用于compact单行用法，不改变默认文字图例。示例外层仍为 `gap={1}`：列表尾部4px加外层4px容纳时间条下沿8px命中外延，两个实际44px目标相接而不重叠；不能单独删光外层gap、用负margin或缩小命中区。
+两者的 `density` 默认均为 `default`。列表紧凑密度将尾部从space-2改为space-1；单行图例紧凑密度只移除上下padding，保留横向padding和内部焦点轮廓。`TimelineLegend` 的密度选项仅作用于compact单行用法，不改变默认文字图例。示例外层仍为 `gap={1}`：列表尾部4px加外层4px容纳时间条下沿8px命中外延，两个实际44px目标相接而不重叠；不能单独删光外层gap、用负margin或缩小命中区。单行图例聚焦按钮时以 nearest 滚动使整个目标进入可视范围，关闭说明返回时同样保持可见；不依赖浏览器对部分可见按钮的默认 focus 滚动。
 
 可见色块间距包括触发器内部的居中留白，不能把图例容器边缘或44px目标边缘当作色块。32→24px是既定合成组合的测量，不是所有主题、token覆盖、悬停状态和调用场景的统一常量。`?fixture=timeline-density`提供默认/紧凑对照，分别记录色块、range和button真实rect，覆盖原生range方向键详情、图例说明、Escape归焦、窄容器局部滚动与减少动态。紧凑账号展台同步使用上述公开组合。源码候选未发布；原消费恢复同步并完成固定制品复验后才能删除临时适配。

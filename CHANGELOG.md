@@ -2,7 +2,7 @@
 
 ## 未发布
 
-- #23：StatusTimelineList / compact TimelineLegend 增加可选 density="compact" 组合，减少重复尾距/上下padding，保留默认布局、44px命中区和详情焦点；账号展台使用公开组合，视觉色块距离与命中边界分别验收。
+- #23：StatusTimelineList / compact TimelineLegend 增加可选 density="compact" 组合，减少重复尾距/上下padding，保留默认布局、44px命中区和详情焦点；账号展台使用公开组合，视觉色块距离与命中边界分别验收；单行图例聚焦/返回时将完整目标滚入可视范围。
 
 - #18：新增 SettingsNavigation，按 Dialog 实际内容宽度切换 SideNav / 原生 Select；共用选项、禁用与回调，隐藏分支退出 Tab/可访问树，响应式切换保留草稿和当前导航焦点。单对象身份合并标题，确认/提交锁导航，原消费仍须固定制品后删除局部适配。
 

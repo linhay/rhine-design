@@ -9,7 +9,7 @@ export function TimelineDensityFixture() {
  const params=new URLSearchParams(location.search),zoom=Number(params.get('zoom'))||1;
  useEffect(()=>{document.documentElement.style.zoom=String(zoom);return()=>{document.documentElement.style.zoom='';};},[zoom]);
  return <ThemeProvider defaultTheme={(params.get('theme')||'rhine') as ThemeName} data-rhine-motion={params.get('motion')||'reduced'}><div style={{padding:16}}><Stack gap={6}>
-  {(['default','compact'] as const).map(density=><section key={density} aria-label={`${density}密度`}><Text as="h2" variant="heading">{density==='default'?'默认组合':'紧凑组合'}</Text><Stack gap={1}>
+  {(['default','compact'] as const).map(density=><section key={density} aria-label={`${density}密度`} style={params.has('narrow')?{maxWidth:152}:undefined}><Text as="h2" variant="heading">{density==='default'?'默认组合':'紧凑组合'}</Text><Stack gap={1}>
    <StatusTimelineList density={density} label={`${density}历史`} items={[{id:'sample',title:'合成长资源名称：用于验证窄容器换行',timeline:{segments,startLabel:'00:00',endLabel:'03:00'}}]} />
    <TimelineLegend compact density={density} label={`${density}图例`} items={legend} />
   </Stack></section>)}

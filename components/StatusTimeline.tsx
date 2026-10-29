@@ -109,7 +109,10 @@ function LegendItem({ item, container, open, onOpenChange }: { item: TimelineLeg
   if (!item.description) return <li>{marker}{item.label}</li>;
   return <li><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Anchor asChild>
     <button ref={trigger} type="button" className="rhine-timeline__legend-trigger" aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? id : undefined}
-      onFocus={() => { if (!returning.current) onOpenChange(true); returning.current = false; }}
+      onFocus={event => {
+        if (event.currentTarget.closest('.rhine-timeline__legend--compact')) event.currentTarget.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+        if (!returning.current) onOpenChange(true); returning.current = false;
+      }}
       onClick={() => onOpenChange(true)}
       onPointerEnter={event => { if (event.pointerType === 'mouse') { hover.cancel(); onOpenChange(true); } }}
       onPointerLeave={event => { if (event.pointerType === 'mouse' && !(event.relatedTarget instanceof Node && popup.current?.contains(event.relatedTarget))) hover.leave(); }}
