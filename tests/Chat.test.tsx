@@ -103,3 +103,32 @@ describe('Chat composition', () => {
     unmount(); expect(vi.getTimerCount()).toBe(0);
   });
 });
+
+describe('opt-in chat layout and appearance', () => {
+  it('keeps standalone defaults and maps bubble presentation by stable member id only', () => {
+    const entries=[msg('a',10,'agent-a'),msg('b',11,'human-b'),{id:'event',kind:'event' as const,day:'今天',content:'事件'}];
+    const {container,rerender}=render(<ChatThread label="成员记录" entries={entries}/>);
+    const root=container.querySelector('.rhine-chat')!;
+    expect(root).toHaveAttribute('data-layout','standalone');expect(root).toHaveAttribute('data-appearance','plain');expect(root).toHaveAttribute('data-controls','full');
+    const mapping={ 'agent-a':{align:'end' as const,tone:'strong' as const} };
+    rerender(<ChatThread label="成员记录" entries={entries} layout="fill" appearance="bubble" controls="compact" memberAppearance={mapping} className="host-chat" style={{flex:1}} readOnly/>);
+    expect(root).toHaveClass('host-chat');expect(root).toHaveAttribute('data-layout','fill');
+    expect(screen.getByRole('article',{name:'agent-a · 10:10'})).toHaveAttribute('data-align','end');
+    expect(screen.getByRole('article',{name:'human-b · 10:11'})).toHaveAttribute('data-align','start');
+    expect(container.querySelector('.rhine-chat-event')?.closest('article')).toBeNull();
+    expect(screen.getByText('只读观察')).toBeVisible();
+    rerender(<ChatThread label="成员记录" entries={entries} appearance="plain" memberAppearance={mapping}/>);
+    expect(screen.getByRole('article',{name:'agent-a · 10:10'})).toHaveAttribute('data-align','start');
+  });
+  it('preserves compact history errors, new-message state and read-only action suppression', () => {
+    const content=<ChatCard title="未知记录" status="unknown" summary="运行结束，结果未确认" actions={<Button>接受</Button>}/>;
+    const entries=[{...msg('a',10),content}];
+    const props={label:'记录',layout:'fill' as const,appearance:'bubble' as const,controls:'compact' as const,readOnly:true,historyError:'加载失败，保留历史'};
+    const {rerender}=render(<ChatThread {...props} entries={entries}/>);
+    fireEvent.keyDown(screen.getByRole('region',{name:'记录'}),{key:'PageUp'});
+    rerender(<ChatThread {...props} entries={[...entries,msg('b',12)]}/>);
+    expect(screen.getByRole('alert')).toHaveTextContent('加载失败');expect(screen.getByRole('status')).toHaveTextContent('有新消息 · 已暂停跟随');
+    expect(screen.queryByRole('button',{name:'接受'})).not.toBeInTheDocument();expect(screen.getByText('状态未知')).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'回到最新并跟随'}));expect(screen.getByRole('status')).toHaveTextContent('跟随中');
+  });
+});

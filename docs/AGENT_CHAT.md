@@ -18,10 +18,10 @@
 ## 消息骨架与密度
 
 - 时间升序；`id` 唯一稳定。宿主提供成员 ID/名称、可选装饰头像、ISO 时间（含时区）及本地化时间/日期。头像不重复朗读姓名。
-- 同成员、同日期、间隔不超过 5 分钟且中间无事件，合并可见元信息；每条仍保留可访问作者/时间。换成员、跨日、系统事件、较长间隔均重新开始组。无右侧「当前用户」特权。
+- 同成员、同日期、间隔不超过 5 分钟且中间无事件，合并可见元信息；每条仍保留可访问作者/时间。换成员、跨日、系统事件、较长间隔均重新开始组。不根据身份推断左右；显式 bubble 成员映射见下文。
 - 正文用 body 14/22 与主题 regular 字重，不缩字；作者与时间 caption 12/18，作者用 label 字重。行宽上限 72ch；卡片 64ch，窄屏不设最小宽度。
 - 组间 24px、同组消息 8px、元信息到正文 8px、段间 12px。日期以细线区隔，事件用次级文字，不伪装成员气泡。
-- 普通正文无卡片外框。结构化内容复用 Surface、Badge、Disclosure，卡片内距 12px，标题/状态间距 8px。动作靠近对应正文或卡片尾部，使用 Button quiet/secondary，自然宽度并换行；保留 44px 命中范围。
+- 默认 plain 正文无卡片外框。结构化内容复用 Surface、Badge、Disclosure，卡片内距 12px，标题/状态间距 8px。动作靠近对应正文或卡片尾部，使用 Button quiet/secondary，自然宽度并换行；保留 44px 命中范围。
 - 文本、列表、代码、引用均完整换行。代码保留空白并可在长标识符处换行；复制由宿主使用原始数据。引用使用 blockquote + 可键盘访问的来源链接，宿主校验 URL 并提供可读名称。大型表格/产物另开详情，不默认裁切正文。
 
 ## 卡片与状态所有权
@@ -88,3 +88,34 @@ export function Observation() {
 ```
 
 完整可运行公开导出消费样例：`preview/ChatGallery.tsx`。三场景全部合成：两成员连续消息、三成员和事件、只读状态分支记录；演示控制在消息区之外，不执行模型或真实业务接口。`排版对照` 提供改造前后相同内容。验证结果见 [Agent Chat 验证](AGENT_CHAT_VERIFICATION.md)。
+
+
+## 无框全高与成员气泡（#99，未发布）
+
+npm 0.11.3 不包含这些新增参数。默认仍为 `layout="standalone" appearance="plain" controls="full"`，保留外框、32rem 消息视口和原控制区。
+
+| 参数 | 契约 |
+| --- | --- |
+| `layout` | `standalone` / `fill`；fill 取消外框与固定 32rem，高度为宿主的 100%，消息区 flex 填充剩余空间 |
+| `appearance` | `plain` / `bubble`；仅 bubble 应用成员样式，事件与日期始终独立于气泡 |
+| `memberAppearance` | 以稳定 `member.id` 为键的只读映射；值为 `{ align?: 'start' \| 'end', tone?: 'subtle' \| 'strong' }`。缺失值回退 start/subtle；逻辑方向随宿主 dir，不按人类、Agent 或观察者推断 |
+| `controls` | `full` / `compact`；compact 缩减栏内距、去除分隔线并缩短跟随文字。历史按钮、只读标记、失败全文、暂停/新消息状态与恢复按钮仍保留 |
+| `className` / `style` | 作用于根元素，供宿主安排 flex/grid 布局；不要覆盖内部滚动/锚点规则 |
+
+```tsx
+<div style={{ height: 640, minHeight: 0 }}>
+  <ChatThread label="成员协作记录" entries={entries}
+    layout="fill" appearance="bubble" controls="compact"
+    memberAppearance={{
+      'member-a': { align: 'end', tone: 'strong' },
+      'member-b': { align: 'start', tone: 'subtle' },
+      'member-c': { align: 'start', tone: 'strong' },
+    }} />
+</div>
+```
+
+fill 的祖先必须提供确定高度；放入剩余空间时，宿主用 flex/grid 的 `min-height:0` 和 `minmax(0,1fr)`，不要再用一个固定高度的滚动容器包裹 ChatThread。控制区是可换行的正常流内容，正文是线程唯一滚动容器。宿主应预留足够高度容纳控制区、错误与至少一段正文；极短宿主不能靠隐藏错误或缩字解决。消息内容可嵌阅读来源/卡片，但大型可执行产物仍另开视图。展台的有界 640px 框用于比较 400/520/880 和 CSS zoom；宿主页面本身仍可滚动至展台控制区，不冒充产品全屏页面。
+
+气泡使用现有主题 surface/ink/selected 配色：neutral 为黑/浅灰，其他主题各自保留语义。作者/时间在气泡外保持可读，结构化 ChatCard 保留自身表面、状态与动作；代码、引用、链接完整可读。对齐与色调只是呈现，不表达发送权限、已读或任务完成。只读、prepend 锚点、来源 Dialog 往返、流式暂停/恢复与减少动态沿用上方契约。
+
+2026-10-29 参考 [Grok Bot 官方应用示意](https://x.ai/news/designing-grok-bot) 的无框阅读和轻量气泡，采用显式宿主布局/成员映射；不复制角色或品牌，不引入其运行时。`#agent-chat` 可切换布局和外观；隔离验证 `?fixture=chat-layout`，追加 `&viewport=1` 展示固定标题与剩余视口高度、无页面滚动的真实宿主；三场景覆盖双成员、多人/事件和只读、长 Markdown 结构、未知/失败。详见 [布局与气泡验收](CHAT_LAYOUT_VERIFICATION.md)。

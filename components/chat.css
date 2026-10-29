@@ -32,3 +32,22 @@
 .rhine-chat-card .rhine-disclosure__content { padding:var(--rhine-space-2) 0; }
 .rhine-chat-actions { display:flex; flex-wrap:wrap; gap:var(--rhine-space-2); margin-top:var(--rhine-space-2); }
 .rhine-chat-history-error { margin:var(--rhine-space-3) var(--rhine-space-4); color:var(--rhine-error); overflow-wrap:anywhere; }
+
+/* Opt-in layouts leave the original standalone/plain viewport unchanged. */
+.rhine-chat[data-layout=fill] { height:100%; min-height:0; display:flex; flex-direction:column; border:0; border-radius:0; background:transparent; }
+.rhine-chat[data-layout=fill] > :is(.rhine-chat-toolbar,.rhine-chat-footer,.rhine-chat-history-error) { flex:none; }
+.rhine-chat[data-layout=fill] > .rhine-chat-viewport { flex:1 1 0; height:auto; min-height:0; }
+.rhine-chat[data-controls=compact] > :is(.rhine-chat-toolbar,.rhine-chat-footer) { padding:4px 8px; border:0; gap:4px 8px; }
+.rhine-chat[data-controls=compact] > .rhine-chat-history-error { margin:4px 8px; }
+.rhine-chat[data-appearance=bubble] .rhine-chat-entry > article { width:fit-content; max-width:min(100%,64ch); }
+.rhine-chat[data-appearance=bubble] .rhine-chat-entry > article[data-align=end] { margin-inline-start:auto; }
+.rhine-chat[data-appearance=bubble] .rhine-chat-body { padding:12px 16px; border-radius:max(16px,var(--rhine-radius-card)); background:var(--rhine-selected); color:var(--rhine-ink); }
+.rhine-chat[data-appearance=bubble] article[data-tone=strong] > .rhine-chat-body { background:var(--rhine-ink); color:var(--rhine-surface); }
+.rhine-chat[data-appearance=bubble] .rhine-chat-body a { color:inherit; }
+.rhine-chat[data-appearance=bubble] .rhine-chat-body blockquote { color:inherit; border-color:currentColor; }
+.rhine-chat[data-appearance=bubble] .rhine-chat-body pre { color:var(--rhine-ink); }
+/* Cards retain their own surface/semantic state colors inside either bubble tone. */
+.rhine-chat[data-appearance=bubble] .rhine-chat-card a { color:var(--rhine-green); }
+@media (forced-colors:active) { .rhine-chat[data-appearance=bubble] .rhine-chat-body { border:1px solid CanvasText; } }
+/* Dual boundary remains visible on a strong bubble and on an embedded card surface. */
+.rhine-chat[data-appearance=bubble] article[data-tone=strong] > .rhine-chat-body :is(a,button,input,summary,[tabindex]):focus-visible { outline:2px solid var(--rhine-ink); outline-offset:3px; box-shadow:0 0 0 3px var(--rhine-surface); }
