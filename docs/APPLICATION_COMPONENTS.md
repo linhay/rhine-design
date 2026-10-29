@@ -244,3 +244,7 @@ RemoteMultiSelect/Combobox完成或Escape后的延迟归焦只处理原输入框
 脚本：`check-remote-tag-wrap.js`量测141px、标签/按钮边界、文字与正文横溢出并验证交互；`prepare-remote-wrap-consumer.mjs <tarball> <new-directory>`从固定包复制同一合成展台，以公开入口加后置公共CSS构建，包含模板焦点回归入口。
 
 `StatusTimelineList.density`及单行`TimelineLegend.density`新增可选`compact`，默认`default`保持兼容；紧凑组合须保留外层`Stack gap={1}`以容纳44px命中区，见[密度契约](COMPACT_ACCOUNT_PATTERNS.md#时间条与图例的紧凑密度23-新增未发布)。该参数尚未发布。
+
+### 字段标题附属动作（未发布）
+
+Combobox / RemoteMultiSelect 可传 `labelAction`，保留 string label 与已选列表名称；动作是 label 旁独立节点，复用 quiet Button，获取只更新候选且不更改选择或草稿。可用性、busy、取消和迟到结果由宿主处理。无动作布局兼容；见[标题动作契约](FIELD_LABEL_ACTION.md)。

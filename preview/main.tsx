@@ -1,3 +1,4 @@
+import { LabelActionGallery, LabelActionFixture } from './LabelActionGallery';
 import { TimelineDensityFixture } from './TimelineDensityFixture';
 import { TemplateSettingsGallery, TemplateSettingsFixture, SwitchRowsExample, MappingDensityExamples } from './TemplateSettingsGallery';
 import { RemoteSelectionGallery, RemoteSelectionFixture } from './RemoteSelectionGallery';
@@ -69,7 +70,7 @@ function Gallery() {
     {section === 'date-range-filter' && <DateRangeFilterGallery />}
     {section === 'list-filter-bar' && <ListFilterBarGallery />}
     {section === 'compact-account' && <CompactAccountGallery />}
-    {section === 'compact-filters' && <><RemoteSelectionGallery /><CompactFilterBarGallery /><DenseFilterControlsGallery /></>}
+    {section === 'compact-filters' && <><LabelActionGallery /><RemoteSelectionGallery /><CompactFilterBarGallery /><DenseFilterControlsGallery /></>}
     {section === 'checkbox-rows' && <CheckboxRowGallery />}
     {section === 'component-typography' && <ComponentTypographyGallery />}
     {section === 'nav-actions' && <NavActionsGallery />}
@@ -169,4 +170,4 @@ function Gallery() {
 
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('fixture') === 'timeline-density' ? <TimelineDensityFixture /> : new URLSearchParams(location.search).get('fixture') === 'template-settings' ? <TemplateSettingsFixture /> : new URLSearchParams(location.search).get('fixture') === 'remote-selection' ? <RemoteSelectionFixture /> : new URLSearchParams(location.search).get('fixture') === 'object-reading' ? <ObjectReadingFixture /> : ['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-composition' ? <SettingsCompositionFixture /> : new URLSearchParams(location.search).get('fixture') === 'tray-usage' ? <TrayUsageFixture /> : <Gallery />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('fixture') === 'label-action' ? <LabelActionFixture /> : new URLSearchParams(location.search).get('fixture') === 'timeline-density' ? <TimelineDensityFixture /> : new URLSearchParams(location.search).get('fixture') === 'template-settings' ? <TemplateSettingsFixture /> : new URLSearchParams(location.search).get('fixture') === 'remote-selection' ? <RemoteSelectionFixture /> : new URLSearchParams(location.search).get('fixture') === 'object-reading' ? <ObjectReadingFixture /> : ['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-composition' ? <SettingsCompositionFixture /> : new URLSearchParams(location.search).get('fixture') === 'tray-usage' ? <TrayUsageFixture /> : <Gallery />}</StrictMode>);

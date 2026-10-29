@@ -1,6 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type SyntheticEvent } from 'react';
 import { Button, TextField, type Choice } from './components';
-import { Combobox } from './Forms';
+import { Combobox, type ComboboxProps } from './Forms';
 import './compact-forms.css';
 
 export interface DateFieldProps {
@@ -123,6 +123,7 @@ export function NumberField({ label, value, onValueChange, min, max, step = 1, p
 }
 
 export interface RemoteMultiSelectProps {
+  labelAction?: ComboboxProps['labelAction'];
   hasMore?: boolean; onLoadMore?: () => void; loadingMore?: boolean; loadMoreError?: string; onRetry?: () => void;
   label: string; query: string; onQueryChange: (query: string) => void;
   value: Choice[]; onValueChange: (value: Choice[]) => void; options: Choice[];

@@ -89,3 +89,9 @@
 /* A standalone switch retains its hit/focus space without a label column. */
 .rhine-switch.rhine-switch--hidden-label { flex:none; width:fit-content; max-width:100%; }
 .rhine-switch.rhine-switch--hidden-label label { width:44px; min-width:44px; min-height:44px; gap:0; justify-content:center; }
+
+/* Optional heading keeps the action outside the label and the accessible name. */
+.rhine-combobox__heading { display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; min-width:0; }
+.rhine-combobox__heading>label { flex:1 1 160px; min-width:0; overflow-wrap:anywhere; font-weight:500; }
+.rhine-combobox__label-action { min-width:0; max-width:100%; margin-inline-start:auto; }
+.rhine-combobox__label-action .rhine-button { white-space:normal; text-align:start; }
