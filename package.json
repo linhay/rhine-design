@@ -28,7 +28,8 @@
     "./review/vite": {
       "types": "./review/vite.d.mts",
       "import": "./review/vite.mjs"
-    }
+    },
+    "./theme-neutral.css": "./components/theme-neutral.css"
   },
   "sideEffects": [
     "./components/index.ts",

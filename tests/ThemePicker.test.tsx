@@ -25,6 +25,6 @@ it('keeps failed previews selectable and retries a replacement source', () => {
 it('uses independent radio groups and supports whole-group and per-option disabling', () => {
   render(<><ThemePicker label="一" value="rhine" onValueChange={() => {}} disabled /><ThemePicker label="二" value="rhine" onValueChange={() => {}} options={[{ value: 'rhine' }, { value: 'arknights', disabled: true }]} /></>);
   const radios = screen.getAllByRole('radio');
-  expect(radios[0]).toBeDisabled(); expect(radios[4]).toBeDisabled();
-  expect(radios[0].getAttribute('name')).not.toBe(radios[3].getAttribute('name'));
+  expect(radios[0]).toBeDisabled(); expect(radios[5]).toBeDisabled();
+  expect(radios[0].getAttribute('name')).not.toBe(radios[4].getAttribute('name'));
 });

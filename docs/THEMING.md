@@ -2,6 +2,8 @@
 
 `ThemeProvider`、`useTheme`、`themes` 和相关类型从 `@linhey/rhine-design/theme` 导出。此能力自 0.4.0 提供，npm 0.3.0 不包含；建议固定版本并提交 lockfile。组件仍从 `@linhey/rhine-design` 导入。
 
+`neutral` 为 #98 新增的未发布源码能力，npm 0.11.3 不包含。完整配色与兼容边界见 [中性主题](THEME_NEUTRAL.md)。
+
 ## 接入一次，随处切换
 
 ```tsx
@@ -20,12 +22,12 @@ export function App() {
 }
 ```
 
-主题入口自动加载基础样式与三套内置主题，不需要另行导入主题 CSS、添加 `.rhine-theme` 或修改 DOM。Provider 渲染一个真实的 `div.rhine-theme`，通过 `data-rhine-theme` 应用主题，不重建子组件。普通组件入口保持独立，不额外加载可选主题。
+主题入口自动加载基础样式与四套内置主题，不需要另行导入主题 CSS、添加 `.rhine-theme` 或修改 DOM。Provider 渲染一个真实的 `div.rhine-theme`，通过 `data-rhine-theme` 应用主题，不重建子组件。普通组件入口保持独立，不额外加载可选主题。
 
 ## API
 
 ```ts
-type ThemeName = 'rhine' | 'arknights' | 'neo-brutalism';
+type ThemeName = 'rhine' | 'arknights' | 'neo-brutalism' | 'neutral';
 
 interface ThemeProviderProps extends HTMLAttributes<HTMLDivElement> {
   defaultTheme?: ThemeName;
@@ -101,11 +103,11 @@ export function App() {
 
 将 `<div className="rhine-theme" data-rhine-theme="arknights">` 替换为 `<ThemeProvider defaultTheme="arknights">`，删除额外主题 CSS 导入；原根节点的布局类、`id`、动效属性直接传给 Provider。需要动态切换时调用 `useTheme().setTheme()`。
 
-旧的 CSS-only 用法继续支持：先导入基础组件样式，再导入 `theme-arknights.css` 或 `theme-neo-brutalism.css`，在根节点设置属性。两种用法选择一种即可，不要为迁移再包一层主题根。
+旧的 CSS-only 用法继续支持：先导入基础组件样式，再导入 `theme-arknights.css` 、`theme-neo-brutalism.css` 或 `theme-neutral.css`，在根节点设置属性。两种用法选择一种即可，不要为迁移再包一层主题根。
 
 ## 场景背景（0.5.0）
 
-`Background` 从组件主入口导出，复用当前主题，不生成主题根。使用 `roleTone` 选择场景；默认是 `content`。主题定义颜色和纹理，业务无需判断当前主题名称。展台 `#backgrounds` 只展示当前选中主题的六类场景；使用右上角主题选择器切换三套内置主题，背景随之同步更新。
+`Background` 从组件主入口导出，复用当前主题，不生成主题根。使用 `roleTone` 选择场景；默认是 `content`。主题定义颜色和纹理，业务无需判断当前主题名称。展台 `#backgrounds` 只展示当前选中主题的六类场景；使用右上角主题选择器切换四套内置主题，背景随之同步更新。
 
 | `roleTone` | 用途 | 默认纹理 | 底色 / 文字变量 |
 | --- | --- | --- | --- |
