@@ -62,4 +62,8 @@
 
 /* A single-pane form needs room for one feedback block and its direct actions.
    Settings navigation and split previews keep their established footer budget. */
-.rhine-dialog--bounded:not(.rhine-dialog--settings):not(.rhine-dialog--split) .rhine-dialog__footer { max-height:55%; }
+.rhine-dialog--bounded:not(.rhine-dialog--settings):not(.rhine-dialog--split) .rhine-dialog__footer { max-height:var(--rhine-dialog-footer-limit,60%); }
+/* Match the existing narrow-window inset for short single-pane forms as well. */
+@media (max-height:700px) {
+ .rhine-dialog.rhine-dialog--bounded:not(.rhine-dialog--settings):not(.rhine-dialog--split) { padding:12px; }
+}

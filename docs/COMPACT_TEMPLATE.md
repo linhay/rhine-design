@@ -28,4 +28,19 @@
 
 测试：`tests/CompactTemplate.test.tsx`、`tests/MappingEditor.test.tsx` 和 `scripts/check-compact-template.js`。真实浏览器证明 CSS zoom、DOM/键盘和合成宿主流程；原生网页缩放、读屏语音与真实服务另验。
 
-2026-10-29 评论 6497842246 取代此前“整组 Stack/Inline footer”建议。普通有界 Dialog 同样建立实际容器查询，让原有 ≤300px 直接动作规则生效；单栏有界表单的 footer 上限为55%，容纳一条反馈与动作，设置导航/分栏仍保留原预算。648px短屏另测正文至少44 CSS px可操作空间；不新增插槽或消费 CSS。
+2026-10-29 评论 6497842246 取代此前“整组 Stack/Inline footer”建议。普通有界 Dialog 同样建立实际容器查询，让原有 ≤300px 直接动作规则生效；显式固定高度的单栏有界表单 footer 后备上限为60%（保留 `--rhine-dialog-footer-limit` 优先级，自动高度的测量上限不变），容纳一条反馈与动作，设置导航/分栏仍保留原预算。648px短屏另测正文至少44 CSS px可操作空间；不新增插槽或消费 CSS。
+
+## 验收边界与反例
+
+`check-template-footer.js` 以三主题、400/520/880、100/200% CSS zoom、648px高窗口，从空白、重名到失败、成功和无改动，检查整个44px动作、提示行、正文至少一个控件的空间，以及 footer 无内部裁剪。`?probe=footer` 临时恢复40%上限作为反例；`check-compact-template.js` 的 `?probe=clip` 定向裁剪长标签。反例只修改测试页面。
+
+普通有界 Dialog 新建容器后，后代现有 footer 的≤559px间距和≤300px按钮规则以实际 Dialog 宽度计算；MappingEditor/ListFilterBar等有自身容器，仍以自身容器计算。settings 已有容器保持不变，split 的媒体查询分栏保持不变。普通单栏有界表单在≤700px高窗口沿用现有窄窗12px内距，避免880px×200% CSS zoom的短窗口仍消耗标准24px外框内距。对应回归入口为 `check-settings-bounded.js`、`check-dialog-scroll-boundaries.js`、`check-compact-selection.js`；自动高度继续优先使用测量变量，不被60%后备值覆盖。
+
+保留失败：首次单测误用了查询 API，随后类型检查检出未使用导入和错误参数；首次浏览器自动检查虽通过，截图发现 footer 动作裁剪，原因是检查先滚动且只量文字。补充整个按钮/不滚动断言后，400px×200%下橙趣主题及648px短屏复现。整组Stack被Fragment取代；普通有界Dialog缺少容器与反馈预算的缺口一并修正。修复期间中止的一次浏览器运行记录为中止，不计通过。后续结果须绑定精确提交与制品，CLI退出码不代替JSON。
+
+截图使用合成值：
+
+![默认主题的紧凑标签与来源](verification/compact-template-rhine.png)
+![战术主题的紧凑标签与来源](verification/compact-template-arknights.png)
+![橙趣主题的紧凑标签与来源](verification/compact-template-neo-brutalism.png)
+![400px、200% CSS zoom、648px高的初始错误与保存](verification/compact-template-short.png)

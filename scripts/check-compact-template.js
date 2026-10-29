@@ -16,7 +16,7 @@ async page => {
   });
   assert(result.visible&&result.rects.length>0&&result.rects.every(r=>r.left>=result.left-1&&r.right<=result.right+1&&r.top>=result.top-1&&r.bottom<=result.bottom+1),'text clipped or hidden '+JSON.stringify(result));return result;
  };
- const feedback=async text=>{const node=page.getByRole('dialog',{name:'编辑完整模板'}).locator('.rhine-dialog__footer').getByText(text,{exact:true});await node.waitFor();await page.waitForTimeout(250);const evidence=await readable(node,false);await readable(page.getByRole('button',{name:'保存完整模板',exact:true}).locator('span').first(),false);return evidence;};
+ const feedback=async text=>{const node=page.getByRole('dialog',{name:'编辑完整模板'}).locator('.rhine-dialog__footer').getByText(text,{exact:true});await node.waitFor();await page.waitForTimeout(250);const evidence=await readable(node,false);await readable(page.getByRole('button',{name:'保存完整模板',exact:true}).locator('span').first(),false);const frame=await page.locator('.rhine-dialog__footer').evaluate(el=>({client:el.clientHeight,scroll:el.scrollHeight}));assert(frame.scroll<=frame.client+1,'footer clips actions '+JSON.stringify(frame));return evidence;};
  const workflow=async()=>{
   await page.getByLabel('首次保存失败',{exact:true}).check();await page.getByRole('button',{name:'新建完整模板',exact:true}).click();
   const dialog=page.getByRole('dialog',{name:'编辑完整模板'}),save=dialog.getByRole('button',{name:'保存完整模板',exact:true}),name=dialog.getByLabel('完整模板名称',{exact:true});
