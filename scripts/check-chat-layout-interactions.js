@@ -9,6 +9,13 @@ async page => {
   try{
    await page.setViewportSize({width:400,height:900});await page.goto(`${base}/?fixture=chat-layout&theme=${theme}&zoom=2&appearance=${appearance}`);
    const v=page.getByRole('region',{name:'合成聊天消息'});await v.waitFor();
+   await v.scrollIntoViewIfNeeded();await v.focus();await page.keyboard.press('Home');await settle(v);
+   const bounds=await v.boundingBox();await page.mouse.move(bounds.x+bounds.width/2,(Math.max(0,bounds.y)+Math.min(900,bounds.y+bounds.height))/2);
+   await page.mouse.wheel(0,10000);
+   await page.waitForFunction(()=>{const e=document.querySelector('.rhine-chat-viewport');return Math.abs(e.scrollHeight-e.clientHeight-e.scrollTop)<2;},null,{timeout:4000});
+   const wheelSettled=await settle(v);await page.waitForTimeout(220);
+   assert(await v.evaluate(e=>Math.abs(e.scrollHeight-e.clientHeight-e.scrollTop)<2),'native wheel rolled back');
+   await page.getByRole('button',{name:'回到最新并跟随'}).click();
    await v.scrollIntoViewIfNeeded();await v.focus();await page.keyboard.press('PageUp');
    await page.waitForFunction(()=>document.querySelector('.rhine-chat-footer [role=status]').textContent.includes('已暂停'));
    await v.evaluate(e=>e.scrollTop=200);await page.waitForTimeout(80);
@@ -39,7 +46,7 @@ async page => {
    await page.waitForFunction(e=>e===document.activeElement,handle,{timeout:3000});
    assert(await v.getByRole('button',{name:'接受请求'}).count()===0,'readOnly action leaked');
    assert(await page.getByRole('status').textContent().then(t=>t.includes('已暂停')),'source focus resumed follow');
-   rows.push({theme,appearance,pass:true,settled,streamAnchor,afterOffset});
+   rows.push({theme,appearance,pass:true,wheelSettled,settled,streamAnchor,afterOffset});
   }catch(error){rows.push({theme,appearance,pass:false,error:String(error)});}
  }
  const motion=[];

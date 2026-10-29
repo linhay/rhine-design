@@ -36,7 +36,10 @@ async page => {
     });
     assert(contrast.length>0&&contrast.every(c=>c.ratio>=4.5),'strong content contrast failed '+JSON.stringify(contrast));
    }
-   await viewport.evaluate(e=>e.scrollTop=e.scrollHeight);
+   await viewport.focus();await page.keyboard.press('End');
+   await page.waitForFunction(()=>{const e=document.querySelector('.rhine-chat-viewport');return Math.abs(e.scrollHeight-e.clientHeight-e.scrollTop)<2;},null,{timeout:3000});
+   await page.waitForTimeout(220);
+   assert(await viewport.evaluate(e=>Math.abs(e.scrollHeight-e.clientHeight-e.scrollTop)<2),'native End rolled back');
    const end=await viewport.locator('[data-chat-entry]').last().boundingBox(),v=await viewport.boundingBox();
    assert(end.y+end.height<=v.y+v.height+1,'last message unreachable');
    rows.push({theme,width,zoom,appearance,scene,pass:true,geometry});
