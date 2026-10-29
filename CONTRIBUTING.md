@@ -40,6 +40,8 @@ npm run check
 | 表单/错误 | `tests/Patterns.test.tsx`、`tests/SettingsDialog.test.tsx` 和设置交互脚本：失败保留输入，摘要只随失败提交定位、链接回字段不变路由；选择/关闭不等于保存 |
 | 有界布局/操作区 | `scripts/check-settings-bounded.js`：真实内框、长导航/操作、末项滚动可达、按钮完整和命中范围；保留 398px iframe 内宽及 CSS zoom 的独立标识 |
 | 紧凑数值/长文 | `scripts/check-compact-layouts.js`：正常/零/未知/长文；关键数值的行片段不被 hidden/clip 祖先截断，滚动内容另验滚到后可达；document.scrollWidth 不溢出不能替代 |
+| 反馈可读/纠错闭环 | `scripts/check-p0-feedback.js`：三主题、正常/系统/手动减少动态，400×648 下设置失败/成功路径及 CSS zoom 1/2 的逐行滚动、裁剪祖先与遮挡采样；另测 200% 下 ErrorSummary 定位、回字段、保留输入和修正后结果 |
+| 交互中断/迟到结果 | `scripts/check-p0-interruptions.js`：三主题、三动态模式，入场中 Escape、保存中关闭重开与新草稿、快速 Home/End、重播/复位/实际路由卸载；观察真实 500/700ms 计时器取消和过期回调，保留过程采样 |
 
 例如，从所选源码仓根目录，用其 engines 支持的 Node 执行：
 
@@ -52,16 +54,22 @@ npx vite preview --host 127.0.0.1 --port 18497 --strictPort
 在另一个终端、同一源码目录，使用已有 Playwright CLI 打开此生产预览后按相关范围运行：
 
 ```sh
-mkdir -p output/playwright/issues-23-25
+mkdir -p output/playwright/issues-23-25 output/playwright/p0-feedback
 playwright-cli -s=p0-validation open http://127.0.0.1:18497/
 playwright-cli -s=p0-validation run-code --filename scripts/check-settings-interactions.js
 playwright-cli -s=p0-validation run-code --filename scripts/check-tabs-layout.js
 playwright-cli -s=p0-validation run-code --filename scripts/check-settings-bounded.js
 playwright-cli -s=p0-validation run-code --filename scripts/check-compact-layouts.js
+playwright-cli -s=p0-validation run-code --filename scripts/check-p0-feedback.js
+playwright-cli -s=p0-validation run-code --filename scripts/check-p0-interruptions.js
 playwright-cli -s=p0-validation close
 ```
 
 也可用环境已有的 CLI wrapper；不把 Playwright 或外部检测器新增为运行时依赖。脚本返回结构化结果，必须检查 `pass`、失败列表与页面错误，不能只看 shell 退出码。保存本轮脚本/源码差异与构建摘要、浏览器版本和原始失败；测试结束关闭自己启动的预览服务。
+
+两个 P0 补充脚本在同一生产预览上提供浏览器内反例。打开带 `?p0Probe=clip` 或 `?p0Probe=cover` 的 URL 后运行 `check-p0-feedback.js`；带 `?p0Probe=lost-draft`、`inactive-focus` 或 `stale-timer` 后运行 `check-p0-interruptions.js`。正常运行应 `pass:true`；反例应 `pass:false`，且分别命中长反馈裁剪/遮挡、新草稿丢失、非活动面板焦点、旧完成/复位/卸载取消失败。异常、超时或未实际进入中断时间窗不算反例检出成功。保存完整 JSON、初始失败与最终脚本摘要，不能只保存最终绿灯。
+
+可读性检查先等待有限入场，再逐行滚动可滚动祖先及主滚动区；每行检查裁剪边界和三处命中采样；不透明纯色的 `pointer-events:none` 表面在同步测量期间临时参与命中，并立即恢复原样。它覆盖这些固定场景，不证明所有像素、半透明/图片/伪元素遮罩、其他浏览器或读屏。长提示由真实 Notice DOM 中的合成文字扩展而来；保存结果为展台定时器，不代表真实服务。中断检查使用真实时间和 React 生命周期；计时器观察记录也属于证据。设置宿主允许保存中关闭，迟到结果不得覆盖重开后的编辑，不通过禁止关闭来改变原契约。
 
 新增断言用正常场景与有针对性的破坏对照证明能抓到目标问题。反例只在隔离测试页面或临时浏览器状态中注入，不改正式组件来迎合检查。`npm run check` 包含 JSDOM、类型与构建，不自动运行上述真实浏览器矩阵；CSS zoom 不等于浏览器原生缩放。完整库变更仍按原流程运行 `npm run check`，制品发布/消费仍需固定 tarball 独立验收。
 
