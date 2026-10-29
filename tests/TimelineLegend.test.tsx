@@ -8,6 +8,42 @@ const items: TimelineLegendItem[] = [
   { status: 'unknown', label: '未知', description: '数据缺失或不完整，不能解释为健康。' },
 ];
 
+function hover(element: HTMLElement) {
+  const event = new Event('pointerover', { bubbles: true });
+  Object.defineProperty(event, 'pointerType', { value: 'mouse' });
+  fireEvent(element, event);
+}
+
+it('keeps a keyboard rule open when scrolling moves another legend item under the pointer', async () => {
+  render(<><TimelineLegend compact items={items} /><button>离开图例</button></>);
+  const output = screen.getByRole('button', { name: '有输出' });
+  const unknown = screen.getByRole('button', { name: '未知' });
+  act(() => output.focus());
+  expect(output.matches(':focus-visible')).toBe(true);
+  await screen.findByRole('dialog', { name: '有输出规则' });
+  hover(unknown);
+  expect(screen.getByRole('dialog', { name: '有输出规则' })).toBeVisible();
+  expect(output).toHaveFocus();
+  fireEvent.click(unknown);
+  await screen.findByRole('dialog', { name: '未知规则' });
+  act(() => screen.getByRole('button', { name: '离开图例' }).focus());
+  hover(output);
+  await screen.findByRole('dialog', { name: '有输出规则' });
+});
+
+it('does not unmount the rule being inspected when another item receives incidental hover', async () => {
+  render(<TimelineLegend compact items={items} />);
+  const output = screen.getByRole('button', { name: '有输出' });
+  act(() => output.focus());
+  await screen.findByRole('dialog', { name: '有输出规则' });
+  fireEvent.keyDown(output, { key: 'Enter' });
+  const close = screen.getByRole('button', { name: '关闭有输出规则' });
+  expect(close).toHaveFocus();
+  hover(screen.getByRole('button', { name: '未知' }));
+  expect(close).toHaveFocus();
+  expect(screen.getByRole('dialog', { name: '有输出规则' })).toBeVisible();
+});
+
 it('preserves default labels and non-interactive presentation', () => {
   render(<TimelineLegend />);
   expect(screen.getByRole('list', { name: '健康记录图例' }).children).toHaveLength(5);
