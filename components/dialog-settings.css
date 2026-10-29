@@ -73,7 +73,7 @@
  .rhine-dialog.rhine-dialog--settings:not(.rhine-dialog--split).rhine-dialog--bounded { max-height:calc(100% - 8px); padding-block:8px; }
  @container (max-width:559px) {
   .rhine-dialog--settings:not(.rhine-dialog--split) .rhine-dialog__footer .rhine-notice, .rhine-dialog--settings:not(.rhine-dialog--split) .rhine-dialog__footer .rhine-toast { padding:4px 8px; }
-  .rhine-dialog--settings:not(.rhine-dialog--split) .rhine-dialog__footer { max-height:var(--rhine-dialog-footer-limit,50%); margin-top:4px; padding-top:4px; }
+  .rhine-dialog--settings:not(.rhine-dialog--split) .rhine-dialog__footer { max-height:var(--rhine-dialog-footer-limit,calc(50% - 8px)); margin-top:4px; padding-top:4px; }
   .rhine-dialog--settings:not(.rhine-dialog--split) .rhine-dialog__body { margin-top:4px; }
   .rhine-dialog--settings:not(.rhine-dialog--split) .rhine-dialog__settings-grid { gap:4px; }
  }
