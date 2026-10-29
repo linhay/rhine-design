@@ -119,3 +119,26 @@ fill 的祖先必须提供确定高度；放入剩余空间时，宿主用 flex/
 气泡使用现有主题 surface/ink/selected 配色：neutral 为黑/浅灰，其他主题各自保留语义。作者/时间在气泡外保持可读，结构化 ChatCard 保留自身表面、状态与动作；代码、引用、链接完整可读。对齐与色调只是呈现，不表达发送权限、已读或任务完成。只读、prepend 锚点、来源 Dialog 往返、流式暂停/恢复与减少动态沿用上方契约。
 
 2026-10-29 参考 [Grok Bot 官方应用示意](https://x.ai/news/designing-grok-bot) 的无框阅读和轻量气泡，采用显式宿主布局/成员映射；不复制角色或品牌，不引入其运行时。`#agent-chat` 可切换布局和外观；隔离验证 `?fixture=chat-layout`，追加 `&viewport=1` 展示固定标题与剩余视口高度、无页面滚动的真实宿主；三场景覆盖双成员、多人/事件和只读、长 Markdown 结构、未知/失败。详见 [布局与气泡验收](CHAT_LAYOUT_VERIFICATION.md)。
+
+
+## 成员资料链接（#110，未发布）
+
+`ChatThread.memberLink(member, message)` 可返回 `ChatMemberLink` 或 `undefined`。此能力不在 npm 0.11.3 中，使用前固定包含改动的源码/制品。
+
+`ChatMemberLink` 只开放必填 `href: string` 和原生链接的 `id`、`onClick`、`aria-label`、`title`、`target`、`rel`。头像与姓名组成一个原生 `<a>`；时间在链接外，不把整条消息或元信息空白变成点击区。无映射（含未知目标）保持静态作者；`readOnly` 仍允许导航。
+
+- `ChatMember.id/name` 仍为字符串，article 的「作者 · 时间」可访问名称不变。头像仅作装饰，不嵌入交互内容；可选 `aria-label` 应包含可见姓名。链接自然换行，长名不省略；细指针最小 24px，粗或混合指针最小 44px，目标与时间不重叠。
+- 连续消息的 sr-only header 只有静态身份与时间，不渲染隐藏链接，也不调用映射。每个可见作者在每次 render 只求值一次；React 的重渲染/StrictMode 可重新求值，因此映射必须纯函数，不做请求或写入。
+- 组件不拦截点击、不推断路由或权限。宿主提供可信 href，`undefined` 表示没有可用目标；新标签、复制链接、Enter 等沿用浏览器语义。宿主 onClick 仅拦截未被处理、无修饰键的普通左击，尊重 `target`；Ctrl/Cmd/Shift/Alt 与中键不改为同页跳转。
+- 返回历史、阅读位置、已加载记录及触发焦点属于宿主。稳定消息 id 可用于链接 id；离开时保存位置与入口，返回时先恢复数据/视口，再用 `focus({preventScroll:true})` 回到原入口。隐藏但保留的会话需退出焦点顺序与可访问树；卸载的会话不能依靠组件内部状态自动恢复。
+
+```tsx
+<ChatThread label="协作记录" entries={entries} readOnly
+  memberLink={(member, message) => knownMemberIds.has(member.id) ? {
+    href: `/members/${encodeURIComponent(member.id)}`,
+    id: `author-${message.id}`,
+    'aria-label': `查看 ${member.name} 的资料`,
+  } : undefined} />
+```
+
+真实合成宿主位于 `preview/ChatMemberLinkGallery.tsx`，展台 `#agent-chat` 提供入口，隔离页面 `?fixture=chat-member-link`。覆盖两侧成员、群聊/事件、未知目标、长名称与只读导航；URL 可直接打开成员资料，普通导航与浏览器返回恢复聊天和已加载历史。它不连接真实服务，也不代表消费产品已升级。验收见 [成员链接验证](CHAT_MEMBER_LINK_VERIFICATION.md)。

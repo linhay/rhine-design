@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #110：ChatThread 新增可选 `memberLink(member, message)` 与有限原生链接类型 `ChatMemberLink`；头像和姓名为同一链接、时间独立，连续作者静态、无映射回退，支持只读导航。宿主负责目标与返回恢复，见[契约](docs/AGENT_CHAT.md#成员资料链接110未发布)。尚未 npm 发布。
+
 - #99：ChatThread 新增可选 fill 布局、plain/bubble 外观、按稳定成员 id 配置的逻辑对齐/明暗气泡、compact 控制区及根 className/style；保留 standalone/plain/full 默认、只读与历史锚点契约。尚未 npm 发布。
 - #96：ResponsiveActions 按实际容器/内容依次收为文字、图标、竖点菜单；动态权限/busy/禁用、44px、焦点连续性与测量清理。新增 moreVertical，原 more 不变。
 

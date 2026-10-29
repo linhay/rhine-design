@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button, ChatCard, ChatThread, Checkbox, Dialog, Inline, Select, Stack, Surface, Text, Toolbar, type ChatEntry, type ChatStatus, type ChatThreadProps } from '../components';
+import { Badge, Button, ChatCard, ChatThread, Checkbox, Dialog, Inline, Link, Select, Stack, Surface, Text, Toolbar, type ChatEntry, type ChatStatus, type ChatThreadProps } from '../components';
 import './chat-gallery.css';
 
 const members = [{ id: 'a', name: '成员 A' }, { id: 'b', name: '成员 B' }, { id: 'c', name: '成员 C' }];
@@ -96,6 +96,7 @@ export function ChatGallery({ initialLayout = 'standalone', initialAppearance = 
       <Select label="消息外观" value={appearance} onChange={e => setAppearance(e.target.value as NonNullable<ChatThreadProps['appearance']>)}><option value="plain">纯正文</option><option value="bubble">成员气泡</option></Select>
       <Select label="排版对照" value={layout} onChange={e => setLayout(e.target.value)}><option value="after">规范组合</option><option value="before">问题结构复现</option></Select>
     </Toolbar>
+    <Text><Link href="?fixture=chat-member-link">体验头像与姓名导航</Link></Text>
     <div className="chat-gallery-canvas" style={{ width: `${width}px`, height: threadLayout === 'fill' && !before ? 640 : undefined }}>
       {before ? <Surface><Stack gap={6}>{entries.map(entry => <div key={entry.id}>{entry.kind === 'message' && <Inline gap={2}><Text>{entry.member.name}</Text><Text variant="caption">{entry.time}</Text></Inline>}{entry.content}</div>)}</Stack></Surface>
         : <ChatThread layout={threadLayout} appearance={appearance} controls={threadLayout === 'fill' ? 'compact' : 'full'} memberAppearance={{ a: { align: 'end', tone: 'strong' }, b: { align: 'start', tone: 'subtle' }, c: { align: 'start', tone: 'strong' } }} key={scene} label="合成聊天消息" entries={entries} readOnly={observing} hasEarlier={!older} loadingEarlier={loading} historyError={historyError}
