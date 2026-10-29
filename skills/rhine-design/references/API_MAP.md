@@ -14,7 +14,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
 | 紧凑筛选（自 0.10.0，npm 0.9.1 不含） | `docs/COMPACT_FILTER_CONTROLS.md`；SegmentedControl `fullWidth`、DateRangePicker `compact`、RemoteMultiSelect `maxVisibleTags`、ListFilterBar `drawerDescription` / `drawerResult`；保持默认兼容、完整选择值及加载/错误反馈 |
 | Date presets + confirmed custom range（组合，无新增导出） | `docs/DATE_RANGE_FILTER.md`、`preview/DateRangeFilterGallery.tsx`；复用 SegmentedControl + Button + Popover + DateRangePicker，宿主负责时区、预设和查询 |
-| ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
+| ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md`；未发布 `neutral` 主题见 `docs/THEME_NEUTRAL.md`（npm 0.11.3 不含） |
 | OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
 | NeutronStarBackdrop, NeutronStarBackdropProps (0.8.0) | `components/NeutronStarBackdrop.tsx`；契约 `docs/NEUTRON_STAR_BACKDROP.md`；Three.js drawing modules are internal |
 | Logo | `components/Logo.tsx` |
