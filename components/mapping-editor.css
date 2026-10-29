@@ -48,3 +48,15 @@
 .rhine-mapping-editor--compact .rhine-mapping-editor__fields--long:not(:has(>button)) { grid-template-columns:minmax(0,1fr); gap:var(--rhine-space-1); }
 .rhine-mapping-editor--compact .rhine-mapping-editor__fields--long>.rhine-mapping-editor__arrow { justify-self:start; transform:rotate(90deg); }
 .rhine-mapping-editor--compact .rhine-mapping-editor__fields--long>button { justify-self:end; }
+
+.rhine-mapping-editor__group--tags { gap:var(--rhine-space-2); }
+.rhine-mapping-editor__group--tags .rhine-mapping-editor__sources { display:flex; flex-wrap:wrap; gap:var(--rhine-space-1); }
+.rhine-mapping-editor__group--tags .rhine-mapping-editor__sources>li { min-height:0; max-width:100%; padding:0; }
+.rhine-mapping-editor__group--tags .rhine-badge { max-width:100%; white-space:normal; overflow-wrap:anywhere; font-size:var(--rhine-text-caption); line-height:var(--rhine-leading-caption); }
+/* The tags relationship remains horizontal until the grouped container fallback. */
+@container (min-width:360px) {
+ .rhine-mapping-editor__group--tags>.rhine-mapping-editor__arrow { transform:none; justify-self:center; }
+}
+@container (max-width:359px) {
+ .rhine-mapping-editor__group--tags>.rhine-mapping-editor__arrow { transform:rotate(90deg); justify-self:center; }
+}

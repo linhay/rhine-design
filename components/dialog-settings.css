@@ -9,7 +9,7 @@
 }
 
 /* Opt-in stable outer frame; footer never participates in content scrolling. */
-.rhine-dialog.rhine-dialog--bounded { display:flex; flex-direction:column; gap:0; height:var(--rhine-dialog-height,auto); max-height:calc(100% - 32px); overflow:hidden; }
+.rhine-dialog.rhine-dialog--bounded { container-type:inline-size; display:flex; flex-direction:column; gap:0; height:var(--rhine-dialog-height,auto); max-height:calc(100% - 32px); overflow:hidden; }
 .rhine-dialog.rhine-dialog--bounded.rhine-dialog--split { width:min(960px,calc(100% - 32px)); }
 .rhine-dialog__scroll { min-height:0; min-width:0; overflow:auto; flex:1 1 auto; display:grid; grid-template-columns:minmax(0,1fr); }
 .rhine-dialog--bounded .rhine-dialog__main { min-height:0; }
@@ -59,3 +59,7 @@
 @media (max-width:560px) {
  .rhine-dialog.rhine-dialog--settings.rhine-dialog--bounded { padding-inline:8px; }
 }
+
+/* A single-pane form needs room for one feedback block and its direct actions.
+   Settings navigation and split previews keep their established footer budget. */
+.rhine-dialog--bounded:not(.rhine-dialog--settings):not(.rhine-dialog--split) .rhine-dialog__footer { max-height:55%; }

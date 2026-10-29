@@ -23,3 +23,15 @@
 /* More specific than the generic tag button flex:none, independent of stylesheet order. */
 .rhine-multi-select__tags .rhine-button.rhine-multi-select__activate { min-width:44px; flex:0 1 auto; white-space:normal; }
 .rhine-multi-select__tags .rhine-multi-select__activate > span { min-width:0; white-space:normal; overflow-wrap:anywhere; }
+
+/* Density is independent of the visible-tag count. Unknown and mixed input stay 44px. */
+.rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags { gap:var(--rhine-space-1); }
+.rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags > li { min-width:0; padding-inline-start:var(--rhine-space-1); }
+.rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags > li[data-activatable=true] { padding-inline-start:0; }
+.rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags > li > span { white-space:normal; overflow:visible; overflow-wrap:anywhere; }
+.rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags > li,
+.rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags .rhine-button { font-size:var(--rhine-text-caption); line-height:var(--rhine-leading-caption); }
+.rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags .rhine-button { min-width:44px; min-height:44px; padding:var(--rhine-space-1); }
+@media (pointer:fine) and (not (any-pointer:coarse)) {
+ .rhine-multi-select[data-tag-density=compact] .rhine-multi-select__tags .rhine-button { min-width:28px; min-height:28px; }
+}

@@ -10,7 +10,7 @@ it('keeps the original label DOM without an action and preserves all accessible 
   const { container, rerender } = render(<RemoteMultiSelect {...props}/>);
   expect(container.querySelector('.rhine-combobox>label')).not.toBeNull();
   expect(container.querySelector('.rhine-combobox__heading')).toBeNull();
-  rerender(<RemoteMultiSelect {...props} value={props.options} labelAction={<Button variant="quiet">获取目录</Button>}/>);
+  rerender(<RemoteMultiSelect {...props} value={props.options} labelAction={<Button variant="secondary">获取目录</Button>}/>);
   expect(screen.getByRole('combobox', { name: '对象' })).toBeInTheDocument();
   expect(screen.getByRole('list', { name: '对象已选项' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: '移除对象 A' })).toBeInTheDocument();

@@ -131,10 +131,12 @@ export interface RemoteMultiSelectProps {
   readOnly?: boolean; clearable?: boolean; closeOnSelect?: boolean; clearQueryOnSelect?: boolean;
   placeholder?: string; hint?: string; name?: string;
   maxVisibleTags?: number;
+  /** Compact captions; 28px targets only for fine pointers without any coarse pointer. */
+  tagDensity?: 'default' | 'compact';
   activeValue?: string;
   onActivateValue?: (option: Choice) => void;
 }
-export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, maxVisibleTags, activeValue, onActivateValue, ...props }: RemoteMultiSelectProps) {
+export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, maxVisibleTags, tagDensity = 'default', activeValue, onActivateValue, ...props }: RemoteMultiSelectProps) {
   const inputId = useId();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -148,7 +150,7 @@ export function RemoteMultiSelect({ value, onValueChange, options, readOnly = fa
     if (props.disabled || readOnly || value.find(item => item.value === key)?.disabled) return;
     onValueChange(value.filter(item => item.value !== key)); focusInput(nextOpen);
   };
-  return <div className={`rhine-multi-select${limit !== undefined ? ' rhine-multi-select--compact' : ''}`}>
+  return <div data-tag-density={tagDensity} className={`rhine-multi-select${limit !== undefined ? ' rhine-multi-select--compact' : ''}`}>
     <Combobox {...props} id={inputId} open={open} onOpenChange={setOpen} readOnly={readOnly} selectedValues={value.map(item => item.value)} closeOnSelect={closeOnSelect} completionLabel={closeOnSelect ? undefined : '完成选择'} onEmptyBackspace={() => { const last = [...value].reverse().find(item => !item.disabled); if (last) remove(last.value, open); }} options={options.map(option => ({ ...option, disabled: option.disabled || value.some(item => item.value === option.value && item.disabled) }))} value={null} onValueChange={option => {
       const original = options.find(item => item.value === option.value);
       if (!original || original.disabled || props.disabled || readOnly) return;

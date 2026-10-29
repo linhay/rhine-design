@@ -115,3 +115,14 @@ it('disconnects compact measurement observers on mode change and unmount',()=>{
   rerender(<MappingEditor {...props} density="compact"/>);unmount();expect(disconnect).toHaveBeenCalledTimes(2);
  }finally{vi.unstubAllGlobals();}
 });
+
+it('flows grouped sources as noninteractive tags with one decorative arrow and stable duplicates',()=>{
+ const rows=[{id:'1',source:'a',target:'b'},{id:'2',source:'b',target:'b'},{id:'3',source:'a',target:'b'},{id:'4',source:'b',target:'a'}];
+ const props={label:'标签汇合',rows,sourceOptions:choices,targetOptions:choices,onRowChange:vi.fn(),readOnlyLayout:'grouped' as const,groupedSourceLayout:'tags' as const};
+ const {container,rerender}=render(<MappingEditor {...props} readOnly/>);
+ expect([...container.querySelectorAll('.rhine-badge')].map(node=>node.textContent)).toEqual(['来源甲','来源乙','来源甲','来源乙']);
+ expect([...container.querySelectorAll('.rhine-mapping-editor__target')].map(node=>node.textContent)).toEqual(['目标：来源乙','目标：来源甲']);
+ expect(screen.queryByRole('button')).toBeNull();expect(container.querySelector('.rhine-mapping-editor__branch')).toBeNull();
+ expect(screen.getAllByText('→')).toHaveLength(2);screen.getAllByText('→').forEach(node=>expect(node).toHaveAttribute('aria-hidden','true'));
+ rerender(<MappingEditor {...props}/>);expect(screen.getAllByRole('combobox')).toHaveLength(8);expect(container.querySelector('.rhine-badge')).toBeNull();
+});
