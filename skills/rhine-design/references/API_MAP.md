@@ -71,3 +71,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 #46未发布：Button.size="standard" | "large"；动作语义先读 `docs/BUTTON_ACTIONS.md`，展台 `#button-actions`。
 
 #18 未发布：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。
+
+- Combobox / RemoteMultiSelect 标题动作（未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`；契约 `docs/FIELD_LABEL_ACTION.md`，真实组合 `preview/LabelActionGallery.tsx`。保持 string label，动作/异步状态由宿主控制。
