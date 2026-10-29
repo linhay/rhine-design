@@ -53,6 +53,19 @@ async page => {
     await last.click(); await page.waitForTimeout(220);
     check(await group.getByRole('tabpanel').evaluate(el => el.getAttribute('aria-labelledby') === document.querySelector('[data-tabs-layout=full] [aria-selected=true]').id), { label, kind: 'panel-relation' });
     check(await group.locator('[role=tabpanel][hidden]').count() === 2 && await group.getByRole('textbox').count() === 0, { label, kind: 'hidden-panel' });
+    // Walk the native Tab order after switching away from a panel containing a draft.
+    // hidden/ARIA counts do not prove the retained input is excluded from keyboard use.
+    const closedInput=await group.locator('[role=tabpanel][hidden] input').elementHandle();
+    check(Boolean(closedInput), {label,kind:'retained-draft-input'});
+    for(const key of ['Tab','Shift+Tab']) {
+      await last.focus();
+      for(let i=0;i<6;i++) {
+        await page.keyboard.press(key);
+        check(await page.evaluate(()=>!document.activeElement?.closest('[role=tabpanel][hidden]')), {label,kind:'inactive-panel-tab',key,step:i});
+      }
+    }
+    await first.click();
+    check(await group.getByRole('textbox').inputValue()==='合成草稿', {label,kind:'draft-after-keyboard-traversal'});
     await page.getByLabel('布局对比标签').selectOption('long'); await page.waitForTimeout(220);
     const long = await measure();
     check(long.every(result => result.fits && result.buttons.every(button => button.fits && Math.abs(button.lineWidth - button.cssWidth) < 1 && button.lineVisible === button.selected)), { label, kind: 'long-fits', long });

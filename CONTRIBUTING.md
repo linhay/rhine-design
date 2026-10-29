@@ -29,6 +29,42 @@ npm run check
 
 `dist/` 是展台构建结果；包导出源码。修改打包配置时，请在仓库外安装实际 tarball 验证。不要删除入口和 CSS 的 `sideEffects`；Logo 依赖 SVG `?no-inline`。本地链接消费项目时，Vite 使用 `resolve.dedupe: ['react', 'react-dom']` 避免重复 React。
 
+## P0 验证入口
+
+先按[通用设计规范](docs/DESIGN_SYSTEM.md)确认操作、阅读或品牌任务及必须保留的事实/动作。先验功能和恢复，再验视觉与连续性；只选改动相关项，不要求每次运行所有矩阵。系统字体、主题、状态边框、浮层阴影及已选动画继续遵守原契约，不引入外部 Skill 的全量规则。
+
+| 涉及变化 | 原有入口与补充条件 |
+| --- | --- |
+| 浮层/关闭/动态偏好 | `scripts/check-settings-interactions.js`：关闭前后正反向 Tab 排除隐藏内容，嵌套 Escape/归焦；正常、系统/手动减少动态均完成失败保留输入与成功保存，结果及祖先非隐藏/非透明且结果有非零尺寸（不代表已验证裁剪或遮挡），不能只检查时长为零 |
+| Tabs | `tests/TabsLayout.test.tsx` 与 `scripts/check-tabs-layout.js`：禁用项、关系与受控状态；切离含输入面板后实际走 Tab/Shift+Tab，再返回核对草稿，不能只数 hidden/ARIA |
+| 表单/错误 | `tests/Patterns.test.tsx`、`tests/SettingsDialog.test.tsx` 和设置交互脚本：失败保留输入，摘要只随失败提交定位、链接回字段不变路由；选择/关闭不等于保存 |
+| 有界布局/操作区 | `scripts/check-settings-bounded.js`：真实内框、长导航/操作、末项滚动可达、按钮完整和命中范围；保留 398px iframe 内宽及 CSS zoom 的独立标识 |
+| 紧凑数值/长文 | `scripts/check-compact-layouts.js`：正常/零/未知/长文；关键数值的行片段不被 hidden/clip 祖先截断，滚动内容另验滚到后可达；document.scrollWidth 不溢出不能替代 |
+
+例如，从所选源码仓根目录，用其 engines 支持的 Node 执行：
+
+```sh
+npm test -- tests/SettingsDialog.test.tsx tests/TabsLayout.test.tsx tests/Patterns.test.tsx tests/MotionGallery.test.tsx
+npm run build
+npx vite preview --host 127.0.0.1 --port 18497 --strictPort
+```
+
+在另一个终端、同一源码目录，使用已有 Playwright CLI 打开此生产预览后按相关范围运行：
+
+```sh
+mkdir -p output/playwright/issues-23-25
+playwright-cli -s=p0-validation open http://127.0.0.1:18497/
+playwright-cli -s=p0-validation run-code --filename scripts/check-settings-interactions.js
+playwright-cli -s=p0-validation run-code --filename scripts/check-tabs-layout.js
+playwright-cli -s=p0-validation run-code --filename scripts/check-settings-bounded.js
+playwright-cli -s=p0-validation run-code --filename scripts/check-compact-layouts.js
+playwright-cli -s=p0-validation close
+```
+
+也可用环境已有的 CLI wrapper；不把 Playwright 或外部检测器新增为运行时依赖。脚本返回结构化结果，必须检查 `pass`、失败列表与页面错误，不能只看 shell 退出码。保存本轮脚本/源码差异与构建摘要、浏览器版本和原始失败；测试结束关闭自己启动的预览服务。
+
+新增断言用正常场景与有针对性的破坏对照证明能抓到目标问题。反例只在隔离测试页面或临时浏览器状态中注入，不改正式组件来迎合检查。`npm run check` 包含 JSDOM、类型与构建，不自动运行上述真实浏览器矩阵；CSS zoom 不等于浏览器原生缩放。完整库变更仍按原流程运行 `npm run check`，制品发布/消费仍需固定 tarball 独立验收。
+
 ## 文档与 AI skill
 
 README 面向首次接触项目的开发者，优先解释用途、安装、示例、兼容性和文档入口。维护者操作放在专门文档中。

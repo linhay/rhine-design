@@ -4,6 +4,16 @@ async page => {
   const base=page.url().split('/').slice(0,3).join('/'), results=[],errors=[];
   page.on('pageerror',error=>errors.push(String(error)));
   const assert=(ok,message)=>{if(!ok)throw new Error(message)};
+  // Traverse the closed page, including retained DOM: role queries alone can hide bugs.
+  const closedTraversal=async()=>{
+    await page.getByRole('textbox',{name:'宿主查询'}).focus();
+    const steps=await page.locator('a[href],button,input,select,textarea,[tabindex]').count()+2;
+    for(const key of ['Tab','Shift+Tab']) for(let i=0;i<steps;i++) {
+      await page.keyboard.press(key);
+      assert(await page.evaluate(()=>!document.activeElement?.closest('[role="dialog"],[role="alertdialog"],.rhine-combobox__list,[hidden],[inert]')),`closed content reached by ${key} at step ${i}`);
+    }
+    return {stepsPerDirection:steps};
+  };
   const trapped=async dialog=>assert(await dialog.evaluate(e=>{
     if(e.contains(document.activeElement)) return true;
     // Tab may reopen an owned combobox and enter its portaled completion button.
@@ -87,14 +97,49 @@ async page => {
       results.push({...c,pass:true});
     }catch(error){results.push({...c,pass:false,error:String(error)});}
   }
-  // System and manual reduced motion are independent paths.
+  // Exercise the same result path, not only animation-duration, in all three modes.
   const motion=[];
   for(const mode of ['system','manual','full']) {
+    try {
+    await page.setViewportSize({width:400,height:900});
     await page.emulateMedia({reducedMotion:mode==='system'?'reduce':'no-preference'});
     await page.goto(`${base}/?fixture=settings-dialog&motion=${mode==='manual'?'reduced':'full'}`);
-    await page.getByRole('button',{name:'打开设置',exact:true}).click();
-    const duration=await page.getByRole('dialog',{name:'设置',exact:true}).evaluate(e=>getComputedStyle(e).animationDuration);
-    motion.push({mode,duration,pass:mode==='full'?parseFloat(duration)>0:parseFloat(duration)===0});
+    const initial=await closedTraversal(), outcomes=[];
+    for(const outcome of ['error','success']) {
+      await page.getByRole('combobox',{name:'保存结果'}).selectOption(outcome);
+      const trigger=page.getByRole('button',{name:'打开设置',exact:true});
+      await trigger.click();
+      const dialog=page.getByRole('dialog',{name:'设置',exact:true});
+      const duration=await dialog.evaluate(e=>getComputedStyle(e).animationDuration);
+      assert(mode==='full'?parseFloat(duration)>0:parseFloat(duration)===0,`${mode}: unexpected duration ${duration}`);
+      await dialog.evaluate(e=>Promise.all(e.getAnimations().map(a=>a.finished)));
+      const draft=dialog.getByRole('textbox',{name:'工作区名称'});
+      await draft.fill('动态偏好下保留的草稿');
+      await dialog.getByRole('button',{name:'保存当前工作区设置'}).click();
+      const result=dialog.getByText(outcome==='error'?'保存失败，草稿已保留':'已保存演示草稿',{exact:true});
+      await result.waitFor();
+      // Visible accepts opacity:0. Allow entrance motion, but bound the wait for
+      // nontransparent, nonzero-size text; this does not test clipping or occlusion.
+      const resultHandle=await result.elementHandle();
+      try {
+        const ready=await page.waitForFunction(e=>{
+          if(!e?.isConnected)return false;
+          for(let n=e;n;n=n.parentElement) {const s=getComputedStyle(n);if(s.display==='none'||s.visibility!=='visible'||Number(s.opacity)===0)return false;}
+          const r=e.getBoundingClientRect();return r.width>0&&r.height>0;
+        },resultHandle,{timeout:6000});
+        await ready.dispose();
+      } catch(error) {
+        throw new Error(`${mode}/${outcome}: result stayed hidden, transparent or zero-size: ${error}`);
+      } finally { await resultHandle?.dispose(); }
+      const painted=true;
+      assert(await draft.inputValue()==='动态偏好下保留的草稿',`${mode}/${outcome}: input lost`);
+      await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});
+      await page.waitForFunction(()=>document.activeElement?.textContent==='打开设置');
+      const closed=await closedTraversal();
+      outcomes.push({outcome,duration,painted,closed});
+    }
+    motion.push({mode,initial,outcomes,pass:true});
+    }catch(error){motion.push({mode,pass:false,error:String(error)});}
   }
   await page.emulateMedia({reducedMotion:'no-preference'});
   return {pass:results.every(r=>r.pass)&&motion.every(r=>r.pass)&&!errors.length,results,motion,errors};
