@@ -46,7 +46,7 @@ it('repairs focus when the current action is removed and disconnects measurement
 it('keeps menu mode until close autofocus finishes after widening',async()=>{
  width=80;render(<><ResponsiveActions label="操作" items={items()}/><button>之后</button></>);
  const more=screen.getByRole('button',{name:'更多操作'});more.focus();fireEvent.keyDown(more,{key:'ArrowDown'});await act(async()=>{await vi.advanceTimersByTimeAsync(30);});
- screen.getByRole('menuitem',{name:'管理'}).focus();resize(500);fireEvent.click(screen.getByRole('menuitem',{name:'管理'}));await act(async()=>{await vi.advanceTimersByTimeAsync(100);});
+ screen.getByRole('menuitem',{name:'管理'}).focus();resize(500);fireEvent.keyDown(document.activeElement!,{key:'Escape'});await act(async()=>{await vi.advanceTimersByTimeAsync(100);});
  expect(screen.getByRole('group',{name:'操作'})).toHaveAttribute('data-mode','menu');expect(more).toHaveFocus();
  act(()=>{screen.getByRole('button',{name:'之后'}).focus();vi.advanceTimersByTime(20);});expect(screen.getByRole('group',{name:'操作'})).toHaveAttribute('data-mode','text');
 });

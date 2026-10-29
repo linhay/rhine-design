@@ -29,7 +29,7 @@ export function ResponsiveActions({label,items,moreLabel='更多操作',classNam
   const root=useRef<HTMLDivElement>(null),textProbe=useRef<HTMLDivElement>(null),iconProbe=useRef<HTMLDivElement>(null),more=useRef<HTMLButtonElement>(null);
   const [mode,setMode]=useState<Mode>('menu'),modeRef=useRef<Mode>('menu'),desired=useRef<Mode>('menu');
   const [open,setOpen]=useState(false),openRef=useRef(false),[tooltip,setTooltip]=useState<string|null>(null);
-  const closing=useRef(false);
+  const closing=useRef(false),[moreHint,setMoreHint]=useState(false);
   const pendingFocus=useRef<HTMLElement|null>(null),blurFrame=useRef<number|null>(null);
   const ownedFocus=useRef<HTMLElement|null>(null),menuNode=useRef<HTMLElement|null>(null),fallback=useRef<HTMLElement|null>(null),focusIndex=useRef(0);
   const visible=items.filter(item=>!item.hidden);
@@ -100,7 +100,7 @@ export function ResponsiveActions({label,items,moreLabel='更多操作',classNam
       </Tooltip>)}
     </div>
     <span className="rhine-responsive-actions__menu" hidden={mode!=='menu'}>
-      <Tooltip content={moreLabel}><span><Menu label={`${label}菜单`} open={open} onOpenChange={next=>{if(next && more.current)rememberFocus(more.current);closing.current=!next;openRef.current=next;setOpen(next);}} onCloseAutoFocus={()=>{closing.current=false;settle();}}
+      <Tooltip content={moreLabel} open={mode==='menu' && !open && moreHint} onOpenChange={setMoreHint}><span><Menu label={`${label}菜单`} open={open} onOpenChange={next=>{if(next && more.current)rememberFocus(more.current);closing.current=!next;openRef.current=next;setOpen(next);}} onCloseAutoFocus={()=>{closing.current=false;settle();}}
         trigger={<IconButton ref={more} label={moreLabel} icon="moreVertical"/>}
         items={visible.map(item=>({id:item.id,label:item.busy?`${item.label}（处理中）`:item.label,disabled:item.disabled || item.busy,danger:item.variant==='danger',onSelect:()=>run(item)}))}/></span></Tooltip>
     </span>

@@ -33,7 +33,7 @@ async page=>{
   const samples=await stable();check(new Set(samples).size===1,'mode oscillation');
   if(!probe){
    const more=page.getByRole('button',{name:'更多操作',exact:true});await more.focus();await page.getByRole('tooltip').filter({hasText:'更多操作'}).waitFor();await more.press('ArrowDown');
-   const menu=page.getByRole('menu',{name:'更多操作',exact:true});await menu.waitFor();check(await menu.getByRole('menuitem').count()===4,'menu lost actions');
+   const menu=page.getByRole('menu',{name:'更多操作',exact:true});await menu.waitFor();check(await menu.getByRole('menuitem').count()===4,'menu lost actions');check(await page.getByRole('tooltip').count()===0,'menu retains overlapping tooltip');
    const fit=await menu.evaluate(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,scroll:el.scrollWidth,client:el.clientWidth,viewport:innerWidth};});check(fit.left>=-1&&fit.right<=fit.viewport+1&&fit.scroll<=fit.client+1,'long menu clipping');
    await page.keyboard.press('Escape');await menu.waitFor({state:'hidden'});await page.waitForTimeout(60);check(await focusIs(more),'Escape did not return more');
    await page.getByRole('button',{name:'操作区之后',exact:true}).focus();await page.getByLabel('长动作与多语言',{exact:true}).uncheck();await page.getByLabel('动作字体',{exact:true}).selectOption('default');await page.getByLabel('动作容器宽度',{exact:true}).selectOption('680');await page.waitForTimeout(80);evidence.push(await geometry(zoom));

@@ -13,6 +13,6 @@ for(const file of ['ResponsiveActionsGallery.tsx']){
  await writeFile(resolve(target,file),source.replaceAll("'../components'","'@linhey/rhine-design'").replaceAll("'../components/theme'","'@linhey/rhine-design/theme'"));
 }
 await writeFile(resolve(target,'main.tsx'),"import React from 'react';import {createRoot} from 'react-dom/client';import {ResponsiveActionsFixture} from './ResponsiveActionsGallery';import '@linhey/rhine-design/styles.css?late';createRoot(document.getElementById('root')!).render(<ResponsiveActionsFixture/>);");
-await writeFile(resolve(target,'index.html'),'<html><head><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module" src="/main.tsx"></script></body></html>');
+await writeFile(resolve(target,'index.html'),'<!doctype html><html lang="zh-CN"><head><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module" src="/main.tsx"></script></body></html>');
 await writeFile(resolve(target,'vite.config.ts'),"import {defineConfig} from 'vite';import react from '@vitejs/plugin-react';export default defineConfig({plugins:[react()]});");
 execFileSync('npm',['run','build'],{cwd:target,stdio:'inherit'});
