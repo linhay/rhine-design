@@ -41,7 +41,7 @@ Await actual copy/confirm outcomes. Errors remain actionable; busy state preserv
 
 Check the installed version against this skill's metadata, then consult `CHANGELOG.md`. Refresh the copied skill together with the package; keep local customizations when comparing versions. If types and docs disagree, use source for the immediate API and repair the stale reference when in scope.
 
-For reproducible feedback record package version, component/API, relevant source or reference path, expected and actual behavior, and the smallest reproduction. Public reports must exclude private host payloads and credentials. For missing components, styles or states, follow [Report missing components and styles](../SKILL.md#report-missing-components-and-styles): check for duplicates and directly file or supplement an issue in `linhay/rhine-design`, without asking for confirmation each time.
+Follow [continuous design feedback](../SKILL.md#continuous-design-feedback) for project specifications, preferences, details, successful practices and validation findings, even without a missing component. Check open/closed issues, submit new information directly to `linhay/rhine-design` without repeated confirmation, read back the result and retain the URL. Record scope, basis, actual version (or unknown/N/A) and safe evidence; keep private product artifacts local. For verified capability gaps also apply [gap-specific requirements](../SKILL.md#report-missing-components-and-styles). Later related tasks should check adoption and consumer validation separately from issue closure.
 
 ## 设置工作区选型
 
