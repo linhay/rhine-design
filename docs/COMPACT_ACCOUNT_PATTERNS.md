@@ -45,7 +45,7 @@
 ]} />
 ```
 
-`TimelineLegendProps` 为 `label?: string`、`compact?: boolean`、`items?: TimelineLegendItem[]`；item 为 `status: TimelineStatus`、`label: string`、`description?: string`。每种 status 在一组中唯一。以上规则仅为合成示例，宿主必须传入自己的实际证据定义，组件不推断健康评分。
+`TimelineLegendProps` 为 `label?: string`、`compact?: boolean`、`density?: 'default' | 'compact'`（密度参数未发布）、`items?: TimelineLegendItem[]`；item 为 `status: TimelineStatus`、`label: string`、`description?: string`。每种 status 在一组中唯一。以上规则仅为合成示例，宿主必须传入自己的实际证据定义，组件不推断健康评分。
 
 默认无参调用仍显示原五类完整标签。`compact` 把项目保留在一行；容器过窄时仅图例局部横向滚动，不使页面溢出。有 description 的项目可鼠标悬停、键盘聚焦或触屏点按查看，操作区域至少 44px；一次只开一项规则。Enter/Space 从触发器进入详情关闭按钮，Escape 关闭并按需要归还焦点。没有 description 的项目保持只读文本，不制造空交互。
 
@@ -86,3 +86,18 @@
 复杂选择采用“草稿预览＋显式保存”：候选只更新预览，footer保存成功后更新确认值，关闭/Escape丢弃草稿；重开回到确认值。未改动不可保存；保存中同步防重、阻止关闭；失败保留确认值与草稿及原因，允许重试。成功以确认值回显和保存恢复不可用表达，不重复常驻“已保存”。即时提交是另一种契约，不给所有Select强加保存按钮。
 
 Dialog的高度/footer契约见[稳定预览弹窗](SETTINGS_DIALOG.md#稳定预览与底部操作区410112)。不以填充假记录保持高度。后台刷新、数据时间和错误/过期语义仍由宿主保存，删除重复标题或机制说明不意味着删除这些事实。
+
+## 时间条与图例的紧凑密度（#23 新增，未发布）
+
+默认密度保持原布局。需要更紧凑的相邻列表/图例时，使用公开组合：
+
+```tsx
+<Stack gap={1}>
+  <StatusTimelineList density="compact" label="历史" items={items} />
+  <TimelineLegend compact density="compact" label="历史状态图例" items={legend} />
+</Stack>
+```
+
+两者的 `density` 默认均为 `default`。列表紧凑密度将尾部从space-2改为space-1；单行图例紧凑密度只移除上下padding，保留横向padding和内部焦点轮廓。`TimelineLegend` 的密度选项仅作用于compact单行用法，不改变默认文字图例。示例外层仍为 `gap={1}`：列表尾部4px加外层4px容纳时间条下沿8px命中外延，两个实际44px目标相接而不重叠；不能单独删光外层gap、用负margin或缩小命中区。
+
+可见色块间距包括触发器内部的居中留白，不能把图例容器边缘或44px目标边缘当作色块。32→24px是既定合成组合的测量，不是所有主题、token覆盖、悬停状态和调用场景的统一常量。`?fixture=timeline-density`提供默认/紧凑对照，分别记录色块、range和button真实rect，覆盖原生range方向键详情、图例说明、Escape归焦、窄容器局部滚动与减少动态。紧凑账号展台同步使用上述公开组合。源码候选未发布；原消费恢复同步并完成固定制品复验后才能删除临时适配。

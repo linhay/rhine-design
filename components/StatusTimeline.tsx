@@ -84,17 +84,17 @@ export function StatusTimeline({ label, segments, startLabel, endLabel, compact 
 }
 
 export interface TimelineLegendItem { status: TimelineStatus; label: string; description?: string }
-export interface TimelineLegendProps { label?: string; compact?: boolean; items?: TimelineLegendItem[] }
+export interface TimelineLegendProps { label?: string; compact?: boolean; density?: 'default' | 'compact'; items?: TimelineLegendItem[] }
 const defaultLegendItems: TimelineLegendItem[] = Object.entries(timelineLabels).map(([status, label]) => ({ status: status as TimelineStatus, label }));
 
 /** Short labels describe evidence; hosts provide the precise rules rather than relying on color. */
-export function TimelineLegend({ label = '健康记录图例', compact = false, items = defaultLegendItems }: TimelineLegendProps) {
+export function TimelineLegend({ label = '健康记录图例', compact = false, density = 'default', items = defaultLegendItems }: TimelineLegendProps) {
   const root = useRef<HTMLUListElement>(null);
   const [container, setContainer] = useState<HTMLElement>();
   const [active, setActive] = useState<TimelineStatus | null>(null);
   useLayoutEffect(() => { setContainer(root.current?.closest<HTMLElement>('.rhine-theme') ?? document.body); }, []);
   useEffect(() => { if (active && !items.some(item => item.status === active && item.description)) setActive(null); }, [active, items]);
-  return <ul ref={root} className={`rhine-timeline__legend${compact ? ' rhine-timeline__legend--compact' : ''}`} aria-label={label}>
+  return <ul ref={root} className={`rhine-timeline__legend${compact ? ' rhine-timeline__legend--compact' : ''}${compact && density === 'compact' ? ' rhine-timeline__legend--dense' : ''}`} aria-label={label}>
     {items.map(item => <LegendItem key={item.status} item={item} container={container} open={active === item.status}
       onOpenChange={next => setActive(current => next ? item.status : current === item.status ? null : current)} />)}
   </ul>;

@@ -33,3 +33,7 @@
 .rhine-timeline-list__item+.rhine-timeline-list__item { border-top:1px solid var(--rhine-line); }
 .rhine-timeline-list__heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:var(--rhine-space-2); min-width:0; overflow-wrap:anywhere; }
 .rhine-timeline-list__heading>* { min-width:0; }
+
+/* Pair with Stack gap={1}: keep timeline/legend hit regions adjacent, never overlapping. */
+.rhine-timeline-list.rhine-timeline-list--dense { padding-bottom:var(--rhine-space-1); }
+.rhine-timeline__legend--compact.rhine-timeline__legend--dense { padding-block:0; }

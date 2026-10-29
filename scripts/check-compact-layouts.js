@@ -94,7 +94,7 @@ async page => {
             overflow: [...e.querySelectorAll('.compact-gallery-facts, .compact-gallery-facts span')].some(node => node.scrollWidth > node.clientWidth + 1),
           };
         });
-        check(Math.abs(layout.gap / zoom - 12) < 1 && layout.sliderHeight >= 44 && layout.triggerHeight >= 44 && layout.aligned && !layout.overflow, { ...context, state, kind: 'account-layout', layout });
+        check(Math.abs(layout.gap / zoom - 8) < 1 && layout.sliderHeight >= 44 && layout.triggerHeight >= 44 && layout.aligned && !layout.overflow, { ...context, state, kind: 'account-layout', layout });
         if (state === 'normal') {
           const slider = card.getByRole('slider');
           await slider.focus(); await page.keyboard.press('ArrowRight');
