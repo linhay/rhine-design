@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { TimelineCompositionGallery } from './TimelineCompositionGallery';
 import { TimelineListGallery } from './TimelineListGallery';
 import { Select, Stack, StackedBar, StatusTimeline, Surface, TimelineLegend, TrendChart, type ChartPoint, type TimelineSegment } from '../components';
 
@@ -16,6 +17,7 @@ export function MonitoringGallery() {
   }));
   const feedback = { stale: state === 'stale' ? '最后采集于 20 分钟前，请核对来源。' : undefined, error: state === 'error' ? '本次读取失败，保留上次采样。' : undefined };
   return <section><div className="ds-section-title"><span>MONITORING</span><h2>看见证据，也看见缺口</h2></div>
+    <TimelineCompositionGallery />
     <TimelineListGallery />
     <p className="ds-caption">计数与口径由宿主提供。未知保持未知，折线在缺失处断开；图例与数据表提供文字替代，不生成健康评分。时段详情支持鼠标、键盘、触屏和 Escape，并自动避让视口。</p>
     <Select label="监控演示状态" value={state} onChange={event => setState(event.target.value)}><option value="ready">默认 / 含缺失采样</option><option value="empty">空数据</option><option value="stale">陈旧数据</option><option value="error">错误 / 保留旧数据</option><option value="unknown">占比总量未知</option></Select>

@@ -13,7 +13,7 @@ export type { MediaCardProps, MediaViewerProps } from './Media';
 export { DateField, DateRangePicker, NumberField, RemoteMultiSelect, TreeSelect } from './AdvancedForms';
 export type { DateFieldProps, DateRange, DateRangePickerProps, NumberFieldProps, RemoteMultiSelectProps, TreeNode, TreeSelectProps } from './AdvancedForms';
 export { StatusTimeline, TimelineLegend } from './StatusTimeline';
-export type { TimelineSegment, TimelineStatus, TimelineDetail, StatusTimelineProps, TimelineLegendItem, TimelineLegendProps } from './StatusTimeline';
+export type { TimelineSegment, TimelineStatus, TimelineStatusLabels, TimelineOutcome, TimelineComposition, TimelineCompositionSegment, TimelineDataProps, TimelineDetail, StatusTimelineProps, TimelineLegendItem, TimelineLegendProps } from './StatusTimeline';
 export { StatusTimelineList } from './StatusTimelineList';
 export type { StatusTimelineItem, StatusTimelineListProps } from './StatusTimelineList';
 export { TrendChart, StackedBar } from './Charts';
