@@ -11,7 +11,7 @@ async page => {
    await a.press('Enter');const close=rule.getByRole('button',{name:'关闭有输出规则'});await page.mouse.move(0,0);await b.hover();
    if(!await close.evaluate(e=>e===document.activeElement))throw Error('hover unmounted focused detail');
    await b.click();await page.getByRole('dialog',{name:'未知规则',exact:true}).waitFor();
-   await slider.focus();await page.mouse.move(0,0);await a.hover();await rule.waitFor();
+   await slider.focus();await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'detached'});await page.mouse.move(0,0);await a.hover();await rule.waitFor();
    results.push({theme,width,zoom,pass:true});
   }catch(e){results.push({theme,width,zoom,pass:false,error:String(e)});}
  }
