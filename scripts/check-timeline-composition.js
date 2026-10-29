@@ -24,13 +24,15 @@ async page => {
       if (initial.probe === 'inflate') await page.locator('.rhine-timeline__bucket > [data-outcome=failed]').evaluateAll(elements => elements.forEach(e => { e.style.minHeight = '8px'; }));
       const geometry = await slider.evaluate(e => {
         const buckets = [...e.parentElement.querySelectorAll('.rhine-timeline__bucket')];
-        return buckets.map(bucket => ({ height: bucket.getBoundingClientRect().height, parts: [...bucket.children].map(p => ({ kind: p.dataset.outcome, style: p.style.height, height: p.getBoundingClientRect().height, color: getComputedStyle(p).backgroundColor, min: getComputedStyle(p).minHeight, animation: getComputedStyle(p).animationName })) }));
+        return buckets.map(bucket => ({ height: bucket.getBoundingClientRect().height, parts: [...bucket.children].map(p => ({ kind: p.dataset.outcome, style: p.style.height, height: p.getBoundingClientRect().height, top: p.getBoundingClientRect().top, bottom: p.getBoundingClientRect().bottom, color: getComputedStyle(p).backgroundColor, min: getComputedStyle(p).minHeight, animation: getComputedStyle(p).animationName })) }));
       });
       check(geometry.length === 12 && geometry.every(b => Math.abs(b.height - 28 * zoom) < 0.1), { ...context, kind: 'equal-height', geometry });
       check(geometry.every(b => Math.abs(b.parts.reduce((sum, p) => sum + p.height, 0) - b.height) < 0.2 * zoom), { ...context, kind: 'exact-shares', geometry });
       check(geometry[6].parts[2].style === '0.001%' && geometry[6].parts[2].height < 0.1 * zoom && geometry[6].parts[1].height === 0, { ...context, kind: 'tiny-zero-not-inflated', geometry: geometry[6] });
       check(geometry.every(b => b.parts.every(p => p.animation === 'none' && p.min === '0px')), { ...context, kind: 'no-minimum-or-animation' });
-      check(new Set(geometry[4].parts.slice(0, 3).map(p => p.color)).size === 3, { ...context, kind: 'distinct-result-colors' });
+      check(geometry[4].parts[0].top >= geometry[4].parts[1].bottom - .1 && geometry[4].parts[1].top >= geometry[4].parts[2].bottom - .1, { ...context, kind: 'bottom-to-top-order' });
+      const palette = ['rgb(25, 184, 138)', 'rgb(239, 166, 41)', 'rgb(239, 100, 100)', 'rgb(197, 204, 211)'];
+      check(geometry[5].parts.every((part, i) => part.color === palette[i]), { ...context, kind: 'result-colors', parts: geometry[5].parts });
       await slider.focus(); await page.keyboard.press('Home');
       for (let i = 0; i < expected.length; i++) {
         if (i) await page.keyboard.press('ArrowRight');
@@ -111,11 +113,16 @@ async page => {
     const slider = touch.getByRole('slider', { name: '结果构成历史', exact: true });
     await slider.scrollIntoViewIfNeeded();
     const rect = await slider.boundingBox();
-    await touch.touchscreen.tap(rect.x + rect.width * .5, rect.y + rect.height / 2);
+    const selected = new Set();
     const dialog = touch.getByRole('dialog', { name: '结果构成历史时段详情', exact: true });
-    await dialog.waitFor();
-    const value = await slider.getAttribute('aria-valuetext');
-    check(value.includes('请求总数') && (await dialog.innerText()).includes('请求总数'), { kind: 'touch-details', value });
+    for (let i = 0; i < expected.length; i++) {
+      await touch.touchscreen.tap(rect.x + 1 + (rect.width - 2) * i / 11, rect.y + rect.height / 2);
+      await dialog.waitFor();
+      const index = Number(await slider.inputValue()), value = await slider.getAttribute('aria-valuetext');
+      selected.add(index);
+      check(value.includes(expected[index]) && (await dialog.innerText()).includes(expected[index].replace(/^(直接成功|重试后成功|最终失败|结果未知) /, '')), { kind: 'touch-details', index, value });
+    }
+    check(selected.size === 12, { kind: 'touch-all-buckets', selected: [...selected] });
     await dialog.getByRole('button', { name: '关闭时段详情' }).tap();
     await dialog.waitFor({ state: 'hidden' });
   } catch (error) { failures.push({ kind: 'touch-timeout', error: String(error) }); }
