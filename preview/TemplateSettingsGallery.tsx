@@ -169,13 +169,21 @@ export function TemplateSettingsGallery({keyboardLabels=false,longNavigation=fal
 }
 
 export function SwitchRowsExample() {
-  const [draft,setDraft]=useState(false),[applied,setApplied]=useState(false),[long,setLong]=useState(true);
+  const [draft,setDraft]=useState(false),[applied,setApplied]=useState(false),[long,setLong]=useState(true),[cards,setCards]=useState([false,true,true]);
   return <section aria-label="开关行样例"><Stack gap={3}>
     <Switch layout="row" label="接收提醒" checked={draft} onCheckedChange={setDraft} />
     <Switch layout="row" label="较长设置名称：保留完整说明并在窄容器中自然换行" hint="仅修改草稿，确认后才生效。较长提示也应完整换行。" checked={long} onCheckedChange={setLong} />
     <Switch layout="row" label="不可更改的设置" checked disabled onCheckedChange={()=>{}} />
     <Switch layout="row" label="只读设置" checked readOnly hint="可以聚焦查看当前值" onCheckedChange={()=>{}} />
     <Switch label="默认内联开关" checked onCheckedChange={()=>{}} />
+    <section aria-label="独立卡片开关"><Stack gap={3}>
+      {['消息提醒','自动归档','长名称：团队资料同步与离线保留的独立设置'].map((title,index)=><div key={title} style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,minWidth:0}}>
+        <Text as="h3" variant="label" style={{overflowWrap:'anywhere'}}>{title}</Text>
+        <Switch label={`${title}启用`} labelVisibility="hidden" checked={cards[index]} onCheckedChange={checked=>setCards(current=>current.map((value,i)=>i===index?checked:value))} />
+      </div>)}
+      <Switch label="隐藏标签只读开关" labelVisibility="hidden" layout="row" checked readOnly onCheckedChange={()=>{}} />
+      <Switch label="隐藏标签禁用开关" labelVisibility="hidden" checked disabled onCheckedChange={()=>{}} />
+    </Stack></section>
     <Button onClick={()=>setApplied(draft)}>确认开关草稿</Button><Text aria-label="已提交开关">{applied?'已开启':'已关闭'}</Text>
   </Stack></section>;
 }

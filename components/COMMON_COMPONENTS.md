@@ -79,3 +79,5 @@ Toast 浮动通知（自 0.11.0，npm 0.10.0 不含，见[版本记录](../CHANG
 SideNav 可选 `NavItem.actions` / `NavAction`，空数组无按钮/空位；菜单触发器与链接为兄弟。菜单到受控 Dialog 的归焦见[导航行操作](../docs/SIDE_NAV_ACTIONS.md)（0.11.2）。
 
 Popover可选 `showHeader={false}`（未发布，默认true）省略可见标题/关闭行；非空title仍为可访问名称，触发器必须具名可聚焦。适用范围、退出与组合契约见[托盘用量](../docs/TRAY_USAGE.md)。
+
+- Switch 的 `labelVisibility="hidden"` 保留必填字符串名称，独立开关无文字占位；适用边界与默认兼容见 `docs/TEMPLATE_SETTINGS.md` 的独立开关标签（#88，未发布）。
