@@ -32,9 +32,9 @@
 .rhine-switch label { display:flex; position:relative; align-items:center; gap:12px; min-height:44px; cursor:pointer; }
 .rhine-switch input { position:absolute; opacity:0; width:1px; height:1px; }
 .rhine-switch__track { display:inline-flex; width:36px; height:22px; border:1px solid var(--rhine-control); border-radius:12px; padding:3px; flex:none; background:var(--rhine-surface); transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
-.rhine-switch__track>span { width:14px; height:14px; border-radius:50%; background:var(--rhine-muted); transition:transform var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.rhine-switch__track>span { position:relative; inset-inline-start:0; width:14px; height:14px; border-radius:50%; background:var(--rhine-muted); transition:inset-inline-start var(--rhine-duration-hover) var(--rhine-ease-standard); }
 .rhine-switch input:checked+.rhine-switch__track { background:var(--rhine-green); border-color:var(--rhine-green); }
-.rhine-switch input:checked+.rhine-switch__track>span { transform:translateX(14px); background:var(--rhine-surface); }
+.rhine-switch input:checked+.rhine-switch__track>span { inset-inline-start:14px; background:var(--rhine-surface); }
 .rhine-switch input:focus-visible+.rhine-switch__track { outline:2px solid var(--rhine-green); outline-offset:3px; }
 .rhine-switch input:disabled~span { opacity:.6; cursor:default; }
 .rhine-field textarea { font:var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); color:var(--rhine-ink); background:var(--rhine-surface); border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-control); padding:10px 12px; min-height:88px; resize:vertical; width:100%; transition:border-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
@@ -84,6 +84,4 @@
 .rhine-switch--row { width:100%; min-width:0; }
 .rhine-switch--row > label { width:100%; justify-content:space-between; }
 .rhine-switch--row .rhine-switch__label { order:-1; min-width:0; overflow-wrap:anywhere; }
-.rhine-switch--row .rhine-switch__track>span { position:relative; inset-inline-start:0; transition:inset-inline-start var(--rhine-duration-hover) var(--rhine-ease-standard); }
-.rhine-switch--row input:checked+.rhine-switch__track>span { transform:none; inset-inline-start:14px; }
 .rhine-switch input[aria-readonly=true]~span { cursor:default; }
