@@ -92,14 +92,36 @@ export function TimelineLegend({ label = '健康记录图例', compact = false, 
   const root = useRef<HTMLUListElement>(null);
   const [container, setContainer] = useState<HTMLElement>();
   const [active, setActive] = useState<TimelineStatus | null>(null);
+  const protectedFocus = useRef(false);
   useLayoutEffect(() => { setContainer(root.current?.closest<HTMLElement>('.rhine-theme') ?? document.body); }, []);
   useEffect(() => { if (active && !items.some(item => item.status === active && item.description)) setActive(null); }, [active, items]);
-  const openFromHover = (status: TimelineStatus) => {
+  const ownsFocusedInteraction = () => {
     const legend = root.current, document = legend?.ownerDocument, focused = document?.activeElement;
-    // Focus scrolling can move a different item under a stationary pointer.
-    if (focused && legend?.contains(focused) && focused.matches(':focus-visible')) return;
+    if (focused && legend?.contains(focused) && focused.matches(':focus-visible')) return true;
     const popupId = legend?.querySelector('[aria-expanded="true"]')?.getAttribute('aria-controls');
-    if (focused && popupId && document?.getElementById(popupId)?.contains(focused)) return;
+    return !!(focused && popupId && document?.getElementById(popupId)?.contains(focused));
+  };
+  useEffect(() => {
+    const document = root.current?.ownerDocument;
+    if (!document) return;
+    const remember = () => {
+      // Radix removes the focused popup before restoring its trigger. Body focus
+      // in that gap is not a user decision to leave keyboard inspection.
+      if (document.activeElement !== document.body) protectedFocus.current = ownsFocusedInteraction();
+    };
+    const release = () => { protectedFocus.current = false; };
+    document.addEventListener('focusin', remember);
+    document.addEventListener('pointerdown', release, true);
+    document.defaultView?.addEventListener('blur', release);
+    return () => {
+      document.removeEventListener('focusin', remember);
+      document.removeEventListener('pointerdown', release, true);
+      document.defaultView?.removeEventListener('blur', release);
+    };
+  }, []);
+  const openFromHover = (status: TimelineStatus) => {
+    // Focus scrolling can move a different item under a stationary pointer.
+    if (protectedFocus.current || ownsFocusedInteraction()) return;
     setActive(status);
   };
   return <ul ref={root} className={`rhine-timeline__legend${compact ? ' rhine-timeline__legend--compact' : ''}${compact && density === 'compact' ? ' rhine-timeline__legend--dense' : ''}`} aria-label={label}>

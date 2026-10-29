@@ -44,6 +44,28 @@ it('does not unmount the rule being inspected when another item receives inciden
   expect(screen.getByRole('dialog', { name: '有输出规则' })).toBeVisible();
 });
 
+it('retains keyboard ownership through a temporary body-focus gap until explicit outside focus', async () => {
+  render(<><TimelineLegend compact items={items} /><button>离开图例</button></>);
+  const output = screen.getByRole('button', { name: '有输出' });
+  act(() => output.focus());
+  await screen.findByRole('dialog', { name: '有输出规则' });
+  fireEvent.keyDown(output, { key: 'Enter' });
+  act(() => screen.getByRole('button', { name: '关闭有输出规则' }).blur());
+  expect(document.body).toHaveFocus();
+  hover(screen.getByRole('button', { name: '未知' }));
+  expect(screen.getByRole('dialog', { name: '有输出规则' })).toBeVisible();
+  act(() => screen.getByRole('button', { name: '离开图例' }).focus());
+  hover(screen.getByRole('button', { name: '未知' }));
+  await screen.findByRole('dialog', { name: '未知规则' });
+  const unknown = screen.getByRole('button', { name: '未知' });
+  act(() => unknown.focus());
+  fireEvent.keyDown(unknown, { key: 'Enter' });
+  act(() => screen.getByRole('button', { name: '关闭未知规则' }).blur());
+  fireEvent.pointerDown(document.body);
+  hover(output);
+  await screen.findByRole('dialog', { name: '有输出规则' });
+});
+
 it('preserves default labels and non-interactive presentation', () => {
   render(<TimelineLegend />);
   expect(screen.getByRole('list', { name: '健康记录图例' }).children).toHaveLength(5);
