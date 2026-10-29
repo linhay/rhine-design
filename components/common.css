@@ -80,3 +80,10 @@
 .rhine-popover[data-state=open],.rhine-menu[data-state=open],.rhine-combobox__list[data-state=open],.rhine-tooltip[data-state=delayed-open],.rhine-tooltip[data-state=instant-open] { animation:rhine-enter var(--rhine-duration-overlay) var(--rhine-ease-standard); }
 @keyframes rhine-overlay-fade { from { opacity:0; } to { opacity:1; } }
 @media(forced-colors:active) { .rhine-switch__track { border-color:ButtonText; }.rhine-switch input:checked+.rhine-switch__track { background:Highlight; }.rhine-switch__track>span { background:ButtonText; }.rhine-switch input:checked+.rhine-switch__track>span { background:HighlightText; }.rhine-dialog,.rhine-tooltip,.rhine-menu,.rhine-popover { border:1px solid CanvasText; } }
+
+.rhine-switch--row { width:100%; min-width:0; }
+.rhine-switch--row > label { width:100%; justify-content:space-between; }
+.rhine-switch--row .rhine-switch__label { order:-1; min-width:0; overflow-wrap:anywhere; }
+.rhine-switch--row .rhine-switch__track>span { position:relative; inset-inline-start:0; transition:inset-inline-start var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.rhine-switch--row input:checked+.rhine-switch__track>span { transform:none; inset-inline-start:14px; }
+.rhine-switch input[aria-readonly=true]~span { cursor:default; }

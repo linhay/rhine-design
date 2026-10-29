@@ -56,3 +56,5 @@ export type { TextFieldProps } from './components';
 
 export { MappingEditor } from './MappingEditor';
 export type { MappingEditorProps, MappingEditorRow } from './MappingEditor';
+
+export type { SwitchProps } from './Forms';

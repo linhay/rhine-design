@@ -27,9 +27,15 @@ export function RadioGroup({ label, items, value, onValueChange, disabled = fals
   const id = useId();
   return <fieldset className="rhine-radio-group" disabled={disabled}><legend>{label}</legend>{items.map(item => <label key={item.value}><input type="radio" name={name || id} value={item.value} checked={value === item.value} disabled={item.disabled} onChange={() => onValueChange(item.value)} /><span>{item.label}</span></label>)}</fieldset>;
 }
-export function Switch({ label, checked, onCheckedChange, disabled = false, hint }: { label: string; checked: boolean; onCheckedChange: (checked: boolean) => void; disabled?: boolean; hint?: string }) {
+export interface SwitchProps {
+  label: string; checked: boolean; onCheckedChange: (checked: boolean) => void;
+  disabled?: boolean; readOnly?: boolean; hint?: string;
+  /** Row fills the available width: label at logical start, fixed-size toggle at logical end. */
+  layout?: 'inline' | 'row';
+}
+export function Switch({ label, checked, onCheckedChange, disabled = false, readOnly = false, hint, layout = 'inline' }: SwitchProps) {
   const id = useId();
-  return <div className="rhine-switch"><label><input type="checkbox" role="switch" checked={checked} aria-checked={checked} disabled={disabled} aria-describedby={hint ? id : undefined} onChange={event => onCheckedChange(event.target.checked)} /><span className="rhine-switch__track" aria-hidden="true"><span /></span><span>{label}</span></label>{hint && <p id={id} className="rhine-text rhine-text--caption rhine-text--muted">{hint}</p>}</div>;
+  return <div className={`rhine-switch${layout === 'row' ? ' rhine-switch--row' : ''}`}><label><input type="checkbox" role="switch" checked={checked} aria-checked={checked} disabled={disabled} aria-readonly={readOnly || undefined} aria-describedby={hint ? id : undefined} readOnly={readOnly} onChange={event => { if (!readOnly) onCheckedChange(event.target.checked); }} /><span className="rhine-switch__track" aria-hidden="true"><span /></span><span className="rhine-switch__label">{label}</span></label>{hint && <p id={id} className="rhine-text rhine-text--caption rhine-text--muted">{hint}</p>}</div>;
 }
 export function Textarea({ label, hint, error, id: suppliedId, className = '', rows = 3, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string; hint?: string; error?: string }) {
   const generatedId = useId(), id = suppliedId || generatedId;
