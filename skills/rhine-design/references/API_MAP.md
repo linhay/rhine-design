@@ -4,7 +4,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 
 | Exports | Source |
 | --- | --- |
-| ChatThread, ChatCard; ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus, ChatThreadProps, ChatCardProps (source candidate after 0.11.0) | `components/Chat.tsx`；未发布 #99 的 fill/bubble/memberAppearance/compact 见 `docs/AGENT_CHAT.md`（npm 0.11.3 不含）, `docs/AGENT_CHAT.md`; stable IDs, history anchor, explicit resume, readOnly action slots |
+| ChatThread, ChatCard; ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatMemberLink, ChatStatus, ChatThreadProps, ChatCardProps (source candidate after 0.11.0) | `components/Chat.tsx`；未发布 #110 的 memberLink 原生作者链接与 #99 的 fill/bubble/memberAppearance/compact 见 `docs/AGENT_CHAT.md`（npm 0.11.3 不含）, `docs/AGENT_CHAT.md`; stable IDs, history anchor, explicit resume, readOnly action slots |
 | Checkbox `layout="row"`, CheckboxProps（自 0.10.0） | `components/Forms.tsx`、`docs/CHECKBOX_ROWS.md`；整行双行多选，默认 form 保持兼容；npm 0.9.1 不含此选项 |
 | TrendChart, StackedBar；StatusTimeline.detail（0.5.0） | `components/Charts.tsx`、`components/StatusTimeline.tsx`；`docs/APPLICATION_COMPONENTS.md`，未知不补零；键盘逐点查看、按ID受控高亮/详情、valueFormatter |
 | Background, AppShell（0.5.0）；AppShellToggle（0.8.0） | `components/Background.tsx`、`components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；桌面open与临时drawerOpen独立，断点为容器CSS布局宽度 |

@@ -50,7 +50,7 @@ export type { ButtonProps, TabsProps, SurfaceProps, Tone, Choice, TabItem } from
 export { ThemePicker, ThemePreview, type ThemePickerProps, type ThemePickerOption, type ThemePreviewProps } from './ThemePicker';
 
 export { ChatThread, ChatCard } from './Chat';
-export type { ChatThreadProps, ChatMemberAppearance, ChatCardProps, ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus } from './Chat';
+export type { ChatThreadProps, ChatMemberLink, ChatMemberAppearance, ChatCardProps, ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus } from './Chat';
 
 export type { TextFieldProps } from './components';
 

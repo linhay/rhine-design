@@ -1,4 +1,4 @@
-import { createContext, useContext, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { createContext, useContext, useId, useLayoutEffect, useRef, useState, type AnchorHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 import { Badge, Button, Disclosure, Surface, type Tone } from './components';
 
 export type ChatStatus = 'pending' | 'accepted' | 'declined' | 'blocked' | 'running' | 'partial' | 'succeeded' | 'failed' | 'cancelled' | 'expired' | 'unknown';
@@ -46,7 +46,11 @@ export interface ChatMemberAppearance {
   align?: 'start' | 'end';
   tone?: 'subtle' | 'strong';
 }
+/** Native author navigation; identity and timestamp remain owned by ChatThread. */
+export type ChatMemberLink = Pick<AnchorHTMLAttributes<HTMLAnchorElement>, 'id' | 'onClick' | 'aria-label' | 'title' | 'target' | 'rel'> & { href: string };
 export interface ChatThreadProps {
+  /** Pure mapping, evaluated once per visible author render. Continuations remain static. */
+  memberLink?: (member: ChatMember, message: ChatMessage) => ChatMemberLink | undefined;
   /** fill requires a bounded host height; standalone keeps the original 32rem viewport. */
   layout?: 'standalone' | 'fill';
   appearance?: 'plain' | 'bubble';
@@ -74,7 +78,7 @@ function isContinuation(previous: ChatEntry | undefined, entry: ChatMessage) {
 type Anchor = { id: string; offset: number };
 
 /** A non-virtualized, chronological reading viewport. No network, model or read receipts. */
-export function ChatThread({ label, entries, readOnly = false, hasEarlier = false, loadingEarlier = false, historyError, onLoadEarlier, announcement = '', layout = 'standalone', appearance = 'plain', memberAppearance, controls = 'full', className = '', style }: ChatThreadProps) {
+export function ChatThread({ label, entries, readOnly = false, hasEarlier = false, loadingEarlier = false, historyError, onLoadEarlier, announcement = '', layout = 'standalone', appearance = 'plain', memberAppearance, memberLink, controls = 'full', className = '', style }: ChatThreadProps) {
   const id = useId();
   const viewport = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLOListElement>(null);
@@ -155,8 +159,8 @@ export function ChatThread({ label, entries, readOnly = false, hasEarlier = fals
             {previous?.day !== entry.day && <div className="rhine-chat-day">{entry.day}</div>}
             {entry.kind === 'event' ? <div className="rhine-chat-event">{entry.content}</div> : <article data-align={presentation?.align ?? 'start'} data-tone={presentation?.tone ?? 'subtle'} aria-label={`${entry.member.name} · ${entry.time}`}>
               <header className={continuation ? 'rhine-sr-only' : 'rhine-chat-meta'}>
-                {entry.member.avatar && <span aria-hidden="true" className="rhine-chat-avatar">{entry.member.avatar}</span>}
-                <strong>{entry.member.name}</strong><time dateTime={entry.dateTime}>{entry.time}</time>
+                <MemberAuthor member={entry.member} message={entry} memberLink={continuation ? undefined : memberLink} />
+                <time dateTime={entry.dateTime}>{entry.time}</time>
               </header>
               <div className="rhine-chat-body">{entry.content}</div>
               {!readOnly && entry.actions && <div className="rhine-chat-actions">{entry.actions}</div>}
@@ -173,4 +177,12 @@ export function ChatThread({ label, entries, readOnly = false, hasEarlier = fals
       }}>回到最新并跟随</Button>
     </div>
   </div></ReadOnlyContext.Provider>;
+}
+
+function MemberIdentity({ member }: { member: ChatMember }) {
+  return <>{member.avatar && <span aria-hidden="true" className="rhine-chat-avatar">{member.avatar}</span>}<strong>{member.name}</strong></>;
+}
+function MemberAuthor({ member, message, memberLink }: { member: ChatMember; message: ChatMessage; memberLink?: ChatThreadProps['memberLink'] }) {
+  const link = memberLink?.(member, message);
+  return link ? <a {...link} className="rhine-chat-member-link"><MemberIdentity member={member} /></a> : <MemberIdentity member={member} />;
 }
