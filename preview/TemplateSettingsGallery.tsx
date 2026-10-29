@@ -176,6 +176,14 @@ export function SwitchRowsExample() {
     <Switch layout="row" label="不可更改的设置" checked disabled onCheckedChange={()=>{}} />
     <Switch layout="row" label="只读设置" checked readOnly hint="可以聚焦查看当前值" onCheckedChange={()=>{}} />
     <Switch label="默认内联开关" checked onCheckedChange={()=>{}} />
+    <section aria-label="独立卡片开关"><Stack gap={3}>
+      {['消息提醒','自动归档','长名称：团队资料同步与离线保留的独立设置'].map((title,index)=><div key={title} style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,minWidth:0}}>
+        <Text as="h3" variant="label" style={{overflowWrap:'anywhere'}}>{title}</Text>
+        <Switch label={`${title}启用`} labelVisibility="hidden" checked={index===0?draft:long} onCheckedChange={index===0?setDraft:setLong} />
+      </div>)}
+      <Switch label="隐藏标签只读开关" labelVisibility="hidden" layout="row" checked readOnly onCheckedChange={()=>{}} />
+      <Switch label="隐藏标签禁用开关" labelVisibility="hidden" checked disabled onCheckedChange={()=>{}} />
+    </Stack></section>
     <Button onClick={()=>setApplied(draft)}>确认开关草稿</Button><Text aria-label="已提交开关">{applied?'已开启':'已关闭'}</Text>
   </Stack></section>;
 }

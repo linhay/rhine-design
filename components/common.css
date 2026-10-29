@@ -85,3 +85,7 @@
 .rhine-switch--row > label { width:100%; justify-content:space-between; }
 .rhine-switch--row .rhine-switch__label { order:-1; min-width:0; overflow-wrap:anywhere; }
 .rhine-switch input[aria-readonly=true]~span { cursor:default; }
+
+/* A standalone switch retains its hit/focus space without a label column. */
+.rhine-switch.rhine-switch--hidden-label { flex:none; width:fit-content; max-width:100%; }
+.rhine-switch.rhine-switch--hidden-label label { width:44px; min-width:44px; min-height:44px; gap:0; justify-content:center; }

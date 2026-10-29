@@ -26,7 +26,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | ButtonLink（0.8.0） | `components/Actions.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；原生 anchor/下载语义，同 Button 视觉，busy 保焦点并移除 href |
 | Divider, Stack, Inline, Grid | `components/Layout.tsx` |
 | Metric, KeyValue, DataTable, Pagination | `components/Data.tsx` |
-| Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx` |
+| Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx`；Switch 标签显隐见 `docs/TEMPLATE_SETTINGS.md`（未发布） |
 | Dialog, Drawer (0.4.0), ConfirmDialog, Popover, Menu, Tooltip | `components/Overlays.tsx` |
 | StatusTimeline, TimelineLegend (0.4.0) | `components/StatusTimeline.tsx`；历史证据，不计算健康评分 |
 | TimelineLegend compact/items（0.8.0） | `components/StatusTimeline.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；宿主短标签/完整规则，一行局部滚动，hover/focus/touch 详情 |

@@ -77,3 +77,9 @@ const nextId = useRef(0);
 `Switch layout="row"`让label占满可用宽度，标题位于逻辑起端、36×22px开关图形位于逻辑末端；RTL对调方向，图形不拉伸。标题及hint自然换行，整行原生label至少44px高。默认`layout="inline"`保持开关在前、标题在后的原用法。`readOnly`保留焦点与`aria-readonly`，阻止点击及Space更改；disabled使用原生禁用。原生input/label、完整名称、hint关联和focus-visible保留。
 
 模板工作区使用row；专用真实入口`?fixture=template-settings&switches=1`覆盖长短标题、hint、disabled/readOnly、LTR/RTL、开关状态和显式草稿确认，未确认前不改变已应用值。系统/手动减少动态保留同一路径。npm0.11.3无此新增契约，原消费固定制品验收后才删除局部反转/space-between适配。
+
+## 独立开关标签（#88，未发布）
+
+`Switch labelVisibility="hidden"` 仅隐藏视觉标签，默认 `visible` 与既有 inline/row 兼容；`label` 仍为必填非空字符串。仅在紧邻对象标题、关系明确时使用，多个卡片用包含对象身份的独立名称（例如 `label="消息提醒启用"`），不能只重复“启用”。内部复用 sr-only，标签无占位和 gap，隐藏态不填满 row，保留 44×44px 命中区与焦点轮廓空间。hint 如提供仍可见且保持描述关联；需要较长 hint 时优先可见标签行布局。
+
+`#template-settings` 的开关行样例与 `?fixture=template-settings&switches=1` 覆盖默认可见、独立隐藏、长标题、只读及禁用。Space、受控更新、焦点与减少动态沿用同一原生 input。此能力不在 npm 0.11.3 或维护候选 settings-tag-wrap.1 中。

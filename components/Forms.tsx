@@ -32,10 +32,12 @@ export interface SwitchProps {
   disabled?: boolean; readOnly?: boolean; hint?: string;
   /** Row fills the available width: label at logical start, fixed-size toggle at logical end. */
   layout?: 'inline' | 'row';
+  /** Hide only the visual label when an adjacent title already identifies the setting. */
+  labelVisibility?: 'visible' | 'hidden';
 }
-export function Switch({ label, checked, onCheckedChange, disabled = false, readOnly = false, hint, layout = 'inline' }: SwitchProps) {
+export function Switch({ label, checked, onCheckedChange, disabled = false, readOnly = false, hint, layout = 'inline', labelVisibility = 'visible' }: SwitchProps) {
   const id = useId();
-  return <div className={`rhine-switch${layout === 'row' ? ' rhine-switch--row' : ''}`}><label><input type="checkbox" role="switch" checked={checked} aria-checked={checked} disabled={disabled} aria-readonly={readOnly || undefined} aria-describedby={hint ? id : undefined} readOnly={readOnly} onChange={event => { if (!readOnly) onCheckedChange(event.target.checked); }} /><span className="rhine-switch__track" aria-hidden="true"><span /></span><span className="rhine-switch__label">{label}</span></label>{hint && <p id={id} className="rhine-text rhine-text--caption rhine-text--muted">{hint}</p>}</div>;
+  return <div className={`rhine-switch${layout === 'row' ? ' rhine-switch--row' : ''}${labelVisibility === 'hidden' ? ' rhine-switch--hidden-label' : ''}`}><label><input type="checkbox" role="switch" checked={checked} aria-checked={checked} disabled={disabled} aria-readonly={readOnly || undefined} aria-describedby={hint ? id : undefined} readOnly={readOnly} onChange={event => { if (!readOnly) onCheckedChange(event.target.checked); }} /><span className="rhine-switch__track" aria-hidden="true"><span /></span><span className={labelVisibility === 'hidden' ? 'rhine-sr-only' : 'rhine-switch__label'}>{label}</span></label>{hint && <p id={id} className="rhine-text rhine-text--caption rhine-text--muted">{hint}</p>}</div>;
 }
 export function Textarea({ label, hint, error, id: suppliedId, className = '', rows = 3, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string; hint?: string; error?: string }) {
   const generatedId = useId(), id = suppliedId || generatedId;
