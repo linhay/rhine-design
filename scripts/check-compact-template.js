@@ -10,8 +10,13 @@ async page => {
   const result=await locator.evaluate(el=>{
    const range=document.createRange();range.selectNodeContents(el);const bounds=el.getBoundingClientRect();
    const rects=[...range.getClientRects()].filter(r=>r.width>0&&r.height>0);
-   let left=0,right=innerWidth,top=0,bottom=innerHeight,visible=true;
-   for(let n=el;n;n=n.parentElement){const s=getComputedStyle(n),r=n.getBoundingClientRect();if(s.display==='none'||s.visibility==='hidden'||Number(s.opacity)===0)visible=false;if(/hidden|clip|auto|scroll/.test(s.overflowX)){left=Math.max(left,r.left);right=Math.min(right,r.right);}if(/hidden|clip|auto|scroll/.test(s.overflowY)){top=Math.max(top,r.top);bottom=Math.min(bottom,r.bottom);}}
+   let left=0,right=innerWidth,top=0,bottom=innerHeight,visible=true,escaped=false;
+   for(let n=el;n;n=n.parentElement){const s=getComputedStyle(n),r=n.getBoundingClientRect();if(s.display==='none'||s.visibility==='hidden'||Number(s.opacity)===0)visible=false;if(!escaped&&/hidden|clip|auto|scroll/.test(s.overflowX)){left=Math.max(left,r.left);right=Math.min(right,r.right);}if(!escaped&&/hidden|clip|auto|scroll/.test(s.overflowY)){top=Math.max(top,r.top);bottom=Math.min(bottom,r.bottom);}
+    if(s.position==='fixed'){
+     let containingBlock=false;for(let parent=n.parentElement;parent;parent=parent.parentElement){const style=getComputedStyle(parent);if(style.transform!=='none'||style.perspective!=='none'||style.filter!=='none'||/paint|layout|strict|content/.test(style.contain)||/transform|perspective|filter/.test(style.willChange))containingBlock=true;}
+     if(!containingBlock)escaped=true;
+    }
+   }
    return {visible,rects:rects.map(r=>({left:r.left,right:r.right,top:r.top,bottom:r.bottom})),left,right,top,bottom,width:bounds.width,height:bounds.height};
   });
   assert(result.visible&&result.rects.length>0&&result.rects.every(r=>r.left>=result.left-1&&r.right<=result.right+1&&r.top>=result.top-1&&r.bottom<=result.bottom+1),'text clipped or hidden '+JSON.stringify(result));return result;
