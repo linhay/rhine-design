@@ -57,6 +57,9 @@
 .rhine-chat-member-link strong { min-width:0; overflow-wrap:anywhere; }
 .rhine-chat-member-link .rhine-chat-avatar { flex:none; }
 .rhine-chat-member-link:hover strong { text-decoration:underline; text-underline-offset:3px; }
+@media (hover:none), (any-pointer:coarse) {
+  .rhine-chat-member-link strong { text-decoration:underline; text-underline-offset:3px; }
+}
 .rhine-chat-member-link:focus-visible { outline:2px solid var(--rhine-green); outline-offset:3px; }
 @media (pointer:fine) and (not (any-pointer:coarse)) {
   .rhine-chat-member-link { min-height:24px; min-inline-size:24px; }

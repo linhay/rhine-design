@@ -7,10 +7,10 @@
 - `tests/ChatMemberLink.test.tsx`：只读头像/姓名单一原生链接、时间外置、article 名称、有限公开类型、无映射静态回退、每次作者 render 单次映射、连续/事件不求值，以及普通/修饰点击未被组件阻止。JSDOM 不证明浏览器导航。
 - `scripts/check-chat-member-link.js`：四主题 × 400/520/880 × 100%/200% CSS zoom × plain/bubble × 私聊/群聊，共 96 组合。核对消息区/页面横向溢出、作者逐行文字裁剪、时间独立、头像装饰语义、事件/未知目标静态、连续作者没有隐藏交互及末项可达。
 - `scripts/check-chat-member-link-interactions.js`：四主题 × 两外观，在 400px/200% 下实际 Tab、Shift+Tab、Enter、可见 focus；双方和长名成员分别点头像/姓名；时间不导航；返回保存已加载历史、scrollTop 与入口焦点。保留的隐藏聊天退出键盘顺序。系统/手动减少动态走同一路径。
-- 原生修饰键、中键和 `_blank` 三条路径分别创建新标签，从 href 初始化资料且不导航原聊天；粗指针环境分别核对单行 A/B 与长名 C 至少 44×44 CSS px、不与时间重叠及实际 tap 往返；主页面、新标签与触控页面均记录 pageerror。粗指针模拟不代表触屏真机验收。
+- 原生修饰键、中键和 `_blank` 三条路径分别创建新标签，从 href 初始化资料且不导航原聊天；粗指针环境分别核对单行 A/B 与长名 C 至少 44×44 CSS px、不与时间重叠及实际 tap 往返；静态未知作者无下划线；粗指针有常驻下划线，纯细指针保留悬停提示。主页面、新标签与触控页面均记录 pageerror。粗指针模拟不代表触屏真机验收。
 - 原有 `check-chat-layout.js`、`check-chat-layout-interactions.js`、`check-chat-layout-smoke.js` 回归分组、布局、历史失败/重试、prepend 锚点、流式跟随/暂停/取消、只读来源往返、默认布局与 RTL。
 
-脚本在打开本轮生产预览后用 Playwright CLI `run-code --filename` 执行；必须读取 JSON 的 `pass`、每项结果与 `errors`，不能只看 shell 退出码。给页面追加 `?memberProbe=clip` 或 `?memberProbe=hidden-link` 后运行布局脚本，分别在临时页面注入姓名裁剪、隐藏可聚焦链接；应明确检出目标失败。交互脚本另支持 `memberProbe=touch24`，仅运行粗指针子集并临时把链接最小目标降至24px；相同44px断言应检出短作者高度不足。反例不修改正式组件。
+脚本在打开本轮生产预览后用 Playwright CLI `run-code --filename` 执行；必须读取 JSON 的 `pass`、每项结果与 `errors`，不能只看 shell 退出码。给页面追加 `?memberProbe=clip` 或 `?memberProbe=hidden-link` 后运行布局脚本，分别在临时页面注入姓名裁剪、隐藏可聚焦链接；应明确检出目标失败。交互脚本另支持 `memberProbe=touch24`，仅运行粗指针子集并临时把链接最小目标降至24px；相同44px断言应检出短作者高度不足。`memberProbe=touch-no-cue` 则临时去掉触控下划线，应命中可辨识性断言。反例不修改正式组件。
 
 ## 本轮结果
 
@@ -33,3 +33,9 @@
 首轮布局脚本在 CLI 执行环境遇到 `URL is not defined`，尚未进入断言；已保留原始失败，将 URL 构造移至浏览器上下文后另跑，不能把此工具错误记作组件回归或反例检出。
 
 独立暂存评审发现初版粗指针检查只量多行长名，其自然高度不能证明最小目标；补测单行作者并加入上述24px最小值反例。原初版PASS仅对应原断言，最终记录以补强后的完整输出为准。
+
+PR审阅补充：无悬停/粗指针下只靠hover无法区别链接与静态作者。根据字体契约的可辨识样式要求，仅这些环境采用姓名常驻下划线；不把此具体媒体查询提升为全库规则。原 `dd684df` 候选与制品保留为已取代证据，新修订独立打包、全新安装与复验，精确身份回填PR。
+
+补充验证：四主题细指针的静态/悬停样式、两外观粗指针常驻提示及tap往返PASS；去掉提示的反例明确命中。二轮尺寸矩阵在生产目录同时重建期间出现3项导航HTTP失败，原记录保留，后续只对冻结的构建运行矩阵，不混写制品。
+
+![触控作者链接的常驻提示](images/chat-member-link-touch.png)

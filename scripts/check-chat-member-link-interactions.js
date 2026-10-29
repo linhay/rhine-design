@@ -1,7 +1,7 @@
 async page => {
   page.setDefaultTimeout(4000);
   const { base, probe } = await page.evaluate(() => ({ base: `${location.origin}${location.pathname}`, probe: new URLSearchParams(location.search).get('memberProbe') }));
-  const touchProbe = probe === 'touch24';
+  const touchProbe = ['touch24', 'touch-no-cue'].includes(probe);
   const rows = [], motion = [], native = [], touch = [], errors = [];
   const mainContext = page.context(), watchedPages = new Map();
   const watchPage = target => {
@@ -29,6 +29,17 @@ async page => {
   async function roundtrip(options) {
     await page.goto(url(options));
     const viewport = page.getByRole('region', { name: '成员导航聊天消息' }); await viewport.waitFor();
+    assert(await page.evaluate(() => matchMedia('(hover:hover) and (pointer:fine) and (not (any-pointer:coarse))').matches), 'fine-only hover environment not active');
+    const cueLink = page.locator('#member-author-member-a-1');
+    await page.mouse.move(0, 0); await cueLink.scrollIntoViewIfNeeded();
+    const readCue = () => cueLink.locator('strong').evaluate(node => ({ decoration: getComputedStyle(node).textDecorationLine, hovered: node.closest('a').matches(':hover') }));
+    const idleCue = await readCue();
+    assert(!idleCue.hovered && !idleCue.decoration.includes('underline'), 'fine-only idle author unexpectedly has a persistent underline');
+    await cueLink.hover(); const hoverCue = await readCue();
+    assert(hoverCue.hovered && hoverCue.decoration.includes('underline'), 'fine-only hover did not underline author');
+    await page.mouse.move(0, 0); const leaveCue = await readCue();
+    assert(!leaveCue.hovered && !leaveCue.decoration.includes('underline'), 'fine-only author underline persisted after leaving');
+    const fineCue = { idle: idleCue, hover: hoverCue, leave: leaveCue };
     await page.getByRole('button', { name: '加载更早消息', exact: true }).click();
     assert(await viewport.locator('[data-chat-entry="member-history-a"], [data-chat-entry="member-history-b"]').count() === 2, 'history was not loaded');
     await viewport.focus(); await page.keyboard.press('Home'); await settle(viewport);
@@ -86,7 +97,7 @@ async page => {
       if (active.author) visited.push(active.id);
     }
     assert(visited.length === expected && new Set(visited).size === expected, 'author Tab sequence lost or duplicated a visible entry');
-    return { focus, restored, activated, tabStops: visited.length };
+    return { fineCue, focus, restored, activated, tabStops: visited.length };
   }
   try {
     for (const theme of touchProbe ? [] : ['rhine', 'arknights', 'neo-brutalism', 'neutral']) for (const appearance of ['plain', 'bubble']) {
@@ -132,32 +143,38 @@ async page => {
       const touchPage = await touchContext.newPage(); touchPage.setDefaultTimeout(4000);
       for (const appearance of ['plain', 'bubble']) {
         const geometry = [], activated = [];
+        let unknownCue = null;
         try {
           await touchPage.goto(url({ theme: 'neutral', appearance, zoom: 2 }));
           assert(await touchPage.evaluate(() => matchMedia('(any-pointer:coarse)').matches), 'coarse pointer emulation not active');
-          if (touchProbe) await touchPage.addStyleTag({ content: '.rhine-chat-member-link { min-height:24px !important; min-inline-size:24px !important; }' });
+          if (probe === 'touch24') await touchPage.addStyleTag({ content: '.rhine-chat-member-link { min-height:24px !important; min-inline-size:24px !important; }' });
+          if (probe === 'touch-no-cue') await touchPage.addStyleTag({ content: '.rhine-chat-member-link strong { text-decoration:none !important; }' });
           // A/B must remain single-line: a multi-line name alone cannot prove the minimum target height.
           for (const member of ['a', 'b', 'c']) {
             const link = touchPage.locator(`#member-author-member-${member}-1`); await link.scrollIntoViewIfNeeded();
             geometry.push(await link.evaluate((node, member) => {
               const rect = node.getBoundingClientRect(), time = node.parentElement.querySelector('time').getBoundingClientRect();
               const name = document.createRange(); name.selectNodeContents(node.querySelector('strong'));
-              return { member, nameLines: name.getClientRects().length, width: rect.width / 2, height: rect.height / 2,
+              return { member, nameLines: name.getClientRects().length, decoration: getComputedStyle(node.querySelector('strong')).textDecorationLine, width: rect.width / 2, height: rect.height / 2,
                 overlap: Math.min(rect.right, time.right) - Math.max(rect.left, time.left) > 1 && Math.min(rect.bottom, time.bottom) - Math.max(rect.top, time.top) > 1 };
             }, member));
           }
+          unknownCue = await touchPage.locator('[data-chat-entry="member-unknown"] strong').evaluate(node => ({ decoration: getComputedStyle(node).textDecorationLine, linked: !!node.closest('a') }));
+          assert(!unknownCue.linked && !unknownCue.decoration.includes('underline'), 'static unknown author acquired a link cue');
           assert(geometry.filter(row => row.member !== 'c').every(row => row.nameLines === 1), 'coarse short-name fixture is not single-line');
           assert(geometry.every(row => row.width >= 44 && row.height >= 44 && !row.overlap), 'coarse author target is under 44px or overlaps time: ' + JSON.stringify(geometry));
+          assert(geometry.every(row => row.decoration.includes('underline')), 'coarse author lacks a persistent link cue before touch: ' + JSON.stringify(geometry));
           for (const member of ['a', 'b', 'c']) {
             const id = `member-author-member-${member}-1`, link = touchPage.locator(`#${id}`); await link.scrollIntoViewIfNeeded();
+            assert(await link.locator('strong').evaluate(node => getComputedStyle(node).textDecorationLine.includes('underline')), `coarse author ${member} lost its link cue before touch`);
             await link.locator('.rhine-chat-avatar').tap(); await touchPage.locator('[data-member-profile]').waitFor();
             assert(await touchPage.evaluate(() => new URLSearchParams(location.search).get('member')) === member, 'touch did not open expected member');
             await touchPage.getByRole('button', { name: '返回聊天', exact: true }).tap();
             await touchPage.waitForFunction(id => document.activeElement?.id === id, id);
             activated.push(member);
           }
-          touch.push({ appearance, pass: true, geometry, activated });
-        } catch (error) { touch.push({ appearance, pass: false, geometry, activated, error: String(error) }); }
+          touch.push({ appearance, pass: true, geometry, unknownCue, activated });
+        } catch (error) { touch.push({ appearance, pass: false, geometry, unknownCue, activated, error: String(error) }); }
       }
     } finally { touchContext.off('page', watchPage); await touchContext.close(); }
   } finally {
