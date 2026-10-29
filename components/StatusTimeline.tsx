@@ -94,13 +94,22 @@ export function TimelineLegend({ label = '健康记录图例', compact = false, 
   const [active, setActive] = useState<TimelineStatus | null>(null);
   useLayoutEffect(() => { setContainer(root.current?.closest<HTMLElement>('.rhine-theme') ?? document.body); }, []);
   useEffect(() => { if (active && !items.some(item => item.status === active && item.description)) setActive(null); }, [active, items]);
+  const openFromHover = (status: TimelineStatus) => {
+    const legend = root.current, document = legend?.ownerDocument, focused = document?.activeElement;
+    // Focus scrolling can move a different item under a stationary pointer.
+    if (focused && legend?.contains(focused) && focused.matches(':focus-visible')) return;
+    const popupId = legend?.querySelector('[aria-expanded="true"]')?.getAttribute('aria-controls');
+    if (focused && popupId && document?.getElementById(popupId)?.contains(focused)) return;
+    setActive(status);
+  };
   return <ul ref={root} className={`rhine-timeline__legend${compact ? ' rhine-timeline__legend--compact' : ''}${compact && density === 'compact' ? ' rhine-timeline__legend--dense' : ''}`} aria-label={label}>
     {items.map(item => <LegendItem key={item.status} item={item} container={container} open={active === item.status}
+      onHover={() => openFromHover(item.status)}
       onOpenChange={next => setActive(current => next ? item.status : current === item.status ? null : current)} />)}
   </ul>;
 }
 
-function LegendItem({ item, container, open, onOpenChange }: { item: TimelineLegendItem; container?: HTMLElement; open: boolean; onOpenChange: (open: boolean) => void }) {
+function LegendItem({ item, container, open, onOpenChange, onHover }: { item: TimelineLegendItem; container?: HTMLElement; open: boolean; onOpenChange: (open: boolean) => void; onHover: () => void }) {
   const id = useId(), trigger = useRef<HTMLButtonElement>(null), popup = useRef<HTMLDivElement>(null), returning = useRef(false);
   const detailHadFocus = useRef(false);
   const hover = useTimelineHoverExit(trigger, popup, () => onOpenChange(false));
@@ -114,7 +123,7 @@ function LegendItem({ item, container, open, onOpenChange }: { item: TimelineLeg
         if (!returning.current) onOpenChange(true); returning.current = false;
       }}
       onClick={() => onOpenChange(true)}
-      onPointerEnter={event => { if (event.pointerType === 'mouse') { hover.cancel(); onOpenChange(true); } }}
+      onPointerEnter={event => { if (event.pointerType === 'mouse') { hover.cancel(); onHover(); } }}
       onPointerLeave={event => { if (event.pointerType === 'mouse' && !(event.relatedTarget instanceof Node && popup.current?.contains(event.relatedTarget))) hover.leave(); }}
       onKeyDown={event => {
         if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); onOpenChange(false); }
