@@ -10,6 +10,7 @@ async page => {
    await page.setViewportSize({width,height});await page.goto(`${base}/?fixture=template-settings&theme=${theme}&zoom=${zoom}`);
    await page.getByRole('button',{name:'载入八行草稿'}).click();const trigger=page.getByRole('button',{name:'打开模板工作区'});await trigger.click();
    const d=page.getByRole('dialog',{name:'模板配置'}), editor=d.getByRole('group',{name:'模板规则'}), body=d.getByRole('region',{name:'模板配置内容'});
+   const nav=async name=>{const select=d.getByRole('combobox',{name:'模板工作区栏目'});if(await select.isVisible()) await select.selectOption({label:name});else await d.getByRole('link',{name,exact:true}).click();};
    const measure=()=>d.evaluate(e=>{const rect=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right};};const body=e.querySelector('.rhine-dialog__settings-content'), footer=e.querySelector('.rhine-dialog__footer');return {frame:rect(e),head:rect(e.querySelector('.rhine-dialog__head')),body:rect(body),footer:rect(footer),buttons:[...footer.querySelectorAll('button')].map(rect),overflow:body.scrollWidth>body.clientWidth+1};});
    const first=await measure();const stable=async()=>{const now=await measure();for(const key of ['frame','head','footer'])for(const axis of ['x','y','width','height'])assert(Math.abs(now[key][axis]-first[key][axis])<1,`unstable ${key}.${axis}`);return now;};
    assert(first.body.height>=128,`body only ${first.body.height}px`);
@@ -19,7 +20,7 @@ async page => {
    const layout=await fields.evaluate(e=>({columns:getComputedStyle(e).gridTemplateColumns.split(' ').length,width:e.closest('.rhine-mapping-editor').getBoundingClientRect().width,zoom:Number(getComputedStyle(document.documentElement).zoom)}));
    assert(layout.columns===(layout.width/zoom<480?1:4),'incorrect container reflow');
    const edited=d.getByRole('combobox',{name:'第3行 目标'});await edited.selectOption('option-8');
-   await d.getByRole('link',{name:'其他设置',exact:true}).click();await stable();await d.getByRole('link',{name:'模板编辑',exact:true}).click();
+   await nav('其他设置');await stable();await nav('模板编辑');
    assert(await edited.inputValue()==='option-8','section lost row draft');
    const surviving=await d.getByRole('combobox',{name:'第4行 目标'}).elementHandle();
    await d.getByRole('button',{name:'删除第3行',exact:true}).click();

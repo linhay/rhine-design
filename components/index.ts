@@ -58,3 +58,6 @@ export { MappingEditor } from './MappingEditor';
 export type { MappingEditorProps, MappingEditorRow } from './MappingEditor';
 
 export type { SwitchProps } from './Forms';
+
+export { SettingsNavigation } from './SettingsNavigation';
+export type { SettingsNavigationProps, SettingsNavigationItem } from './SettingsNavigation';

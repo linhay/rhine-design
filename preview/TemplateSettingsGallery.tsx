@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import './template-settings.css';
-import { Button, Checkbox, Dialog, EmptyState, MappingEditor, Notice, RemoteMultiSelect, Select, SideNav, Stack, Switch, Text, TextField, type MappingEditorRow } from '../components';
+import { Button, Checkbox, Dialog, EmptyState, MappingEditor, Notice, RemoteMultiSelect, Select, SettingsNavigation, Stack, Switch, Text, TextField, type MappingEditorRow } from '../components';
 import { ThemeProvider, type ThemeName } from '../components/theme';
 
 type Rule = Pick<MappingEditorRow,'id'|'source'|'target'>;
@@ -15,7 +15,7 @@ const initialTemplates:Template[]=[{id:'basic',name:'基础模板',version:1,row
 const initialTargets:Target[]=[{id:'a',name:'合成对象甲',enabled:true,editable:true,rows:[]},{id:'b',name:'合成对象乙',enabled:false,editable:true,rows:initialTemplates[0].rows},{id:'c',name:'合成对象丙',enabled:true,editable:false,rows:[]}];
 const equalRules=(a:Rule[],b:Rule[])=>JSON.stringify(a.map(({source,target})=>({source,target})))===JSON.stringify(b.map(({source,target})=>({source,target})));
 
-export function TemplateSettingsGallery({keyboardLabels=false}:{keyboardLabels?:boolean}={}) {
+export function TemplateSettingsGallery({keyboardLabels=false,longNavigation=false}:{keyboardLabels?:boolean;longNavigation?:boolean}={}) {
   const options=keyboardLabels ? catalogOptions.map((option,index)=>({...option,label:`${['Alpha','Beta','Gamma','Delta','Echo','Foxtrot','Hotel','India'][index]} · ${option.label}`})) : catalogOptions;
   const [open,setOpen]=useState(false),[section,setSection]=useState('apply');
   const [templates,setTemplates]=useState(initialTemplates),[targets,setTargets]=useState(initialTargets);
@@ -26,7 +26,7 @@ export function TemplateSettingsGallery({keyboardLabels=false}:{keyboardLabels?:
   const opener=useRef<HTMLButtonElement|null>(null);
   const [targetIds,setTargetIds]=useState<string[]>([]),[intent,setIntent]=useState<Intent>('keep');
   const [message,setMessage]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
-  const [failure,setFailure]=useState(false),[mode,setMode]=useState('edit');
+  const [failure,setFailure]=useState(false),[mode,setMode]=useState('edit'),[readOnlyWorkspace,setReadOnlyWorkspace]=useState(false);
   const [plan,setPlan]=useState<{template:Template|null;intent:Intent;targets:Target[]}|null>(null);
   const selectedRef=useRef(selected);selectedRef.current=selected;
   const handoffId=useId();
@@ -93,23 +93,23 @@ export function TemplateSettingsGallery({keyboardLabels=false}:{keyboardLabels?:
     setTargets(current=>current.map(t=>ids.has(t.id)?{...t,rows:plan.template?plan.template.rows.map(r=>({...r})):t.rows,enabled:plan.intent==='keep'?t.enabled:plan.intent==='on'}:t));
     setPlan(null);setIntent('keep');setMessage('已应用演示配置（仅本页内存）');
   };
-  const nav=[{id:'apply',label:'应用配置',href:'#apply'},{id:'edit',label:'模板编辑',href:'#edit'},{id:'other',label:'其他设置',href:'#other'}];
+  const nav=[{id:'apply',label:'应用配置',href:'#apply'},{id:'edit',label:'模板编辑',href:'#edit'},{id:'other',label:longNavigation?'其他设置：用于验证超长栏目名称的合成导航项目':'其他设置',href:'#other'}];
   return <Stack gap={4}>
     <Text as="h2" variant="section">模板驱动批量设置</Text>
     <Text>合成数据，仅本页内存；业务权限、服务与持久化由宿主提供。</Text>
+    <Checkbox label="只读工作区" checked={readOnlyWorkspace} onChange={e=>{setReadOnlyWorkspace(e.target.checked);if(e.target.checked) setSection('apply');}} />
     <Checkbox label="模拟模板保存失败" checked={failure} onChange={e=>setFailure(e.target.checked)} />
     <Select label="编辑器状态" value={mode} onChange={e=>setMode(e.target.value)}><option value="edit">可编辑</option><option value="disabled">禁用</option><option value="readonly">只读</option></Select>
-    <Button variant="secondary" disabled={busy} onClick={()=>{setDrafts(current=>({...current,[editing]:{...current[editing],rows:options.map(o=>({id:`rule-${nextId.current++}`,source:o.value,target:'option-2'}))}}));setSection('edit');}}>载入八行草稿</Button>
-    <Button variant="secondary" disabled={busy} onClick={()=>{setDrafts(current=>({...current,[editing]:{...current[editing],rows:[{id:`rule-${nextId.current++}`,source:'option-1',target:''},{id:`rule-${nextId.current++}`,source:'option-1',target:'option-2'}]}}));setSection('edit');}}>载入重复来源与空目标</Button>
+    <Button variant="secondary" disabled={busy || readOnlyWorkspace} onClick={()=>{setDrafts(current=>({...current,[editing]:{...current[editing],rows:options.map(o=>({id:`rule-${nextId.current++}`,source:o.value,target:'option-2'}))}}));setSection('edit');}}>载入八行草稿</Button>
+    <Button variant="secondary" disabled={busy || readOnlyWorkspace} onClick={()=>{setDrafts(current=>({...current,[editing]:{...current[editing],rows:[{id:`rule-${nextId.current++}`,source:'option-1',target:''},{id:`rule-${nextId.current++}`,source:'option-1',target:'option-2'}]}}));setSection('edit');}}>载入重复来源与空目标</Button>
     <Button variant="secondary" onClick={e=>enter('single',e.currentTarget)}>设置合成对象甲</Button>
-    <Dialog title="模板配置" height={760} open={open} onOpenChange={setOpen} trigger={<Button onClick={e=>enter('batch',e.currentTarget)}>打开模板工作区</Button>}
-      description={context==='single' ? '当前对象：合成对象甲' : undefined}
+    <Dialog title={context==='single'?'模板配置 · 合成对象甲':'模板配置'} height={760} open={open} onOpenChange={setOpen} trigger={<Button onClick={e=>enter('batch',e.currentTarget)}>打开模板工作区</Button>}
       onCloseAutoFocus={event=>{event.preventDefault();opener.current?.focus();}}
-      navigation={<SideNav aria-label="模板工作区栏目" currentId={section} groups={[{label:'配置',items:nav.map(item=>({...item,disabled:Boolean(plan)}))}]} onNavigate={(item,e)=>{e.preventDefault();if(!plan) setSection(item.id);}} />}
+      navigation={<SettingsNavigation label="模板工作区栏目" currentId={section} items={nav.filter(item=>!readOnlyWorkspace || item.id!=='edit')} disabled={Boolean(plan) || busy} onNavigate={item=>setSection(item.id)} />}
       footer={<>
         <Button variant="secondary" disabled={busy} onClick={()=>{if(plan) setPlan(null);else if(section==='edit') {update(saved ? {name:saved.name,rows:saved.rows} : {name:'',rows:[]});}else {setSelected(null);setIntent('keep');setMessage('已撤销应用选择');}}}>{plan?'返回':'撤销'}</Button>
         <Button variant="secondary" onClick={()=>setOpen(false)}>关闭</Button>
-        {section==='edit' ? <Button busy={busy} disabled={mode!=='edit'} onClick={save}>保存</Button> : plan ? <Button onClick={apply}>确认</Button> : <Button disabled={!targetIds.length || (!selectedTemplate && intent==='keep')} onClick={()=>{setSection('apply');setPlan({template:selectedTemplate,intent,targets:targets.filter(t=>targetIds.includes(t.id)).map(t=>({...t}))});}}>预览</Button>}
+        {section==='edit' ? <Button busy={busy} disabled={mode!=='edit' || readOnlyWorkspace} onClick={save}>保存</Button> : plan ? <Button onClick={apply}>确认</Button> : <Button disabled={readOnlyWorkspace || !targetIds.length || (!selectedTemplate && intent==='keep')} onClick={()=>{setSection('apply');setPlan({template:selectedTemplate,intent,targets:targets.filter(t=>targetIds.includes(t.id)).map(t=>({...t}))});}}>预览</Button>}
       </>}>
       <div className="template-settings-context"><div className={`template-settings-layout ${context==='batch'?'template-settings-layout--batch':''}`}>
         {context==='batch' && <aside aria-label="批量对象栏" className="template-settings-targets">
@@ -134,12 +134,12 @@ export function TemplateSettingsGallery({keyboardLabels=false}:{keyboardLabels?:
             onRemove={id=>update({rows:draft.rows.filter(r=>r.id!==id)})}
             onAdd={()=>{const id=`rule-${nextId.current++}`;update({rows:[...draft.rows,{id,source:'',target:''}]});return id;}} emptyContent="模板暂无规则" />
         </>}
-        {section==='other' && <Switch layout="row" label="启用调度" checked={intent==='keep'?allEnabled:intent==='on'} disabled={!targetIds.length} hint={intent==='keep' && mixed?'部分对象已开启':undefined} onCheckedChange={checked=>{setIntent(checked?'on':'off');setMessage('');}} />}
+        {section==='other' && <Switch layout="row" label="启用调度" checked={intent==='keep'?allEnabled:intent==='on'} disabled={!targetIds.length || readOnlyWorkspace} hint={intent==='keep' && mixed?'部分对象已开启':undefined} onCheckedChange={checked=>{setIntent(checked?'on':'off');setMessage('');}} />}
         {section==='apply' && (plan ? <>
           <Text as="h3" variant="heading">确认逐目标差异</Text><Text>{plan.template?`${plan.template.name} · v${plan.template.version}`:'规则保持原值'}；{plan.intent==='keep'?'开关保持各自原值':plan.intent==='on'?'全部开启':'全部关闭'}</Text>
           {plan.targets.map(target=><Stack key={target.id} gap={1}><Text>{target.name}</Text>{changes(target,plan.template,plan.intent).map((change,index)=><Text key={index}>{change}</Text>)}</Stack>)}
         </> : <>
-          <Select label="已保存模板" value={selectedTemplate?.id || ''} onChange={e=>{const t=templates.find(t=>t.id===e.target.value);setSelected(t?{id:t.id,version:t.version}:null);setMessage('');}}><option value="">不修改规则</option>{templates.map(t=><option key={t.id} value={t.id}>{t.name} · v{t.version}</option>)}</Select>
+          <Select label="已保存模板" disabled={readOnlyWorkspace} value={selectedTemplate?.id || ''} onChange={e=>{const t=templates.find(t=>t.id===e.target.value);setSelected(t?{id:t.id,version:t.version}:null);setMessage('');}}><option value="">不修改规则</option>{templates.map(t=><option key={t.id} value={t.id}>{t.name} · v{t.version}</option>)}</Select>
           {selectedTemplate ? <><Text>只读预览 · v{selectedTemplate.version}</Text><MappingEditor label="已保存模板规则" rows={selectedTemplate.rows} sourceOptions={options} targetOptions={options} onRowChange={()=>{}} readOnly emptyContent="空模板：应用后清空规则" /></> : <EmptyState title="规则保持原值" description="" />}
         </>)}
       </Stack></div></div></div>
@@ -183,5 +183,5 @@ export function SwitchRowsExample() {
 export function TemplateSettingsFixture() {
   const params=new URLSearchParams(location.search), zoom=Number(params.get('zoom')) || 1;
   useEffect(()=>{document.documentElement.style.zoom=String(zoom);return()=>{document.documentElement.style.zoom='';};},[zoom]);
-  return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') || 'reduced'}><div dir={params.get('dir')==='rtl'?'rtl':'ltr'} style={{padding:16}}>{params.get('switches')==='1' && <SwitchRowsExample />}<TemplateSettingsGallery keyboardLabels={params.get('keyboard')==='latin'} /></div></ThemeProvider>;
+  return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') || 'reduced'}><div dir={params.get('dir')==='rtl'?'rtl':'ltr'} style={{padding:16}}>{params.get('switches')==='1' && <SwitchRowsExample />}<TemplateSettingsGallery keyboardLabels={params.get('keyboard')==='latin'} longNavigation={params.get('longnav')==='1'} /></div></ThemeProvider>;
 }

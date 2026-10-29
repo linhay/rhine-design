@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #18：新增 SettingsNavigation，按 Dialog 实际内容宽度切换 SideNav / 原生 Select；共用选项、禁用与回调，隐藏分支退出 Tab/可访问树，响应式切换保留草稿和当前导航焦点。单对象身份合并标题，确认/提交锁导航，原消费仍须固定制品后删除局部适配。
+
 - #76：Tabs 新增 `fullWidth`，与 content 布局组合让栏及分隔线铺满、文字和指示线按内容靠左；content/fill默认兼容。规范、三布局展台及[验收边界](docs/TABS_LAYOUT_VERIFICATION.md)同步更新，npm0.11.3不含此属性。
 
 - #61：工作空间对象阅读规范与合成展台。

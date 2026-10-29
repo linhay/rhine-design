@@ -1,4 +1,4 @@
-.rhine-dialog.rhine-dialog--settings { width:min(960px,calc(100% - 32px)); max-height:calc(100% - 32px); container-type:inline-size; }
+.rhine-dialog.rhine-dialog--settings { width:min(960px,calc(100% - 32px)); max-height:calc(100% - 32px); container-type:inline-size; container-name:rhine-settings; }
 .rhine-dialog__settings-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
 .rhine-dialog__navigation { min-width:0; padding-bottom:16px; border-bottom:1px solid var(--rhine-line); }
 .rhine-dialog__settings-content { min-width:0; overflow-wrap:anywhere; }

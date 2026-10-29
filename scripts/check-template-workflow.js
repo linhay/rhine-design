@@ -10,7 +10,7 @@ async page => {
    await page.setViewportSize({width,height:648});await page.goto(`${base}/?fixture=template-settings&theme=${theme}&zoom=${zoom}`);
    const trigger=page.getByRole('button',{name:'打开模板工作区'});await trigger.click();const d=page.getByRole('dialog',{name:'模板配置'});
    const actual=page.locator('[aria-label="已应用目标状态"]'), original=await actual.textContent();
-   const nav=async name=>{await d.getByRole('link',{name,exact:true}).click();};
+   const nav=async name=>{const select=d.getByRole('combobox',{name:'模板工作区栏目'});if(await select.isVisible()) await select.selectOption({label:name});else await d.getByRole('link',{name,exact:true}).click();};
    await d.getByRole('combobox',{name:'已保存模板'}).selectOption('basic');
    assert(await d.getByRole('group',{name:'已保存模板规则'}).locator('select,button').count()===0,'apply page exposes rule editing');
    for(const name of ['合成对象甲','合成对象乙','合成对象丙']){await d.getByRole('combobox',{name:'目标对象'}).fill(name);await page.getByRole('option',{name,exact:true}).click();}await page.getByRole('button',{name:'完成选择'}).click();
