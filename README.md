@@ -222,7 +222,7 @@ skill 中提供以下参考入口：
 
 ## 参与贡献
 
-欢迎提交问题、文档改进和组件提案。遇到问题时，请在 [Issues](https://github.com/linhay/rhine-design/issues) 提供组件名、版本、预期行为及最小复现。
+欢迎反馈设计规范、用户偏好、交互细节、成功实践与验证发现，也欢迎提交文档改进和组件提案。先查 open/closed issues，同类主题补充原 issue；场景、依据、实际消费版本和验证边界见[消费反馈流程与短模板](CONTRIBUTING.md#消费反馈与设计共建)。反馈不必转换成组件缺陷，处理结论与发行、消费验证分别记录。
 
 开发环境、验证命令和 PR 说明见 [贡献指南](CONTRIBUTING.md)。版本变化和升级说明见 [CHANGELOG](CHANGELOG.md)。
 
