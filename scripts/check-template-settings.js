@@ -9,7 +9,7 @@ async page => {
   try {
    await page.setViewportSize({width,height});await page.goto(`${base}/?fixture=template-settings&theme=${theme}&zoom=${zoom}`);
    await page.getByRole('button',{name:'载入八行草稿'}).click();const trigger=page.getByRole('button',{name:'打开模板工作区'});await trigger.click();
-   const d=page.getByRole('dialog',{name:'模板配置'}), editor=d.getByRole('group',{name:'模板规则'}), body=d.getByRole('region');
+   const d=page.getByRole('dialog',{name:'模板配置'}), editor=d.getByRole('group',{name:'模板规则'}), body=d.getByRole('region',{name:'模板配置内容'});
    const measure=()=>d.evaluate(e=>{const rect=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right};};const body=e.querySelector('.rhine-dialog__settings-content'), footer=e.querySelector('.rhine-dialog__footer');return {frame:rect(e),head:rect(e.querySelector('.rhine-dialog__head')),body:rect(body),footer:rect(footer),buttons:[...footer.querySelectorAll('button')].map(rect),overflow:body.scrollWidth>body.clientWidth+1};});
    const first=await measure();const stable=async()=>{const now=await measure();for(const key of ['frame','head','footer'])for(const axis of ['x','y','width','height'])assert(Math.abs(now[key][axis]-first[key][axis])<1,`unstable ${key}.${axis}`);return now;};
    assert(first.body.height>=128,`body only ${first.body.height}px`);
@@ -34,7 +34,8 @@ async page => {
    await page.waitForFunction(()=>document.querySelector('.rhine-dialog__settings-content').scrollTop>0);const down=await body.evaluate(e=>e.scrollTop);await page.mouse.wheel(0,-150);await page.waitForFunction(previous=>document.querySelector('.rhine-dialog__settings-content').scrollTop<previous,down);await stable();
    const last=d.getByRole('button',{name:'添加规则'});await last.focus();const lastBox=await last.boundingBox(),after=await stable();assert(within({...lastBox,right:lastBox.x+lastBox.width,bottom:lastBox.y+lastBox.height},after.body),'last action unreachable');assert(!after.overflow,'horizontal overflow');
    const targets=await editor.locator('select,button').evaluateAll(elements=>elements.map(e=>({w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height})));assert(targets.every(r=>r.w/zoom>=43.9&&r.h/zoom>=43.9),'editor target below 44px');
-   for(const key of ['Tab','Shift+Tab'])for(let i=0;i<12;i++){await page.keyboard.press(key);assert(await d.evaluate(e=>e.contains(document.activeElement)),'focus escaped');}
+   for(const key of ['Tab','Shift+Tab'])for(let i=0;i<12;i++){await page.keyboard.press(key);assert(await d.evaluate(e=>e.contains(document.activeElement) || [...e.querySelectorAll('[aria-controls]')].some(input=>document.getElementById(input.getAttribute('aria-controls'))?.closest('.rhine-combobox__list')?.contains(document.activeElement))),'focus escaped owned Dialog/Portal');}
+   if(await page.getByRole('listbox',{name:'目标对象'}).count()) {await page.keyboard.press('Escape');await page.getByRole('listbox',{name:'目标对象'}).waitFor({state:'detached'});}
    await page.keyboard.press('Escape');await d.waitFor({state:'detached'});await page.waitForFunction(()=>document.activeElement?.textContent==='打开模板工作区');
    for(const mode of ['disabled','readonly']) {
     await page.getByRole('combobox',{name:'编辑器状态'}).selectOption(mode);await trigger.click();

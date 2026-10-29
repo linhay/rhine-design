@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { flushSync } from 'react-dom';
 import { useRef, useState } from 'react';
 import { expect, it, vi } from 'vitest';
 import { MappingEditor, type MappingEditorRow } from '../components';
@@ -62,4 +63,29 @@ it('respects a host focus handoff when the removed trigger disconnects',()=>{
  }
  render(<Host />);const remove=screen.getByRole('button',{name:'删除第2行'});remove.focus();fireEvent.click(remove);
  expect(screen.getByRole('textbox',{name:'宿主确认字段'})).toHaveFocus();expect(remove).not.toBeInTheDocument();
+});
+
+it.each(['batch','flush'] as const)('focuses an added row after %s updates and respects explicit host handoff',mode=>{
+ function Host() {
+  const [rows,setRows]=useState<MappingEditorRow[]>([]),outside=useRef<HTMLInputElement>(null),id=useRef(0);
+  return <><input ref={outside} aria-label="宿主添加确认" /><MappingEditor label="映射" rows={rows} sourceOptions={choices} targetOptions={choices} onRowChange={()=>{}} onAdd={()=>{
+   const newId=`added-${id.current++}`,append=()=>setRows(current=>[...current,{id:newId,source:'',target:''}]);
+   if(mode==='flush') flushSync(append);else append();
+   if(id.current===2) outside.current?.focus();
+   return newId;
+  }} /></>;
+ }
+ render(<Host />);const add=screen.getByRole('button',{name:'添加规则'});add.focus();fireEvent.click(add);
+ expect(screen.getByRole('combobox',{name:'第1行 来源'})).toHaveFocus();
+ add.focus();fireEvent.click(add);expect(screen.getByRole('textbox',{name:'宿主添加确认'})).toHaveFocus();
+ expect(screen.getAllByRole('combobox')).toHaveLength(4);
+});
+it('clears rejected add intent before an unrelated later row with the returned id arrives',()=>{
+ const props={label:'映射',rows:[],sourceOptions:choices,targetOptions:choices,onRowChange:vi.fn(),onAdd:()=> 'rejected'};
+ const {rerender}=render(<MappingEditor {...props} />);const add=screen.getByRole('button',{name:'添加规则'});add.focus();fireEvent.click(add);expect(add).toHaveFocus();
+ rerender(<MappingEditor {...props} rows={[{id:'rejected',source:'',target:''}]} />);expect(add).toHaveFocus();
+});
+it('does not focus an added row if a synchronous host update locks the editor',()=>{
+ function Host(){const [rows,setRows]=useState<MappingEditorRow[]>([]),[locked,setLocked]=useState(false);return <MappingEditor label="映射" rows={rows} sourceOptions={choices} targetOptions={choices} disabled={locked} onRowChange={()=>{}} onAdd={()=>{flushSync(()=>{setRows([{id:'locked',source:'',target:''}]);setLocked(true);});return 'locked';}} />;}
+ render(<Host />);const add=screen.getByRole('button',{name:'添加规则'});add.focus();fireEvent.click(add);expect(screen.getByRole('combobox',{name:'第1行 来源'})).not.toHaveFocus();expect(add).toBeDisabled();
 });

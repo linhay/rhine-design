@@ -138,7 +138,14 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
           if (!root.current?.isConnected || revision !== openRevision.current) return;
           const dialog = root.current.closest('.rhine-dialog');
           if (dialog && dialog.getAttribute('data-state') !== 'open') return;
-          document.getElementById(id)?.focus({ preventScroll: true }); setOpen(false); setActive(null);
+          const input = document.getElementById(id), active = document.activeElement;
+          // Closing a nested scope may finish after the user/host has moved on.
+          // Restore only its own focus or a genuinely lost/guard focus.
+          const closingPopup = event.target;
+          if (active && active !== input && active !== document.body && active !== document.documentElement
+            && !active.hasAttribute('data-radix-focus-guard')
+            && !(closingPopup instanceof Node && closingPopup.contains(active))) return;
+          input?.focus({ preventScroll: true }); setOpen(false); setActive(null);
         });
       }
       restoreInputOnClose.current = false;

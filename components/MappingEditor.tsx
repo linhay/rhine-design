@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useReducer, useRef, type ReactNode } from 'react';
 import { Button, type Choice } from './components';
 import { Select } from './Select';
 import './mapping-editor.css';
@@ -44,6 +44,8 @@ export function MappingEditor({label, rows, sourceOptions, targetOptions, onRowC
   disabled=false, readOnly=false, className=''}: MappingEditorProps) {
   const id=useId(), root=useRef<HTMLDivElement>(null);
   const nodes=useRef(new Map<string, HTMLLIElement>());
+  // Ensure a post-callback commit even when onAdd already flushed or rejected its update.
+  const [,commitFocus]=useReducer((revision:number)=>revision+1,0);
   const pending=useRef<{kind:'add'|'remove'; id:string; index:number; trigger:HTMLElement} | null>(null);
   useLayoutEffect(()=>{
     const action=pending.current; pending.current=null;
@@ -83,6 +85,6 @@ export function MappingEditor({label, rows, sourceOptions, targetOptions, onRowC
         </li>;
       })}
     </ol>}
-    {!readOnly && onAdd && <Button data-mapping-add variant="secondary" disabled={disabled} onClick={e=>{const newId=onAdd();if(newId!==undefined) pending.current={kind:'add',id:newId,index:rows.length,trigger:e.currentTarget};}}>{addLabel}</Button>}
+    {!readOnly && onAdd && <Button data-mapping-add variant="secondary" disabled={disabled} onClick={e=>{const newId=onAdd();if(newId!==undefined) {pending.current={kind:'add',id:newId,index:rows.length,trigger:e.currentTarget};commitFocus();}}}>{addLabel}</Button>}
   </div>;
 }
