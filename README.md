@@ -16,10 +16,10 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、70 个源码组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、71 个源码组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **70 个源码可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **71 个源码可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
@@ -136,7 +136,7 @@ export function App() {
 | 操作 | Button · ButtonLink⁴ · Icon · IconButton · Link · CopyButton |
 | 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · AppShellToggle⁴ · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
 | 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² · MappingEditor（未发布） · ThemePicker⁴ · ThemePreview⁴ |
-| 导航与展开 | SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
+| 导航与展开 | SettingsNavigation（未发布） · SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
 | 聊天组合（源码候选） | ChatThread · ChatCard |
 | 搜索与筛选组合 | ListFilterBar⁵ |
 | 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · StatusTimelineList⁴ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
@@ -232,7 +232,7 @@ skill 中提供以下参考入口：
 
 ### 多栏目设置工作区（源码候选）
 
-短任务 Dialog 默认自然高度；多栏目编辑推荐显式 `height`、`footer`、`navigation`，保持空态、长表单、加载/错误和栏目切换时的外框稳定。footer直接传按钮或Fragment，description仅在帮助决策时提供。窄导航轨道与短屏修复尚未发布，接入前固定候选并验证实际操作空间，见[设置契约](docs/SETTINGS_DIALOG.md)和展台 `#settings-dialog`。
+短任务 Dialog 默认自然高度；多栏目编辑推荐显式 `height`、`footer`、`navigation`，保持空态、长表单、加载/错误和栏目切换时的外框稳定。footer直接传按钮或Fragment，description仅在帮助决策时提供。`SettingsNavigation` 在实际 Dialog 窄容器中把 SideNav 切为满宽原生 Select，共享栏目和禁用状态，重排保留正文与导航焦点。此组合及窄导航轨道与短屏修复尚未发布，接入前固定候选并验证实际操作空间，见[设置契约](docs/SETTINGS_DIALOG.md)和展台 `#settings-dialog`。
 
 ### 模板驱动批量设置（源码候选，未发布）
 

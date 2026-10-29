@@ -27,3 +27,9 @@ describe('SideNav trailing actions', () => {
     expect(screen.getByRole('link', {name:'合成工作区'})).toHaveAttribute('aria-current','page');
   });
 });
+
+it('disables an already-open trailing action when its navigation item becomes disabled', async () => {
+ const action=vi.fn();const groups=(disabled:boolean)=>[{label:'项目',items:[{id:'a',label:'甲',href:'#a',disabled,actions:[{id:'details',label:'详情',onSelect:action}]}]}];
+ const {rerender}=render(<SideNav currentId="a" groups={groups(false)}/>);const trigger=screen.getByRole('button',{name:'甲：更多操作'});fireEvent.keyDown(trigger,{key:'Enter'});await screen.findByRole('menuitem',{name:'详情'});
+ rerender(<SideNav currentId="a" groups={groups(true)}/>);const item=screen.getByRole('menuitem',{name:'详情'});expect(item).toHaveAttribute('aria-disabled','true');fireEvent.click(item);expect(action).not.toHaveBeenCalled();expect(trigger).toBeDisabled();
+});

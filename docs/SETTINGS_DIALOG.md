@@ -69,3 +69,11 @@
 ## 对象上下文（#78，未发布组合）
 
 单对象入口将固定身份放在Dialog整体，不重复对象搜索/多选。批量入口保持独立对象栏，跨功能保留目标和草稿，确认期间锁定目标；只选一个对象仍保留该栏。当前无需新增插槽：保留navigation作为功能导航，在children中用现有RemoteMultiSelect与正文组合，宽屏分列、窄屏堆叠，共用正文滚动和固定footer。navigation与sidePanel仍互斥。详见[对象上下文组合](TEMPLATE_SETTINGS.md#对象上下文与最小组合)。
+
+## 响应式功能导航（#18 新增，未发布）
+
+在 `Dialog.navigation` 放入 `SettingsNavigation`：`items: readonly {id,label,disabled?}[]`、受控 `currentId`、`onNavigate(item)`，可选整组 `disabled` 和可访问 `label`（默认“设置栏目”）。共享同一组选项与回调，宽屏复用 SideNav，Dialog 内容盒不足560 CSS px时使用满宽原生 Select。下拉 label 只作可访问命名，不额外占一行；被隐藏的一种导航以 display:none 移出 Tab 与可访问树。缺失 currentId 显示禁用占位，不自动选择第一项。SideNav 的 `NavItem.disabled` 同步阻止导航及行操作。
+
+仅响应实际 Dialog 容器，不按窗口宽度判断；响应式切换不重挂正文，草稿属于宿主。焦点落在变为隐藏的导航控件时转到可见的当前项/Select，正文已有焦点不被夺走。短屏的导航轨道只占 Select 实际高度，保留44px命中；旧任意navigation内容仍沿用原有有界滚动。单对象身份可直接合并到 Dialog 标题，不强制独立说明行。只读栏目由宿主过滤；确认或提交期间传 disabled，不能让隐藏导航绕过锁定。
+
+`TemplateSettingsGallery` 使用该公开组合，覆盖单/批量身份、栏目草稿、保存锁定、只读隐藏管理项。原生方向键须以实际系统菜单验证，selectOption 与键入选择仅各自证明其路径，不能替代方向键。原消费仍暂缓升级，待固定制品验收后删除局部导航适配；npm0.11.3不包含该新增API。
