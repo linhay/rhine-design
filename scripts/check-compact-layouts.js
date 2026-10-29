@@ -86,7 +86,23 @@ async page => {
           const legend = e.querySelector('.rhine-timeline__legend').getBoundingClientRect();
           const slider = e.querySelector('input[type=range]');
           const pairs = [...e.querySelectorAll('.compact-gallery-fact-pair')];
+          // Measure glyph ranges against non-scrollable clipping ancestors. A document can fit
+          // while a fixed-height inner panel has cut off the only copy of a value.
+          const clippedFacts=[];
+          for(const value of e.querySelectorAll('.compact-gallery-facts strong,.compact-gallery-fact-pair strong')) {
+            const range=document.createRange();range.selectNodeContents(value);
+            const rects=[...range.getClientRects()].filter(r=>r.width&&r.height);
+            for(let parent=value.parentElement;parent;parent=parent.parentElement) {
+              const style=getComputedStyle(parent),box=parent.getBoundingClientRect();
+              const clipsX=/^(hidden|clip)$/.test(style.overflowX),clipsY=/^(hidden|clip)$/.test(style.overflowY);
+              if(rects.some(r=>(clipsX&&(r.left<box.left-1||r.right>box.right+1))||(clipsY&&(r.top<box.top-1||r.bottom>box.bottom+1)))) {
+                clippedFacts.push({text:value.textContent,ancestor:parent.className,overflowX:style.overflowX,overflowY:style.overflowY});break;
+              }
+            }
+          }
           return {
+            factCount:e.querySelectorAll('.compact-gallery-fact-pair strong').length,
+            clippedFacts,
             gap: legend.top - bars.bottom,
             sliderHeight: parseFloat(getComputedStyle(slider).height),
             triggerHeight: parseFloat(getComputedStyle(e.querySelector('.rhine-timeline__legend-trigger')).height),
@@ -95,6 +111,25 @@ async page => {
           };
         });
         check(Math.abs(layout.gap / zoom - 8) < 1 && layout.sliderHeight >= 44 && layout.triggerHeight >= 44 && layout.aligned && !layout.overflow, { ...context, state, kind: 'account-layout', layout });
+        check(layout.factCount===4&&layout.clippedFacts.length===0, {...context,state,kind:'critical-facts-not-clipped',factCount:layout.factCount,clippedFacts:layout.clippedFacts});
+        // Content below the viewport is legitimate only if it can actually be scrolled into view.
+        const values=card.locator('.compact-gallery-facts strong,.compact-gallery-fact-pair strong');
+        for(let i=0;i<await values.count();i++) {
+          const value=values.nth(i);await value.scrollIntoViewIfNeeded();
+          const visible=await value.evaluate(e=>{
+            const range=document.createRange();range.selectNodeContents(e);
+            const lines=[...range.getClientRects()].filter(r=>r.width&&r.height);
+            let left=0,top=0,right=innerWidth,bottom=innerHeight,painted=true;
+            for(let p=e;p;p=p.parentElement) {
+              const s=getComputedStyle(p),b=p.getBoundingClientRect();
+              if(s.display==='none'||s.visibility!=='visible'||Number(s.opacity)===0)painted=false;
+              if(/^(hidden|clip|auto|scroll)$/.test(s.overflowX)){left=Math.max(left,b.left);right=Math.min(right,b.right);}
+              if(/^(hidden|clip|auto|scroll)$/.test(s.overflowY)){top=Math.max(top,b.top);bottom=Math.min(bottom,b.bottom);}
+            }
+            return {text:e.textContent,pass:painted&&lines.length>0&&lines.every(r=>r.left>=left-1&&r.right<=right+1&&r.top>=top-1&&r.bottom<=bottom+1)};
+          });
+          check(visible.pass,{...context,state,kind:'critical-fact-scroll-reachable',visible});
+        }
         if (state === 'normal') {
           const slider = card.getByRole('slider');
           await slider.focus(); await page.keyboard.press('ArrowRight');
