@@ -83,3 +83,5 @@ Popover可选 `showHeader={false}`（未发布，默认true）省略可见标题
 - Switch 的 `labelVisibility="hidden"` 保留必填字符串名称，独立开关无文字占位；适用边界与默认兼容见 `docs/TEMPLATE_SETTINGS.md` 的独立开关标签（#88，未发布）。
 
 Combobox 与 RemoteMultiSelect 的可选标题动作 `labelAction`（未发布）及状态/焦点所有权见[字段标题动作](../docs/FIELD_LABEL_ACTION.md)。
+
+RemoteMultiSelect `tagDensity` 与 MappingEditor `groupedSourceLayout` 的未发布紧凑能力见[模板增量契约](../docs/COMPACT_TEMPLATE.md)，默认行为不变。

@@ -39,7 +39,7 @@ export function LabelActionExample() {
       <option value="success">成功</option><option value="failure">失败一次后重试</option><option value="empty">空目录</option><option value="late">忽略取消的慢响应</option>
     </Select>
     <Inline><Checkbox label="禁用目录字段" checked={disabled} onChange={event => setDisabled(event.target.checked)}/><Checkbox label="只读目录字段" checked={readOnly} onChange={event => setReadOnly(event.target.checked)}/></Inline>
-    <RemoteMultiSelect label={directoryLabel} labelAction={<Button variant="quiet" busy={busy} busyLabel="正在获取目录" disabled={disabled || readOnly} onClick={fetchDirectory}>{directoryAction}</Button>}
+    <RemoteMultiSelect label={directoryLabel} labelAction={<Button variant="secondary" busy={busy} busyLabel="正在获取目录" disabled={disabled || readOnly} onClick={fetchDirectory}>{directoryAction}</Button>}
       value={value} onValueChange={setValue} query={query} onQueryChange={next => { setQuery(next); setLimit(3); }} options={matches.slice(0, limit)}
       disabled={disabled} readOnly={readOnly} hasMore={limit < matches.length} onLoadMore={() => setLimit(current => current + 3)} />
     <Text role="status" aria-label="目录获取结果">{message}</Text>

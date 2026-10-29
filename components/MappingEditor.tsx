@@ -1,5 +1,5 @@
 import { useId, useLayoutEffect, useReducer, useRef, type ReactNode } from 'react';
-import { Button, type Choice } from './components';
+import { Badge, Button, type Choice } from './components';
 import { Select } from './Select';
 import './mapping-editor.css';
 
@@ -38,6 +38,8 @@ export interface MappingEditorProps {
   density?: 'default' | 'compact';
   /** Group by target only when the entire editor is read-only; never changes rows. */
   readOnlyLayout?: 'rows' | 'grouped';
+  /** Only affects read-only grouped presentation. */
+  groupedSourceLayout?: 'branches' | 'tags';
   className?: string;
 }
 
@@ -45,7 +47,7 @@ export interface MappingEditorProps {
 export function MappingEditor({label, rows, sourceOptions, targetOptions, onRowChange, onRemove, onAdd,
   sourceLabel='来源', targetLabel='目标', sourcePlaceholder='选择来源', targetPlaceholder='选择目标',
   addLabel='添加规则', removeLabel='删除', rowLabel=index=>`第${index+1}行`, emptyContent='暂无规则',
-  disabled=false, readOnly=false, density='default', readOnlyLayout='rows', className=''}: MappingEditorProps) {
+  disabled=false, readOnly=false, density='default', readOnlyLayout='rows', groupedSourceLayout='branches', className=''}: MappingEditorProps) {
   const id=useId(), root=useRef<HTMLDivElement>(null);
   const nodes=useRef(new Map<string, HTMLLIElement>());
   // Ensure a post-callback commit even when onAdd already flushed or rejected its update.
@@ -111,12 +113,12 @@ export function MappingEditor({label, rows, sourceOptions, targetOptions, onRowC
   const display=(items:readonly Choice[], value:string, placeholder:string)=>items.find(item=>item.value===value)?.label || (value ? `${value}（不可用）` : placeholder);
   return <div ref={root} role="group" aria-label={label} tabIndex={-1} className={`rhine-mapping-editor${density==='compact' ? ' rhine-mapping-editor--compact' : ''} ${className}`}>
     {rows.length===0 ? <div className="rhine-mapping-editor__empty">{emptyContent}</div> : readOnly && readOnlyLayout==='grouped' ? <ul className="rhine-mapping-editor__groups">
-      {[...groups].map(([target,group])=><li key={target} className="rhine-mapping-editor__group">
+      {[...groups].map(([target,group])=><li key={target} className={`rhine-mapping-editor__group${groupedSourceLayout==='tags' ? ' rhine-mapping-editor__group--tags' : ''}`}>
         <ul aria-label={sourceLabel} className="rhine-mapping-editor__sources">{group.map(row=><li key={row.id}>
-          <span className="rhine-mapping-editor__value">{display(row.sourceOptions || sourceOptions,row.source,sourcePlaceholder)}{row.error && <span className="rhine-field__error" role="alert">{row.error}</span>}</span>
-          <span className="rhine-mapping-editor__branch" aria-hidden="true" />
+          <span className="rhine-mapping-editor__value">{groupedSourceLayout==='tags' ? <Badge>{display(row.sourceOptions || sourceOptions,row.source,sourcePlaceholder)}</Badge> : display(row.sourceOptions || sourceOptions,row.source,sourcePlaceholder)}{row.error && <span className="rhine-field__error" role="alert">{row.error}</span>}</span>
+          {groupedSourceLayout==='branches' && <span className="rhine-mapping-editor__branch" aria-hidden="true" />}
         </li>)}</ul>
-        <span className="rhine-mapping-editor__join" aria-hidden="true" />
+        {groupedSourceLayout==='tags' ? <span className="rhine-mapping-editor__arrow" aria-hidden="true">→</span> : <span className="rhine-mapping-editor__join" aria-hidden="true" />}
         <div className="rhine-mapping-editor__value rhine-mapping-editor__target"><span className="rhine-sr-only">{targetLabel}：</span>{display(group[0].targetOptions || targetOptions,target,targetPlaceholder)}</div>
       </li>)}
     </ul> : <ol className="rhine-mapping-editor__list">

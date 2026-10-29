@@ -5,8 +5,9 @@
 - #97：时间线共享可配置状态标签；新增独立等高请求结果构成模式，精确四类比例、完整性/无效数据检查及统一详情/可访问文本，默认单状态兼容。输入与消费边界见[契约](docs/TIMELINE_COMPOSITION.md)。
 
 - #98：新增 opt-in `neutral` 黑白轻量主题、独立 CSS 出口、ThemePicker 静态预览与真实组件展台；原三主题与默认值保留。源码能力尚未 npm 发布。
+- #89 增量：RemoteMultiSelect 显式 compact 标签密度（细指针28px、粗/混合44px），MappingEditor 只读分组来源流式标签；完整模板初始/跨页签校验、固定底部反馈、无改动与失败重试展台。独立目录动作使用 secondary。
 
-- #78：Combobox / RemoteMultiSelect 增加可选 `labelAction`，保留 string label 与无动作布局。标题动作复用 quiet Button，状态和异步目录归宿主；新增长文、取消/迟到结果与嵌套焦点真实展台。
+- #78：Combobox / RemoteMultiSelect 增加可选 `labelAction`，保留 string label 与无动作布局。标题轻量切换用 quiet、独立目录获取用 secondary Button，状态和异步目录归宿主；新增长文、取消/迟到结果与嵌套焦点真实展台。
 
 - #89：MappingEditor 增加可选 `density="compact"` 与整组只读 `readOnlyLayout="grouped"`；实际容器重排、按目标首次出现汇合且不改写行数据。同步设置空态、首建/锁定、实际差异、单/批量确认和失败重试规范与真实展台。补齐 #88 隐藏只读/禁用示例的邻近可见标题。
 

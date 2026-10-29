@@ -5,14 +5,14 @@
 ```tsx
 <RemoteMultiSelect
   label="授权对象"
-  labelAction={<Button variant="quiet" busy={fetching} busyLabel="正在获取目录"
+  labelAction={<Button variant="secondary" busy={fetching} busyLabel="正在获取目录"
     disabled={!canFetch || disabled || readOnly} onClick={fetchDirectory}>获取候选目录</Button>}
   query={query} onQueryChange={setQuery} options={options}
   value={selected} onValueChange={setSelected} disabled={disabled} readOnly={readOnly}
 />
 ```
 
-动作与 label 是标题行中的兄弟节点，不把交互元素嵌入 label。使用已有 quiet Button（默认 `type="button"`），保留至少 44px 命中、focus-visible、长文换行；空间不足时动作换行并靠逻辑末端。不要给插槽添加另一套字段标题或把它当作清空、完成、保存入口。插槽接收 ReactNode 以支持宿主组合；组件不克隆它、不注入可用状态、不推断权限。
+动作与 label 是标题行中的兄弟节点，不把交互元素嵌入 label。按动作语义使用已有 Button：独立获取目录使用 secondary 描边；标题附属的轻量模板切换使用 quiet（默认 `type="button"`），保留至少 44px 命中、focus-visible、长文换行；空间不足时动作换行并靠逻辑末端。不要给插槽添加另一套字段标题或把它当作清空、完成、保存入口。插槽接收 ReactNode 以支持宿主组合；组件不克隆它、不注入可用状态、不推断权限。
 
 ## 状态和焦点所有权
 
