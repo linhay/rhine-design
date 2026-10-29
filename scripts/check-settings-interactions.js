@@ -118,12 +118,20 @@ async page => {
       await dialog.getByRole('button',{name:'保存当前工作区设置'}).click();
       const result=dialog.getByText(outcome==='error'?'保存失败，草稿已保留':'已保存演示草稿',{exact:true});
       await result.waitFor();
-      // Playwright visible alone accepts opacity:0; check painted text and ancestors too.
-      const painted=await result.evaluate(e=>{
-        for(let n=e;n;n=n.parentElement) {const s=getComputedStyle(n);if(s.display==='none'||s.visibility!=='visible'||Number(s.opacity)===0)return false;}
-        const r=e.getBoundingClientRect();return r.width>0&&r.height>0;
-      });
-      assert(painted,`${mode}/${outcome}: result exists but is not painted`);
+      // Visible accepts opacity:0. Allow entrance motion, but bound the wait for
+      // nontransparent, nonzero-size text; this does not test clipping or occlusion.
+      const resultHandle=await result.elementHandle();
+      try {
+        const ready=await page.waitForFunction(e=>{
+          if(!e?.isConnected)return false;
+          for(let n=e;n;n=n.parentElement) {const s=getComputedStyle(n);if(s.display==='none'||s.visibility!=='visible'||Number(s.opacity)===0)return false;}
+          const r=e.getBoundingClientRect();return r.width>0&&r.height>0;
+        },resultHandle,{timeout:6000});
+        await ready.dispose();
+      } catch(error) {
+        throw new Error(`${mode}/${outcome}: result stayed hidden, transparent or zero-size: ${error}`);
+      } finally { await resultHandle?.dispose(); }
+      const painted=true;
       assert(await draft.inputValue()==='动态偏好下保留的草稿',`${mode}/${outcome}: input lost`);
       await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});
       await page.waitForFunction(()=>document.activeElement?.textContent==='打开设置');

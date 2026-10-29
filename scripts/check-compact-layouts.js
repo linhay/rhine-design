@@ -115,7 +115,16 @@ async page => {
         // Content below the viewport is legitimate only if it can actually be scrolled into view.
         const values=card.locator('.compact-gallery-facts strong,.compact-gallery-fact-pair strong');
         for(let i=0;i<await values.count();i++) {
-          const value=values.nth(i);await value.scrollIntoViewIfNeeded();
+          const value=values.nth(i);
+          if(!await value.isVisible()) {
+            check(false,{...context,state,kind:'critical-fact-scroll-reachable',index:i,reason:'hidden-or-zero-size'});
+            continue;
+          }
+          try { await value.scrollIntoViewIfNeeded({timeout:2000}); }
+          catch(error) {
+            check(false,{...context,state,kind:'critical-fact-scroll-reachable',index:i,reason:'scroll-failed',error:String(error)});
+            continue;
+          }
           const visible=await value.evaluate(e=>{
             const range=document.createRange();range.selectNodeContents(e);
             const lines=[...range.getClientRects()].filter(r=>r.width&&r.height);
