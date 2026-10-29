@@ -216,16 +216,19 @@ export function SwitchRowsExample() {
   </Stack></section>;
 }
 
+const densityOptions=[{value:'a',label:'Alpha'},{value:'b',label:'Beta'},{value:'c',label:'Gamma'},{value:'d',label:'Delta'},{value:'moderate',label:'Moderate mapping name'},{value:'long',label:'很长的来源名称：跨团队归档与完整内容在窄窗口中自然换行'}];
+const densityRows=[{id:'1',source:'a',target:'b'},{id:'2',source:'c',target:'d'},{id:'3',source:'b',target:'b'},{id:'4',source:'long',target:'long'}];
 export function MappingDensityExamples() {
-  const options=[{value:'a',label:'Alpha'},{value:'b',label:'Beta'},{value:'c',label:'Gamma'},{value:'d',label:'Delta'},{value:'long',label:'很长的来源名称：跨团队归档与完整内容在窄窗口中自然换行'}];
-  const initial=[{id:'1',source:'a',target:'b'},{id:'2',source:'c',target:'d'},{id:'3',source:'b',target:'b'},{id:'4',source:'long',target:'long'}];
+  const options=densityOptions,initial=densityRows;
+  const [removeEnabled,setRemoveEnabled]=useState(true);
   const [rows,setRows]=useState<MappingEditorRow[]>(initial);
   const next=useRef(5);
   return <section aria-label="紧凑映射与汇合预览" style={{paddingInline:16}}><Stack gap={3}>
     <Text as="h2" variant="section">紧凑映射与汇合预览</Text>
+    <Checkbox label="显示移除动作" checked={removeEnabled} onChange={e=>setRemoveEnabled(e.target.checked)} />
     <MappingEditor density="compact" label="紧凑映射" rows={rows} sourceOptions={options} targetOptions={options}
       onRowChange={(id,values)=>setRows(current=>current.map(row=>row.id===id?{...row,...values}:row))}
-      onRemove={id=>setRows(current=>current.filter(row=>row.id!==id))}
+      onRemove={removeEnabled ? id=>setRows(current=>current.filter(row=>row.id!==id)) : undefined}
       onAdd={()=>{const id=String(next.current++);setRows(current=>[...current,{id,source:'',target:''}]);return id;}} />
     <MappingEditor density="compact" label="紧凑逐行只读" rows={rows} sourceOptions={options} targetOptions={options} onRowChange={()=>{}} readOnly />
     <section aria-label="完整来源预览"><Stack gap={2}>

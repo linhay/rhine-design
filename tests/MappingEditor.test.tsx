@@ -105,3 +105,13 @@ it('keeps custom empty content and unavailable values in grouped preview',()=>{
  const {rerender}=render(<MappingEditor {...props} rows={[]} emptyContent="尚无映射"/>);expect(screen.getByText('尚无映射')).toBeVisible();
  rerender(<MappingEditor {...props} rows={[{id:'x',source:'removed',target:''}]}/>);expect(screen.getByText('removed（不可用）')).toBeVisible();expect(screen.getByText('选择目标')).toBeVisible();
 });
+
+it('disconnects compact measurement observers on mode change and unmount',()=>{
+ const disconnect=vi.fn();class Observer {observe(){}disconnect(){disconnect();}unobserve(){}}
+ vi.stubGlobal('ResizeObserver',Observer);
+ try {
+  const props={label:'测量',rows:initial,sourceOptions:choices,targetOptions:choices,onRowChange:vi.fn()};
+  const {rerender,unmount}=render(<MappingEditor {...props} density="compact"/>);rerender(<MappingEditor {...props} density="compact" readOnly/>);expect(disconnect).toHaveBeenCalledTimes(1);
+  rerender(<MappingEditor {...props} density="compact"/>);unmount();expect(disconnect).toHaveBeenCalledTimes(2);
+ }finally{vi.unstubAllGlobals();}
+});

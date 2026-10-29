@@ -41,3 +41,10 @@
  .rhine-mapping-editor__join { width:1px; height:12px; border-top:0; border-inline-start:1px solid var(--rhine-line); justify-self:center; }
  .rhine-mapping-editor__target { text-align:center; }
 }
+
+.rhine-mapping-editor__measure { position:absolute; visibility:hidden; pointer-events:none; width:0; height:0; overflow:hidden; }
+.rhine-mapping-editor__measure>span { display:block; white-space:pre; width:max-content; }
+.rhine-mapping-editor--compact .rhine-mapping-editor__fields--long,
+.rhine-mapping-editor--compact .rhine-mapping-editor__fields--long:not(:has(>button)) { grid-template-columns:minmax(0,1fr); gap:var(--rhine-space-1); }
+.rhine-mapping-editor--compact .rhine-mapping-editor__fields--long>.rhine-mapping-editor__arrow { justify-self:start; transform:rotate(90deg); }
+.rhine-mapping-editor--compact .rhine-mapping-editor__fields--long>button { justify-self:end; }

@@ -63,7 +63,7 @@ const nextId = useRef(0);
 
 `tests/MappingEditor.test.tsx`验证受控回调、稳定行DOM、禁用/只读/错误、空目录值与增删焦点；`tests/TemplateSettings.test.tsx`验证保存和应用分离、混合目标、版本失效及失败重试。真实浏览器另验三主题四宽度、100/200% CSS zoom、648px短屏、长文重排、滚动、44px、键盘和系统/手动减少动态。CSS zoom不等于原生缩放，合成Memory状态不等于业务后端。
 
-新增密度/退出矩阵：`scripts/check-mapping-density.js`（48组实际容器/汇合/完整来源组合，`?densityProbe=density` 与 `duplicate` 提供反例）、`scripts/check-settings-density.js`（48组空态/首建/真实差异退出/跨入口草稿/完整批次重试）。
+新增密度/退出矩阵：`scripts/check-mapping-measurement.js`（三主题、实际字体/容器/删除动作变化、超长隐藏测量不扩展scrollWidth、真实展台卸载observer；`?measurementProbe=overflow`反例）、`scripts/check-mapping-density.js`（48组实际容器/汇合/完整来源组合，`?densityProbe=density` 、`duplicate` 与 `long` 提供反例）、`scripts/check-settings-density.js`（48组空态/首建/真实差异退出/跨入口草稿/完整批次重试）。
 
 浏览器回归入口：`scripts/check-template-settings.js`（48组布局/增删/草稿/只读禁用/键盘/滚轮，另测三种动态偏好）、`scripts/check-template-workflow.js`（24组模板管理与逐目标确认、宿主焦点交接）、`scripts/prepare-template-consumer.mjs <tarball> <new-directory>`（从实际已安装包提取同一合成例，公开入口及后置CSS生产构建）。
 
@@ -88,7 +88,7 @@ const nextId = useRef(0);
 
 ## 紧凑映射与按目标汇合（#89，未发布）
 
-`density="compact"` 按 **MappingEditor 实际可用宽度** 排列，360 CSS px 及以上保留来源 / 箭头 / 目标 / 删除；不足时回到纵排。默认 `density="default"` 仍为 480px 阈值。520px画布内约450px编辑器的短名称同排，200% CSS zoom下可用空间变窄后自然重排。字体与44px命中不缩小；编辑使用原生Select，长选项在打开原生菜单时查看完整文字，关闭态按既有Select契约省略；逐行只读值完整换行，目标用 label 字重。该变体不是强制单行或消费端私有CSS覆盖。
+`density="compact"` 按 **MappingEditor 实际可用宽度** 排列，360 CSS px 及以上保留来源 / 箭头 / 目标 / 删除；不足时回到纵排。默认 `density="default"` 仍为 480px 阈值。520px画布内约450px编辑器的短名称同排，200% CSS zoom下可用空间变窄后自然重排。字体与44px命中不缩小；紧凑编辑用当前选中标签的真实文本宽度（包括控件padding/箭头/动作）判断同排所需空间，长名称不足时纵排，ResizeObserver跟随容器和文字尺寸变化并卸载清理，主题与字体变化重新读取原生Select字体。测量文字位于0尺寸裁剪容器，不能增加横向滚动。极长选项超过整列时仍沿原生Select契约省略，可打开原生菜单查看完整文字；逐行只读值完整换行，目标用 label 字重。该变体不是强制单行或消费端私有CSS覆盖。
 
 `readOnly readOnlyLayout="grouped"` 将相同 **target 值** 的行仅在展示时汇合。分组顺序由目标首次出现决定，组内来源保持原行顺序；重复来源与 source=target 均不丢弃，原始数组和编辑顺序不变。即使传 grouped，非整组readOnly仍逐行编辑，不能用分组代替编辑校验。单来源、多来源和不同目标共用同一结构：目标每组一次，来源是具名列表，目标保留隐藏语义标签；连接线明确 aria-hidden、使用线条token，组间只有轻分隔线，无卡片、编号或重复可见表头。空数据沿用 emptyContent，缺失目录值和行错误仍可见。极窄时来源与目标纵向连接，完整文字可换行。
 
@@ -103,3 +103,5 @@ const nextId = useRef(0);
 - 未确认修改按宿主实际差异判断；选择与原值相同的模板不会产生未确认提示。模板草稿和应用差异分开持有；组件不推断业务dirty。
 
 真实入口 `?fixture=template-settings&density=1`，常规 `#template-settings` 同时提供完整组合。外部夹具可加载无模板、行错误、长列表及一次批量失败。保存失败为400ms合成异步，批量结果为内存模拟；不外推业务服务。源码、固定制品、发布和原消费接入分开验收；原消费的临时CSS和分组原型仅在获授权固定接入后移除，故源码合并不会关闭 #89。
+
+退出确认是父设置Dialog拥有的Portal：对象选择的快速Tab临时保护及延迟关闭归焦均识别父层trigger指向的嵌套Dialog，不把其焦点拉回旧选择器。继续编辑同步交还原控件，延迟清理尊重已经转移到其他有效控件的焦点。
