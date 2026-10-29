@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #99：ChatThread 新增可选 fill 布局、plain/bubble 外观、按稳定成员 id 配置的逻辑对齐/明暗气泡、compact 控制区及根 className/style；保留 standalone/plain/full 默认、只读与历史锚点契约。尚未 npm 发布。
+
 - #98：新增 opt-in `neutral` 黑白轻量主题、独立 CSS 出口、ThemePicker 静态预览与真实组件展台；原三主题与默认值保留。源码能力尚未 npm 发布。
 
 - #78：Combobox / RemoteMultiSelect 增加可选 `labelAction`，保留 string label 与无动作布局。标题动作复用 quiet Button，状态和异步目录归宿主；新增长文、取消/迟到结果与嵌套焦点真实展台。

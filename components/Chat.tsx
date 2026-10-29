@@ -1,4 +1,4 @@
-import { createContext, useContext, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Badge, Button, Disclosure, Surface, type Tone } from './components';
 
 export type ChatStatus = 'pending' | 'accepted' | 'declined' | 'blocked' | 'running' | 'partial' | 'succeeded' | 'failed' | 'cancelled' | 'expired' | 'unknown';
@@ -41,7 +41,20 @@ export interface ChatMessage extends ChatEntryBase {
 }
 export interface ChatEvent extends ChatEntryBase { kind: 'event' }
 export type ChatEntry = ChatMessage | ChatEvent;
+export interface ChatMemberAppearance {
+  /** Logical side, independent of human/agent/observer roles. Unmapped members use start. */
+  align?: 'start' | 'end';
+  tone?: 'subtle' | 'strong';
+}
 export interface ChatThreadProps {
+  /** fill requires a bounded host height; standalone keeps the original 32rem viewport. */
+  layout?: 'standalone' | 'fill';
+  appearance?: 'plain' | 'bubble';
+  /** Stable member ids own their presentation; used only by bubble appearance. */
+  memberAppearance?: Readonly<Record<string, ChatMemberAppearance>>;
+  controls?: 'full' | 'compact';
+  className?: string;
+  style?: CSSProperties;
   label: string;
   /** Stable unique ids in chronological order; prepend older entries without replacing existing ids. */
   entries: readonly ChatEntry[];
@@ -61,7 +74,7 @@ function isContinuation(previous: ChatEntry | undefined, entry: ChatMessage) {
 type Anchor = { id: string; offset: number };
 
 /** A non-virtualized, chronological reading viewport. No network, model or read receipts. */
-export function ChatThread({ label, entries, readOnly = false, hasEarlier = false, loadingEarlier = false, historyError, onLoadEarlier, announcement = '' }: ChatThreadProps) {
+export function ChatThread({ label, entries, readOnly = false, hasEarlier = false, loadingEarlier = false, historyError, onLoadEarlier, announcement = '', layout = 'standalone', appearance = 'plain', memberAppearance, controls = 'full', className = '', style }: ChatThreadProps) {
   const id = useId();
   const viewport = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLOListElement>(null);
@@ -110,7 +123,7 @@ export function ChatThread({ label, entries, readOnly = false, hasEarlier = fals
     return () => observer.disconnect();
     // The observer reads mutable viewport/anchor/follow refs, not entry props.
   }, []);
-  return <ReadOnlyContext.Provider value={readOnly}><div className="rhine-chat">
+  return <ReadOnlyContext.Provider value={readOnly}><div className={`rhine-chat ${className}`} style={style} data-layout={layout} data-appearance={appearance} data-controls={controls}>
     <div className="rhine-chat-toolbar">
       <Button variant="quiet" aria-disabled={!hasEarlier || loadingEarlier || !onLoadEarlier} busy={loadingEarlier} busyLabel="正在加载更早消息"
         onClick={() => { if (!hasEarlier || loadingEarlier || !onLoadEarlier) return; pause(); onLoadEarlier(); }}>
@@ -136,10 +149,11 @@ export function ChatThread({ label, entries, readOnly = false, hasEarlier = fals
       <ol ref={content} className="rhine-chat-list">
         {entries.map((entry, index) => {
           const previous = entries[index - 1];
+          const presentation = entry.kind === 'message' && appearance === 'bubble' && memberAppearance && Object.hasOwn(memberAppearance, entry.member.id) ? memberAppearance[entry.member.id] : undefined;
           const continuation = entry.kind === 'message' && isContinuation(previous, entry);
           return <li key={entry.id} data-chat-entry={entry.id} className="rhine-chat-entry" data-continuation={continuation}>
             {previous?.day !== entry.day && <div className="rhine-chat-day">{entry.day}</div>}
-            {entry.kind === 'event' ? <div className="rhine-chat-event">{entry.content}</div> : <article aria-label={`${entry.member.name} · ${entry.time}`}>
+            {entry.kind === 'event' ? <div className="rhine-chat-event">{entry.content}</div> : <article data-align={presentation?.align ?? 'start'} data-tone={presentation?.tone ?? 'subtle'} aria-label={`${entry.member.name} · ${entry.time}`}>
               <header className={continuation ? 'rhine-sr-only' : 'rhine-chat-meta'}>
                 {entry.member.avatar && <span aria-hidden="true" className="rhine-chat-avatar">{entry.member.avatar}</span>}
                 <strong>{entry.member.name}</strong><time dateTime={entry.dateTime}>{entry.time}</time>
@@ -153,7 +167,7 @@ export function ChatThread({ label, entries, readOnly = false, hasEarlier = fals
       {!entries.length && <p className="rhine-chat-empty">暂无消息</p>}
     </div>
     <div className="rhine-chat-footer">
-      <span role="status" aria-live="polite">{[announcement, following ? '正在跟随最新消息' : `${hasNewMessages ? '有新消息 · ' : ''}已暂停跟随，可继续阅读历史`].filter(Boolean).join(' · ')}</span>
+      <span role="status" aria-live="polite">{[announcement, following ? (controls === 'compact' ? '跟随中' : '正在跟随最新消息') : `${hasNewMessages ? '有新消息 · ' : ''}${controls === 'compact' ? '已暂停跟随' : '已暂停跟随，可继续阅读历史'}`].filter(Boolean).join(' · ')}</span>
       <Button variant="quiet" aria-controls={id} aria-pressed={following} onClick={() => {
         follow.current = true; setFollowing(true); setHasNewMessages(false); restore();
       }}>回到最新并跟随</Button>

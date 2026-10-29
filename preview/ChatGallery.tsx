@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge, Button, ChatCard, ChatThread, Checkbox, Dialog, Inline, Select, Stack, Surface, Text, Toolbar, type ChatEntry, type ChatStatus } from '../components';
+import { Badge, Button, ChatCard, ChatThread, Checkbox, Dialog, Inline, Select, Stack, Surface, Text, Toolbar, type ChatEntry, type ChatStatus, type ChatThreadProps } from '../components';
 import './chat-gallery.css';
 
 const members = [{ id: 'a', name: '成员 A' }, { id: 'b', name: '成员 B' }, { id: 'c', name: '成员 C' }];
@@ -38,8 +38,10 @@ function ReadonlyObjectCard({ object, status, summary }: { object: typeof readin
 }
 
 /** A host example using public exports only; all timers and transitions are synthetic host state. */
-export function ChatGallery() {
-  const [scene, setScene] = useState('pair');
+export function ChatGallery({ initialLayout = 'standalone', initialAppearance = 'plain', initialScene = 'pair' }: { initialLayout?: ChatThreadProps['layout']; initialAppearance?: ChatThreadProps['appearance']; initialScene?: string }) {
+  const [scene, setScene] = useState(initialScene);
+  const [threadLayout, setThreadLayout] = useState(initialLayout);
+  const [appearance, setAppearance] = useState(initialAppearance);
   const [layout, setLayout] = useState('after');
   const [width, setWidth] = useState('880');
   const [request, setRequest] = useState<ChatStatus>('pending');
@@ -69,7 +71,7 @@ export function ChatGallery() {
       <p>仅比较公开的合成资料，保留未知项；接受不代表运行完成。</p><a href="https://example.com">来源示例 · example.com</a>
     </ChatCard>;
   const pair: ChatEntry[] = [
-    message('a1', 0, 23, <p>需要一起核对资料变化。</p>),
+    message('a1', 0, 23, <><p>需要一起核对资料变化。</p><blockquote>运行结束仅表示停止执行，结果仍需核对。<br /><a href="https://example.com">公开来源示例</a></blockquote><pre><code>{'const state = { result: "unknown", ended: true };'}</code></pre></>),
     message('a2', 0, 24, requestCard),
     message('b1', 1, 25, <><p>先查看这段依据：</p><blockquote>“比较版本并附上依据。”<br /><a href="https://example.com">公开来源示例</a></blockquote><p>{paragraph}</p></>),
     message('b2', 1, 26, <><pre><code>{'const result = {\n  status: "partial",\n  source: "synthetic-example-with-a-very-long-unbroken-identifier-0123456789"\n};'}</code></pre><p><strong>尚未确认：</strong>补全来源后再形成最终结论。</p></>),
@@ -90,11 +92,13 @@ export function ChatGallery() {
     <Toolbar title="Agent Chat · 对话与记录" description="正文优先，成员平等；摘要紧随消息，阅读位置由读者掌握。">
       <Select label="聊天场景" value={scene} onChange={e => resetScene(e.target.value)}><option value="pair">两成员连续对话</option><option value="team">三成员与事件混排</option><option value="observer">只读观察与历史</option></Select>
       <Select label="聊天容器宽度" value={width} onChange={e => setWidth(e.target.value)}><option>400</option><option>520</option><option>880</option></Select>
+      <Select label="聊天布局" value={threadLayout} onChange={e => setThreadLayout(e.target.value as NonNullable<ChatThreadProps['layout']>)}><option value="standalone">独立外框</option><option value="fill">无框全高</option></Select>
+      <Select label="消息外观" value={appearance} onChange={e => setAppearance(e.target.value as NonNullable<ChatThreadProps['appearance']>)}><option value="plain">纯正文</option><option value="bubble">成员气泡</option></Select>
       <Select label="排版对照" value={layout} onChange={e => setLayout(e.target.value)}><option value="after">规范组合</option><option value="before">问题结构复现</option></Select>
     </Toolbar>
-    <div className="chat-gallery-canvas" style={{ width: `${width}px` }}>
+    <div className="chat-gallery-canvas" style={{ width: `${width}px`, height: threadLayout === 'fill' && !before ? 640 : undefined }}>
       {before ? <Surface><Stack gap={6}>{entries.map(entry => <div key={entry.id}>{entry.kind === 'message' && <Inline gap={2}><Text>{entry.member.name}</Text><Text variant="caption">{entry.time}</Text></Inline>}{entry.content}</div>)}</Stack></Surface>
-        : <ChatThread key={scene} label="合成聊天消息" entries={entries} readOnly={observing} hasEarlier={!older} loadingEarlier={loading} historyError={historyError}
+        : <ChatThread layout={threadLayout} appearance={appearance} controls={threadLayout === 'fill' ? 'compact' : 'full'} memberAppearance={{ a: { align: 'end', tone: 'strong' }, b: { align: 'start', tone: 'subtle' }, c: { align: 'start', tone: 'strong' } }} key={scene} label="合成聊天消息" entries={entries} readOnly={observing} hasEarlier={!older} loadingEarlier={loading} historyError={historyError}
           announcement={running ? '正在接收合成记录' : streamState === 'cancelled' ? '已取消，保留部分内容' : streamState === 'failed' ? '连接中断，未完成' : ''}
           onLoadEarlier={() => {
             setLoading(true); setHistoryError('');
