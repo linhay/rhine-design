@@ -76,3 +76,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 
 未发布 #97：`StatusTimeline` / `TimelineLegend` 共享 `statusLabels`；`mode="composition"` 使用四类互斥计数与 coverage，等高精确比例、缺失/不完整/无请求整桶未知；`StatusTimelineList` 透传。源码与契约为 `components/StatusTimeline.tsx`、`docs/TIMELINE_COMPOSITION.md`，展台 `/#monitoring`。npm 0.11.3 不含这些属性。
 紧凑已选标签 `RemoteMultiSelect.tagDensity` 与只读分组来源 `MappingEditor.groupedSourceLayout`：实现分别位于包内 `components/AdvancedForms.tsx`、`components/MappingEditor.tsx`；增量契约与固定底部保存示例位于 `docs/COMPACT_TEMPLATE.md`。源码候选，先核对安装包是否含对应 API。
+
+未发布 `ResponsiveActions` / `ResponsiveAction`：包内 `components/ResponsiveActions.tsx`，实际容器测量与焦点契约 `docs/RESPONSIVE_ACTIONS.md`；竖点 `IconName.moreVertical` 位于 `components/Actions.tsx`。先核对安装包是否包含对应导出。

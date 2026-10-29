@@ -133,7 +133,7 @@ export function App() {
 | 类别 | 组件 |
 | --- | --- |
 | 品牌与文字 | Logo · Text |
-| 操作 | Button · ButtonLink⁴ · Icon · IconButton · Link · CopyButton |
+| 操作 | Button · ButtonLink⁴ · Icon · IconButton · Link · CopyButton · ResponsiveActions（未发布） |
 | 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · AppShellToggle⁴ · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
 | 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² · MappingEditor（未发布） · ThemePicker⁴ · ThemePreview⁴ |
 | 导航与展开 | SettingsNavigation（未发布） · SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
@@ -237,3 +237,5 @@ skill 中提供以下参考入口：
 ### 模板驱动批量设置（源码候选，未发布）
 
 `MappingEditor` 提供受控来源→目标编辑列表：双侧原生Select、稳定行id、只读/禁用/错误、窄容器重排及增删焦点。模板保存与应用分离、逐目标差异和混合值意图由官方合成组合示范，业务服务与持久化归宿主。见[契约与组合](docs/TEMPLATE_SETTINGS.md)及展台 `#template-settings`；正式npm0.11.3不包含此组件。
+
+`ResponsiveActions` 按实际容器依次呈现文字、图标和竖点菜单，保留44px目标与键盘焦点；源码主入口现有71个组件，发布0.11.3仍为69个。见[容器动作契约](docs/RESPONSIVE_ACTIONS.md)与展台 `#responsive-actions`。

@@ -114,11 +114,11 @@ export function Popover({ trigger, title, children, open, onOpenChange, side, sh
   return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
 }
 export interface MenuItem { id: string; label: string; disabled?: boolean; danger?: boolean; onSelect: () => void }
-export function Menu({ trigger, label, items, open, onOpenChange, side }: OverlayControl & { trigger: ReactElement; label: string; items: MenuItem[] }) {
+export function Menu({ trigger, label, items, open, onOpenChange, onCloseAutoFocus, side }: OverlayControl & { trigger: ReactElement; label: string; items: MenuItem[]; onCloseAutoFocus?: (event: Event) => void }) {
   const { ref, container } = useScope();
   const floatingRef = useFloatingScale(undefined, 'dropdown-menu');
   const floatingSide = useFloatingSide(ref, side, 180);
-  return <span className="rhine-overlay-anchor" ref={ref}><MenuBase.Root open={open} onOpenChange={onOpenChange}><MenuBase.Trigger asChild>{trigger}</MenuBase.Trigger><MenuBase.Portal container={container}><MenuBase.Content ref={floatingRef} className="rhine-menu" aria-label={label} side={floatingSide} sideOffset={8} collisionPadding={12}>{items.map(item => <MenuBase.Item key={item.id} disabled={item.disabled} onSelect={item.onSelect} className="rhine-menu__item" data-danger={item.danger}>{item.label}</MenuBase.Item>)}</MenuBase.Content></MenuBase.Portal></MenuBase.Root></span>;
+  return <span className="rhine-overlay-anchor" ref={ref}><MenuBase.Root open={open} onOpenChange={onOpenChange}><MenuBase.Trigger asChild>{trigger}</MenuBase.Trigger><MenuBase.Portal container={container}><MenuBase.Content onCloseAutoFocus={onCloseAutoFocus} ref={floatingRef} className="rhine-menu" aria-label={label} side={floatingSide} sideOffset={8} collisionPadding={12}>{items.map(item => <MenuBase.Item key={item.id} disabled={item.disabled} onSelect={item.onSelect} className="rhine-menu__item" data-danger={item.danger}>{item.label}</MenuBase.Item>)}</MenuBase.Content></MenuBase.Portal></MenuBase.Root></span>;
 }
 export function Tooltip({ children, content, open, onOpenChange, side }: OverlayControl & { children: ReactElement; content: string }) {
   const { ref, container } = useScope();

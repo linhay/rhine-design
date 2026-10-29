@@ -61,3 +61,6 @@ export type { SwitchProps } from './Forms';
 
 export { SettingsNavigation } from './SettingsNavigation';
 export type { SettingsNavigationProps, SettingsNavigationItem } from './SettingsNavigation';
+
+export { ResponsiveActions } from './ResponsiveActions';
+export type { ResponsiveAction, ResponsiveActionsProps } from './ResponsiveActions';
