@@ -53,3 +53,6 @@ export { ChatThread, ChatCard } from './Chat';
 export type { ChatThreadProps, ChatCardProps, ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus } from './Chat';
 
 export type { TextFieldProps } from './components';
+
+export { MappingEditor } from './MappingEditor';
+export type { MappingEditorProps, MappingEditorRow } from './MappingEditor';

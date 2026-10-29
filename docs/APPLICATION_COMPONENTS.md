@@ -232,3 +232,5 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 页首切换三主题及减少动态不重建当前展台；切换章节会卸载演示。自动测试验证受控行为，浏览器与版本验收单独记录于 [验证记录](ISSUE_VALIDATION.md)。精确版本的制品校验和与消费验证按 [发布流程](RELEASING.md)保留。
 
 远程分页契约见 [REMOTE_PAGINATION](REMOTE_PAGINATION.md)，标签激活与分页均自 0.11.3 提供。
+
+RemoteMultiSelect/Combobox完成或Escape后的延迟归焦只处理原输入框、关闭浮层和失焦/守卫节点；用户或宿主已移到其他控件时不再抢回。快速重开仍按打开代次拒绝旧关闭回调，Tab离开保留现有Dialog边界保护。此补充为#78源码修复，尚未发布。
