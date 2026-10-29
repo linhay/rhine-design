@@ -18,10 +18,13 @@ export function RemoteSelectionGallery() {
     <Dialog trigger={<Button variant="secondary">弹窗分页</Button>} title="合成对象配置">
       <RemoteSelectionExample scenario={scenario}/>
     </Dialog>
+    <Dialog trigger={<Button variant="secondary">141px窄正文标签</Button>} title="窄正文已选对象" height={640}>
+      <RemoteSelectionExample scenario="normal" tagWidth={141}/>
+    </Dialog>
   </Stack>;
 }
 
-export function RemoteSelectionExample({ scenario }: { scenario: string }) {
+export function RemoteSelectionExample({ scenario, tagWidth }: { scenario: string; tagWidth?: number }) {
   const [query, setQuery] = useState(''), [options, setOptions] = useState<Choice[]>([]);
   const [selected, setSelected] = useState(choices.slice(0, 3)), [active, setActive] = useState('0');
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -63,10 +66,10 @@ export function RemoteSelectionExample({ scenario }: { scenario: string }) {
   const changeSelection = (next: Choice[]) => { setSelected(next); if (!next.some(item => item.value === active)) setActive(next[0]?.value ?? ''); };
   return <Stack gap={2}>
     <Inline><Checkbox label="禁用选择器" checked={disabled} onChange={event => setDisabled(event.target.checked)}/><Checkbox label="只读选择器" checked={readOnly} onChange={event => setReadOnly(event.target.checked)}/></Inline>
-    <RemoteMultiSelect label="合成授权对象" query={query} onQueryChange={setQuery} value={selected} onValueChange={changeSelection} options={options}
+    <div style={{maxWidth:tagWidth}} data-tag-width={tagWidth}><RemoteMultiSelect label="合成授权对象" query={query} onQueryChange={setQuery} value={selected} onValueChange={changeSelection} options={options}
       maxVisibleTags={2} activeValue={active} onActivateValue={item => setActive(item.value)} disabled={disabled} readOnly={readOnly}
       loading={loading} error={error} hasMore={hasMore} loadingMore={loadingMore} loadMoreError={loadMoreError}
-      onLoadMore={() => request(cursor)} onRetry={() => request(error ? 0 : cursor)}/>
+      onLoadMore={() => request(cursor)} onRetry={() => request(error ? 0 : cursor)}/></div>
     {active && <TextField label="当前对象草稿" value={drafts[active] ?? ''} onChange={event => setDrafts(current => ({ ...current, [active]: event.target.value }))}/>}
     <Text>当前对象：{active || '无'}</Text><Text>请求记录：{requests.join(' → ')}</Text>
     <Button variant="secondary" onClick={() => setDrafts({})}>重置合成草稿</Button>
