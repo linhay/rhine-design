@@ -7,7 +7,7 @@ async page => {
   const box = async locator => locator.evaluate(e => { const r = e.getBoundingClientRect(); return { x:r.x, y:r.y, right:r.right, bottom:r.bottom, w:innerWidth, h:innerHeight }; });
   const inside = r => r.x >= -1 && r.y >= -1 && r.right <= r.w + 1 && r.bottom <= r.h + 1;
   let settingsCases = 0, themeCases = 0;
-  for (const theme of ['rhine','arknights','neo-brutalism']) for (const width of [400,520,880,1440]) for (const zoom of [1,2]) {
+  for (const theme of ['rhine','arknights','neo-brutalism','neutral']) for (const width of [400,520,880,1440]) for (const zoom of [1,2]) {
     await page.setViewportSize({width,height:900});
     await page.goto(`http://127.0.0.1:18480/?fixture=settings-dialog&theme=${theme}&zoom=${zoom}`);
     const url = page.url();
@@ -41,14 +41,14 @@ async page => {
     if(!pass) failures.push({kind:'settings',theme,width,zoom,outerBounds,saveBounds,innerBounds,closeBounds,outerOpen,trapped});
     settingsCases++;
   }
-  for (const theme of ['rhine','arknights','neo-brutalism']) for (const width of [390,400,520,880,889,1440]) for (const zoom of [1,2]) {
+  for (const theme of ['rhine','arknights','neo-brutalism','neutral']) for (const width of [390,400,520,880,889,1440]) for (const zoom of [1,2]) {
     await page.setViewportSize({width,height:900});
     await page.goto(`http://127.0.0.1:18480/?fixture=theme-picker&theme=${theme}&zoom=${zoom}`);
     const draft=page.getByRole('textbox',{name:'未保存草稿',exact:true}); await draft.fill('保留原始输入节点');
     const handle=await draft.elementHandle();
     await page.waitForFunction(()=>[...document.querySelectorAll('.rhine-theme-preview img')].every(e=>e.complete&&e.naturalWidth===960));
     const srcs=await page.locator('.rhine-theme-preview img').evaluateAll(es=>es.map(e=>e.currentSrc));
-    for (const name of ['莱茵 · 纸面','明日方舟 · 战术终端','橙趣 · 粗描边']) {
+    for (const name of ['莱茵 · 纸面','明日方舟 · 战术终端','橙趣 · 粗描边','中性 · 黑白轻量']) {
       const radio=page.getByRole('radio',{name,exact:true});
       await page.locator('label.rhine-theme-option').filter({has:radio}).click();
       if(!await radio.isChecked()) failures.push({kind:'theme-selection',theme,width,zoom,name});
@@ -70,7 +70,7 @@ async page => {
     await page.keyboard.press('Escape');
     await dialog.waitFor({state:'detached'});
     await page.getByRole('checkbox',{name:'模拟预览失败',exact:true}).check();
-    await page.waitForFunction(()=>document.querySelectorAll('.rhine-theme-preview[data-state=error]').length===3);
+    await page.waitForFunction(()=>document.querySelectorAll('.rhine-theme-preview[data-state=error]').length===4);
     const fallback=page.getByRole('radio',{name:/橙趣/});
     await page.locator('label.rhine-theme-option').filter({has:fallback}).click();
     const fallbackSelectable=await fallback.isChecked();

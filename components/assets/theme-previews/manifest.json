@@ -1,24 +1,27 @@
 {
-  "revision": 1,
-  "sourceBaseline": "95578008442d06bdda681f2722f46b0d3cb01794",
+  "revision": 2,
+  "sourceBaseline": "8c23eea20d55962dc50cae381abc5815ca04677e + neutral candidate",
   "width": 960,
   "height": 600,
   "sourceSHA256": {
     "preview/ThemeSample.tsx": "1922382b1bd075726838323d4cd0b64ad1e0c90118c24fee50b49d77dfb78fcd",
-    "components/theme.tsx": "68b739a38e6dc2faf01fa3a17af95ce47411cb592857df981d8c3d10ec05824c",
+    "components/theme.tsx": "f7bf867f54d9f3ba56ab137060bc252da56ea7cbe2710070a10e9e4d20b11b53",
     "components/tokens.css": "d6ae0c876d40e17ba80fd4eed5a5e1ff0a58a8fba7d0b3210906f5738ef57d44",
-    "components/theme-arknights.css": "114f2d877e41a1dd0fe7ccc801166bbf2a67031cb110f05ccdcf779e67f9f5d7",
+    "components/theme-arknights.css": "78a263420681c35d0312d0b8b7a30f13dc8f038735664738200c3bf6cb0f2666",
     "components/theme-neo-brutalism.css": "0205d7f3bf4167724f2be0ae8dbabbdc5f0adb81dd0f2386c3be02c73cb7ee32",
-    "components/components.tsx": "4926d35115b4b11f7277789d9df9917c5c355cdabd3287fc9c4c55e996611a66",
-    "components/common.css": "246f2e07d84b2d0cd81e94b615850bb4b112aae97c34a9548b190447f84d4c16",
-    "components/Navigation.tsx": "4d77b0a51897c0758529285b7a6672920685ce39c8ee0372b2d282eac1d769c7",
+    "components/components.tsx": "932aab5dbe5cf142c985cb65f0bf1c211936bd0c6e96e7717c36d8269b54a0d7",
+    "components/common.css": "a96b632ccce5fbf6a3bd2dcdc56bd68c6785a77288a61e6fce820a8b455e46cc",
+    "components/Navigation.tsx": "9e7ab6608abc0c24522006db53c059feab7a11ad3caeefd90b95b9c5fa5c8f78",
     "components/Layout.tsx": "d802937b725d7c1783242ecb21d51dcf0aa0497f6e48502ebbc1d98fd63aa8f1",
     "components/Typography.tsx": "b82a590ec61b9f901c75ebfb5421931240dbb34e710c2eaf2bfa678e4f15f454",
-    "components/themeMetadata.ts": "c795fa74ed742ab9746db058919aac4de2978bbde3dfe7352075e1b9d2628b73"
+    "components/themeMetadata.ts": "9e55db377deb9d86aef91f958723eb1aa0388f4fb8a573a124e0a27c872d926f",
+    "components/theme-neutral.css": "4b3d8538fc990a90bf521cc0ab89458e504c910dcf66310ce0ea33d38432fdc1",
+    "components/styles.css": "4fcb9f2d3d57327d81a1b77b29acb67660e66fec7351ac538ffbc07df69644b0"
   },
   "images": {
     "arknights.png": "6787af3f88612fcd6f3550114056d6281ce51a2a3b03c9e38eb5235ab14fdb46",
     "neo-brutalism.png": "02faec22e585718e7121411cc71dc0efea86376089c94c1ba7195548bdb73255",
+    "neutral.png": "a1d19a5e4646255c04a8ad782f0be9386ac8c8fe41b63bdcc2769e1cfea8d0d7",
     "rhine.png": "2bbb22a1c6da3afd5f0af079d3977ca4399d1502bba1d908fadb78cd89918049"
   }
 }

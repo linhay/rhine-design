@@ -26,7 +26,7 @@ describe('public theme API', () => {
     fireEvent.click(screen.getByRole('button', { name: '计数 0' }));
     const input = screen.getByRole('textbox', { name: '草稿' });
     fireEvent.change(input, { target: { value: '未保存的内容' } });
-    for (const name of ['arknights', 'neo-brutalism', 'rhine'] as const) {
+    for (const name of ['arknights', 'neo-brutalism', 'neutral', 'rhine'] as const) {
       fireEvent.click(screen.getByRole('button', { name: themes.find(item => item.name === name)!.label }));
       expect(root).toHaveAttribute('data-rhine-theme', name);
       expect(screen.getByLabelText('当前主题')).toHaveTextContent(name);
@@ -34,9 +34,9 @@ describe('public theme API', () => {
       expect(input).toHaveValue('未保存的内容');
       expect(screen.getByRole('button', { name: '计数 1' })).toBeInTheDocument();
     }
-    expect(onThemeChange.mock.calls).toEqual([['arknights'], ['neo-brutalism'], ['rhine']]);
+    expect(onThemeChange.mock.calls).toEqual([['arknights'], ['neo-brutalism'], ['neutral'], ['rhine']]);
     fireEvent.click(screen.getByRole('button', { name: '莱茵 · 纸面' }));
-    expect(onThemeChange).toHaveBeenCalledTimes(3);
+    expect(onThemeChange).toHaveBeenCalledTimes(4);
   });
 
   it('uses defaultTheme only on mount', () => {
