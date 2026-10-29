@@ -19,7 +19,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | NeutronStarBackdrop, NeutronStarBackdropProps (0.8.0) | `components/NeutronStarBackdrop.tsx`；契约 `docs/NEUTRON_STAR_BACKDROP.md`；Three.js drawing modules are internal |
 | Logo | `components/Logo.tsx` |
 | Text | `components/Typography.tsx` |
-| MappingEditor（#78，未发布） | `components/MappingEditor.tsx`；受控稳定行id/两侧选项/错误/只读/增删焦点；模板保存与应用分离见 `docs/TEMPLATE_SETTINGS.md`，不提供业务持久化 |
+| MappingEditor（#78，未发布） | `components/MappingEditor.tsx`；紧凑/分组只读见 `docs/TEMPLATE_SETTINGS.md`（未发布）；受控稳定行id/两侧选项/错误/只读/增删焦点；模板保存与应用分离见 `docs/TEMPLATE_SETTINGS.md`，不提供业务持久化 |
 | Select | `components/Select.tsx` |
 | Toolbar | `components/Toolbar.tsx` |
 | Icon, IconButton, Link, CopyButton | `components/Actions.tsx` |

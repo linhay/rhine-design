@@ -60,6 +60,11 @@ export interface ComboboxProps {
   selectedValues?: string[]; closeOnSelect?: boolean; onEmptyBackspace?: () => void; completionLabel?: string;
   open?: boolean; onOpenChange?: (open: boolean) => void;
 }
+// Portaled nested dialogs remain owned by their trigger inside the parent dialog.
+function isOwnedNestedDialog(dialog: Element, target: Element | null) {
+  const nested=target?.closest('[role=dialog],[role=alertdialog]');
+  return Boolean(nested && nested!==dialog && [...dialog.querySelectorAll('[aria-haspopup=dialog][aria-controls]')].some(trigger=>trigger.getAttribute('aria-controls')===nested.id));
+}
 export function Combobox({ label, query, onQueryChange, value, onValueChange, options, loading = false, error, disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace, completionLabel, hasMore = false, onLoadMore, loadingMore = false, loadMoreError, onRetry, open: controlledOpen, onOpenChange }: ComboboxProps) {
   const generatedId = useId(), id = suppliedId || generatedId; const composing = useRef(false);
   const floatingRef = useFloatingScale(undefined, 'popover', 240);
@@ -105,6 +110,8 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
       if (!dialog.isConnected || dialog.dataset.state !== 'open') return;
       const target = event.target;
       if (!(target instanceof HTMLElement)) return;
+      // A nested Dialog is portaled beside its parent; its trigger still proves ownership.
+      if(isOwnedNestedDialog(dialog,target)) return;
       if (dialog.contains(target)) lastInside = target;
       else if (!document.getElementById(`${id}-popup`)?.contains(target) && lastInside?.isConnected) {
         lastInside.focus({ preventScroll: true });
@@ -164,7 +171,7 @@ export function Combobox({ label, query, onQueryChange, value, onValueChange, op
       // only for a keyboard exit from a still-open Rhine modal.
       const dialog = root.current?.closest('.rhine-dialog[data-state="open"]');
       const active = document.activeElement;
-      if (active?.hasAttribute('data-radix-focus-guard') || (dialog && !dialog.contains(active))) {
+      if (active?.hasAttribute('data-radix-focus-guard') || (dialog && !dialog.contains(active) && !isOwnedNestedDialog(dialog,active))) {
         complete();
         // This close callback is already consuming the focus restoration.
         restoreInputOnClose.current = false;

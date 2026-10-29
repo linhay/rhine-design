@@ -89,3 +89,29 @@ it('does not focus an added row if a synchronous host update locks the editor',(
  function Host(){const [rows,setRows]=useState<MappingEditorRow[]>([]),[locked,setLocked]=useState(false);return <MappingEditor label="映射" rows={rows} sourceOptions={choices} targetOptions={choices} disabled={locked} onRowChange={()=>{}} onAdd={()=>{flushSync(()=>{setRows([{id:'locked',source:'',target:''}]);setLocked(true);});return 'locked';}} />;}
  render(<Host />);const add=screen.getByRole('button',{name:'添加规则'});add.focus();fireEvent.click(add);expect(screen.getByRole('combobox',{name:'第1行 来源'})).not.toHaveFocus();expect(add).toBeDisabled();
 });
+it('groups only read-only presentation by first target occurrence, preserving sources, same-value rows and input order',()=>{
+ const rows=[{id:'1',source:'b',target:'a'},{id:'2',source:'a',target:'b'},{id:'3',source:'a',target:'a',error:'保留行错误'},{id:'4',source:'b',target:'a'}];
+ const before=JSON.stringify(rows),change=vi.fn();const props={label:'汇合',rows,sourceOptions:choices,targetOptions:choices,onRowChange:change,readOnlyLayout:'grouped' as const};
+ const {container,rerender}=render(<MappingEditor {...props} readOnly density="compact"/>);
+ const targets=[...container.querySelectorAll('.rhine-mapping-editor__target')];expect(targets.map(n=>n.textContent)).toEqual(['目标：来源甲','目标：来源乙']);
+ const lists=screen.getAllByRole('list',{name:'来源'});expect(within(lists[0]).getAllByRole('listitem').map(n=>n.textContent)).toEqual(['来源乙','来源甲保留行错误','来源乙']);expect(within(lists[1]).getByRole('listitem')).toHaveTextContent('来源甲');
+ expect(screen.queryByRole('combobox')).toBeNull();expect(screen.queryByRole('button')).toBeNull();expect(screen.getByRole('alert')).toHaveTextContent('保留行错误');
+ for(const line of container.querySelectorAll('.rhine-mapping-editor__branch,.rhine-mapping-editor__join'))expect(line).toHaveAttribute('aria-hidden','true');
+ expect(JSON.stringify(rows)).toBe(before);expect(change).not.toHaveBeenCalled();
+ rerender(<MappingEditor {...props}/>);expect(screen.getAllByRole('combobox')).toHaveLength(8);expect(container.querySelector('.rhine-mapping-editor__groups')).toBeNull();
+});
+it('keeps custom empty content and unavailable values in grouped preview',()=>{
+ const props={label:'汇合',sourceOptions:[],targetOptions:[],onRowChange:vi.fn(),readOnly:true,readOnlyLayout:'grouped' as const};
+ const {rerender}=render(<MappingEditor {...props} rows={[]} emptyContent="尚无映射"/>);expect(screen.getByText('尚无映射')).toBeVisible();
+ rerender(<MappingEditor {...props} rows={[{id:'x',source:'removed',target:''}]}/>);expect(screen.getByText('removed（不可用）')).toBeVisible();expect(screen.getByText('选择目标')).toBeVisible();
+});
+
+it('disconnects compact measurement observers on mode change and unmount',()=>{
+ const disconnect=vi.fn();class Observer {observe(){}disconnect(){disconnect();}unobserve(){}}
+ vi.stubGlobal('ResizeObserver',Observer);
+ try {
+  const props={label:'测量',rows:initial,sourceOptions:choices,targetOptions:choices,onRowChange:vi.fn()};
+  const {rerender,unmount}=render(<MappingEditor {...props} density="compact"/>);rerender(<MappingEditor {...props} density="compact" readOnly/>);expect(disconnect).toHaveBeenCalledTimes(1);
+  rerender(<MappingEditor {...props} density="compact"/>);unmount();expect(disconnect).toHaveBeenCalledTimes(2);
+ }finally{vi.unstubAllGlobals();}
+});

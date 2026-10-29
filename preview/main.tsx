@@ -1,5 +1,5 @@
 import { TimelineDensityFixture } from './TimelineDensityFixture';
-import { TemplateSettingsGallery, TemplateSettingsFixture, SwitchRowsExample } from './TemplateSettingsGallery';
+import { TemplateSettingsGallery, TemplateSettingsFixture, SwitchRowsExample, MappingDensityExamples } from './TemplateSettingsGallery';
 import { RemoteSelectionGallery, RemoteSelectionFixture } from './RemoteSelectionGallery';
 import { ObjectReadingGallery, ObjectReadingFixture } from './ObjectReadingGallery';
 import { SettingsCompositionGallery, SettingsCompositionFixture } from './SettingsCompositionGallery';
@@ -62,7 +62,7 @@ function Gallery() {
     {section === 'tray-usage' && <TrayUsageGallery />}
     {section === 'settings-composition' && <SettingsCompositionGallery />}
     {section === 'object-reading' && <ObjectReadingGallery />}
-    {section === 'template-settings' && <><TemplateSettingsGallery /><SwitchRowsExample /></>}
+    {section === 'template-settings' && <><TemplateSettingsGallery /><MappingDensityExamples /><SwitchRowsExample /></>}
     {section === 'settings-dialog' && <SettingsDialogGallery />}
     {section === 'overlay-bounds' && <OverlayBoundsGallery />}
     {section === 'monitoring' && <MonitoringGallery />}
