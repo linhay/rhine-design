@@ -187,7 +187,7 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 时间条默认色块高 28px，悬停或聚焦选中块高 36px；compact 轨道高 28px，44px 命中区垂直居中。完整时间条沿用 44px 轨道；图例尺寸独立，不随色块加高。
 
-`StatusTimelineList({ label, items, emptyLabel? })` 统一标题、摘要、备注、分隔与 compact 时间条。同一列表一次只展开一条详情；鼠标切换记录不抢焦点，键盘进入详情后退出返回对应时间条，嵌套 Dialog 的下一次 Escape 才关闭外层。行删除、禁用或历史变为空时关闭旧详情。
+`StatusTimelineList({ label, items, emptyLabel?, density? })` 统一标题、摘要、备注、分隔与 compact 时间条。同一列表一次只展开一条详情；鼠标切换记录不抢焦点，键盘进入详情后退出返回对应时间条，嵌套 Dialog 的下一次 Escape 才关闭外层。行删除、禁用或历史变为空时关闭旧详情。
 
 每项为 `StatusTimelineItem`：稳定的 `id`、文字 `title`、可选 `summary: ReactNode`、`note`、`unavailableLabel`，以及 `timeline: { segments, startLabel, endLabel, disabled? } | null`。null 表示历史不可用，空 segments 表示没有时段；两者均不冒充健康。`emptyLabel` 默认“暂无历史记录”，`unavailableLabel` 默认“历史记录暂不可用 · 未知”。摘要由宿主提供，0 与未知应明确区分。行 ID 和时段 ID 不使用数组索引，确保排序或刷新后保留正确身份。
 
@@ -242,3 +242,5 @@ RemoteMultiSelect/Combobox完成或Escape后的延迟归焦只处理原输入框
 合成展台“141px窄正文标签”在有界Dialog中复用RemoteSelectionExample，约束选择器有效宽度上限为141 CSS px（Neo主题400px/200%时受Dialog边框影响为140px，覆盖更窄边界），使用公开组件，不在产品侧增加CSS覆盖。真实生产及固定制品后置styles.css需验证三主题×400/520/880×100/200% CSS zoom的折叠/展开、完整名称、活动状态、激活/移除、键盘、只读/禁用及焦点保护。CSS zoom不代表原生网页缩放；合成分页不代表真实服务。0.11.3历史正式验收保持有效，本项修复未发布，原消费升级/临时覆盖删除另验。
 
 脚本：`check-remote-tag-wrap.js`量测141px、标签/按钮边界、文字与正文横溢出并验证交互；`prepare-remote-wrap-consumer.mjs <tarball> <new-directory>`从固定包复制同一合成展台，以公开入口加后置公共CSS构建，包含模板焦点回归入口。
+
+`StatusTimelineList.density`及单行`TimelineLegend.density`新增可选`compact`，默认`default`保持兼容；紧凑组合须保留外层`Stack gap={1}`以容纳44px命中区，见[密度契约](COMPACT_ACCOUNT_PATTERNS.md#时间条与图例的紧凑密度23-新增未发布)。该参数尚未发布。
