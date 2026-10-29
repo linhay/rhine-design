@@ -1,7 +1,7 @@
 // Run in a production gallery or a fresh fixed-tarball consumer. Synthetic data, CSS zoom.
 async page => {
  page.setDefaultTimeout(7000);
- const base=new URL('./',page.url()).href.replace(/\/$/,''),results=[],errors=[];
+ const base=await page.evaluate(()=>new URL('./',location.href).href.replace(/\/$/,'')),results=[],errors=[];
  page.on('pageerror',error=>errors.push(String(error)));
  const assert=(value,message)=>{if(!value)throw Error(message);};
  for(const theme of ['rhine','arknights','neo-brutalism']) for(const width of [400,520,880,1280]) for(const zoom of [1,2]) for(const height of [900,648]) {
@@ -18,7 +18,7 @@ async page => {
    assert(first.buttons.every(r=>r.width/zoom>=43.9&&r.height/zoom>=43.9&&within(r,first.footer)),'footer target/clipping');
    const fields=editor.locator('.rhine-mapping-editor__fields').first();
    const layout=await fields.evaluate(e=>({columns:getComputedStyle(e).gridTemplateColumns.split(' ').length,width:e.closest('.rhine-mapping-editor').getBoundingClientRect().width,zoom:Number(getComputedStyle(document.documentElement).zoom)}));
-   assert(layout.columns===(layout.width/zoom<480?1:4),'incorrect container reflow');
+   assert(layout.columns===(layout.width/zoom<360?1:4),'incorrect container reflow');
    const edited=d.getByRole('combobox',{name:'第3行 目标'});await edited.selectOption('option-8');
    await nav('其他设置');await stable();await nav('模板编辑');
    assert(await edited.inputValue()==='option-8','section lost row draft');
@@ -37,12 +37,12 @@ async page => {
    const targets=await editor.locator('select,button').evaluateAll(elements=>elements.map(e=>({w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height})));assert(targets.every(r=>r.w/zoom>=43.9&&r.h/zoom>=43.9),'editor target below 44px');
    for(const key of ['Tab','Shift+Tab'])for(let i=0;i<12;i++){await page.keyboard.press(key);assert(await d.evaluate(e=>e.contains(document.activeElement) || [...e.querySelectorAll('[aria-controls]')].some(input=>document.getElementById(input.getAttribute('aria-controls'))?.closest('.rhine-combobox__list')?.contains(document.activeElement))),'focus escaped owned Dialog/Portal');}
    if(await page.getByRole('listbox',{name:'目标对象'}).count()) {await page.keyboard.press('Escape');await page.getByRole('listbox',{name:'目标对象'}).waitFor({state:'detached'});}
-   await page.keyboard.press('Escape');await d.waitFor({state:'detached'});await page.waitForFunction(()=>document.activeElement?.textContent==='打开模板工作区');
+   await page.keyboard.press('Escape');if(await page.getByRole('button',{name:'保留草稿并关闭'}).count())await page.getByRole('button',{name:'保留草稿并关闭'}).click();await d.waitFor({state:'detached'});await page.waitForFunction(()=>document.activeElement?.textContent==='打开模板工作区');
    for(const mode of ['disabled','readonly']) {
     await page.getByRole('combobox',{name:'编辑器状态'}).selectOption(mode);await trigger.click();
     if(mode==='disabled') assert(await editor.locator('select:not(:disabled),button:not(:disabled)').count()===0,'disabled permits mutation');
     else {assert(await editor.locator('select,button').count()===0,'read-only has mutation controls');assert(!(await measure()).overflow,'read-only long text overflow');}
-    await stable();await page.keyboard.press('Escape');await d.waitFor({state:'detached'});
+    await stable();await page.keyboard.press('Escape');if(await page.getByRole('button',{name:'保留草稿并关闭'}).count())await page.getByRole('button',{name:'保留草稿并关闭'}).click();await d.waitFor({state:'detached'});
    }
    results.push({...c,pass:true,bodyHeight:first.body.height,layout});
   }catch(error){results.push({...c,pass:false,error:String(error)});}

@@ -34,6 +34,10 @@ export interface MappingEditorProps {
   emptyContent?: ReactNode;
   disabled?: boolean;
   readOnly?: boolean;
+  /** Compact rows retain a horizontal layout down to 360 CSS px of actual editor width. */
+  density?: 'default' | 'compact';
+  /** Group by target only when the entire editor is read-only; never changes rows. */
+  readOnlyLayout?: 'rows' | 'grouped';
   className?: string;
 }
 
@@ -41,7 +45,7 @@ export interface MappingEditorProps {
 export function MappingEditor({label, rows, sourceOptions, targetOptions, onRowChange, onRemove, onAdd,
   sourceLabel='来源', targetLabel='目标', sourcePlaceholder='选择来源', targetPlaceholder='选择目标',
   addLabel='添加规则', removeLabel='删除', rowLabel=index=>`第${index+1}行`, emptyContent='暂无规则',
-  disabled=false, readOnly=false, className=''}: MappingEditorProps) {
+  disabled=false, readOnly=false, density='default', readOnlyLayout='rows', className=''}: MappingEditorProps) {
   const id=useId(), root=useRef<HTMLDivElement>(null);
   const nodes=useRef(new Map<string, HTMLLIElement>());
   // Ensure a post-callback commit even when onAdd already flushed or rejected its update.
@@ -67,8 +71,23 @@ export function MappingEditor({label, rows, sourceOptions, targetOptions, onRowC
     {value && !items.some(item=>item.value===value) && <option value={value} disabled>{value}（不可用）</option>}
     {items.map(item=><option key={item.value} value={item.value} disabled={item.disabled}>{item.label}</option>)}
   </>;
-  return <div ref={root} role="group" aria-label={label} tabIndex={-1} className={`rhine-mapping-editor ${className}`}>
-    {rows.length===0 ? <div className="rhine-mapping-editor__empty">{emptyContent}</div> : <ol className="rhine-mapping-editor__list">
+  const groups=new Map<string, MappingEditorRow[]>();
+  if(readOnly && readOnlyLayout==='grouped') for(const row of rows) {
+    const group=groups.get(row.target);
+    if(group) group.push(row);else groups.set(row.target,[row]);
+  }
+  const display=(items:readonly Choice[], value:string, placeholder:string)=>items.find(item=>item.value===value)?.label || (value ? `${value}（不可用）` : placeholder);
+  return <div ref={root} role="group" aria-label={label} tabIndex={-1} className={`rhine-mapping-editor${density==='compact' ? ' rhine-mapping-editor--compact' : ''} ${className}`}>
+    {rows.length===0 ? <div className="rhine-mapping-editor__empty">{emptyContent}</div> : readOnly && readOnlyLayout==='grouped' ? <ul className="rhine-mapping-editor__groups">
+      {[...groups].map(([target,group])=><li key={target} className="rhine-mapping-editor__group">
+        <ul aria-label={sourceLabel} className="rhine-mapping-editor__sources">{group.map(row=><li key={row.id}>
+          <span className="rhine-mapping-editor__value">{display(row.sourceOptions || sourceOptions,row.source,sourcePlaceholder)}{row.error && <span className="rhine-field__error" role="alert">{row.error}</span>}</span>
+          <span className="rhine-mapping-editor__branch" aria-hidden="true" />
+        </li>)}</ul>
+        <span className="rhine-mapping-editor__join" aria-hidden="true" />
+        <div className="rhine-mapping-editor__value rhine-mapping-editor__target"><span className="rhine-sr-only">{targetLabel}：</span>{display(group[0].targetOptions || targetOptions,target,targetPlaceholder)}</div>
+      </li>)}
+    </ul> : <ol className="rhine-mapping-editor__list">
       {rows.map((row,index)=>{
         const prefix=rowLabel(index), source=row.sourceOptions || sourceOptions, target=row.targetOptions || targetOptions;
         const locked=disabled || row.disabled, viewing=readOnly || row.readOnly, errorId=`${id}-${encodeURIComponent(row.id)}-error`;

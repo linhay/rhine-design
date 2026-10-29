@@ -15,3 +15,29 @@
  .rhine-mapping-editor__arrow { justify-self:start; transform:rotate(90deg); }
  .rhine-mapping-editor__fields>button { justify-self:end; }
 }
+
+/* Opt-in density uses this editor's container, never the viewport. */
+@container (min-width:360px) and (max-width:479px) {
+ .rhine-mapping-editor--compact .rhine-mapping-editor__fields { grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr) auto; gap:var(--rhine-space-2); }
+ .rhine-mapping-editor--compact .rhine-mapping-editor__fields:not(:has(>button)) { grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr); }
+ .rhine-mapping-editor--compact .rhine-mapping-editor__arrow { justify-self:stretch; transform:none; }
+}
+.rhine-mapping-editor--compact .rhine-mapping-editor__value:last-child { font-weight:var(--rhine-weight-label); }
+.rhine-mapping-editor__groups,.rhine-mapping-editor__sources { margin:0; padding:0; list-style:none; min-width:0; }
+.rhine-mapping-editor__group { display:grid; grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr); align-items:center; min-width:0; padding-block:var(--rhine-space-2); }
+.rhine-mapping-editor__group+.rhine-mapping-editor__group { border-top:1px solid var(--rhine-line); }
+.rhine-mapping-editor__sources>li { position:relative; min-height:36px; padding-block:var(--rhine-space-1); display:flex; align-items:center; min-width:0; }
+.rhine-mapping-editor__sources .rhine-field__error { display:block; }
+.rhine-mapping-editor__branch { position:absolute; inset-block:0; inset-inline-end:-12px; width:12px; pointer-events:none; }
+.rhine-mapping-editor__branch::before { content:''; position:absolute; inset-block:0; inset-inline-end:0; border-inline-end:1px solid var(--rhine-line); }
+.rhine-mapping-editor__branch::after { content:''; position:absolute; top:50%; width:100%; border-top:1px solid var(--rhine-line); }
+.rhine-mapping-editor__sources>li:first-child>.rhine-mapping-editor__branch::before { top:50%; }
+.rhine-mapping-editor__sources>li:last-child>.rhine-mapping-editor__branch::before { bottom:50%; }
+.rhine-mapping-editor__join { width:12px; justify-self:end; border-top:1px solid var(--rhine-line); }
+.rhine-mapping-editor__target { font-weight:var(--rhine-weight-label); }
+@container (max-width:359px) {
+ .rhine-mapping-editor__group { grid-template-columns:minmax(0,1fr); gap:var(--rhine-space-1); }
+ .rhine-mapping-editor__branch { display:none; }
+ .rhine-mapping-editor__join { width:1px; height:12px; border-top:0; border-inline-start:1px solid var(--rhine-line); justify-self:center; }
+ .rhine-mapping-editor__target { text-align:center; }
+}

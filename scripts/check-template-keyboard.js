@@ -1,7 +1,7 @@
 // Real native Select typeahead with host-provided Latin synthetic labels.
 // No selectOption, DOM option mutation or scripted change event.
 async page => {
- const base=new URL('./',page.url()).href.replace(/\/$/,''),results=[];
+ const base=await page.evaluate(()=>new URL('./',location.href).href.replace(/\/$/,'')),results=[];
  for(const theme of ['rhine','arknights','neo-brutalism'])for(const width of [400,520,880,1280])for(const zoom of [1,2]){
   try {
    await page.setViewportSize({width,height:648});await page.goto(`${base}/?fixture=template-settings&keyboard=latin&theme=${theme}&zoom=${zoom}`);
