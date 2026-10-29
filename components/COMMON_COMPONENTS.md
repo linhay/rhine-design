@@ -85,3 +85,5 @@ Popover可选 `showHeader={false}`（未发布，默认true）省略可见标题
 Combobox 与 RemoteMultiSelect 的可选标题动作 `labelAction`（未发布）及状态/焦点所有权见[字段标题动作](../docs/FIELD_LABEL_ACTION.md)。
 
 RemoteMultiSelect `tagDensity` 与 MappingEditor `groupedSourceLayout` 的未发布紧凑能力见[模板增量契约](../docs/COMPACT_TEMPLATE.md)，默认行为不变。
+
+ResponsiveActions 及竖点 moreVertical（未发布）：基于真实容器的文字/图标/菜单、动态权限与焦点契约见[容器自适应动作](../docs/RESPONSIVE_ACTIONS.md)。
