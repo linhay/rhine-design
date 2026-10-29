@@ -1,13 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Text } from './Typography';
-import { StatusTimeline, type StatusTimelineProps } from './StatusTimeline';
+import { StatusTimeline, type StatusTimelineProps, type TimelineDataProps } from './StatusTimeline';
 
 export interface StatusTimelineItem {
   id: string;
   title: string;
   summary?: ReactNode;
   note?: string;
-  timeline: Pick<StatusTimelineProps, 'segments' | 'startLabel' | 'endLabel' | 'disabled'> | null;
+  timeline: (TimelineDataProps & Pick<StatusTimelineProps, 'startLabel' | 'endLabel' | 'disabled'>) | null;
   unavailableLabel?: string;
 }
 export interface StatusTimelineListProps {

@@ -1,7 +1,7 @@
 .rhine-timeline { display:grid; gap:var(--rhine-space-1); min-width:0; }
 .rhine-timeline__track { position:relative; height:44px; }
 .rhine-timeline__bars { height:100%; display:flex; gap:1px; align-items:center; }
-.rhine-timeline__bars span { flex:1; min-width:0; height:28px; background:var(--rhine-line); }
+.rhine-timeline__bars > span { flex:1; min-width:0; height:28px; background:var(--rhine-line); }
 .rhine-timeline [data-status=healthy],.rhine-timeline__legend [data-status=healthy] { background:var(--rhine-health-healthy); }
 .rhine-timeline [data-status=recovered],.rhine-timeline__legend [data-status=recovered] { background:repeating-linear-gradient(135deg,var(--rhine-health-recovered) 0 2px,var(--rhine-surface) 2px 4px); }
 .rhine-timeline [data-status=degraded],.rhine-timeline__legend [data-status=degraded] { background:var(--rhine-health-degraded); }
@@ -37,3 +37,11 @@
 /* Pair with Stack gap={1}: keep timeline/legend hit regions adjacent, never overlapping. */
 .rhine-timeline-list.rhine-timeline-list--dense { padding-bottom:var(--rhine-space-1); }
 .rhine-timeline__legend--compact.rhine-timeline__legend--dense { padding-block:0; }
+
+/* Composition buckets stay equal height, including selection; no gaps or minimum shares. */
+.rhine-timeline--composition .rhine-timeline__bars > .rhine-timeline__bucket { display:flex; flex-direction:column-reverse; height:28px; background:transparent; }
+.rhine-timeline__bucket > span { display:block; width:100%; flex:none; min-height:0; }
+.rhine-timeline [data-outcome=direct] { background:var(--rhine-health-healthy); }
+.rhine-timeline [data-outcome=retried],.rhine-timeline__legend--composition [data-status=recovered] { background:var(--rhine-health-degraded); }
+.rhine-timeline [data-outcome=failed] { background:var(--rhine-health-failed); }
+.rhine-timeline [data-outcome=unknown] { background:var(--rhine-health-unknown); }
