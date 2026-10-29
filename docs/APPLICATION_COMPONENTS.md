@@ -234,3 +234,11 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 远程分页契约见 [REMOTE_PAGINATION](REMOTE_PAGINATION.md)，标签激活与分页均自 0.11.3 提供。
 
 RemoteMultiSelect/Combobox完成或Escape后的延迟归焦只处理原输入框、关闭浮层和失焦/守卫节点；用户或宿主已移到其他控件时不再抢回。快速重开仍按打开代次拒绝旧关闭回调，Tab离开保留现有Dialog边界保护。此补充为#78源码修复，尚未发布。
+
+### 可激活长标签的窄正文（#69 回归修复，未发布）
+
+激活正文与移除按钮保持并列键盘目标，均至少44×44 CSS px。可激活长标签在折叠及展开状态都允许换行，不裁掉名称；完整名称与aria-pressed保留，移除空间不被正文挤占。maxVisibleTags仍控制常显标签数量，展开区域继续有界垂直滚动；不改变非激活标签既有的紧凑显示契约。激活按钮的专用收缩规则必须比通用标签按钮的flex:none更具体，内部文字span也要允许收缩与任意长词换行，不能只依靠CSS导入顺序。
+
+合成展台“141px窄正文标签”在有界Dialog中复用RemoteSelectionExample，约束选择器有效宽度上限为141 CSS px（Neo主题400px/200%时受Dialog边框影响为140px，覆盖更窄边界），使用公开组件，不在产品侧增加CSS覆盖。真实生产及固定制品后置styles.css需验证三主题×400/520/880×100/200% CSS zoom的折叠/展开、完整名称、活动状态、激活/移除、键盘、只读/禁用及焦点保护。CSS zoom不代表原生网页缩放；合成分页不代表真实服务。0.11.3历史正式验收保持有效，本项修复未发布，原消费升级/临时覆盖删除另验。
+
+脚本：`check-remote-tag-wrap.js`量测141px、标签/按钮边界、文字与正文横溢出并验证交互；`prepare-remote-wrap-consumer.mjs <tarball> <new-directory>`从固定包复制同一合成展台，以公开入口加后置公共CSS构建，包含模板焦点回归入口。
