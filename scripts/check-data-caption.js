@@ -30,7 +30,7 @@ async page => {
       await region.evaluate(el=>el.scrollLeft=0);await page.keyboard.press('ArrowRight');await page.waitForTimeout(250);
       const scroll=await region.evaluate(el=>({left:el.scrollLeft,overflow:el.scrollWidth>el.clientWidth+1,focused:document.activeElement===el}));
       check(scroll.focused&&(!scroll.overflow||scroll.left>0),{kind:'native-keyboard-horizontal-scroll',label,scroll});
-      const end=await region.evaluate(el=>{el.scrollLeft=el.scrollWidth;const cell=el.querySelector('tbody tr td:last-child'),b=cell.getBoundingClientRect(),r=el.getBoundingClientRect();return {fits:b.left>=r.left-1&&b.right<=r.right+1,align:getComputedStyle(cell).textAlign,value:cell.innerText};});
+      const end=await region.evaluate(el=>{el.scrollLeft=el.scrollWidth;const cell=el.querySelector('tbody tr td:last-child'),b=cell.getBoundingClientRect(),r=el.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(cell);const fragments=[...range.getClientRects()].map(t=>({left:t.left,right:t.right,top:t.top,bottom:t.bottom}));return {fits:fragments.length>0&&fragments.every(t=>t.left>=r.left-1&&t.right<=r.right+1),cellFits:b.left>=r.left-1&&b.right<=r.right+1,region:{left:r.left,right:r.right},fragments,align:getComputedStyle(cell).textAlign,value:cell.innerText};});
       check(end.fits&&end.align==='right'&&end.value==='9,600',{kind:'last-numeric-column-reachable',label,end});
       for(const state of ['loading','error','empty','normal']) {
         await page.getByLabel('表格状态').selectOption(state);
