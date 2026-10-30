@@ -16,6 +16,10 @@ await writeFile(resolve(target, 'main.tsx'), `import React from 'react';\nimport
 await writeFile(resolve(target, 'vite.config.ts'), "import {defineConfig} from 'vite';import react from '@vitejs/plugin-react';export default defineConfig({plugins:[react()]});");
 const fixture = (await readFile(resolve(root, 'preview/SettingsDialogGallery.tsx'), 'utf8')).replaceAll("'../components'", "'@linhey/rhine-design'").replaceAll("'../components/theme'", "'@linhey/rhine-design/theme'");
 await writeFile(resolve(target, 'SettingsDialogGallery.tsx'), fixture);
+for (const file of ['ObjectSettingsGallery.tsx','object-settings-gallery.css']) {
+  const source = (await readFile(resolve(root, 'preview',file),'utf8')).replaceAll("'../components'", "'@linhey/rhine-design'");
+  await writeFile(resolve(target,file),source);
+}
 await writeFile(resolve(target, 'settings-dialog-gallery.css'), await readFile(resolve(root, 'preview/settings-dialog-gallery.css')));
 execFileSync('npm', ['install'], {cwd:target,stdio:'inherit'});
 execFileSync('npm', ['run','build'], {cwd:target,stdio:'inherit'});
