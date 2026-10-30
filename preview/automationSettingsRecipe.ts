@@ -24,7 +24,7 @@ export function useAutomationRecipe(transport: AutomationTransport, initial: Aut
     mounted.current = false; request.current.generation++; request.current.controller?.abort(); clearTimeout(settle.current);
   }; }, [transport]);
 
-  const run = async (kind: 'read' | 'write', enabled?: boolean) => {
+  const run = async (kind: 'read' | 'write', enabled?: boolean, observe = true) => {
     if (kind === 'write' && (request.current.kind || unknownRef.current)) return;
     clearTimeout(settle.current);
     request.current.controller?.abort();
@@ -39,7 +39,9 @@ export function useAutomationRecipe(transport: AutomationTransport, initial: Aut
       setSnapshot(next); setUnknown(false); unknownRef.current = false; setRequested(null);
       setMessage(kind === 'write' ? '启用意图已保存。' : '已回读确认当前意图与运行事实。');
       // One bounded synthetic observation; no polling or operation replay.
-      if (next.runtime === 'starting' || next.runtime === 'draining') settle.current = setTimeout(() => { void run('read'); }, 1400);
+      if (observe && (next.runtime === 'starting' || next.runtime === 'draining')) settle.current = setTimeout(() => {
+        if (current()) void run('read', undefined, false);
+      }, 1400);
     } catch {
       if (!current()) return;
       if (kind === 'write') {
