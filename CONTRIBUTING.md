@@ -81,7 +81,7 @@ npm run check
 | 涉及变化 | 原有入口与补充条件 |
 | --- | --- |
 | 浮层/关闭/动态偏好 | `scripts/check-settings-interactions.js`：关闭前后正反向 Tab 排除隐藏内容，嵌套 Escape/归焦；正常、系统/手动减少动态均完成失败保留输入与成功保存，结果及祖先非隐藏/非透明且结果有非零尺寸（不代表已验证裁剪或遮挡），不能只检查时长为零 |
-| Tabs | `tests/TabsLayout.test.tsx` 与 `scripts/check-tabs-layout.js`：禁用项、关系与受控状态；切离含输入面板后实际走 Tab/Shift+Tab，再返回核对草稿，不能只数 hidden/ARIA |
+| Tabs | `tests/TabsLayout.test.tsx` 与 `scripts/check-tabs-layout.js`：禁用项、关系与受控状态；切离含输入面板后实际走 Tab/Shift+Tab，再返回核对草稿，不能只数 hidden/ARIA；栏内操作使用 `tests/TabsActions.test.tsx` 与 `scripts/check-tabs-actions.js` 验证整行线、44px/20px、普通/摘要长文、Tab隔离、busy、Dialog归焦与缺线反例 |
 | 表单/错误 | `tests/Patterns.test.tsx`、`tests/SettingsDialog.test.tsx` 和设置交互脚本：失败保留输入，摘要只随失败提交定位、链接回字段不变路由；选择/关闭不等于保存 |
 | 有界布局/操作区 | `scripts/check-settings-bounded.js`：真实内框、长导航/操作、末项滚动可达、按钮完整和命中范围；保留 398px iframe 内宽及 CSS zoom 的独立标识 |
 | 紧凑数值/长文 | `scripts/check-compact-layouts.js`：正常/零/未知/长文；关键数值的行片段不被 hidden/clip 祖先截断，滚动内容另验滚到后可达；document.scrollWidth 不溢出不能替代 |
@@ -103,6 +103,7 @@ mkdir -p output/playwright/issues-23-25 output/playwright/p0-feedback
 playwright-cli -s=p0-validation open http://127.0.0.1:18497/
 playwright-cli -s=p0-validation run-code --filename scripts/check-settings-interactions.js
 playwright-cli -s=p0-validation run-code --filename scripts/check-tabs-layout.js
+playwright-cli -s=p0-validation run-code --filename scripts/check-tabs-actions.js
 playwright-cli -s=p0-validation run-code --filename scripts/check-settings-bounded.js
 playwright-cli -s=p0-validation run-code --filename scripts/check-compact-layouts.js
 playwright-cli -s=p0-validation run-code --filename scripts/check-p0-feedback.js

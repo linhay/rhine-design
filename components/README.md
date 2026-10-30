@@ -64,7 +64,7 @@ export function Example() {
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
 | TextField | 非空 label；labelVisibility="visible"（默认）/"hidden"；hint；error；原生 input 属性 | label 与 id 自动关联；隐藏只影响视觉；错误与提示组成 aria-describedby；输入值由调用方管理；[单搜索契约](../docs/SINGLE_SEARCH.md)（显隐能力自 0.11.2 提供） |
-| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange；layout=content/fill；fullWidth=false | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status自0.11.0新增，npm 0.10.0 不含，见下文 |
+| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange；layout=content/fill；fullWidth=false；actions?；className? | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status自0.11.0新增，npm 0.10.0 不含，见下文 |
 | SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth?；size=default/compact | compact为卡片局部操作的32px视觉/44px命中（自 0.11.0，npm 0.10.0 不含）；原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
 | Notice | tone；title；children；action | error 使用 alert，其余 status；调用方决定显示/移除，不自动倒计时关闭错误 |
 | Progress | label；value:number/null；valueText? | null/NaN 为未知进度；数值钳制 0–100；组件不执行或估算真实进度 |
@@ -210,3 +210,7 @@ Button.size="standard" | "large"（0.11.2），标准14/22、44px最小高度，
 ## 时间线语义与结果构成（未发布）
 
 `StatusTimeline` / `TimelineLegend` / `StatusTimelineList` 支持共享 `statusLabels` 与独立 `mode="composition"` 等高结果构成。输入、比例、未知与兼容边界见[时间线契约](../docs/TIMELINE_COMPOSITION.md)。npm 0.11.3 不包含这些属性。
+
+### Tabs 栏内操作（#134，未发布）
+
+`actions?: ReactNode` 放在组件 header 内、tablist 外，与页签共享整行分隔线；`className` 用于宿主布局。无 actions 保留原 tablist / panel DOM。方向键只控制页签，Tab 进入动作。正文传 `items[].content`，参见[栏内操作契约](../docs/SUMMARY_TABS.md#栏内操作候选134未发布)和 `/#summary-tabs` 真实展台。
