@@ -15,7 +15,7 @@ const names = execFileSync('tar', ['-tzf', artifact], { encoding: 'utf8' }).trim
 let count = 0; const hashes = {};
 for (const entry of names) {
   const file = entry.replace(/^package\//, ''), packed = execFileSync('tar', ['-xOf', artifact, entry]);
-  const actual = await readFile(resolve(installed, file)), original = await readFile(resolve(source, file));
+  const actual = await readFile(resolve(installed, file)), original = execFileSync('git', ['show', `HEAD:${file}`], { cwd: source });
   if (!packed.equals(actual) || !packed.equals(original)) throw Error(`Source/tarball/installed mismatch: ${file}`);
   hashes[file] = createHash('sha256').update(packed).digest('hex'); count++;
 }
