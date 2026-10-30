@@ -39,6 +39,8 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 ## 三种外壳布局
 
+将第三方技术阅读器放入既有外壳时，导航与主题留在宿主、文档样式与 hash 留在 iframe；只读配置、版本状态、下载、失败恢复和键盘边界见[技术阅读器组合](TECHNICAL_READER.md)。这是文档配方，不新增 AppShell 参数或第三方依赖。
+
 ### 内联控制按钮（0.8.0）
 
 默认 `controls="header"` 保持既有顶部操作栏。宿主已有页面导航栏时可用 `controls="inline"`：没有 `header` 内容就不生成顶部横栏。将 `AppShellToggle placement="panel"` 放入侧栏品牌区，将对应的 `placement="content"` 放入正文导航栏；每个面板各放一对。`panel` 默认 navigation，可选 secondary；`iconOnly` 使用已有 IconButton。不要另写折叠状态、复制 Drawer 或用 CSS 隐藏默认横栏。
