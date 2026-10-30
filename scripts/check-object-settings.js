@@ -28,12 +28,15 @@ async page => {
       assert(layout.labels[0].includes('2025')&&layout.labels[0].includes('2026')&&layout.labels[1].includes('权限'),'incomplete date/status accessible names');
       if(layout.scrollWidth>layout.clientWidth+1) {
         await metadata.focus();
-        await page.keyboard.press('ArrowRight');
-        await page.waitForFunction(()=>document.querySelector('.rhine-object-metadata').scrollLeft>0);
-        // Check keyboard movement and physical horizontal-wheel access separately.
-        await metadata.hover();await page.mouse.wheel(10000,0);
-        await page.waitForFunction(()=>{const e=document.querySelector('.rhine-object-metadata');return e.scrollLeft+e.clientWidth>=e.scrollWidth-1;});
-        assert(await metadata.evaluate(e=>e.scrollLeft+e.clientWidth>=e.scrollWidth-1),'metadata end not reachable');
+        // Drive actual keyboard repeat without requiring a per-key pixel delta.
+        for(let round=0;round<12;round++) {
+          for(let step=0;step<10;step++) await page.keyboard.down('ArrowRight');
+          await page.keyboard.up('ArrowRight');
+          await metadata.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+          if(await metadata.evaluate(e=>{const t=e.querySelector('p:last-child').firstChild,r=document.createRange();r.setStart(t,t.length-1);r.setEnd(t,t.length);const text=r.getBoundingClientRect(),box=e.getBoundingClientRect();return text.right<=box.right+1&&text.left>=box.left-1;})) break;
+        }
+        await page.waitForFunction(()=>{const e=document.querySelector('.rhine-object-metadata'),t=e.querySelector('p:last-child').firstChild,r=document.createRange();r.setStart(t,t.length-1);r.setEnd(t,t.length);const text=r.getBoundingClientRect(),box=e.getBoundingClientRect();return document.activeElement===e&&text.right<=box.right+1&&text.left>=box.left-1;});
+        assert(await metadata.evaluate(e=>document.activeElement===e),'metadata lost keyboard focus');
       }
       const quota=page.locator('[data-object-quota]'), loaded=await quota.boundingBox();
       await page.getByLabel('额度加载占位').check(); const skeleton=await quota.boundingBox();
