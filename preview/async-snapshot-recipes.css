@@ -1,0 +1,10 @@
+.rhine-async-card { container-type:inline-size; overflow-wrap:anywhere; }
+.rhine-async-slot { display:grid; min-width:0; min-height:100px; }
+.rhine-async-slot--2 { min-height:132px; }
+.rhine-async-slot--4 { min-height:112px; }
+.rhine-async-slot-content,.rhine-async-slot-skeleton { grid-area:1 / 1; min-width:0; }
+@container (max-width:240px) {
+  .rhine-async-slot { min-height:148px; }
+  .rhine-async-slot--2 { min-height:220px; }
+  .rhine-async-slot--4 { min-height:192px; }
+}

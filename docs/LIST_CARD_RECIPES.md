@@ -10,6 +10,8 @@
 
 结果必须作为每个 item 的 `content` 进入真实 tabpanel，保留 `aria-controls` / `aria-labelledby`。不得造空面板后在外部呈现不相关结果。非活动面板排除实际 Tab 顺序；方向键、Home/End 切换后焦点可见。实际服务端过滤、loading/有效空态/error、权限和请求取消/迟到保护属于宿主。展台仅用可清理的合成定时器模拟读取，不证明后端。
 
+异步快照、Tab 过渡及模块级加载见[异步数据配方](ASYNC_SNAPSHOT_RECIPES.md)，它补充请求与旧摘要归属，不改变这里的分类/动作契约。
+
 ## 只读标签单行滚动
 
 ```tsx
