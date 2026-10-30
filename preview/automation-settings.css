@@ -1,0 +1,7 @@
+.rhine-automation-fixture { padding: var(--rhine-space-4); }
+.rhine-automation-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: var(--rhine-space-4); }
+.rhine-automation-cards > *, .rhine-automation-heading > * { min-width: 0; }
+.rhine-automation-heading { display: flex; align-items: start; justify-content: space-between; gap: var(--rhine-space-3); }
+.rhine-automation-heading > .rhine-switch { flex: 0 0 auto; }
+[data-automation-card] .rhine-text { overflow-wrap: anywhere; }
+[data-automation-card] .rhine-inline { flex-wrap: wrap; }
