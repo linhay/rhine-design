@@ -43,7 +43,7 @@ export function useAsyncSnapshotRecipe(read: RecipeRead, seed?: RecipeSnapshot) 
     void run();
     return () => { alive = false; controller.abort(); if (timer) clearTimeout(timer); };
   }, [scope, read, revision, visible, paused]);
-  return { scope, snapshot, status, paused, visible, cause,
+  return { scope, snapshot, status:!visible || paused ? 'paused' as const : status, paused, visible, cause,
     switchScope: (next: string) => { if (next === scope) return; setCause('tab'); setStatus(paused || !visible ? 'paused' : 'loading'); setScope(next); },
     retry: () => { if (paused || !visible) return; setCause('manual'); setStatus(snapshotRef.current?.scope === scope ? 'refreshing' : 'loading'); setRevision(value => value + 1); },
     togglePause: () => { setCause('resume'); setStatus(paused && visible ? snapshotRef.current?.scope === scope ? 'refreshing' : 'loading' : 'paused'); setPaused(value => !value); },

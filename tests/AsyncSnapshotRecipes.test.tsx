@@ -42,8 +42,10 @@ it('pauses on visibility loss, aborts pending work, and re-reads on restore', as
   const visibility = vi.spyOn(document,'visibilityState','get').mockReturnValue('visible');
   const signals: AbortSignal[] = [];
   const read: RecipeRead = (_scope,signal) => { signals.push(signal); return new Promise(() => {}); };
-  const {result,unmount} = renderHook(() => useAsyncSnapshotRecipe(read,seed));
+  const renders: {visible:boolean;status:string}[]=[];
+  const {result,unmount} = renderHook(() => {const state=useAsyncSnapshotRecipe(read,seed);renders.push({visible:state.visible,status:state.status});return state;});
   visibility.mockReturnValue('hidden'); act(() => document.dispatchEvent(new Event('visibilitychange')));
+  expect(renders.filter(state=>!state.visible).every(state=>state.status==='paused')).toBe(true);
   expect(signals[0].aborted).toBe(true); expect(result.current.status).toBe('paused');
   expect(result.current.snapshot?.task).toBe('failed');
   visibility.mockReturnValue('visible'); act(() => document.dispatchEvent(new Event('visibilitychange')));
