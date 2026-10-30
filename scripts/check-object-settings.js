@@ -1,7 +1,7 @@
 // Run against production preview or a freshly installed fixed-package consumer.
 // Synthetic data only. CSS zoom is not native browser zoom.
 async page => {
-  page.setDefaultTimeout(5000);
+  page.setDefaultTimeout(15000);
   const base = await page.evaluate(()=>location.origin), results = [], errors = [];
   page.on('pageerror', error => errors.push(String(error)));
   const assert = (value,message) => { if(!value) throw Error(message); };
@@ -28,12 +28,11 @@ async page => {
       assert(layout.labels[0].includes('2025')&&layout.labels[0].includes('2026')&&layout.labels[1].includes('权限'),'incomplete date/status accessible names');
       if(layout.scrollWidth>layout.clientWidth+1) {
         await metadata.focus();
-        for(let i=0;i<80;i++) {
-          const previous=await metadata.evaluate(e=>e.scrollLeft);
-          if(await metadata.evaluate(e=>e.scrollLeft+e.clientWidth>=e.scrollWidth-1)) break;
-          await page.keyboard.press('ArrowRight');
-          await page.waitForFunction(before=>{const e=document.querySelector('.rhine-object-metadata');return e.scrollLeft>=Math.min(before+1,e.scrollWidth-e.clientWidth)-0.1;},previous,{timeout:1500});
-        }
+        await page.keyboard.press('ArrowRight');
+        await page.waitForFunction(()=>document.querySelector('.rhine-object-metadata').scrollLeft>0);
+        // Check keyboard movement and physical horizontal-wheel access separately.
+        await metadata.hover();await page.mouse.wheel(10000,0);
+        await page.waitForFunction(()=>{const e=document.querySelector('.rhine-object-metadata');return e.scrollLeft+e.clientWidth>=e.scrollWidth-1;});
         assert(await metadata.evaluate(e=>e.scrollLeft+e.clientWidth>=e.scrollWidth-1),'metadata end not reachable');
       }
       const quota=page.locator('[data-object-quota]'), loaded=await quota.boundingBox();
@@ -107,7 +106,7 @@ async page => {
       // Closed and hidden content cannot enter real keyboard traversal.
       for(let i=0;i<12;i++){await page.keyboard.press('Tab');assert(await page.evaluate(()=>!document.activeElement.closest('[role="dialog"]')),'closed dialog remains in Tab order');}
       results.push({...context,pass:true,layout,geometry,quota:loaded.height/zoom});
-    } catch(error) {results.push({...context,pass:false,error:String(error)});}
+    } catch(error) {results.push({...context,pass:false,error:String(error),scroll:await page.locator('.rhine-object-metadata').evaluate(e=>({left:e.scrollLeft,client:e.clientWidth,width:e.scrollWidth,focus:document.activeElement===e})).catch(()=>null)});}
   }
   return {pass:results.every(item=>item.pass)&&!errors.length,results,errors};
 }

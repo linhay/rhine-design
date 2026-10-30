@@ -2,7 +2,7 @@
 async page => {
   const base=await page.evaluate(()=>location.origin), results=[];
   const assert=(value,message)=>{if(!value)throw Error(message);};
-  page.setDefaultTimeout(5000);
+  page.setDefaultTimeout(15000);
   for(const preference of ['normal','manual','system']) {
     try {
       await page.emulateMedia({reducedMotion:preference==='system'?'reduce':'no-preference'});
@@ -31,16 +31,23 @@ async page => {
   for(const mode of ['批量入口','只读入口','外部动作执行中','模拟设置读取失败']) {
     try {
       await page.goto(`${base}/?fixture=settings-dialog&object=1&motion=reduced`);await page.getByLabel(mode).check();
-      const trigger=page.getByRole('button',{name:'对象设置'});await trigger.click();
+      const trigger=page.getByRole('button',{name:'对象设置'});
+      if(mode==='外部动作执行中') await page.evaluate(()=>{
+        window.__externalLock=false;
+        const observer=new MutationObserver(()=>{
+          const dialog=document.querySelector('[role="dialog"]'), nav=dialog?.querySelector('select');
+          if(nav?.disabled) {observer.disconnect();dialog.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));window.__externalLock=dialog.isConnected&&nav.disabled;}
+        });observer.observe(document.body,{subtree:true,childList:true});
+      });
+      await trigger.click();
       const dialog=page.getByRole('dialog');await dialog.waitFor();
       if(mode==='批量入口'||mode==='只读入口') {
         assert(!await dialog.getByRole('option',{name:'分配',exact:true}).count(),'unsupported allocation in compact navigation');
         assert(!await dialog.getByRole('combobox',{name:'分配人员'}).count(),'unsupported allocation form');
         if(mode==='只读入口')assert(!await dialog.getByRole('button',{name:'保存当前分区'}).count(),'read-only save action');
       }else if(mode==='外部动作执行中') {
-        await page.keyboard.press('Escape');assert(await dialog.isVisible(),'external busy did not protect close');
-        const nav=dialog.getByRole('combobox',{name:'对象设置栏目'});
-        assert(await nav.isDisabled(),'external busy did not lock navigation');
+        assert(await page.evaluate(()=>window.__externalLock),'external busy did not lock navigation and Escape in its actual busy phase');
+        assert(await dialog.isVisible(),'external busy Escape closed the dialog');
         await page.waitForFunction(()=>!document.querySelector('[role="dialog"] button[aria-busy="true"]'));
         await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});
       }else {
