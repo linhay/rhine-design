@@ -1,0 +1,19 @@
+.rhine-parameter-config { container-type: inline-size; min-width: 0; }
+.rhine-parameter-config__heading { justify-content: space-between; align-items: start; }
+.rhine-parameter-config__layout { display: grid; gap: var(--rhine-space-4); min-width: 0; }
+.rhine-parameter-config__inputs, .rhine-parameter-config__preview { min-width: 0; }
+.rhine-parameter-config__details { border-top: 1px solid var(--rhine-line); }
+.rhine-parameter-config__details summary { cursor: pointer; padding-block: var(--rhine-space-3); }
+.rhine-parameter-config__details summary:focus-visible,
+.rhine-parameter-config__results:focus-visible { outline: 2px solid var(--rhine-green); outline-offset: 2px; }
+.rhine-parameter-config__results { max-height: 36rem; overflow: auto; padding: var(--rhine-space-2); }
+.rhine-parameter-config__results ol, .rhine-parameter-config__diff { margin: 0; padding-inline-start: var(--rhine-space-6); }
+.rhine-parameter-config__results li + li, .rhine-parameter-config__diff li + li { margin-top: var(--rhine-space-4); }
+.rhine-parameter-config pre { white-space: pre-wrap; overflow-wrap: anywhere; margin-block: var(--rhine-space-2); font: inherit; }
+.rhine-parameter-config__diff pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+.rhine-parameter-config__changes { margin: 0; display: grid; gap: var(--rhine-space-3); }
+.rhine-parameter-config__changes dd { margin: var(--rhine-space-1) 0 0; overflow-wrap: anywhere; }
+.rhine-parameter-config__changes ins { text-decoration: none; }
+@container (min-width: 42rem) {
+  .rhine-parameter-config__layout { grid-template-columns: minmax(0, 39fr) minmax(0, 61fr); align-items: start; }
+}
