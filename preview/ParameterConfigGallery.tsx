@@ -1,12 +1,71 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { Badge, Button, Dialog, Disclosure, Inline, Notice, Select, Stack, Surface, Text, TextField } from '../components';
+import { Badge, Button, Combobox, Dialog, Disclosure, Inline, Notice, Select, Stack, Surface, Text, type Choice } from '../components';
+import { ComboboxStateGallery } from './ComboboxStateGallery';
 import { ThemeProvider, type ThemeName } from '../components/theme';
 import './parameter-config.css';
 
 // A deliberately small synthetic host model, not a public generator or migration API.
 type Parameters = { version: string; desktopBuild: string; mobileBuild: string; software: string };
 const initial: Parameters = { version: '12.4.0', desktopBuild: '2401', mobileBuild: '8102', software: '3.2.1' };
+// These are observations of four independent fields, never a production history service.
+const observed: Record<keyof Parameters, string[]> = {
+  version: ['12.4.0-alpha.2', '12.3.9', '12.4.0', '12.4.0-alpha.11', '12.4.0', '12.10.0', '12.4.0-rc.1'],
+  desktopBuild: ['2401', '999', '2400', '2401', '10000'],
+  mobileBuild: ['8102', '8101', '900', '8102', '11000'],
+  software: ['3.2.1-alpha.2', '3.2.0', '3.2.1', '3.2.1-alpha.11', '3.2.1', '3.10.0'],
+};
+// Host recipe only: numeric segments descending, release before prerelease at the same core.
+function descendingVersion(a: string, b: string) {
+  const parts = (v: string) => v.split('+')[0].split('-');
+  const [ac, ...ap] = parts(a), [bc, ...bp] = parts(b);
+  const compare = (x: string, y: string) => {
+    const xs = x.split('.'), ys = y.split('.');
+    for (let i = 0; i < Math.max(xs.length, ys.length); i++) {
+      if (xs[i] === ys[i]) continue;
+      if (xs[i] === undefined) return 1;
+      if (ys[i] === undefined) return -1;
+      const xn = /^\d+$/.test(xs[i]), yn = /^\d+$/.test(ys[i]);
+      if (xn && yn) { const d = BigInt(ys[i]) - BigInt(xs[i]); if (d) return d > 0n ? 1 : -1; }
+      else if (xn !== yn) return xn ? 1 : -1;
+      else { const d = ys[i].localeCompare(xs[i], 'en'); if (d) return d; }
+    }
+    return 0;
+  };
+  return compare(ac, bc) || (!ap.length && bp.length ? -1 : ap.length && !bp.length ? 1 : compare(ap.join('-'), bp.join('-'))) || a.localeCompare(b, 'en');
+}
+type CandidateMode = 'normal' | 'empty' | 'error';
+function ObservedParameter({ field, value, onChange, validationError, disabled, mode, id }: {
+  field: keyof Parameters; value: string; onChange: (value: string) => void; validationError?: string;
+  disabled: boolean; mode: CandidateMode; id: string;
+}) {
+  const [search, setSearch] = useState(''), [retry, setRetry] = useState(0);
+  const wasOpen = useRef(false);
+  useEffect(() => { setRetry(0); }, [mode]);
+  const [result, setResult] = useState<{ search: string; mode: CandidateMode; options: Choice[]; loading: boolean; error?: string }>({ search, mode, options: [], loading: true });
+  useEffect(() => {
+    const request = new AbortController();
+    let response: ReturnType<typeof setTimeout> | undefined;
+    setResult({ search, mode, options: [], loading: true });
+    // Debounce and synthetic response have separate lifetimes, both owned by the host.
+    const debounce = setTimeout(() => {
+      response = setTimeout(() => {
+        if (request.signal.aborted) return;
+        const error = mode === 'error' && retry === 0 ? '观测候选读取失败，可重试或继续手填。' : undefined;
+        const options = error || mode === 'empty' ? [] : [...new Set(observed[field])].sort(descendingVersion)
+          .filter(v => v.toLowerCase().includes(search.toLowerCase())).map(v => ({ value: v, label: v }));
+        setResult({ search, mode, options, loading: false, error });
+      }, 240);
+    }, 180);
+    return () => { request.abort(); clearTimeout(debounce); clearTimeout(response); };
+  }, [field, search, mode, retry]);
+  const loading = result.search !== search || result.mode !== mode || result.loading;
+  return <Combobox id={id} label={fields.find(f => f.key === field)!.label} query={value} value={value}
+    onQueryChange={next => { setSearch(next); onChange(next); }} onValueChange={option => { setSearch(''); onChange(option.value); }}
+    options={result.options} loading={loading} error={result.error} onRetry={() => setRetry(n => n + 1)}
+    onOpenChange={next => { if (next && !wasOpen.current && validationError) setSearch(''); wasOpen.current = next; }}
+    validationError={validationError} statusDisplay="compact" disabled={disabled} />;
+}
 const fields: { key: keyof Parameters; label: string }[] = [
   { key: 'version', label: '统一版本' }, { key: 'desktopBuild', label: '桌面应用构建号' },
   { key: 'mobileBuild', label: '移动应用构建号' }, { key: 'software', label: '独立软件版本' },
@@ -38,6 +97,7 @@ export function ParameterConfigGallery() {
   const [validated, setValidated] = useState(false), [busy, setBusy] = useState(false);
   const [conflict, setConflict] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState('');
   const [outcome, setOutcome] = useState('success'), [attempts, setAttempts] = useState(0);
+  const [candidateMode, setCandidateMode] = useState<CandidateMode>('normal');
   const pending = useRef(false), timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => { clearTimeout(timer.current); pending.current = false; }, []);
   const errors = errorsFor(draft), valid = !Object.values(errors).some(Boolean);
@@ -72,9 +132,9 @@ export function ParameterConfigGallery() {
       setBaseline(snapshot.after); setMessage('已保存合成配置'); setOpen(false);
     }, 600);
   };
-  const field = ({ key, label }: typeof fields[number]) => <TextField key={key} id={`${id}-${key}`} label={label}
-    value={draft[key]} disabled={busy} error={validated ? errors[key] || undefined : undefined}
-    onChange={e => { setDraft(current => ({ ...current, [key]: e.target.value })); setMessage(''); }} />;
+  const field = ({ key }: typeof fields[number]) => <ObservedParameter key={key} id={`${id}-${key}`} field={key}
+    value={draft[key]} disabled={busy} validationError={validated ? errors[key] || undefined : undefined} mode={candidateMode}
+    onChange={value => { setDraft(current => ({ ...current, [key]: value })); setMessage(''); }} />;
   return <Stack gap={4}>
     <Text as="h2" variant="section">参数与生成预览</Text>
     <Surface className="rhine-parameter-config">
@@ -103,6 +163,9 @@ export function ParameterConfigGallery() {
       </Stack>
     </Surface>
     <Disclosure title="合成服务控制">
+      <Select label="观测候选场景" value={candidateMode} onChange={e => setCandidateMode(e.target.value as CandidateMode)}>
+        <option value="normal">合成观测记录</option><option value="empty">无历史记录</option><option value="error">读取失败，可逐字段重试</option>
+      </Select>
       <Select label="提交结果" value={outcome} disabled={busy} onChange={e => setOutcome(e.target.value)}>
         <option value="success">成功</option><option value="error">失败一次</option><option value="conflict">冲突一次</option>
       </Select>
@@ -140,6 +203,6 @@ export function ParameterConfigFixture() {
   const params = new URLSearchParams(location.search), zoom = Number(params.get('zoom')) || 1;
   useEffect(() => { document.documentElement.style.zoom = String(zoom); return () => { document.documentElement.style.zoom = ''; }; }, [zoom]);
   return <ThemeProvider theme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') || 'system'}>
-    <div style={{ padding: 16 }}><ParameterConfigGallery /></div>
+    <div style={{ padding: 16 }}>{params.get('combobox') === 'states' ? <ComboboxStateGallery /> : <ParameterConfigGallery />}</div>
   </ThemeProvider>;
 }

@@ -87,3 +87,5 @@ Combobox 与 RemoteMultiSelect 的可选标题动作 `labelAction`（未发布�
 RemoteMultiSelect `tagDensity` 与 MappingEditor `groupedSourceLayout` 的未发布紧凑能力见[模板增量契约](../docs/COMPACT_TEMPLATE.md)，默认行为不变。
 
 ResponsiveActions 及竖点 moreVertical（未发布）：基于真实容器的文字/图标/菜单、动态权限与焦点契约见[容器自适应动作](../docs/RESPONSIVE_ACTIONS.md)。
+
+Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用候选）与 `statusDisplay="compact"`（常规状态仅保留读屏通知、读取失败持续可见），默认兼容；原 `error` 保持候选读取失败语义。见[状态与字段校验](../docs/COMBOBOX_FEEDBACK.md)（#115，未发布）。

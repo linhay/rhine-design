@@ -124,6 +124,8 @@ export function NumberField({ label, value, onValueChange, min, max, step = 1, p
 
 export interface RemoteMultiSelectProps {
   labelAction?: ComboboxProps['labelAction'];
+  validationError?: ComboboxProps['validationError'];
+  statusDisplay?: ComboboxProps['statusDisplay'];
   hasMore?: boolean; onLoadMore?: () => void; loadingMore?: boolean; loadMoreError?: string; onRetry?: () => void;
   label: string; query: string; onQueryChange: (query: string) => void;
   value: Choice[]; onValueChange: (value: Choice[]) => void; options: Choice[];

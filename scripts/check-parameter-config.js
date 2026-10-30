@@ -19,15 +19,15 @@ async page => {
     }, container);
   };
   const cases = probe ? [{ theme: 'rhine', width: 400, zoom: 2, height: 648 }] :
-    ['rhine', 'arknights', 'neo-brutalism'].flatMap(theme => [400, 520, 880].flatMap(width => [1, 2].map(zoom => ({ theme, width, zoom, height: 900 }))))
-      .concat(['rhine', 'arknights', 'neo-brutalism'].map(theme => ({ theme, width: 400, zoom: 2, height: 648 })));
+    ['rhine', 'arknights', 'neo-brutalism', 'neutral'].flatMap(theme => [400, 520, 880].flatMap(width => [1, 2].map(zoom => ({ theme, width, zoom, height: 900 }))))
+      .concat(['rhine', 'arknights', 'neo-brutalism', 'neutral'].map(theme => ({ theme, width: 400, zoom: 2, height: 648 })));
   for (const c of cases) {
     try {
       await page.setViewportSize({ width: c.width, height: c.height });
       await page.goto(fixture(c.theme, c.zoom));
-      const version = page.getByRole('textbox', { name: '统一版本', exact: true });
+      const version = page.getByLabel('统一版本', { exact: true }).and(page.locator('input'));
       const preview = page.getByRole('region', { name: '完整生成结果' });
-      assert(await page.getByRole('textbox').count() === 4, 'four parameters must be exposed without expansion');
+      assert(await page.locator('.rhine-parameter-config input[role=combobox]').count() === 4, 'four parameters must be exposed without expansion');
       assert(await page.locator('.rhine-parameter-config__inputs details').count() === 0, 'parameters retain a disclosure');
       assert(await preview.locator('.rhine-badge').count() === 11, 'expected eleven identity badges');
       assert(await page.locator('.rhine-parameter-config').getByText(/统一版本机制|独立版本机制|合成固定模板/).count() === 0, 'persistent mechanism explanations remain');
@@ -43,9 +43,9 @@ async page => {
         return { sideBySide: b.left > a.left + a.width - 1, inputWidth: a.width, previewWidth: b.width };
       });
       assert(layout.sideBySide === (c.width === 880 && c.zoom === 1), 'container layout differs from expected columns');
-      assert(await page.getByRole('textbox').count() === 4, 'expected exactly four text parameters');
+      assert(await page.locator('.rhine-parameter-config input[role=combobox]').count() === 4, 'expected exactly four text parameters');
       await version.fill('18.0.0-rc.123456789012345678901234567890+synthetic.long.metadata');
-      const fields = await page.getByRole('textbox').evaluateAll(elements => elements.map(e => {
+      const fields = await page.locator('.rhine-parameter-config input[role=combobox]').evaluateAll(elements => elements.map(e => {
         const r = e.getBoundingClientRect(), p = e.closest('[role=region]').getBoundingClientRect();
         return { width: r.width, left: r.left, right: r.right, frameLeft: p.left, frameRight: p.right };
       }));
@@ -64,7 +64,7 @@ async page => {
       assert(inputDelta > 0, 'actual PageDown did not scroll inputs');
       assert(await preview.evaluate(e => e.scrollTop) === 0, 'input scroll moved preview');
       assert(stable(inputPositions, await positions()), 'input scrolling moved title or submit action');
-      const lastInput = page.getByRole('textbox', { name: '独立软件版本' });
+      const lastInput = page.getByLabel('独立软件版本', { exact: true }).and(page.locator('input'));
       assert(await reaches(lastInput, '.rhine-parameter-config__scroll'), 'last input unreachable inside input frame');
       // Both focused scroll regions can be left in either direction using the keyboard.
       await inputs.focus(); await page.keyboard.press('Tab');
@@ -137,8 +137,8 @@ async page => {
       await page.emulateMedia({ reducedMotion: mode === 'system-reduced' ? 'reduce' : 'no-preference' });
       await page.setViewportSize({ width: 400, height: 648 });
       await page.goto(fixture('rhine', 2, mode === 'manual-reduced' ? 'reduced' : 'system'));
-      const version = page.getByLabel('统一版本', { exact: true });
-      const mobile = page.getByRole('textbox', { name: '移动应用构建号' }); await mobile.fill('invalid');
+      const version = page.getByLabel('统一版本', { exact: true }).and(page.locator('input'));
+      const mobile = page.getByLabel('移动应用构建号', { exact: true }).and(page.locator('input')); await mobile.fill('invalid');
       await review().click();
       assert(await mobile.evaluate(e => {
         const r = e.getBoundingClientRect(), c = e.closest('[role=region]').getBoundingClientRect();
@@ -147,7 +147,7 @@ async page => {
       assert((await page.getByRole('region', { name: '完整生成结果' }).textContent()).includes('待校验'), 'invalid results labeled valid');
       await mobile.fill('9100'); await version.fill('13.0.0');
       await summary('合成服务控制').click(); await page.getByRole('combobox', { name: '提交结果' }).selectOption('error');
-      await review().click(); let d = page.getByRole('dialog');
+      await review().click(); let d = page.getByRole('dialog', { name: '核对配置变化' });
       const duration = await d.evaluate(e => getComputedStyle(e).animationDuration);
       assert(mode === 'normal' ? parseFloat(duration) > 0 : parseFloat(duration) === 0, `motion duration ${duration}`);
       await d.getByRole('button', { name: '确认提交', exact: true }).dblclick({ delay: 10 });
@@ -158,18 +158,18 @@ async page => {
       await page.getByText('已保存合成配置', { exact: true }).waitFor();
       assert(await page.getByTestId('parameter-saved-version').textContent() === '13.0.0', 'retry failed to save');
       await version.fill('14.0.0'); await page.getByRole('combobox', { name: '提交结果' }).selectOption('conflict');
-      await review().click(); d = page.getByRole('dialog'); await d.getByRole('button', { name: '确认提交' }).click();
+      await review().click(); d = page.getByRole('dialog', { name: '核对配置变化' }); await d.getByRole('button', { name: '确认提交' }).click();
       await d.getByText('基线冲突', { exact: true }).waitFor(); await page.keyboard.press('Escape'); await d.waitFor({ state: 'detached' });
-      await review().click(); d = page.getByRole('dialog'); assert(await d.getByRole('button', { name: '确认提交' }).count() === 0, 'reopen bypasses conflict');
+      await review().click(); d = page.getByRole('dialog', { name: '核对配置变化' }); assert(await d.getByRole('button', { name: '确认提交' }).count() === 0, 'reopen bypasses conflict');
       await d.getByRole('button', { name: '读取新基线' }).click(); await d.waitFor({ state: 'detached' });
       assert(await version.inputValue() === '14.0.0', 'refresh discarded draft');
-      await review().click(); d = page.getByRole('dialog');
+      await review().click(); d = page.getByRole('dialog', { name: '核对配置变化' });
       assert((await d.textContent()).includes('12.5.0'), 'review did not use refreshed baseline');
       await d.getByRole('button', { name: '确认提交' }).click();
       await d.getByRole('button', { name: '返回编辑' }).click(); await d.waitFor({ state: 'detached' });
       await version.fill('15.0.0'); await page.waitForTimeout(750);
       assert(await page.getByTestId('parameter-saved-version').textContent() === '12.5.0' && await version.inputValue() === '15.0.0', 'canceled response overwrote later draft');
-      await review().click(); d = page.getByRole('dialog'); await d.getByRole('button', { name: '确认提交' }).click(); await d.waitFor({ state: 'detached' });
+      await review().click(); d = page.getByRole('dialog', { name: '核对配置变化' }); await d.getByRole('button', { name: '确认提交' }).click(); await d.waitFor({ state: 'detached' });
       assert(await page.getByTestId('parameter-saved-version').textContent() === '15.0.0', 'final save failed');
       interactions.push({ mode, pass: true, duration, paths: ['exposed-invalid', 'duplicate', 'error-retry', 'conflict-reopen', 'refresh-retain', 'cancel-stale', 'success'] });
     } catch (error) { interactions.push({ mode, pass: false, error: String(error) }); }

@@ -78,3 +78,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 紧凑已选标签 `RemoteMultiSelect.tagDensity` 与只读分组来源 `MappingEditor.groupedSourceLayout`：实现分别位于包内 `components/AdvancedForms.tsx`、`components/MappingEditor.tsx`；增量契约与固定底部保存示例位于 `docs/COMPACT_TEMPLATE.md`。源码候选，先核对安装包是否含对应 API。
 
 未发布 `ResponsiveActions` / `ResponsiveAction`：包内 `components/ResponsiveActions.tsx`，实际容器测量与焦点契约 `docs/RESPONSIVE_ACTIONS.md`；竖点 `IconName.moreVertical` 位于 `components/Actions.tsx`。先核对安装包是否包含对应导出。
+
+- Combobox / RemoteMultiSelect 紧凑状态与独立校验（#115，未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`，契约 `docs/COMBOBOX_FEEDBACK.md`，真实状态 `preview/ComboboxStateGallery.tsx`。原 error 保持候选读取失败语义；validationError 允许从候选纠正，statusDisplay 默认兼容。宿主观测候选配方见 `docs/PARAMETER_CONFIG.md`。
