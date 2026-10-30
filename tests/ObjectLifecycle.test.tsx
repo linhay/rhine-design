@@ -127,6 +127,62 @@ it.each(invalidObservations)('rejects %s instead of replacing the last complete 
   expect(rows().queryByText('已移除', { exact: true })).not.toBeInTheDocument();
 });
 
+// Finite numbers outside ECMAScript Date's range still make toISOString throw.
+// Keep a valid ordering in every case so chronology cannot mask the range defect.
+const unrenderableDates: [string, Pick<LifecycleObservation, 'observedAt' | 'expiresAt'>][] = [
+  ['out-of-range observation only', { observedAt: -1e17, expiresAt: syntheticNow + 60000 }],
+  ['out-of-range expiry only', { observedAt: syntheticNow, expiresAt: 1e17 }],
+  ['both timestamps out of range', { observedAt: 1e17, expiresAt: 2e17 }],
+];
+
+it.each(unrenderableDates)('keeps the old snapshot and reports an invalid new read with %s', async (_label, dates) => {
+  const { read, pending } = deferredRead();
+  render(<ObjectLifecycle retainHistory read={read} now={now} initial={lifecycleObservation()} />);
+  const originalTime = document.querySelector('[data-lifecycle-times]')!.textContent!.replace('观测时间', '上次记录');
+  fireEvent.click(screen.getByRole('button', { name: '读取状态' }));
+  await act(async () => pending[0].resolve({ ...lifecycleObservation(true), ...dates }));
+  expect(summary()).toHaveTextContent(/^未知$/);
+  expect(screen.getByRole('alert')).toHaveTextContent('原目标观测不完整');
+  expect(rows().getAllByText('上次记录：仍存在', { exact: true })).toHaveLength(5);
+  expect(rows().getAllByText('未知', { exact: true })).toHaveLength(5);
+  expect(document.querySelector('[data-lifecycle-times]')!.textContent).toBe(originalTime);
+  expect(document.querySelector('[data-lifecycle-card]')).toHaveAttribute('data-pending', 'false');
+});
+
+it.each(unrenderableDates)('discards an invalid initial snapshot with %s and safely cold-reads a valid one', async (_label, dates) => {
+  const { read, pending } = deferredRead();
+  expect(() => render(<ObjectLifecycle retainHistory read={read} now={now} initial={{ ...lifecycleObservation(true), ...dates }} />)).not.toThrow();
+  expect(summary()).toHaveTextContent(/^未知$/);
+  expect(screen.getByText('正在读取对象状态')).toBeInTheDocument();
+  expect(document.querySelector('[data-lifecycle-times]')).toBeNull();
+  expect(read).toHaveBeenCalledTimes(1);
+  await act(async () => pending[0].resolve(lifecycleObservation()));
+  expect(summary()).toHaveTextContent(/^仍有对象$/);
+  expect(rows().getAllByText('仍存在', { exact: true })).toHaveLength(5);
+});
+
+it.each([
+  ['minimum Date endpoint', -8640000000000000, -8639999999999000],
+  ['maximum Date endpoint', 8639999999999000, 8640000000000000],
+])('accepts and renders the %s without rejecting representable numeric timestamps', (_label, observedAt, expiresAt) => {
+  const initial = { ...lifecycleObservation(true), observedAt, expiresAt };
+  const read = vi.fn<LifecycleRead>(async () => initial);
+  expect(completeOriginalObservation(initial)).toBe(true);
+  expect(() => render(<ObjectLifecycle retainHistory read={read} now={observedAt} initial={initial} />)).not.toThrow();
+  expect(summary()).toHaveTextContent(/^已结束$/);
+  const times = document.querySelector('[data-lifecycle-times]')!;
+  for (const value of [observedAt, expiresAt]) expect(times).toHaveTextContent(new Date(value).toISOString().replace('T', ' ').replace('.000Z', ' UTC（合成）'));
+  expect(read).not.toHaveBeenCalled();
+});
+
+it.each(['observedAt', 'expiresAt'] as const)('requires a finite number for %s rather than coercing a Date, string, or null', field => {
+  // Each impostor can construct a valid Date; it still is not an accepted timestamp number.
+  for (const value of [new Date(0), '1970-01-01T00:00:00.000Z', '0', null]) {
+    const initial = { ...lifecycleObservation(true), observedAt: -60000, expiresAt: 60000, [field]: value } as unknown as LifecycleObservation;
+    expect(completeOriginalObservation(initial), `${field}: ${String(value)}`).toBe(false);
+  }
+});
+
 it.each(['timeout', 'denied', 'partial', 'replacement'])('keeps the complete old removal record after %s, without claiming a current ended state', async scenario => {
   vi.useFakeTimers();
   const read = vi.fn(syntheticLifecycleRead(scenario));

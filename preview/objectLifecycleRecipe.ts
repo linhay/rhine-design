@@ -10,6 +10,7 @@ export interface LifecycleObservation {
 export type LifecycleRead = (signal: AbortSignal) => Promise<LifecycleObservation>;
 export function completeOriginalObservation(value: LifecycleObservation) {
   return value.complete && Number.isFinite(value.observedAt) && Number.isFinite(value.expiresAt)
+    && Number.isFinite(new Date(value.observedAt).getTime()) && Number.isFinite(new Date(value.expiresAt).getTime())
     && value.expiresAt > value.observedAt && value.objects.length === originalTargets.length
     && originalTargets.every(id => value.objects.filter(row => row.id === id && row.state !== 'unknown').length === 1);
 }
