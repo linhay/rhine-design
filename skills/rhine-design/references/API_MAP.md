@@ -55,6 +55,7 @@ API decisions that commonly matter:
 - `Logo` accepts `wordmark` and `label`; its `theme` affects the logo, not the full component library.
 - `OrbitBackdrop` is decorative artwork with built-in pause / resume. Its `reducedMotion` prop can strengthen but never override system reduction; see `docs/ORBIT_BACKDROP.md` for visibility, narrow-window and fallback behavior. In 0.8.0, theme artwork uses an origami paper bird, originium crystals or a strawberry donut; `appearance="original"` preserves the initial orbit. It does not express loading or business progress.
 - `NeutronStarBackdrop` preserves the separate neutron-star artwork. `appearance="theme"` follows existing theme tokens; `original` restores its deep-space palette without replacing the host control theme. It lazy-loads WebGL, freezes under reduction or visibility constraints, and retains static art on failure. It requires 0.8.0 or later; see `docs/NEUTRON_STAR_BACKDROP.md`.
+- `DataTable.captionVisibility` optionally hides a duplicate native caption visually while retaining table/scroll-region names; default visible. Unreleased source capability: check installed `components/Data.tsx` and `docs/APPLICATION_COMPONENTS.md` before use.
 - `Toast` presents one notification, not a global queue. `DataTable` is not a query or table-state engine.
 - Components in `preview/` are demonstrations. Public API must resolve through a `package.json` export; theme APIs use the separate `/theme` entry.
 

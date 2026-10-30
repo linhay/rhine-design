@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #19 增量：DataTable 新增可选 `captionVisibility="hidden"`，默认标题保持可见，隐藏重复标题仍保留原生 caption、表格名称与可聚焦横滚区域名称；列表配方补完整嵌入组合复核，尚未 npm 发布。
+
 - #116 增量：异步快照配方补有缓存预算退出场景，以中性信息提示保留可读旧值和原观测时间；真正读取失败与无缓存预算保持独立，不新增公共 API。
 
 - #115：Combobox / RemoteMultiSelect 新增可选 `validationError` 与 `statusDisplay="compact"`，分离可纠正字段校验和候选读取失败，保留默认呈现。四参数配方使用各自独立合成观测候选、宿主排序/防抖/取消与手填新值；见[状态契约](docs/COMBOBOX_FEEDBACK.md)，尚未 npm 发布。
