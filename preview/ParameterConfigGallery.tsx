@@ -97,13 +97,13 @@ export function ParameterConfigGallery() {
               </details>
             </Fieldset>
           </div>
-          <section aria-label="生成结果" className="rhine-parameter-config__preview">
+          <div className="rhine-parameter-config__preview">
             <Text as="h4" variant="heading">生成结果{valid ? '（11）' : ' · 待校验'}</Text>
             <div role="region" aria-label="完整生成结果" tabIndex={0} className="rhine-parameter-config__results">
               {valid ? <ol>{results.map(r => <li key={r.label}><Text as="strong" variant="label">{r.label}</Text><pre>{r.value}</pre></li>)}</ol> :
                 <Notice tone="warning" title="待校验：参数不完整或格式非法">修正源参数后才生成有效结果。</Notice>}
             </div>
-          </section>
+          </div>
         </div>
       </Stack>
     </Surface>

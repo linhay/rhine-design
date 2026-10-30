@@ -13,6 +13,7 @@ async page => {
     window.clearTimeout = function (id) { window.__parameterRequests.delete(id); return originalClear(id); };
   });
   await page.setViewportSize({ width: 880, height: 900 }); await page.goto(`${base}/#parameter-config`);
+  assert(await page.locator('.rhine-parameter-config__preview').evaluate(e => parseFloat(getComputedStyle(e).paddingTop) === 0), 'gallery chapter styles added padding to nested preview');
   const input = page.getByLabel('统一版本', { exact: true }); await input.fill('20.0.0');
   const handle = await input.elementHandle(), preservation = [];
   for (const theme of ['rhine', 'arknights', 'neo-brutalism']) for (const width of [400, 520, 880]) {
