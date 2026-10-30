@@ -87,8 +87,8 @@ export function ObjectSettingsGallery() {
       <Text as="h3" variant="heading">合成资源 A</Text>
       <div className="rhine-object-metadata" role="region" aria-label="资源日期与分发状态" tabIndex={0}>
         <Inline gap={2} style={{ flexWrap:'nowrap',width:'max-content' }}>
-          <Text aria-label="创建于2025年12月31日，更新于2026年1月2日，上海时间" title="创建 2025-12-31 · 更新 2026-01-02 · 上海时间">2025-12-31 → 2026-01-02</Text>
-          <Text aria-label={long ? '分发异常：目录成员已变化，部分接收人权限待重新确认' : '分发状态：已分配'} title={long ? '分发异常：目录成员已变化，部分接收人权限待重新确认' : '分发状态：已分配'}>{long ? '分发异常：目录成员已变化，部分接收人权限待重新确认' : '已分配'}</Text>
+          <Text title="创建 2025-12-31 · 更新 2026-01-02 · 上海时间"><span aria-hidden="true">2025-12-31 → 2026-01-02</span><span className="rhine-sr-only">创建于2025年12月31日，更新于2026年1月2日，上海时间</span></Text>
+          <Text title={long ? '分发异常：目录成员已变化，部分接收人权限待重新确认' : '分发状态：已分配'}><span aria-hidden="true">{long ? '分发异常：目录成员已变化，部分接收人权限待重新确认' : '已分配'}</span><span className="rhine-sr-only">{long ? '分发异常：目录成员已变化，部分接收人权限待重新确认' : '分发状态：已分配'}</span></Text>
         </Inline>
       </div>
       <div className="rhine-object-quota" aria-busy={quotaLoading || undefined} data-object-quota>

@@ -22,10 +22,10 @@ async page => {
       const metadata = page.getByRole('region',{name:'资源日期与分发状态'});
       const layout = await metadata.evaluate(element => {
         const items=[...element.querySelectorAll('p')]; const r=items.map(x=>x.getBoundingClientRect());
-        return {sameLine:Math.abs(r[0].y-r[1].y)<1,font:items.map(x=>parseFloat(getComputedStyle(x).fontSize)),labels:items.map(x=>x.getAttribute('aria-label')),scrollWidth:element.scrollWidth,clientWidth:element.clientWidth,pageOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1};
+        return {sameLine:Math.abs(r[0].y-r[1].y)<1,font:items.map(x=>parseFloat(getComputedStyle(x).fontSize)),text:items.map(x=>x.querySelector('.rhine-sr-only')?.textContent),namedParagraph:items.some(x=>x.hasAttribute('aria-label')||x.hasAttribute('aria-labelledby')),scrollWidth:element.scrollWidth,clientWidth:element.clientWidth,pageOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1};
       });
       assert(layout.sameLine && !layout.pageOverflow,'metadata wraps or page overflows');
-      assert(layout.labels[0].includes('2025')&&layout.labels[0].includes('2026')&&layout.labels[1].includes('权限'),'incomplete date/status accessible names');
+      assert(!layout.namedParagraph&&layout.text[0]==='创建于2025年12月31日，更新于2026年1月2日，上海时间'&&layout.text[1]==='分发异常：目录成员已变化，部分接收人权限待重新确认','incomplete date/status text semantics (not a spoken screen-reader check)');
       if(layout.scrollWidth>layout.clientWidth+1) {
         await metadata.focus();
         // Drive actual keyboard repeat without requiring a per-key pixel delta.
@@ -33,9 +33,9 @@ async page => {
           for(let step=0;step<10;step++) await page.keyboard.down('ArrowRight');
           await page.keyboard.up('ArrowRight');
           await metadata.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-          if(await metadata.evaluate(e=>{const t=e.querySelector('p:last-child').firstChild,r=document.createRange();r.setStart(t,t.length-1);r.setEnd(t,t.length);const text=r.getBoundingClientRect(),box=e.getBoundingClientRect();return text.right<=box.right+1&&text.left>=box.left-1;})) break;
+          if(await metadata.evaluate(e=>{const t=e.querySelector('p:last-child > [aria-hidden="true"]').firstChild,r=document.createRange();r.setStart(t,t.length-1);r.setEnd(t,t.length);const text=r.getBoundingClientRect(),box=e.getBoundingClientRect();return text.right<=box.right+1&&text.left>=box.left-1;})) break;
         }
-        await page.waitForFunction(()=>{const e=document.querySelector('.rhine-object-metadata'),t=e.querySelector('p:last-child').firstChild,r=document.createRange();r.setStart(t,t.length-1);r.setEnd(t,t.length);const text=r.getBoundingClientRect(),box=e.getBoundingClientRect();return document.activeElement===e&&text.right<=box.right+1&&text.left>=box.left-1;});
+        await page.waitForFunction(()=>{const e=document.querySelector('.rhine-object-metadata'),t=e.querySelector('p:last-child > [aria-hidden="true"]').firstChild,r=document.createRange();r.setStart(t,t.length-1);r.setEnd(t,t.length);const text=r.getBoundingClientRect(),box=e.getBoundingClientRect();return document.activeElement===e&&text.right<=box.right+1&&text.left>=box.left-1;});
         assert(await metadata.evaluate(e=>document.activeElement===e),'metadata lost keyboard focus');
       }
       const quota=page.locator('[data-object-quota]'), loaded=await quota.boundingBox();

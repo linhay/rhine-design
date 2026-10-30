@@ -1,3 +1,3 @@
 /* Host composition only; no Dialog or form internals are overridden. */
-.rhine-object-metadata { max-width:100%; overflow-x:auto; white-space:nowrap; }
+.rhine-object-metadata { position:relative; max-width:100%; overflow-x:auto; white-space:nowrap; }
 .rhine-object-quota { display:grid; min-width:0; padding-block:var(--rhine-space-2); border-block:1px solid var(--rhine-line); }

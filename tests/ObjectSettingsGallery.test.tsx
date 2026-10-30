@@ -113,3 +113,18 @@ it('restarts failed settings reads without accepting the old notification timer'
   view.unmount(); act(()=>vi.advanceTimersByTime(1000));
   expect(vi.getTimerCount()).toBe(0);
 });
+
+it('provides full date, time zone and distribution as text instead of naming paragraphs', () => {
+  setup();
+  const metadata = screen.getByRole('region', { name: '资源日期与分发状态' });
+  const facts = [...metadata.querySelectorAll('p')];
+  for (const fact of facts) expect(fact).not.toHaveAttribute('aria-label');
+  const accessibleText = () => [...metadata.querySelectorAll('.rhine-sr-only')].map(node => {
+    expect(node.closest('[aria-hidden="true"],[hidden],[inert]')).toBeNull();
+    return node.textContent;
+  });
+  expect(accessibleText()).toEqual(['创建于2025年12月31日，更新于2026年1月2日，上海时间', '分发状态：已分配']);
+  expect(facts[0].querySelector('[aria-hidden="true"]')).toHaveTextContent('2025-12-31 → 2026-01-02');
+  fireEvent.click(screen.getByLabelText('跨年日期与长异常状态'));
+  expect(accessibleText()[1]).toBe('分发异常：目录成员已变化，部分接收人权限待重新确认');
+});
