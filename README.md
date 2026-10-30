@@ -333,3 +333,7 @@ skill 中提供以下参考入口：
 `MappingEditor` 提供受控来源→目标编辑列表：双侧原生Select、稳定行id、只读/禁用/错误、窄容器重排及增删焦点。模板保存与应用分离、逐目标差异和混合值意图由官方合成组合示范，业务服务与持久化归宿主。见[契约与组合](docs/TEMPLATE_SETTINGS.md)及展台 `#template-settings`；正式npm0.11.3不包含此组件。
 
 `ResponsiveActions` 按实际容器依次呈现文字、图标和竖点菜单，保留44px目标与键盘焦点；源码主入口现有71个组件，发布0.11.3仍为69个。见[容器动作契约](docs/RESPONSIVE_ACTIONS.md)与展台 `#responsive-actions`。
+
+## 常驻层级浏览组合
+
+只读树与外部画布、固定/跟随目标、刷新快照和详情复制的配方见[常驻层级浏览](docs/RESIDENT_TREE.md)。展台 `#resident-tree` 使用公开基础组件与语义 HTML，不新增 Tree 公共导出；npm 0.11.3 尚不包含本配方。

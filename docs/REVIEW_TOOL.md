@@ -126,6 +126,12 @@ reviewProductionGuard({ forbidden: ['./design', './src/preview-fixtures'] });
 
 默认只拒绝官方 review runtime；不会把所有名为 design/fixtures 的正常生产目录误判。消费方必须登记自己的预览目录。检查基于实际输出 chunk 的模块图，随包附带的 tests/examples 不会因主入口引用自动进入 App。生产与预览使用不同 outDir；静态托管只上传对应 dist-review，不上传源码目录、环境文件或本地日志。
 
+## 同组件评审与宿主接回
+
+独立 catalog 动态载入与业务接回相同的组件和样式，合成 DTO/Clipboard 适配仅留在设计入口。保留唯一 ThemeProvider，主题与尺寸原位更新，未知或失败不得模拟为成功。正式配置登记 fixture 目录，并用实际构建的正反例验证 production guard：普通模块通过，引入 fixture/review 必须拒绝；临时路径先 canonical/realpath。
+
+接回后另验宿主工具条、Portal 祖先和滚动容器，避免浮动分割/关闭工具条遮住组件状态；优先宿主布局预留操作空间，不绕过库私有 CSS。同组件在独立评审中通过，不能替代宿主包装后的几何与焦点检查。此组合经验来自 [#40 补充评论](https://github.com/linhay/rhine-design/issues/40#issuecomment-6514632554)。
+
 ## 静态托管与迁移
 
 1. 保留现有可用预览，先固定并安装通过验证的官方候选/发布制品。
