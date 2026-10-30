@@ -63,7 +63,7 @@
 
 ## 第三方技术文档阅读
 
-OpenAPI 页面可组合现有 AppShell、Tabs、Notice、ButtonLink 与固定同源阅读器 iframe，见[技术阅读器配方](TECHNICAL_READER.md)。宿主管导航、版本/草案状态、下载及恢复；阅读器独立管理内部样式和 hash。首版只读、不注入凭据或执行业务请求；真实加载、迟到消息、键盘往返及内外滚动仍须消费端验收。本项为规范建议，无专用公共 API 或 Swagger 展台。
+OpenAPI 页面可组合现有 AppShell、Tabs、Notice、ButtonLink 与固定同源阅读器 iframe，见[技术阅读器配方](TECHNICAL_READER.md)。宿主管导航、版本/草案状态、下载及恢复；阅读器内部按宿主实际安装 tokens 局部适配正文并同步主题/减少动态，hash 保持内部归属；第三方默认视觉不豁免宿主规范。首版只读、不注入凭据或执行业务请求；真实加载、迟到消息、键盘往返及内外滚动仍须消费端验收。本项为规范建议，无专用公共 API 或 Swagger 展台。
 
 ## 侧栏导航
 

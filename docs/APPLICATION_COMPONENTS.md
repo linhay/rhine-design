@@ -39,7 +39,7 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 ## 三种外壳布局
 
-将第三方技术阅读器放入既有外壳时，导航与主题留在宿主、文档样式与 hash 留在 iframe；只读配置、版本状态、下载、失败恢复和键盘边界见[技术阅读器组合](TECHNICAL_READER.md)。这是文档配方，不新增 AppShell 参数或第三方依赖。
+将第三方技术阅读器放入既有外壳时，宿主管导航与主题决策，阅读器在 iframe 内按实际安装 tokens 局部适配正文，hash 保持内部归属；只读配置、版本状态、下载、失败恢复和键盘边界见[技术阅读器组合](TECHNICAL_READER.md)。这是文档配方，不新增 AppShell 参数或第三方依赖。
 
 ### 内联控制按钮（0.8.0）
 
