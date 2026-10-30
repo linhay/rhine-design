@@ -165,6 +165,7 @@ export function App() {
 | 轨道装饰、暂停与静态降级 | [OrbitBackdrop](docs/ORBIT_BACKDROP.md) | [轨道星空](https://linhay.github.io/rhine-design/#orbit) |
 | 中子星艺术、主题与 WebGL 生命周期 | [NeutronStarBackdrop（0.8.0）](docs/NEUTRON_STAR_BACKDROP.md) | [中子星展台](https://linhay.github.io/rhine-design/#neutron-star) |
 | 工作空间文件/笔记与关联往返 | [对象阅读组合](docs/OBJECT_READING.md) | [对象阅读](https://linhay.github.io/rhine-design/#object-reading) |
+| OpenAPI 与第三方技术文档只读集成 | [技术阅读器配方](docs/TECHNICAL_READER.md) | 规范配方，尚无运行展台 |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
 | 少量源参数与只读生成结果 | [参数与预览组合](docs/PARAMETER_CONFIG.md) | [参数与生成预览](https://linhay.github.io/rhine-design/#parameter-config) |
 | 日期快捷项、范围草稿与确认 | [日期筛选组合](docs/DATE_RANGE_FILTER.md) | [日期筛选](https://linhay.github.io/rhine-design/#date-range-filter) |
