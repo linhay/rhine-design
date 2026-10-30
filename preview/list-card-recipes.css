@@ -1,0 +1,4 @@
+.rhine-recipe-list { display:flow-root; min-width:0; }
+.rhine-recipe-bulk { float:right; margin-inline-start:var(--rhine-space-3); margin-block-end:var(--rhine-space-2); max-width:100%; }
+.rhine-recipe-card { overflow-wrap:anywhere; }
+.rhine-recipe-labels:focus-visible { outline:2px solid var(--rhine-green); outline-offset:2px; }
