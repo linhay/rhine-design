@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Badge, KeyValue, Select, Stack, Surface, Tabs, Text, TextField, Toolbar } from '../components';
+import { Badge, Button, Dialog, IconButton, Inline, KeyValue, Select, Stack, Surface, Tabs, Text, TextField, Toolbar } from '../components';
 
 export function SummaryTabsGallery() {
   const [layout, setLayout] = useState<'content' | 'full' | 'fill'>('content');
@@ -7,6 +7,11 @@ export function SummaryTabsGallery() {
   const [width, setWidth] = useState('520');
   const [scenario, setScenario] = useState('normal');
   const [selected, setSelected] = useState('primary');
+  const [actionTab, setActionTab] = useState('projects');
+  const [created, setCreated] = useState(2);
+  const [refreshes, setRefreshes] = useState(0);
+  const [actionDetails, setActionDetails] = useState(true);
+  const [createOpen, setCreateOpen] = useState(false);
   const pending = scenario === 'loading', failed = scenario === 'error';
   return <section id="summary-tabs"><Stack gap={6}>
     <Toolbar title="带摘要的页签" description="名称与状态在同一组，身份摘要紧随；每个对象的状态始终可见。">
@@ -31,6 +36,16 @@ export function SummaryTabsGallery() {
         ]}/>
       </div>
       <Text variant="caption" tone="muted">先输入草稿，再使用左右方向键或 Home / End 切换。场景与主题变化不清空面板。</Text>
+    </Stack></Surface>
+    <Surface><Stack gap={4}><Text as="h2" variant="heading">页签栏内部操作</Text>
+      <Select label="操作页签样式" value={actionDetails ? 'detailed' : 'plain'} onChange={event => setActionDetails(event.target.value === 'detailed')}><option value="detailed">摘要页签</option><option value="plain">普通页签</option></Select>
+      <Text variant="caption" tone="muted">分隔线贯穿整栏；图标保留44px点击区，相邻透明命中范围不重叠。操作不属于tablist，方向键只切换页签。</Text>
+      <div style={{ width: width === '100%' ? width : `${width}px`, maxWidth: '100%' }}>
+        <Tabs label="栏内操作示例" fullWidth value={actionTab} onValueChange={setActionTab} actions={<Inline style={{ gap: 0 }}><Dialog open={createOpen} onOpenChange={setCreateOpen} title="新增项目示例" description="仅使用本地合成数据。关闭后返回新增按钮。" trigger={<IconButton label="新增示例" title="新增示例" icon="plus" disabled={scenario === 'disabled'}/>}><Stack gap={4}><TextField label="新项目名称"/><Button onClick={() => { setCreated(value => value + 1); setCreateOpen(false); }}>确认新增示例</Button></Stack></Dialog><IconButton label="刷新示例" title="刷新示例" icon="refresh" busy={pending} disabled={scenario === 'disabled'} onClick={() => setRefreshes(value => value + 1)}/></Inline>} items={[
+          { value: 'projects', label: scenario === 'long' ? '跨区域长期协作项目' : '项目', description: actionDetails ? (scenario === 'long' ? '跨区域研究与设计协作的长期项目身份' : '研究与设计') : undefined, status: actionDetails ? <Text as="span" variant="caption" numeric>{created}</Text> : undefined, content: <Stack gap={4}><TextField label="项目操作草稿"/><Text>本地项目 {created} 个；已模拟刷新 {refreshes} 次</Text></Stack> },
+          { value: 'teams', label: '协作', disabled: scenario === 'disabled', content: <TextField label="协作操作草稿"/> },
+        ]}/>
+      </div>
     </Stack></Surface>
     <Surface><Stack gap={4}><Text as="h2" variant="heading">尺寸与层级</Text><KeyValue items={[
       {key:'title',label:'名称',value:'14 / 22 · 600'}, {key:'description',label:'身份摘要',value:'12 / 18 · 400'},
