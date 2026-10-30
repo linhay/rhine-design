@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { Badge, Button, Checkbox, CopyButton, DataTable, EmptyState, Grid, Inline, Notice, Select, Skeleton, Stack, Surface, Tabs, Text } from '../components';
 import { ThemeProvider, type ThemeName } from '../components/theme';
 import { accessKinds, CompactDates, OwnershipLabels } from './ListCardRecipes';
@@ -37,7 +37,7 @@ export function AsyncResourceCard({ kind, loading = 'none', long = false, partia
   </Stack></Surface>;
 }
 
-function ResultReadNotice({ status, old, retry }: { status: string; old: boolean; retry: () => void }) {
+function ResultReadNotice({ status, old, retry }: { status: string; old: boolean; retry: (event: MouseEvent<HTMLButtonElement>) => void }) {
   if (status === 'error') return <Notice tone="error" title={old ? '读取失败，保留上次快照' : '读取失败，尚无可用快照'} action={<Button variant="secondary" onClick={retry}>重试读取</Button>}>任务状态与读取错误独立；没有已确认的新结果。</Notice>;
   if (status === 'budget') return <Notice tone={old ? 'neutral' : 'warning'} title="已达到本轮读取预算" action={<Button variant="secondary" onClick={retry}>重试读取</Button>}>{old ? '旧快照仍可读，稍后可重试更新；保留原观测时间，尚无已确认的新结果。' : '已退出忙态；未知结果不显示为零。'}</Notice>;
   if (status === 'paused') return <Notice tone="warning" title="读取已暂停">恢复后重新读取，保留已有快照。</Notice>;
@@ -56,7 +56,7 @@ function SnapshotList({ scenario, loading, long }: { scenario: string; loading: 
   useEffect(() => () => clearTimeout(searchTimer.current), []);
   return <Stack gap={3} data-snapshot-list data-read-status={state.status}>
     <Inline gap={2}>
-      <Button variant="secondary" disabled={state.paused || !state.visible} busy={waiting && state.cause === 'manual'} busyLabel="正在读取现有结果" onClick={state.retry}>读取现有结果</Button>
+      <Button data-snapshot-read-action variant="secondary" disabled={state.paused || !state.visible} busy={waiting && state.cause === 'manual'} busyLabel="正在读取现有结果" onClick={state.retry}>读取现有结果</Button>
       <Button variant="quiet" onClick={state.togglePause}>{state.paused ? '恢复读取' : '暂停读取'}</Button>
       <Button variant="quiet" onClick={() => { clearTimeout(searchTimer.current); setSearch('搜索筛选正在读取'); searchTimer.current = setTimeout(() => { setSearch('搜索筛选读取完成（合成）'); setSearchApplied(true); }, 500); }}>演示搜索反馈</Button>
     </Inline>
@@ -67,7 +67,10 @@ function SnapshotList({ scenario, loading, long }: { scenario: string; loading: 
     {/* Tab transitions retain the previous summary verbatim. No page spinner or update announcement. */}
     {state.cause !== 'tab' && state.status === 'refreshing' && <Text tone="muted">正在后台读取，已有快照仍可读。</Text>}
     {state.snapshot?.stale && <Text tone="warning">快照已过期；以下保留原观测结果。</Text>}
-    <ResultReadNotice status={state.status} old={same && !!state.snapshot} retry={state.retry} />
+    <ResultReadNotice status={state.status} old={same && !!state.snapshot} retry={event => {
+      if (document.activeElement === event.currentTarget) event.currentTarget.closest('[data-snapshot-list]')?.querySelector<HTMLButtonElement>('[data-snapshot-read-action]')?.focus();
+      state.retry();
+    }} />
     <Tabs label="异步接入方式" value={state.scope} onValueChange={state.switchScope} items={accessKinds.map(item => ({ ...item, content:
       <div data-async-result={item.value}>
         {state.scope === item.value && <Stack gap={3}>

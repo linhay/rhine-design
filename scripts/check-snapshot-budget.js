@@ -30,8 +30,11 @@ async page => {
       await page.getByRole('button',{name:'暂停读取',exact:true}).click();
       check(await list.getAttribute('data-read-status')==='paused'&&(await facts()).text.includes('128.00 USD'),{kind:'manual-pause-keeps-readable-cache',label});
       await page.getByRole('button',{name:'恢复读取',exact:true}).click();await readStatus('budget');
-      const retry=page.getByRole('button',{name:'重试读取',exact:true});await retry.focus();await page.keyboard.press('Enter');await readStatus('budget');
-      check(await retry.evaluate(el=>document.activeElement===el),{kind:'keyboard-retry-focus-retained',label});
+      const retry=page.getByRole('button',{name:'重试读取',exact:true});await retry.focus();await page.keyboard.press('Enter');
+      check(await list.locator('[data-snapshot-read-action]').evaluate(el=>document.activeElement===el),{kind:'keyboard-retry-immediate-focus-transfer',label});await readStatus('budget');
+      check(await list.locator('[data-snapshot-read-action]').evaluate(el=>document.activeElement===el),{kind:'keyboard-retry-focus-transferred-and-retained',label});
+      await page.getByRole('button',{name:'重试读取',exact:true}).click();await page.getByLabel('异步长文本').focus();await readStatus('budget');
+      check(await page.getByLabel('异步长文本').evaluate(el=>document.activeElement===el),{kind:'completion-does-not-steal-external-focus',label});
       await page.getByRole('tab',{name:'OAuth',exact:true}).click();await readStatus('budget');const other=await facts();
       check(other.summary===before&&other.summary.includes('全部：1')&&!other.text.includes('旧快照仍可读')&&!other.text.includes('128.00 USD')&&other.text.includes('此范围尚无可读快照')&&other.notices.some(n=>n.tone.includes('rhine-tone-warning')),{kind:'different-scope-not-readable-cache',label,other});
       await page.getByLabel('异步配方场景').selectOption('error');await readStatus('error');const error=await facts();
