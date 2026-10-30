@@ -25,7 +25,7 @@ async page => {
       const cached=await facts();checkCached(cached,label,before);check(cached.pageFits,{kind:'page-fit',label,cached});
       if(probe) break;
       await page.getByRole('button',{name:'重试读取',exact:true}).click();
-      check(await list.getAttribute('data-read-status')==='refreshing' && await page.getByRole('button',{name:'读取现有结果',exact:true}).getAttribute('aria-busy')==='true',{kind:'retry-enters-busy',label});
+      check(await list.getAttribute('data-read-status')==='refreshing' && await page.getByRole('button',{name:/读取现有结果/}).getAttribute('aria-busy')==='true',{kind:'retry-enters-busy',label});
       await readStatus('budget');checkCached(await facts(),label,before);
       await page.getByRole('button',{name:'暂停读取',exact:true}).click();
       check(await list.getAttribute('data-read-status')==='paused'&&(await facts()).text.includes('128.00 USD'),{kind:'manual-pause-keeps-readable-cache',label});

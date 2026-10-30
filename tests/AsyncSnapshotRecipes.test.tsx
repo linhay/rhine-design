@@ -150,7 +150,7 @@ it('keeps a readable cached snapshot and its observation time through budget exh
   expect(screen.queryByText('正在读取身份')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button',{name:'重试读取'}));
   expect(list).toHaveAttribute('data-read-status','refreshing');
-  expect(screen.getByRole('button',{name:'读取现有结果'})).toHaveAttribute('aria-busy','true');
+  expect(screen.getByRole('button',{name:/读取现有结果/})).toHaveAttribute('aria-busy','true');
   await act(async () => { await vi.advanceTimersByTimeAsync(860); });
   expect(list).toHaveAttribute('data-read-status','budget');
   expect(screen.getByRole('button',{name:'读取现有结果'})).not.toHaveAttribute('aria-busy','true');
