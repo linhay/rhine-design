@@ -99,17 +99,42 @@ async page => {
     check(await busy.evaluate(el => document.activeElement === el) && await root().textContent() === before, { kind:'motion-busy-inert', mode });
     motion.push({ mode, animation });
   }
-  await page.getByLabel('摘要页签场景').selectOption('disabled');
-  check(await add().isDisabled() && await refresh().isDisabled() && await selected('协作').isDisabled(), { kind:'disabled' });
-  await selected('项目').focus(); await page.keyboard.press('End');
-  check(await selected('项目').evaluate(el => document.activeElement === el), { kind:'disabled-tab-skip' });
-  await page.keyboard.press('Tab');
-  check(!await add().evaluate(el => document.activeElement === el) && !await refresh().evaluate(el => document.activeElement === el), { kind:'disabled-actions-skip' });
-  await page.getByLabel('摘要页签场景').selectOption('normal');
+  const disabledTransitions = [];
+  for (const theme of ['rhine', 'arknights', 'neo-brutalism', 'neutral']) {
+    await page.getByRole('combobox', { name:'界面主题', exact:true }).selectOption(theme);
+    await page.getByLabel('摘要页签场景').selectOption('normal');
+    await selected('项目').click();
+    await root().getByRole('textbox', { name:'项目操作草稿', exact:true }).fill(`项目草稿 ${theme}`);
+    await selected('协作').click();
+    await root().getByRole('textbox', { name:'协作操作草稿', exact:true }).fill(`协作草稿 ${theme}`);
+    await page.getByLabel('摘要页签场景').selectOption('disabled');
+    check(await selected('项目').getAttribute('aria-selected') === 'true' && await selected('项目').getAttribute('tabindex') === '0' && await selected('协作').getAttribute('aria-selected') === 'false', { kind:'disabled-selection-reset', theme });
+    check(await add().isDisabled() && await refresh().isDisabled() && await selected('协作').isDisabled(), { kind:'disabled', theme });
+    // Enter from the preceding real select instead of programmatically focusing the tab.
+    await page.getByLabel('操作页签样式').focus(); await page.keyboard.press('Tab');
+    check(await selected('项目').evaluate(el => document.activeElement === el), { kind:'disabled-tab-native-entry', theme });
+    for (const key of ['ArrowRight', 'ArrowLeft', 'Home', 'End']) {
+      await page.keyboard.press(key);
+      check(await selected('项目').evaluate(el => document.activeElement === el && el.getAttribute('aria-selected') === 'true'), { kind:'disabled-tab-skip', theme, key });
+    }
+    await page.keyboard.press('Tab');
+    check(await root().getByRole('tabpanel').evaluate(el => document.activeElement === el), { kind:'disabled-actions-skip', theme });
+    await page.keyboard.press('Tab');
+    check(await root().getByRole('textbox', { name:'项目操作草稿', exact:true }).evaluate(el => document.activeElement === el), { kind:'disabled-panel-native-entry', theme });
+    await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Shift+Tab');
+    check(await selected('项目').evaluate(el => document.activeElement === el), { kind:'disabled-tab-native-return', theme });
+    check(await root().getByRole('textbox', { name:'项目操作草稿', exact:true }).inputValue() === `项目草稿 ${theme}`, { kind:'project-draft-after-disable', theme });
+    await page.getByLabel('摘要页签场景').selectOption('normal');
+    await selected('协作').click();
+    check(await root().getByRole('textbox', { name:'协作操作草稿', exact:true }).inputValue() === `协作草稿 ${theme}`, { kind:'team-draft-after-enable', theme });
+    await selected('项目').click();
+    check(await root().getByRole('textbox', { name:'项目操作草稿', exact:true }).inputValue() === `项目草稿 ${theme}`, { kind:'project-draft-after-enable', theme });
+    disabledTransitions.push({ theme, nativeTab:true, arrows:true, drafts:true });
+  }
   const header = root().locator('.rhine-tabs__header');
   await header.evaluate(el => { el.style.borderBottomWidth = '0px'; });
   const counterexampleDetected = (await measure()).line !== 1;
   await header.evaluate(el => { el.style.removeProperty('border-bottom-width'); });
   check(counterexampleDetected && (await measure()).line === 1, { kind:'missing-divider-counterexample' });
-  return { pass:failures.length === 0 && errors.length === 0, failures, errors, cases, motion, counterexampleDetected, browser:await page.evaluate(() => navigator.userAgent) };
+  return { pass:failures.length === 0 && errors.length === 0, failures, errors, cases, motion, disabledTransitions, counterexampleDetected, browser:await page.evaluate(() => navigator.userAgent) };
 }
