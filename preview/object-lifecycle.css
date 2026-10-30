@@ -1,0 +1,7 @@
+.rhine-lifecycle-fixture { padding: var(--rhine-space-4); }
+#object-lifecycle .rhine-inline { flex-wrap: wrap; }
+#object-lifecycle .rhine-inline > *, [data-lifecycle-card] { min-width: 0; }
+#object-lifecycle .rhine-text { overflow-wrap: anywhere; }
+.rhine-lifecycle-objects { display: grid; gap: var(--rhine-space-3); padding: 0; margin: 0; list-style: none; }
+.rhine-lifecycle-objects li { display: flex; align-items: center; flex-wrap: wrap; gap: var(--rhine-space-2); }
+.rhine-lifecycle-objects li > .rhine-text:first-child { flex: 1 1 160px; min-width: 0; }
