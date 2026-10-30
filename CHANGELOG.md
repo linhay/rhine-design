@@ -2,6 +2,8 @@
 
 ## 未发布
 
+- #115：Combobox / RemoteMultiSelect 新增可选 `validationError` 与 `statusDisplay="compact"`，分离可纠正字段校验和候选读取失败，保留默认呈现。四参数配方使用各自独立合成观测候选、宿主排序/防抖/取消与手填新值；见[状态契约](docs/COMBOBOX_FEEDBACK.md)，尚未 npm 发布。
+
 - #117：新增常驻层级浏览树与外部画布的公开组合配方、只读合成展台及固定候选验证入口；保留 TreeSelect 和公共导出，未 npm 发布。
 
 - #110：ChatThread 新增可选 `memberLink(member, message)` 与有限原生链接类型 `ChatMemberLink`；头像和姓名为同一链接、时间独立，连续作者静态、无映射回退，支持只读导航。宿主负责目标与返回恢复，见[契约](docs/AGENT_CHAT.md#成员资料链接110未发布)。尚未 npm 发布。

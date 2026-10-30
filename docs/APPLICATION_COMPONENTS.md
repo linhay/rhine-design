@@ -250,3 +250,5 @@ RemoteMultiSelect/Combobox完成或Escape后的延迟归焦只处理原输入框
 Combobox / RemoteMultiSelect 可传 `labelAction`，保留 string label 与已选列表名称；动作是 label 旁独立节点，独立获取目录复用 secondary Button、标题轻量切换可用 quiet，获取只更新候选且不更改选择或草稿。可用性、busy、取消和迟到结果由宿主处理。无动作布局兼容；见[标题动作契约](FIELD_LABEL_ACTION.md)。
 
 RemoteMultiSelect 的 `tagDensity="compact"` 与 `maxVisibleTags` 独立；28px细指针/44px粗或混合输入、完整值换行和原交互契约见[紧凑标签](COMPACT_TEMPLATE.md)。此为未发布增量。
+
+Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用候选）与 `statusDisplay="compact"`（常规状态仅保留读屏通知、读取失败持续可见），默认兼容；原 `error` 保持候选读取失败语义。见[状态与字段校验](COMBOBOX_FEEDBACK.md)（#115，未发布）。

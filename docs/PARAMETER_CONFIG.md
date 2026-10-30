@@ -2,7 +2,7 @@
 
 源码组合示例：`#parameter-config`；独立验收入口：`?fixture=parameter-config`。关联 [#115](https://github.com/linhay/rhine-design/issues/115)，以[结果常显纠正](https://github.com/linhay/rhine-design/issues/115#issuecomment-6514401290)及[四参数消融决定](https://github.com/linhay/rhine-design/issues/115#issuecomment-6514499322)取代旧正文的结果默认折叠、独立引擎覆盖建议。[四字段与双区滚动纠正](https://github.com/linhay/rhine-design/issues/115#issuecomment-6515733599)及[解释与身份标签纠正](https://github.com/linhay/rhine-design/issues/115#issuecomment-6515807157)进一步取代旧例的低频字段折叠与预览身份文字标题。
 
-这是现有组件与 HTML 语义的合成配方，不新增公开组件、生成器、规则引擎或包版本，不声称新 npm API 已发布。只使用合成固定模板；真实参数依赖、模板正确性、鉴权、并发控制和持久化归宿主。系统、架构与终端固定只属于本例，不能据此认定旧生产配置可以无损迁移，也不要求所有产品合并独立版本。
+这是现有组件与 HTML 语义的合成配方。后续[观测候选反馈](https://github.com/linhay/rhine-design/issues/115#issuecomment-6515966271)由下方宿主配方与[可选状态/校验 API](COMBOBOX_FEEDBACK.md)承接；不新增公开组件、生成器、规则引擎或包版本，不声称新 npm API 已发布。只使用合成固定模板；真实参数依赖、模板正确性、鉴权、并发控制和持久化归宿主。系统、架构与终端固定只属于本例，不能据此认定旧生产配置可以无损迁移，也不要求所有产品合并独立版本。
 
 ## 输入与布局
 
@@ -11,7 +11,15 @@
 - 主标题与提交在两栏上方，两区标题也位于对应滚动区外。内容容器达到 42rem 时左输入、右结果约 39%/61%，窄容器上下排列，DOM 顺序保持输入先于结果。配置与预览各自一个命名、可聚焦的滚动 region，高 18rem 且最多 50svh；使用 overscroll containment。实际 PageDown 分别滚动而不移动另一栏、标题和提交，Tab / Shift+Tab 可离开；预览不嵌套第二滚动。
 - 完整结果常显，十一条使用现有中性 Badge 展示完整身份名称，仅代表身份，不表示继承状态。不保留常驻机制说明、逐项继承徽标或重复请求头；错误、未提交和失败/冲突反馈保持可见。长字符串换行，末项及标签完整可达。请求头只在完整提交差异中展示；影响范围与数量保留在提交确认。
 
-复用 TextField、Stack、Inline、Badge、Notice、Button、Dialog、Disclosure 与有名称的 region。无须增加组件 API。此配方与[模板驱动设置](TEMPLATE_SETTINGS.md)分工不同：后者编辑与选择已保存模板、映射和批量对象，本例编辑少量源参数并核对派生文本，不复制模板工作区。
+复用 Combobox、Stack、Inline、Badge、Notice、Button、Dialog、Disclosure 与有名称的 region。四字段采用相同 Stack 间距；本例没有需要分隔的开关，因此不额外插入分隔线。此配方与[模板驱动设置](TEMPLATE_SETTINGS.md)分工不同：后者编辑与选择已保存模板、映射和批量对象，本例编辑少量源参数并核对派生文本，不复制模板工作区。
+
+## 观测候选（#115 新范围，未发布）
+
+四字段各自独立读取合成观测值；候选去重、数字段降序，同核心正式版优先于预发行，`alpha.11` 高于 `alpha.2`；构建元数据不提升版本优先级，同优先级仅稳定排序。排序实现仅在本例宿主，不作为完整 SemVer 引擎公开。手填未出现的新版本仍保留并驱动预览/确认，不强制选中已有项。
+
+每字段独立查询、180ms 防抖及240ms合成响应；改变查询、模式或卸载会取消两段计时器，并通过 AbortSignal 拒绝旧结果。初始/选择后显示全部该字段候选，手填时按查询返回合成匹配；字段校验失败后重新打开（包括提交失败归焦）会读取该字段全部候选供纠正，保留非法原值直到用户明确选择，组件本身不自动清空/选择；生产接口、分页、鉴权与真实历史去重语义由宿主服务实现，不能将此本地合成查询当作生产搜索建议。合成服务控制可切无历史或逐字段首次失败；重试只恢复该字段，失败与空结果均不阻止手填。
+
+`statusDisplay="compact"` 收起常规状态行但保留读屏通知，加载/空结果在弹层、读取失败在字段下持续可见。`validationError` 只表示字段校验，允许从候选纠正；`error` 只表示观测读取失败。两者同时存在仍分别可读。默认 Combobox 外观保持原状；原消费产品的私有隐藏/hint适配尚未替换。
 
 ## 草稿、核对与结果
 
@@ -27,8 +35,8 @@
 ## 验证入口与边界
 
 - `npm test -- tests/ParameterConfig.test.tsx`：草稿、校验、真实差异、失败重试、冲突与取消清理。
-- 先 `npm run build`，对生产预览 `?fixture=parameter-config` 运行 `scripts/check-parameter-config.js`。矩阵覆盖三主题、400/520/880、100/200% CSS zoom、短屏、长版本、实际内框/末项、两区实际 PageDown 独立性及标题/提交位置稳定、Tab 正反向退出、服务控制关闭 Tab 顺序、错误归焦、身份标签与三种动态偏好。`?probe=clip` / `?probe=inputs-clip` 分别将右/左区设为 overflow:hidden，正常检查应 PASS，两个反例应分别命中对应 PageDown 无法滚动。
-- `scripts/check-parameter-config-shell.js`：真实展台主题/宽度切换保留同一输入节点和草稿，导航卸载清理已观察的模拟请求计时器。
+- 先 `npm run build`，对生产预览 `?fixture=parameter-config` 运行 `scripts/check-parameter-config.js`。本轮矩阵覆盖四主题、400/520/880、100/200% CSS zoom、短屏、长版本、实际内框/末项、两区实际 PageDown 独立性及标题/提交位置稳定、Tab 正反向退出、服务控制关闭 Tab 顺序、错误归焦、身份标签与三种动态偏好。`?probe=clip` / `?probe=inputs-clip` 分别将右/左区设为 overflow:hidden，正常检查应 PASS，两个反例应分别命中对应 PageDown 无法滚动。
+- `scripts/check-parameter-config-shell.js`：真实展台四主题/宽度切换保留同一输入节点和草稿，导航卸载清理已观察的模拟请求计时器（提交及候选防抖/响应另由反馈脚本检查）。
 - 固定候选 tarball 在全新消费者安装，逐文件核对 Git 与制品，构建相同示例并复验。源码展台、候选安装、npm 发布、真实产品接入分别记录。
 
 合成异步结果不证明真实服务；Chromium 与 CSS zoom 不证明原生网页缩放、其他引擎或读屏语音。本任务不修改消费产品、不升级既有依赖、不发布 npm。
@@ -40,3 +48,5 @@
 ![四字段展开、身份标签与独立滚动预览](images/parameter-config-wide.png)
 
 ![400×648、200% CSS zoom 下的确认](images/parameter-config-short-dialog.png)
+
+2026-10-30 观测候选增量：源码参数生产矩阵扩为四主题共 28 组，三种动态偏好的既有提交/失败/冲突/取消流程均 PASS，保留双区滚动与十一 Badge。字段改为公开 Combobox，未缩小输入；候选状态与纠正的专项验收见[反馈契约](COMBOBOX_FEEDBACK.md)。PR122 / PR119 原有固定包与历史失败不覆盖，也不将本轮合成候选当作已接通生产历史服务。
