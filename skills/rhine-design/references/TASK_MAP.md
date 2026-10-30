@@ -33,3 +33,5 @@ Run the library showcase with `npm ci && npm run dev` in a source checkout. Defa
 For host pages, keep product-specific drafts in the host project. The library's `preview/` demonstrates reusable behavior, not business APIs. Labels such as “candidate” or “preview” in motion docs identify experiments; check whether the behavior is actually exported before integrating it.
 
 For 0.8.0 theme-comparison cards, settings navigation, or floating CSS zoom boundaries, read `docs/THEME_PICKER.md`, `docs/SETTINGS_DIALOG.md`, and `docs/FLOATING_OVERLAYS.md` respectively. Preview routes: `#theme-picker`, `#settings-dialog`, `#overlay-bounds`. Do not infer package availability from the main gallery.
+
+常驻层级浏览树与外部几何画布：核对安装包是否包含 `docs/RESIDENT_TREE.md`、`preview/ResidentTreeRecipe.tsx` 与 `preview/resident-tree.css`；这是示例组合，不是新的 Tree 公共导出，npm 0.11.3 尚不包含。焦点、选择与展开分离，固定/跟随目标及数据请求由宿主维护。
