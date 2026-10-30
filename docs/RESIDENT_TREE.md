@@ -2,7 +2,7 @@
 
 对应 [#117](https://github.com/linhay/rhine-design/issues/117)，本页是 **Web 组合配方**。公开基础组件 + 语义 HTML 已能完成此例，不新增 Tree 公共导出；TreeSelect 仍用于浮层选择，不代替常驻浏览。npm 0.11.3 不包含本配方；源码、固定候选、正式 npm 和原消费替换分别验收。
 
-真实展台 `#resident-tree`，直接测试入口 `?fixture=resident-tree`。完整可复制示例为 `preview/ResidentTreeRecipe.tsx` 与 `preview/resident-tree.css`，外壳为 `preview/ResidentTreeGallery.tsx`。它们随候选包提供，属于示例代码而非新增稳定导出。迁移时在消费项目维护与数据契约对应的组合，不导入库的 preview 私有路径充当生产 API。
+真实展台 `#resident-tree`，直接测试入口 `?fixture=resident-tree`；追加 `&depth=26` 使用含根项的 26 层合成树，默认仍为 8 层。完整可复制示例为 `preview/ResidentTreeRecipe.tsx` 与 `preview/resident-tree.css`，外壳为 `preview/ResidentTreeGallery.tsx`。它们随候选包提供，属于示例代码而非新增稳定导出。迁移时在消费项目维护与数据契约对应的组合，不导入库的 preview 私有路径充当生产 API。
 
 ![常驻树与几何画布的生产构建合成示例](assets/resident-tree-117.png)
 
@@ -28,6 +28,14 @@
 | Enter/Space | 受控选择当前节点 |
 
 删除当前焦点节点/折叠祖先时，先取仍可见的最近父项，再回退首项；全部移除回到空树容器。目标切换回到新树首项。离树时将停靠点恢复到仍可见的选中项（无选择则首项）；外部 pointerdown、显式 blur 与窗口失焦释放焦点归属。只在树原来持有焦点时实际归焦；用户已移到宿主操作区或画布时只更新停靠位置，不抢焦点。外部删除仍需宿主同步受控选择；示例删除子树后选父节点。
+
+### 删除前的原生焦点事件
+
+浏览器可能在 React 移除焦点 DOM 前发出原生 `blur` / `focusout`，此时 `relatedTarget=null` 且 `isConnected=true`，不能单凭这两个值断言用户显式离开树。若宿主使用原生焦点监听，应结合本次待提交的可见节点身份，区分删除/折叠与显式 blur；外部 pointerdown、外部焦点、显式 blur 和窗口失焦仍释放归焦所有权，不以延时重新抢焦点。
+
+本配方在 React DOM 19.3.1 生产构建与 Chromium 的真实删除中观察到上述原生事件，但叶/祖先/全部删除仍正确恢复。该版本 React DOM 在 commit mutation 期间禁用合成事件（`commitBeforeMutationEffects` 保存并关闭事件、mutation 后恢复），与配方删除后仍可恢复的实测一致；这是版本绑定的源码解释，不是所有 React 版本、原生监听或引擎的保证。此次补回归而不改写已通过的恢复算法，也不推翻消费端自己复现的失败。
+
+真实事件回归用 `scripts/check-resident-tree-deletion.js`：26 层、删除焦点叶/祖先/全部、显式 blur 后 BODY、外部控件不抢焦点，记录原生事件连接状态与实际 DOM 删除，并验单 Tab、真实行/浏览器视口、存活节点身份、Home 和 Tab 重入。与 `scripts/check-resident-tree.js` 的既有键盘、选择、刷新、三主题/双 CSS zoom、1 秒提示、系统/手动减少动态和卸载清理一起运行。`?probe=lost-focus` 仅在测试页阻断树恢复 focus 调用，是定向反例，不代表旧源码失败。
 
 ## 布局、反馈与生命周期
 

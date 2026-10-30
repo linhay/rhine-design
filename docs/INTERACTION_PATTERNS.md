@@ -59,7 +59,7 @@
 
 ## 常驻层级浏览
 
-需要持续比较层级与画布时，使用[常驻树组合配方](RESIDENT_TREE.md)：语义 HTML 单停靠点树与公开 Dialog/Tabs/CopyButton 组合，焦点/选择/展开分离，固定/跟随目标与刷新快照由宿主维护。它不是 TreeSelect 的浮层选择，也不新增 Tree 公共 API。
+需要持续比较层级与画布时，使用[常驻树组合配方](RESIDENT_TREE.md)：语义 HTML 单停靠点树与公开 Dialog/Tabs/CopyButton 组合，焦点/选择/展开分离，固定/跟随目标与刷新快照由宿主维护。它不是 TreeSelect 的浮层选择，也不新增 Tree 公共 API。已有多窗格宿主的唯一 Surface 边界、标题动作同排及低频设置按需展开，见[只读工作台局部组合](COMPACT_ACCOUNT_PATTERNS.md#只读工作台的局部组合14)。
 
 ## 侧栏导航
 
