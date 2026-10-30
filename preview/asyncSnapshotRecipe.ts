@@ -44,24 +44,23 @@ export function useAsyncSnapshotRecipe(read: RecipeRead, seed?: RecipeSnapshot) 
     return () => { alive = false; controller.abort(); if (timer) clearTimeout(timer); };
   }, [scope, read, revision, visible, paused]);
   return { scope, snapshot, status, paused, visible, cause,
-    switchScope: (next: string) => { if (next === scope) return; setCause('tab'); setScope(next); },
-    retry: () => { setCause('manual'); setRevision(value => value + 1); },
-    togglePause: () => { setCause('resume'); setPaused(value => !value); },
+    switchScope: (next: string) => { if (next === scope) return; setCause('tab'); setStatus(paused || !visible ? 'paused' : 'loading'); setScope(next); },
+    retry: () => { if (paused || !visible) return; setCause('manual'); setStatus(snapshotRef.current?.scope === scope ? 'refreshing' : 'loading'); setRevision(value => value + 1); },
+    togglePause: () => { setCause('resume'); setStatus(paused && visible ? snapshotRef.current?.scope === scope ? 'refreshing' : 'loading' : 'paused'); setPaused(value => !value); },
   };
 }
 
 export function syntheticRecipeRead(scenario: string): RecipeRead {
-  return (scope, signal, attempt) => new Promise((resolve, reject) => {
+  return (scope, signal) => new Promise((resolve, reject) => {
     const cleanup = () => signal.removeEventListener('abort', abort);
     const timer = setTimeout(() => {
       cleanup();
       if (scenario === 'error' || scenario === 'no-snapshot-error') reject(new Error('Synthetic read failed'));
       else if (scenario === 'budget') resolve({ pending: true });
-      else resolve({ snapshot: { scope, count: scenario === 'empty' ? 0 : scope === 'all' ? 2 : 1, observedAt: scenario === 'stale' ? '2026-10-29 14:32 上海时间' : '2026-10-30 14:35 上海时间', task: 'paused', stale:scenario === 'stale' } });
+      else resolve({ snapshot: { scope, count: scenario === 'empty' ? 0 : 1, observedAt: scenario === 'stale' ? '2026-10-29 14:32 上海时间' : '2026-10-30 14:35 上海时间', task: 'paused', stale:scenario === 'stale' } });
     }, scenario === 'delayed' && scope === 'oauth' ? 1200 : scenario === 'budget' ? 120 : 650);
     const abort = () => { clearTimeout(timer); cleanup(); reject(new DOMException('Aborted', 'AbortError')); };
     signal.addEventListener('abort', abort, { once: true });
     if (signal.aborted) abort();
-    void attempt;
   });
 }
