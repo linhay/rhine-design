@@ -20,7 +20,7 @@ export function SummaryTabsGallery() {
       <Select label="局部容器宽度" value={width} onChange={event => setWidth(event.target.value)}>
         <option value="320">320px · 窄容器</option><option value="520">520px · 标准</option><option value="100%">自适应</option>
       </Select>
-      <Select label="摘要页签场景" value={scenario} onChange={event => {setScenario(event.target.value); if(event.target.value === 'disabled') setSelected('primary');}}>
+      <Select label="摘要页签场景" value={scenario} onChange={event => {setScenario(event.target.value); if(event.target.value === 'disabled') { setSelected('primary'); setActionTab('projects'); }}}>
         <option value="normal">正常</option><option value="loading">读取中</option><option value="error">读取失败</option><option value="disabled">禁用</option><option value="long">长身份与名称</option>
       </Select>
     </Toolbar>
