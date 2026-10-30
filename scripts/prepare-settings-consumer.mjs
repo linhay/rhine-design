@@ -11,11 +11,15 @@ const target = resolve(destination);
 await mkdir(target); // Existing candidates are immutable; use a fresh directory.
 const sourcePackage = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
 await writeFile(resolve(target, 'package.json'), JSON.stringify({name:'settings-dialog-synthetic-consumer',version:'0.0.0',private:true,type:'module',scripts:{build:'vite build',preview:'vite preview'},dependencies:{'@linhey/rhine-design':`file:${resolve(tarball)}`,react:sourcePackage.devDependencies.react,'react-dom':sourcePackage.devDependencies['react-dom']},devDependencies:{vite:sourcePackage.devDependencies.vite,'@vitejs/plugin-react':sourcePackage.devDependencies['@vitejs/plugin-react']}}, null, 2));
-await writeFile(resolve(target, 'index.html'), '<html><head><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module" src="/main.tsx"></script></body></html>');
+await writeFile(resolve(target, 'index.html'), '<!doctype html><html lang="zh-CN"><head><link rel="icon" href="data:,"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module" src="/main.tsx"></script></body></html>');
 await writeFile(resolve(target, 'main.tsx'), `import React from 'react';\nimport {createRoot} from 'react-dom/client';\nimport {SettingsDialogFixture} from './SettingsDialogGallery';\n${order === '--late-css' ? "import '@linhey/rhine-design/styles.css?late';" : ''}\ncreateRoot(document.getElementById('root')!).render(<SettingsDialogFixture/>);`);
 await writeFile(resolve(target, 'vite.config.ts'), "import {defineConfig} from 'vite';import react from '@vitejs/plugin-react';export default defineConfig({plugins:[react()]});");
 const fixture = (await readFile(resolve(root, 'preview/SettingsDialogGallery.tsx'), 'utf8')).replaceAll("'../components'", "'@linhey/rhine-design'").replaceAll("'../components/theme'", "'@linhey/rhine-design/theme'");
 await writeFile(resolve(target, 'SettingsDialogGallery.tsx'), fixture);
+for (const file of ['ObjectSettingsGallery.tsx','object-settings-gallery.css']) {
+  const source = (await readFile(resolve(root, 'preview',file),'utf8')).replaceAll("'../components'", "'@linhey/rhine-design'");
+  await writeFile(resolve(target,file),source);
+}
 await writeFile(resolve(target, 'settings-dialog-gallery.css'), await readFile(resolve(root, 'preview/settings-dialog-gallery.css')));
 execFileSync('npm', ['install'], {cwd:target,stdio:'inherit'});
 execFileSync('npm', ['run','build'], {cwd:target,stdio:'inherit'});
