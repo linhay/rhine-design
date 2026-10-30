@@ -131,3 +131,52 @@ it('does not render the new scope as ready while an effect has yet to start its 
   act(()=>result.current.switchScope('oauth'));
   expect(renders.filter(state=>state.scope==='oauth').every(state=>state.status==='loading')).toBe(true);
 });
+
+
+it('keeps a readable cached snapshot and its observation time through budget exhaustion and retry', async () => {
+  vi.useFakeTimers(); const {unmount} = render(<AsyncSnapshotRecipes />);
+  fireEvent.change(screen.getByLabelText('异步配方场景'), {target:{value:'cached-budget'}});
+  const list = document.querySelector('[data-snapshot-list]')!;
+  const summary = document.querySelector('[data-result-summary]')!.textContent;
+  expect(list).toHaveAttribute('data-read-status','refreshing');
+  await act(async () => { await vi.advanceTimersByTimeAsync(860); });
+  expect(list).toHaveAttribute('data-read-status','budget');
+  expect(screen.getByText('已达到本轮读取预算').closest('.rhine-notice')).toHaveClass('rhine-tone-neutral');
+  expect(screen.getByText(/旧快照仍可读，稍后可重试更新/)).toBeInTheDocument();
+  expect(document.querySelector('[data-result-summary]')!.textContent).toBe(summary);
+  expect(summary).toContain('2026-10-30 14:32');
+  expect(within(screen.getByRole('tabpanel')).getByText('任务已暂停')).toBeVisible();
+  expect(within(screen.getByRole('tabpanel')).getByText('128.00 USD')).toBeVisible();
+  expect(screen.queryByText('正在读取身份')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button',{name:'重试读取'}));
+  expect(list).toHaveAttribute('data-read-status','refreshing');
+  expect(screen.getByRole('button',{name:'读取现有结果'})).toHaveAttribute('aria-busy','true');
+  await act(async () => { await vi.advanceTimersByTimeAsync(860); });
+  expect(list).toHaveAttribute('data-read-status','budget');
+  expect(screen.getByRole('button',{name:'读取现有结果'})).not.toHaveAttribute('aria-busy','true');
+  expect(document.querySelector('[data-result-summary]')!.textContent).toBe(summary);
+  fireEvent.click(screen.getByRole('tab',{name:'OAuth'}));
+  await act(async () => { await vi.advanceTimersByTimeAsync(860); });
+  expect(list).toHaveAttribute('data-read-status','budget');
+  expect(document.querySelector('[data-result-summary]')!.textContent).toBe(summary);
+  expect(screen.getByText('已达到本轮读取预算').closest('.rhine-notice')).toHaveClass('rhine-tone-warning');
+  expect(screen.queryByText(/旧快照仍可读/)).not.toBeInTheDocument();
+  expect(screen.queryByText('128.00 USD')).not.toBeInTheDocument();
+  expect(screen.getByText('此范围尚无可读快照；可重试读取。')).toBeInTheDocument();
+  unmount(); expect(vi.getTimerCount()).toBe(0);
+});
+
+it('distinguishes cached request errors and no-snapshot budgets from cached budget information', async () => {
+  vi.useFakeTimers(); render(<AsyncSnapshotRecipes />);
+  fireEvent.change(screen.getByLabelText('异步配方场景'), {target:{value:'error'}});
+  await act(async () => { await vi.advanceTimersByTimeAsync(650); });
+  expect(screen.getByText('读取失败，保留上次快照').closest('.rhine-notice')).toHaveClass('rhine-tone-error');
+  expect(screen.getByText('任务已暂停')).toBeVisible();
+  fireEvent.change(screen.getByLabelText('异步配方场景'), {target:{value:'budget'}});
+  await act(async () => { await vi.advanceTimersByTimeAsync(860); });
+  expect(screen.getByText('已达到本轮读取预算').closest('.rhine-notice')).toHaveClass('rhine-tone-warning');
+  expect(screen.getByText('尚无已确认的结果快照')).toBeInTheDocument();
+  expect(screen.queryByText('128.00 USD')).not.toBeInTheDocument();
+  expect(screen.queryByText('此范围没有资源')).not.toBeInTheDocument();
+  expect(screen.queryByText('正在读取身份')).not.toBeInTheDocument();
+});
