@@ -8,6 +8,28 @@ const columns = [{ key: 'id', header: '标识', render: (row: { id: string }) =>
 const base = { caption: '记录', rows, columns, rowKey: (row: { id: string }) => row.id };
 
 describe('DataTable framework parity', () => {
+  it('keeps native table and scroll-region names when a duplicate caption is visually hidden', () => {
+    const {rerender} = render(<DataTable {...base} />);
+    const table = screen.getByRole('table',{name:'记录'});
+    const region = screen.getByRole('region',{name:'记录，可横向滚动'});
+    const caption = table.querySelector('caption')!;
+    expect(caption).toHaveTextContent('记录');
+    expect(caption).not.toHaveClass('rhine-sr-only');
+    expect(region).toHaveAttribute('tabindex','0');
+    rerender(<DataTable {...base} captionVisibility="hidden" />);
+    expect(screen.getByRole('table',{name:'记录'})).toBe(table);
+    expect(screen.getByRole('region',{name:'记录，可横向滚动'})).toBe(region);
+    expect(table.querySelector('caption')).toBe(caption);
+    expect(caption).toHaveClass('rhine-sr-only');
+    expect(caption).not.toHaveAttribute('hidden');
+    expect(caption).not.toHaveAttribute('aria-hidden');
+    region.focus();expect(region).toHaveFocus();
+    rerender(<DataTable {...base} captionVisibility="visible" />);
+    expect(caption).not.toHaveClass('rhine-sr-only');
+    expect(screen.getByRole('table',{name:'记录'})).toBe(table);
+    expect(region).toHaveFocus();
+  });
+
   it('offers controlled native single selection without a misleading select-all action', () => {
     const change = vi.fn();
     render(<DataTable {...base} selection={{ mode: 'single', keys: ['off-page'], onChange: change, isDisabled: row => row.id === 'locked' }} />);

@@ -14,14 +14,14 @@ export function KeyValue({ items }: { items: { key: string; label: string; value
 export interface DataColumn<T> { key: string; header: string; render: (row: T) => ReactNode; align?: 'left' | 'right'; sortable?: boolean; width?: number; sticky?: 'left' | 'right'; stickyOffset?: number; rowHeader?: boolean }
 export interface TableSort { key: string; direction: 'asc' | 'desc' }
 export interface DataTableProps<T> {
-  caption: string; columns: DataColumn<T>[]; rows: T[]; rowKey: (row: T) => string;
+  caption: string; captionVisibility?: 'visible' | 'hidden'; columns: DataColumn<T>[]; rows: T[]; rowKey: (row: T) => string;
   loading?: boolean; error?: string; emptyTitle?: string; sort?: TableSort;
   onSortChange?: (sort: TableSort) => void; onSortReset?: () => void; onRetry?: () => void;
   selection?: { keys: string[]; onChange: (keys: string[]) => void; isDisabled?: (row: T) => boolean; mode?: 'multiple' | 'single'; hideSelectAll?: boolean };
   expansion?: { keys: string[]; onChange: (keys: string[]) => void; getChildren?: (row: T) => T[]; renderDetail?: (row: T) => ReactNode; canExpand?: (row: T) => boolean };
   rowLabel?: (row: T) => string; density?: 'comfortable' | 'compact'; stickyHeader?: boolean; maxHeight?: number;
 }
-export function DataTable<T>({ caption, columns, rows, rowKey, loading = false, error, emptyTitle = '暂无记录', sort, onSortChange, onSortReset, onRetry, selection, expansion, rowLabel = rowKey, density = 'comfortable', stickyHeader, maxHeight }: DataTableProps<T>) {
+export function DataTable<T>({ caption, captionVisibility = 'visible', columns, rows, rowKey, loading = false, error, emptyTitle = '暂无记录', sort, onSortChange, onSortReset, onRetry, selection, expansion, rowLabel = rowKey, density = 'comfortable', stickyHeader, maxHeight }: DataTableProps<T>) {
   const id = useId();
   const table = useRef<HTMLTableElement>(null);
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -71,7 +71,7 @@ export function DataTable<T>({ caption, columns, rows, rowKey, loading = false, 
       onSortReset();
     }}>清除排序</Button>}
     <div className="rhine-table-scroll" role="region" aria-label={`${caption}，可横向滚动`} tabIndex={0} style={{ maxHeight }}>
-      <table ref={table} className="rhine-table" data-sticky-header={stickyHeader}><caption>{caption}</caption><thead><tr>
+      <table ref={table} className="rhine-table" data-sticky-header={stickyHeader}><caption className={captionVisibility === 'hidden' ? 'rhine-sr-only' : undefined}>{caption}</caption><thead><tr>
         {selection && <th scope="col">{selection.mode === 'single' || selection.hideSelectAll ? '选择' : <Checkbox label="选择当前可见行" checked={!!eligible.length && selectedCount === eligible.length} indeterminate={selectedCount > 0 && selectedCount < eligible.length} disabled={loading || !eligible.length} onChange={() => selection.onChange(selectedCount === eligible.length ? selection.keys.filter(key => !eligible.includes(key)) : [...new Set([...selection.keys, ...eligible])])} />}</th>}
         {expansion && <th scope="col">层级 / 详情</th>}
         {columns.map(column => <th scope="col" key={column.key} data-column-key={column.key} data-align={column.align} data-sticky={column.sticky} style={columnStyle(column)} aria-sort={column.sortable ? sort?.key === column.key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none' : undefined}>{column.sortable && onSortChange ? <button type="button" disabled={loading} title={`按${sort?.key === column.key && sort.direction === 'asc' ? '降' : '升'}序排列${column.header}`} onClick={() => onSortChange({ key: column.key, direction: sort?.key === column.key && sort.direction === 'asc' ? 'desc' : 'asc' })}>{column.header}<span aria-hidden="true">{sort?.key === column.key ? sort.direction === 'asc' ? ' ↑' : ' ↓' : ' ↕'}</span></button> : column.header}</th>)}</tr></thead>

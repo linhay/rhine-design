@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { ThemeProvider, type ThemeName } from '../components/theme';
 import { ComboboxStateGallery } from './ComboboxStateGallery';
 import { Badge, Button, Checkbox, Combobox, ConfirmDialog, CopyButton, DataTable, Dialog, Divider, Grid, Icon, IconButton, Inline, KeyValue, Link, Menu, Metric, Pagination, Popover, RadioGroup, SearchField, Select, Stack, Surface, Switch, Text, Textarea, TextField, Toast, Tooltip, type TableSort } from '../components/index';
 
 const demoRows = [{ id:'request-a', time:'14:59:18', model:'gpt-6.1-sol', tokens:9600 }, { id:'request-b', time:'14:58:18', model:'gpt-6-sol', tokens:0 }];
 const demoOptions = [{value:'a',label:'研究工作区'}, {value:'disabled',label:'归档工作区',disabled:true}, {value:'b',label:'共享工作区'}];
 export function CommonGallery({ section }: { section?: string }) {
+  const [hideCaption, setHideCaption] = useState(false);
   const [tableState,setTableState]=useState('normal'), [page,setPage]=useState(1), [sort,setSort]=useState<TableSort>();
   const [checked,setChecked]=useState(false), [mixed,setMixed]=useState(true), [radio,setRadio]=useState('daily'), [switchOn,setSwitchOn]=useState(false);
   const [query,setQuery]=useState(''), [queryEvent,setQueryEvent]=useState('尚未提交'), [candidateQuery,setCandidateQuery]=useState(''), [candidate,setCandidate]=useState<string|null>(null), [candidateState,setCandidateState]=useState('normal');
@@ -12,8 +14,8 @@ export function CommonGallery({ section }: { section?: string }) {
   return <>
     {(!section || section === 'data') && <section id="data"><div className="ds-section-title"><span>06</span><h2>数据与分页 · 完整表达状态</h2></div>
       <Surface><Stack><Grid minWidth={150}><Metric label="请求次数" value={128} description="失败 3 次"/><Metric label="预估费用" value="$5.44" description="3 次未计价"/><Metric label="平均耗时" value={null} unit="s" description="暂不可用"/><Metric label="总 Token" value={null} loading/></Grid><Divider/><KeyValue items={[{key:'mode',label:'本地配置',value:'OAuth'},{key:'model',label:'推荐模型',value:'gpt-6.1-sol'},{key:'state',label:'同步状态',value:<Badge tone="success">运行中</Badge>}]}/></Stack></Surface>
-      <Surface className="ds-gap-top"><Stack><Select label="表格状态" value={tableState} onChange={event=>setTableState(event.target.value)}><option value="normal">正常</option><option value="loading">刷新中（保留数据）</option><option value="empty">无记录</option><option value="error">读取失败（保留数据）</option></Select>
-        <DataTable caption="请求明细 · 合成数据" rows={tableState==='empty'?[]:demoRows} rowKey={row=>row.id} loading={tableState==='loading'} error={tableState==='error'?'连接暂时不可用，请重试。':undefined} onRetry={()=>setTableState('normal')} sort={sort} onSortChange={value=>{setSort(value);setAction(`排序事件：${value.key} / ${value.direction}`);}} columns={[{key:'time',header:'时间 · 上海',render:row=>row.time,sortable:true},{key:'model',header:'模型',render:row=>row.model},{key:'tokens',header:'Token',render:row=>row.tokens.toLocaleString('en-US'),align:'right',sortable:true}]}/>
+      <Surface className="ds-gap-top"><Stack><Text as="h3" variant="heading">请求明细</Text><Checkbox label="隐藏重复表格标题" checked={hideCaption} onChange={event=>setHideCaption(event.target.checked)} /><Select label="表格状态" value={tableState} onChange={event=>setTableState(event.target.value)}><option value="normal">正常</option><option value="loading">刷新中（保留数据）</option><option value="empty">无记录</option><option value="error">读取失败（保留数据）</option></Select>
+        <DataTable caption="请求明细 · 合成数据" captionVisibility={hideCaption ? 'hidden' : 'visible'} rows={tableState==='empty'?[]:demoRows} rowKey={row=>row.id} loading={tableState==='loading'} error={tableState==='error'?'连接暂时不可用，请重试。':undefined} onRetry={()=>setTableState('normal')} sort={sort} onSortChange={value=>{setSort(value);setAction(`排序事件：${value.key} / ${value.direction}`);}} columns={[{key:'time',header:'时间 · 上海',render:row=>row.time,sortable:true},{key:'model',header:'模型',render:row=>row.model},{key:'tokens',header:'Token',render:row=>row.tokens.toLocaleString('en-US'),align:'right',sortable:true}]}/>
         <Pagination page={page} pageSize={10} total={23} loading={tableState==='loading'} onPageChange={setPage}/><Text variant="caption" tone="muted">分页和排序只演示事件；此处保留同一组合成记录，组件不本地切片或排序。{action}</Text>
       </Stack></Surface>
     </section>}
@@ -33,4 +35,9 @@ export function CommonGallery({ section }: { section?: string }) {
       <ConfirmDialog trigger={<Button variant="danger">打开确认框</Button>} title="停止演示任务？" description="这是合成操作，不会修改实际同步。默认焦点在取消按钮。" confirmLabel="停止演示任务" danger onConfirm={async()=>{if(confirmFail)throw new Error('demo');setAction('确认已完成（演示）');}}/>
     </Inline><Checkbox label="模拟确认操作失败" checked={confirmFail} onChange={event=>setConfirmFail(event.target.checked)}/><Text variant="caption" tone="muted">{action}。Tab/方向键/Escape可操作；减少动态保留相同功能。</Text><Divider/><Inline><Button variant="secondary" onClick={()=>{setToastTone('success');setToast(true);}}>显示成功通知</Button><Button variant="secondary" onClick={()=>{setToastTone('error');setToast(true);}}>显示错误通知</Button></Inline><Toast placement="floating" open={toast} onOpenChange={setToast} tone={toastTone} title={toastTone==='success'?'演示操作已完成':'演示操作失败'} description={toastTone==='success'?'5秒后关闭；悬停、聚焦或页面隐藏时暂停。':'错误通知保持显示，请重试或手动关闭。'}/></Stack></Surface></section>}
   </>;
+}
+
+export function DataCaptionFixture() {
+  const params = new URLSearchParams(location.search);
+  return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') === 'manual' ? 'reduced' : 'system'}><main style={{padding:16}}><CommonGallery section="data" /></main></ThemeProvider>;
 }

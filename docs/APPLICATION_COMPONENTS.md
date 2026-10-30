@@ -138,6 +138,7 @@ RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误�
 
 所有新参数可选，原表格保持原生 table 语义。此处提供可展开的层级表格，不实现可编辑 ARIA treegrid；键盘使用 Tab 与原生 checkbox/button，不冒充网格方向键导航。
 
+- `caption` 始终为必填的非空表格名称。新增可选 `captionVisibility="visible" | "hidden"`（未发布，0.11.3 不含）：默认 visible 保持既有标题；已有邻近可见区域标题时可选 hidden，只以共享视觉隐藏样式隐藏原生 caption，表格与可聚焦横滚 region 的名称仍由完整 caption 提供。不要传空字符串、使用 display:none 或 aria-hidden 删除名称，也不以该参数隐藏整个表格或滚动入口。
 - `selection={keys,onChange,isDisabled?}`：keys 为稳定 rowKey 数组，可包含其他页/查询中的记录。表头只选择/取消当前可见且未禁选的行；保留不可见和禁选键，部分选中为 mixed。加载时禁用选择。
 - `expansion={keys,onChange,getChildren?,renderDetail?,canExpand?}`：子行按宿主顺序展开，层级有文字说明；renderDetail 为独立 region，可与子行共存。keys 由宿主管理，折叠不清空选择；不请求子数据、不更改导出范围。大树的加载与虚拟化由宿主决定，本组件不内置虚拟表格。
 - `rowLabel` 默认 rowKey，建议传业务可读名称，供选择/展开按钮命名。所有层级 rowKey 必须全局唯一稳定。
