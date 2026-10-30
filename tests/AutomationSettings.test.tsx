@@ -143,3 +143,65 @@ it('preserves the selected synthetic outcome through a read instead of inventing
     expect(card().queryByText('最近执行：未变化')).not.toBeInTheDocument();
   }
 });
+
+it.each(['starting', 'draining'] as const)('bounds observations while the transport remains %s, including explicit re-reads', async runtime => {
+  vi.useFakeTimers();
+  const transitional = { ...initialAutomation, enabled: runtime === 'starting', runtime };
+  const transport: AutomationTransport = { read: vi.fn(async () => transitional), write: vi.fn(async () => transitional) };
+  const { result, unmount } = renderHook(() => useAutomationRecipe(transport, initialAutomation));
+  await act(async () => result.current.write(transitional.enabled));
+  await tick(20000);
+  expect(transport.write).toHaveBeenCalledTimes(1);
+  expect(transport.read).toHaveBeenCalledTimes(1);
+  expect(result.current.snapshot.runtime).toBe(runtime);
+  expect(result.current.pending).toBe(null);
+  expect(vi.getTimerCount()).toBe(0);
+  await act(async () => result.current.read());
+  await tick(20000);
+  expect(transport.read).toHaveBeenCalledTimes(3);
+  expect(vi.getTimerCount()).toBe(0);
+  unmount();
+});
+
+it('cancels a scheduled observation and ignores a late automatic read without scheduling another', async () => {
+  vi.useFakeTimers();
+  const transitional: AutomationSnapshot = { ...initialAutomation, enabled: true, runtime: 'starting' };
+  let resolve!: (value: AutomationSnapshot) => void;
+  const transport: AutomationTransport = { write: vi.fn(async () => transitional), read: vi.fn(() => new Promise<AutomationSnapshot>(r => { resolve = r; })) };
+  const { result, unmount } = renderHook(() => useAutomationRecipe(transport, initialAutomation));
+  await act(async () => result.current.write(true));
+  act(() => result.current.cancel());
+  await tick(5000);
+  expect(transport.read).not.toHaveBeenCalled();
+  await act(async () => result.current.write(true));
+  await tick(1400);
+  expect(transport.read).toHaveBeenCalledTimes(1);
+  act(() => result.current.cancel());
+  await act(async () => resolve({ ...transitional, runtime: 'draining' }));
+  await tick(5000);
+  expect(result.current.snapshot.runtime).toBe('starting');
+  expect(transport.read).toHaveBeenCalledTimes(1);
+  expect(vi.getTimerCount()).toBe(0);
+  await act(async () => result.current.write(false));
+  unmount();
+  await tick(5000);
+  expect(transport.read).toHaveBeenCalledTimes(1);
+});
+
+it('bounds recovery after a lost write response while preserving the confirmed transitional fact', async () => {
+  vi.useFakeTimers();
+  const transport: AutomationTransport = {
+    write: vi.fn(async () => { throw new Error('response lost'); }),
+    read: vi.fn(async () => ({ ...initialAutomation, enabled: true, runtime: 'starting' as const, outcome: 'unknown' as const })),
+  };
+  const { result } = renderHook(() => useAutomationRecipe(transport, initialAutomation));
+  expect(transport.read).not.toHaveBeenCalled();
+  await act(async () => result.current.write(true));
+  await tick(20000);
+  expect(transport.write).toHaveBeenCalledTimes(1);
+  expect(transport.read).toHaveBeenCalledTimes(2);
+  expect(result.current.snapshot).toMatchObject({ enabled: true, runtime: 'starting', outcome: 'unknown' });
+  expect(result.current.unknown).toBe(false);
+  expect(result.current.pending).toBe(null);
+  expect(vi.getTimerCount()).toBe(0);
+});

@@ -81,9 +81,14 @@ async page => {
         await second().getByRole('switch').click();
         await first().getByRole('button',{name:'读取状态'}).click();
       }
-      await page.locator('[data-automation-card][data-write-unknown=false]').first().getByText('已确认意图：启用',{exact:true}).waitFor();
-      check(await first().getAttribute('data-write-unknown')==='false'&&await first().getByRole('switch').isChecked(),{kind:'read-recovers-confirmed-intent',scenario});
-      if(scenario==='unknown') check(await second().getByRole('switch').isChecked(),{kind:'second-card-writes-independently'});
+      // Wait on this card; the independent second card may confirm earlier.
+      await first().getByText('已确认意图：启用',{exact:true}).waitFor();
+      const recovered=await first().evaluate(el=>({unknown:el.getAttribute('data-write-unknown'),checked:el.querySelector('[role=switch]').getAttribute('aria-checked')}));
+      check(recovered.unknown==='false'&&recovered.checked==='true',{kind:'read-recovers-confirmed-intent',scenario,recovered});
+      if(scenario==='unknown') {
+        await second().getByText('已确认意图：启用',{exact:true}).waitFor();
+        check(await second().getByRole('switch').isChecked(),{kind:'second-card-writes-independently'});
+      }
       behavior.push(scenario);
     }
     await page.getByLabel('自动化场景').selectOption('read-error');
