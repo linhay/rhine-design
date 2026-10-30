@@ -25,7 +25,7 @@ export function AutomationCard({ name, transport, initial = initialAutomation, r
       {state.snapshot.outcome === 'unknown' && <Notice tone="warning" title="执行结果待确认">尚无已确认计数；不以零项或成功代替未知。</Notice>}
       {state.unknown && <Notice tone="warning" title="写入结果未知">请求意图：{state.requested ? '启用' : '停用'}。开关保留上次确认值；重新读取前不允许重复写入。</Notice>}
       {state.error && <Notice tone="error" title="此卡片读取失败">{state.error}</Notice>}
-      <Text role="status" data-automation-message>{state.message || '可独立读取或修改此卡片。'}</Text>
+      <Text role="status" data-automation-message>{state.message || '可独立读取此卡片。'}</Text>
       <Inline gap={2} role="group" aria-label={`${name}操作`}>
         <Button variant="secondary" busy={state.pending === 'read'} busyLabel={`正在读取${name}`} disabled={state.pending === 'write'} onClick={state.read}>读取状态</Button>
         <Button variant="quiet" disabled={!state.pending} onClick={state.cancel}>取消等待</Button>
