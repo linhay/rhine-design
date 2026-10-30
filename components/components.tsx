@@ -60,12 +60,15 @@ export interface TabsProps {
   layout?: 'content' | 'fill';
   /** Stretch the tab bar without changing content-sized options. Defaults to false; fill already stretches. */
   fullWidth?: boolean;
+  /** Header actions live outside the tablist and share its full-width divider. */
+  actions?: ReactNode;
+  className?: string;
 }
-export function Tabs({ label, items, value, onValueChange, layout = 'content', fullWidth = false }: TabsProps) {
+export function Tabs({ label, items, value, onValueChange, layout = 'content', fullWidth = false, actions, className }: TabsProps) {
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-  return <div className="rhine-tabs">
-    <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', `rhine-tabs__list--${layout}`, fullWidth && 'rhine-tabs__list--full-width', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
+  const hasActions = actions != null && actions !== false;
+  const tablist = <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', `rhine-tabs__list--${layout}`, fullWidth && 'rhine-tabs__list--full-width', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       const available = items.map((item, index) => ({ ...item, index })).filter(item => !item.disabled);
       if (!available.length) return;
@@ -81,7 +84,9 @@ export function Tabs({ label, items, value, onValueChange, layout = 'content', f
         {item.description || item.status ? <><span className="rhine-tabs__title">{item.label}{item.status && <span id={`${id}-status-${index}`} className="rhine-tabs__status">{item.status}</span>}</span>
           {item.description && <span id={`${id}-description-${index}`} className="rhine-tabs__description">{item.description}</span>}</> : item.label}
       </button>)}
-    </div>
+    </div>;
+  return <div className={classes('rhine-tabs', hasActions && 'rhine-tabs--actions', className)}>
+    {hasActions ? <div className="rhine-tabs__header">{tablist}<div role="group" aria-label={`${label}操作`} className="rhine-tabs__actions">{actions}</div></div> : tablist}
     {items.map((item, index) => <div key={item.value} role="tabpanel" id={`${id}-panel-${index}`} aria-labelledby={`${id}-tab-${index}`}
       hidden={value !== item.value} tabIndex={0} className="rhine-tabs__panel">{item.content}</div>)}
   </div>;

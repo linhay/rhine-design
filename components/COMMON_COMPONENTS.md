@@ -15,7 +15,7 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 | DataTable | 原生表格、caption、行键、列定义、加载/空/失败、排序事件；不本地筛选排序分页 |
 | Pagination | 受控页码、总数、每页大小、加载禁用；总数未知时只依赖hasNext |
 | Link | 原生链接，区分跳转与按钮动作，外部新窗口标识 |
-| Icon / IconButton | 少量常用16/20px线性图标、44px操作目标、可访问名称 |
+| Icon / IconButton | 少量常用16/20px线性图标（含plus）、44px操作目标、可访问名称；IconButton busy保留焦点与名称并阻止重复点击，disabled使用原生禁用（plus/busy为#134未发布候选） |
 | CopyButton | 显式点击后复制；等待真实Promise成功才提示，失败可重试；可注入原生clipboard适配器 |
 | Checkbox | 原生复选框、混合态、label/hint；选中由调用方控制 |
 | Checkbox `layout="row"`（自 0.10.0） | 侧栏整行选择，名称/说明同列、对称内距与主题选中/焦点；默认 form 不变，见[双行多选契约](../docs/CHECKBOX_ROWS.md) |
