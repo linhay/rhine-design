@@ -2,8 +2,36 @@ import { useState } from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { IconButton, Inline, Tabs, TextField } from '../components';
+import { SummaryTabsGallery } from '../preview/SummaryTabsGallery';
 
 describe('Tabs header actions', () => {
+  it('restores an available showcase tab when disabling the selected collaborator and preserves both drafts', () => {
+    render(<SummaryTabsGallery/>);
+    const list = screen.getByRole('tablist', { name: '栏内操作示例' });
+    const project = within(list).getByRole('tab', { name: '项目' });
+    const team = within(list).getByRole('tab', { name: '协作' });
+    fireEvent.change(screen.getByRole('textbox', { name: '项目操作草稿' }), { target: { value: '项目草稿' } });
+    fireEvent.click(team);
+    fireEvent.change(screen.getByRole('textbox', { name: '协作操作草稿' }), { target: { value: '协作草稿' } });
+    fireEvent.change(screen.getByRole('combobox', { name: '摘要页签场景' }), { target: { value: 'disabled' } });
+    expect(project).toHaveAttribute('aria-selected', 'true');
+    expect(project).toHaveAttribute('tabindex', '0');
+    expect(team).toBeDisabled();
+    expect(team).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('textbox', { name: '项目操作草稿' })).toHaveValue('项目草稿');
+    project.focus();
+    for (const key of ['ArrowRight', 'ArrowLeft', 'Home', 'End']) {
+      fireEvent.keyDown(project, { key });
+      expect(project).toHaveFocus();
+      expect(project).toHaveAttribute('aria-selected', 'true');
+    }
+    fireEvent.change(screen.getByRole('combobox', { name: '摘要页签场景' }), { target: { value: 'normal' } });
+    fireEvent.click(team);
+    expect(screen.getByRole('textbox', { name: '协作操作草稿' })).toHaveValue('协作草稿');
+    fireEvent.click(project);
+    expect(screen.getByRole('textbox', { name: '项目操作草稿' })).toHaveValue('项目草稿');
+  });
+
   it('keeps real panel drafts and action keyboard handling separate from tab selection', () => {
     const created = vi.fn();
     function Example() {
