@@ -111,19 +111,19 @@ export function ResidentTree({ nodes, selected, hovered, expanded, updated, upda
   </div>;
 }
 
-export function syntheticNodes(target: string): BrowseNode[] {
+export function syntheticNodes(target: string, hierarchyDepth = 7): BrowseNode[] {
   return [
     { id: `${target}-root`, parent: null, label: '合成工作空间', bounds: { x: 0, y: 0, width: 320, height: 240 } },
-    ...Array.from({ length: 7 }, (_, i) => ({ id: `${target}-depth-${i}`, parent: i ? `${target}-depth-${i - 1}` : `${target}-root`, label: `第${i + 2}层 · 完整节点身份与很长的多语言标签 Synthetic hierarchy identity-${i + 1}`, bounds: { x: 12 + i * 8, y: 12 + i * 8, width: 280 - i * 16, height: 200 - i * 16 } })),
+    ...Array.from({ length: hierarchyDepth }, (_, i) => ({ id: `${target}-depth-${i}`, parent: i ? `${target}-depth-${i - 1}` : `${target}-root`, label: `第${i + 2}层 · 完整节点身份与很长的多语言标签 Synthetic hierarchy identity-${i + 1}`, bounds: { x: 12 + Math.min(i, 6) * 8, y: 12 + Math.min(i, 6) * 8, width: 280 - Math.min(i, 6) * 16, height: 200 - Math.min(i, 6) * 16 } })),
     ...Array.from({ length: 14 }, (_, i) => ({ id: `${target}-item-${i}`, parent: `${target}-root`, label: i === 13 ? '末项 · 最后一个完整可达节点 Last accessible object' : `合成对象 ${i + 1}`, bounds: { x: (i % 4) * 70 + 15, y: Math.floor(i / 4) * 45 + 25, width: 52, height: 32 } })),
   ];
 }
 
-export function ResidentTreeWorkspace({ copy = async text => navigator.clipboard.writeText(text) }: { copy?: (text: string) => Promise<void> }) {
+export function ResidentTreeWorkspace({ copy = async text => navigator.clipboard.writeText(text), hierarchyDepth = 7 }: { copy?: (text: string) => Promise<void>; hierarchyDepth?: number }) {
   const [canvasTarget, setCanvasTarget] = useState('alpha'), [fixed, setFixed] = useState<string | null>(null);
   const target = fixed ?? canvasTarget;
-  const [nodes, setNodes] = useState(() => syntheticNodes(target));
-  const [expanded, setExpanded] = useState(() => new Set(syntheticNodes(target).map(node => node.id)));
+  const [nodes, setNodes] = useState(() => syntheticNodes(target, hierarchyDepth));
+  const [expanded, setExpanded] = useState(() => new Set(syntheticNodes(target, hierarchyDepth).map(node => node.id)));
   const [selected, setSelected] = useState<string | null>('alpha-root'), [hovered, setHovered] = useState<string | null>(null);
   const [updated, setUpdated] = useState<string | null>(null), [revision, setRevision] = useState(0);
   const [status, setStatus] = useState<'ready' | 'loading' | 'error'>('ready');
@@ -134,9 +134,9 @@ export function ResidentTreeWorkspace({ copy = async text => navigator.clipboard
   const cancel = () => { epoch.current++; pending.current = false; if (refreshTimer.current) clearTimeout(refreshTimer.current); refreshTimer.current = null; };
   useEffect(() => () => cancel(), []);
   useLayoutEffect(() => {
-    cancel(); const next = syntheticNodes(target); setNodes(next); setExpanded(new Set(next.map(node => node.id)));
+    cancel(); const next = syntheticNodes(target, hierarchyDepth); setNodes(next); setExpanded(new Set(next.map(node => node.id)));
     setSelected(next[0].id); setHovered(null); setCanvasFocus(next[0].id); setUpdated(null); setStatus('ready');
-  }, [target]);
+  }, [target, hierarchyDepth]);
   useEffect(() => {
     if (!updated) return;
     const timer = setTimeout(() => setUpdated(null), 1000);
@@ -150,7 +150,7 @@ export function ResidentTreeWorkspace({ copy = async text => navigator.clipboard
       pending.current = false; refreshTimer.current = null;
       if (fail) { setStatus('error'); return; }
       setStatus('ready'); const id = selected ?? nodes[0]?.id ?? `${target}-root`;
-      setNodes(current => (current.length ? current : syntheticNodes(target)).map(node => node.id === id ? { ...node, label: node.label.replace(/ · 快照 \d+$/, '') + ` · 快照 ${revision + 1}` } : node));
+      setNodes(current => (current.length ? current : syntheticNodes(target, hierarchyDepth)).map(node => node.id === id ? { ...node, label: node.label.replace(/ · 快照 \d+$/, '') + ` · 快照 ${revision + 1}` } : node));
       setRevision(value => value + 1); setUpdated(id ?? null);
     }, 500);
   };
@@ -185,7 +185,7 @@ export function ResidentTreeWorkspace({ copy = async text => navigator.clipboard
     <div className="rhine-browse-split" ref={split} style={{ '--rhine-browse-ratio': `${ratio}%` } as CSSProperties}>
       <div className="rhine-browse-pane"><Text as="h3" variant="heading">层级浏览</Text><Text variant="caption">方向键移动焦点，Enter / 空格选择；展开不改变选择。</Text>
         <ResidentTree nodes={nodes} selected={selected} hovered={hovered} expanded={expanded} updated={updated} updateRevision={revision} onExpanded={setExpanded} onSelect={select} onHover={setHovered} />
-        {!nodes.length && <EmptyState title={status === 'loading' ? '正在读取节点' : status === 'error' ? '尚未取得快照' : '暂无节点'} description={status === 'loading' ? '等待合成读取结果。' : status === 'error' ? '读取失败，可关闭失败示例后重试。' : '当前快照没有节点，刷新可重新读取合成数据。'} action={<Button variant="secondary" onClick={() => { cancel(); setStatus('ready'); setNodes(syntheticNodes(target)); setExpanded(new Set(syntheticNodes(target).map(node => node.id))); setSelected(`${target}-root`); }}>恢复合成快照</Button>} />}
+        {!nodes.length && <EmptyState title={status === 'loading' ? '正在读取节点' : status === 'error' ? '尚未取得快照' : '暂无节点'} description={status === 'loading' ? '等待合成读取结果。' : status === 'error' ? '读取失败，可关闭失败示例后重试。' : '当前快照没有节点，刷新可重新读取合成数据。'} action={<Button variant="secondary" onClick={() => { cancel(); setStatus('ready'); setNodes(syntheticNodes(target, hierarchyDepth)); setExpanded(new Set(syntheticNodes(target, hierarchyDepth).map(node => node.id))); setSelected(`${target}-root`); }}>恢复合成快照</Button>} />}
       </div>
       <div role="separator" tabIndex={0} aria-label="树与画布分隔条" aria-orientation="vertical" aria-valuemin={30} aria-valuemax={70} aria-valuenow={Math.round(ratio)} className="rhine-browse-separator"
         onKeyDown={event => { if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); setRatio(value => event.key === 'Home' ? 30 : event.key === 'End' ? 70 : Math.max(30, Math.min(70, value + (event.key === 'ArrowRight' ? 2 : -2)))); }}
