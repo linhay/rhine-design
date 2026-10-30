@@ -100,3 +100,5 @@
 - 子表单向父层报告 `ready/dirty/busy` 时，须在相应成功界面可见前完成同步。可在同一状态所有者处理，或在子表单 layout 阶段通知父层并同步更新关闭守卫 ref；不能仅依赖 passive effect，使成功提示已经出现而父层仍按旧 busy 拦截立即 Escape。此处是[宿主组合修正](https://github.com/linhay/rhine-design/issues/18#issuecomment-6519625460)，不增加组件 API。
 
 真实合成示例已扩展 `#settings-dialog`，隔离入口 `?fixture=settings-dialog&object=1`：分配子表单、模型/调度草稿、独立保存、失败保留、退出确认、外部动作短时锁定、只读/批量过滤和嵌套候选。合成设置 100ms、通知 2000ms、保存 350ms 仅用于可交互状态窗口，不是性能目标或真实服务测量。紧凑卡片及读取边界见[紧凑配方](COMPACT_ACCOUNT_PATTERNS.md#紧凑元信息与额度槽位116)与[设置读取配方](ASYNC_SNAPSHOT_RECIPES.md#对象设置与人员目录读取)。
+
+验收入口：[交互/布局矩阵](../scripts/check-object-settings.js)、[失败重试与动态偏好](../scripts/check-object-settings-states.js)、`tests/ObjectSettingsGallery.test.tsx`。布局矩阵为原三主题 400/520/880 × 100/200% CSS zoom，另含 neutral 的 400×648 / CSS zoom 2 定向交互；不将此定向项描述成第四主题的完整矩阵。合成设置截图：[宽屏](assets/object-settings-wide.png)、[窄屏放大](assets/object-settings-narrow.png)。

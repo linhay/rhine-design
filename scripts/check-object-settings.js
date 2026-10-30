@@ -10,8 +10,11 @@ async page => {
     if(await select.isVisible()) await select.selectOption(id);
     else await dialog.getByRole('link',{name:{allocation:'分配',model:'模型',schedule:'调度'}[id],exact:true}).click();
   };
-  for(const theme of ['rhine','arknights','neo-brutalism']) for(const width of [400,520,880]) for(const zoom of [1,2]) {
-    const context = {theme,width,zoom};
+  const contexts=[];
+  for(const theme of ['rhine','arknights','neo-brutalism']) for(const width of [400,520,880]) for(const zoom of [1,2]) contexts.push({theme,width,zoom});
+  contexts.push({theme:'neutral',width:400,zoom:2});
+  for(const context of contexts) {
+    const {theme,width,zoom}=context;
     try {
       await page.setViewportSize({width,height:648});
       await page.goto(`${base}/?fixture=settings-dialog&object=1&theme=${theme}&zoom=${zoom}`);
@@ -57,7 +60,7 @@ async page => {
       await recipients.focus();await page.keyboard.press('ArrowDown');await page.getByRole('listbox').waitFor();
       await page.keyboard.press('Escape');assert(await dialog.isVisible(),'first Escape closed parent');
       assert(await page.getByRole('listbox').count()===0,'first Escape did not close candidates');
-      await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});await trigger.focus();
+      await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});await page.waitForFunction(()=>document.activeElement?.textContent==='对象设置');
       await trigger.click();await recipients.waitFor();
       await navigate(dialog,'model');await dialog.getByRole('textbox',{name:'模型名称'}).fill('独立模型草稿');
       await navigate(dialog,'schedule');await dialog.getByRole('combobox',{name:'执行调度'}).selectOption('manual');
@@ -81,7 +84,7 @@ async page => {
       await dialog.getByRole('combobox',{name:'执行调度'}).focus();
       await page.keyboard.press('Escape');const prompt=page.getByRole('dialog',{name:'放弃未保存修改？'});await prompt.waitFor();
       await prompt.getByRole('button',{name:'继续编辑'}).click();await prompt.waitFor({state:'detached'});
-      assert(await dialog.getByRole('combobox',{name:'执行调度'}).evaluate(e=>document.activeElement===e),'continue editing did not restore the origin');
+      await page.waitForFunction(()=>document.activeElement?.tagName==='SELECT' && document.activeElement?.value==='manual');
       await dialog.getByRole('button',{name:'关闭',exact:true}).click();await prompt.getByRole('button',{name:'放弃并关闭'}).click();await dialog.waitFor({state:'detached'});
       // Only allocation was saved; other partitions retain their confirmed original values.
       assert((await page.getByText(/已保存分配：/).textContent()).includes('模型：合成模型 A · 调度：每日'),'allocation saved another partition');

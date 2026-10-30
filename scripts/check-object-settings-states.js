@@ -47,9 +47,11 @@ async page => {
         await dialog.getByText('对象设置读取失败',{exact:true}).waitFor();
         assert(!await dialog.getByRole('combobox',{name:'分配人员'}).count(),'failed read produced editable settings');
         assert(await dialog.getByRole('button',{name:'保存当前分区'}).isDisabled(),'failed read enabled save');
-        await dialog.getByRole('button',{name:'重试读取设置'}).click();
+        await dialog.getByRole('button',{name:'重试读取设置'}).focus();await page.keyboard.press('Enter');
+        assert(await dialog.evaluate(e=>e.contains(document.activeElement)),'retry lost Dialog focus');
         await dialog.getByText('对象设置读取失败',{exact:true}).waitFor();
         assert(!await dialog.getByText('分配已保存（合成）',{exact:true}).count(),'failed retry claimed success');
+        let reached=false;for(let i=0;i<12;i++){await page.keyboard.press('Tab');if(await dialog.getByRole('button',{name:'重试读取设置'}).evaluate(e=>document.activeElement===e)){reached=true;break;}}assert(reached,'keyboard cannot reach retry after failure');
       }
       results.push({mode,pass:true});
     }catch(error){results.push({mode,pass:false,error:String(error)});}
