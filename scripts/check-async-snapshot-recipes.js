@@ -17,6 +17,7 @@ async page => {
     await page.goto(`${origin}/?fixture=async-snapshot-recipes&theme=${theme}`);
     await page.evaluate(zoom=>{document.documentElement.style.zoom=String(zoom);},zoom);
     await ready();
+    check(await page.evaluate(()=>document.compatMode==='CSS1Compat'),{label,kind:'standards-mode'});
     const baseline = await measure();
     check(baseline.fits && baseline.pageFits && baseline.slots.every(slot=>slot.fits),{label,kind:'baseline-inner-fit',baseline});
     const modules=[];
@@ -95,10 +96,16 @@ async page => {
   // Explicit visibility simulation exercises the handler, not real browser background throttling.
   await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
   check(await page.locator('[data-snapshot-list]').getAttribute('data-read-status')==='paused',{kind:'simulated-hidden-pause'});
-  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'visible'});document.dispatchEvent(new Event('visibilitychange'));});await ready();
+  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'visible'});document.dispatchEvent(new Event('visibilitychange'));});
+  check(await page.locator('[data-snapshot-list]').getAttribute('data-read-status')==='refreshing',{kind:'same-scope-visible-resumes-immediately'});await ready();
   await page.getByRole('button',{name:'暂停读取',exact:true}).click();
   check(await page.locator('[data-snapshot-list]').getAttribute('data-read-status')==='paused',{kind:'manual-pause'});
-  await page.getByRole('button',{name:'恢复读取',exact:true}).click();await ready();
+  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
+  await page.getByRole('tab',{name:'OAuth',exact:true}).click();
+  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'visible'});document.dispatchEvent(new Event('visibilitychange'));});
+  check(await page.locator('[data-snapshot-list]').getAttribute('data-read-status')==='paused'&&(await page.locator('[data-result-summary]').innerText()).includes('API Key：1'),{kind:'manual-pause-survives-visible-scope-change'});
+  await page.getByRole('button',{name:'恢复读取',exact:true}).click();
+  check(await page.locator('[data-snapshot-list]').getAttribute('data-read-status')==='loading',{kind:'new-scope-resumes-loading'});await ready();
   await page.getByRole('button',{name:'演示搜索反馈'}).click();
   check((await page.locator('[data-search-feedback]').innerText()).includes('正在读取'),{kind:'independent-search-feedback'});
   await page.getByRole('button',{name:'更新此对象（合成）'}).click();
@@ -127,5 +134,5 @@ async page => {
     check((await page.locator('[data-result-summary]').innerText()).includes('OAuth：1'),{kind:'motion-completes',mode});motion.push({mode,sample});
   }
   } catch(error) { errors.push(String(error)); }
-  return {pass:!failures.length&&!errors.length,failures,errors,cases,behavior,motion,browser:await page.evaluate(()=>navigator.userAgent)};
+  return {pass:!failures.length&&!errors.length,failures,errors,cases,behavior,motion,compatMode:await page.evaluate(()=>document.compatMode),browser:await page.evaluate(()=>navigator.userAgent)};
 }

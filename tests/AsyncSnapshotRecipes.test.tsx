@@ -42,8 +42,8 @@ it('pauses on visibility loss, aborts pending work, and re-reads on restore', as
   const visibility = vi.spyOn(document,'visibilityState','get').mockReturnValue('visible');
   const signals: AbortSignal[] = [];
   const read: RecipeRead = (_scope,signal) => { signals.push(signal); return new Promise(() => {}); };
-  const renders: {visible:boolean;status:string}[]=[];
-  const {result,unmount} = renderHook(() => {const state=useAsyncSnapshotRecipe(read,seed);renders.push({visible:state.visible,status:state.status});return state;});
+  const renders: {visible:boolean;status:string;paused:boolean}[]=[];
+  const {result,unmount} = renderHook(() => {const state=useAsyncSnapshotRecipe(read,seed);renders.push({visible:state.visible,status:state.status,paused:state.paused});return state;});
   visibility.mockReturnValue('hidden'); act(() => document.dispatchEvent(new Event('visibilitychange')));
   expect(renders.filter(state=>!state.visible).every(state=>state.status==='paused')).toBe(true);
   expect(signals[0].aborted).toBe(true); expect(result.current.status).toBe('paused');
@@ -55,9 +55,14 @@ it('pauses on visibility loss, aborts pending work, and re-reads on restore', as
   visibility.mockReturnValue('visible'); act(() => document.dispatchEvent(new Event('visibilitychange')));
   expect(result.current.status).toBe('paused'); expect(signals).toHaveLength(2);
   act(() => result.current.togglePause()); expect(signals).toHaveLength(3);
-  unmount(); expect(signals[2].aborted).toBe(true);
+  visibility.mockReturnValue('hidden'); act(() => document.dispatchEvent(new Event('visibilitychange')));
+  act(() => result.current.switchScope('oauth'));
+  visibility.mockReturnValue('visible'); act(() => document.dispatchEvent(new Event('visibilitychange')));
+  expect(result.current.status).toBe('loading'); expect(signals).toHaveLength(4);
+  expect(renders.filter(state=>state.visible&&!state.paused).every(state=>state.status!=='paused')).toBe(true);
+  unmount(); expect(signals[3].aborted).toBe(true);
   act(() => document.dispatchEvent(new Event('visibilitychange')));
-  expect(signals).toHaveLength(3);
+  expect(signals).toHaveLength(4);
 });
 
 it('keeps old summary attribution verbatim during a Tab read, without page busy or update text', async () => {
