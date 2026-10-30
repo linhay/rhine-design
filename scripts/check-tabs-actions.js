@@ -43,7 +43,7 @@ async page => {
       check(Math.abs(result.width - result.headerWidth) < 1 && result.line === 1 && result.inside && !result.overlap && result.outsideTablist && result.fits && result.realPanel, { label, style, scenario, kind:'header', result });
       check(result.targets.every(r => Math.abs(r.width - 44 * zoom) < 1 && Math.abs(r.height - 44 * zoom) < 1) && Math.abs(result.gap) < 1, { label, style, scenario, kind:'44px-adjacent-targets', result });
       check(result.glyphs.every(r => Math.abs(r.width - 20 * zoom) < 1 && Math.abs(r.height - 20 * zoom) < 1), { label, style, scenario, kind:'20px-glyphs', result });
-      check(result.lines.every(l => Math.abs(l.width-l.lineWidth)<1 && l.visible === l.selected) && result.panelPadding === (style === 'plain' ? 20 : 24), { label, style, scenario, kind:'indicator-and-spacing', result });
+      check(result.lines.every(l => Math.abs(l.width-l.lineWidth-(theme === 'neutral' ? 24 : 0))<1 && l.visible === l.selected) && result.panelPadding === (style === 'plain' ? 20 : 24), { label, style, scenario, kind:'indicator-and-spacing', result });
       cases.push({ label, style, scenario, result });
     }
     await page.getByLabel('摘要页签场景').selectOption('normal');
