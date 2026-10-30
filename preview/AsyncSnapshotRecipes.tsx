@@ -14,11 +14,11 @@ function ModuleSlot({ index, loading, children }: { index: number; loading: bool
   </div>;
 }
 
-export function AsyncResourceCard({ kind, loading = 'none', long = false, partial = false, first = false }: { kind: string; loading?: string; long?: boolean; partial?: boolean; first?: boolean }) {
+export function AsyncResourceCard({ kind, loading = 'none', long = false, partial = false, fieldPending = false, first = false }: { kind: string; loading?: string; long?: boolean; partial?: boolean; fieldPending?: boolean; first?: boolean }) {
   const [objectState, setObjectState] = useState('idle');
   const objectTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(objectTimer.current), []);
-  const busy = (index: number) => first || loading === 'all' || loading === String(index);
+  const busy = (index: number) => first || loading === 'all' || loading === String(index) || (partial && fieldPending && index === 1 && kind !== 'key');
   const update = () => {
     setObjectState('busy');
     clearTimeout(objectTimer.current);
@@ -26,12 +26,12 @@ export function AsyncResourceCard({ kind, loading = 'none', long = false, partia
   };
   return <Surface className="rhine-async-card" data-async-card><Stack gap={3}>
     <ModuleSlot index={0} loading={busy(0)}>{!first && <Stack gap={2}><Text as="h3" variant="heading">{long ? '跨区域联合研究与长期设计验证资源 Synthetic complete identity that wraps without clipping' : '合成资源 A'}</Text><OwnershipLabels /></Stack>}</ModuleSlot>
-    <ModuleSlot index={1} loading={busy(1)}>{!first && <Stack gap={2}><Text>可用额度</Text><Text>{kind === 'key' ? '此接入方式不提供额度' : partial ? '未知，等待实际额度' : '128.00 USD'}</Text></Stack>}</ModuleSlot>
+    <ModuleSlot index={1} loading={busy(1)}>{!first && <Stack gap={2}><Text>可用额度</Text><Text>{kind === 'key' ? '此接入方式不提供额度' : partial ? '额度未知，未提供读数' : '128.00 USD'}</Text></Stack>}</ModuleSlot>
     <ModuleSlot index={2} loading={busy(2)}>{!first && <Stack gap={2}><Badge tone="warning">任务已暂停</Badge><CompactDates /></Stack>}</ModuleSlot>
     <ModuleSlot index={3} loading={busy(3)}>{!first && <Stack gap={2}><Text>上次历史：12 次请求 · 2026-10-29</Text>{partial ? <Notice tone="error" title="历史读取失败">保留上次历史；未知时段不作健康判断。</Notice> : <Text tone="muted">最近一次任务已暂停，尚未继续执行。</Text>}</Stack>}</ModuleSlot>
     <ModuleSlot index={4} loading={busy(4)}>{!first && <Grid gap={2} minWidth={80}>
       <Stack gap={2}><Text>今日费用</Text><Text>{long ? '123,456,789.12 USD' : '1.28 USD'}</Text><Text>优先级：正常</Text></Stack>
-      <Stack gap={2}><Text>本周期费用</Text>{partial ? <Skeleton label="本周期费用尚未读取" lines={1} /> : <Text>{long ? '987,654,321.00 USD' : '12.80 USD'}</Text>}<Text>关联 Key：2</Text></Stack>
+      <Stack gap={2}><Text>本周期费用</Text>{partial ? <div style={{display:'grid'}}><Text style={{gridArea:'1 / 1',visibility:fieldPending ? 'hidden' : undefined}} aria-hidden={fieldPending || undefined}>费用未知，未提供读数</Text>{fieldPending && <div style={{gridArea:'1 / 1'}}><Skeleton label="本周期费用尚未读取" lines={1} /></div>}</div> : <Text>{long ? '987,654,321.00 USD' : '12.80 USD'}</Text>}<Text>关联 Key：2</Text></Stack>
     </Grid>}</ModuleSlot>
     <ModuleSlot index={5} loading={busy(5)}>{!first && <Stack gap={2}><Inline gap={2}><Button variant="secondary" busy={objectState === 'busy'} busyLabel="正在显式更新此对象" onClick={update}>更新此对象（合成）</Button></Inline><Text role="status">{objectState === 'done' ? '对象更新演示已完成' : '对象更新与列表读取是不同操作'}</Text></Stack>}</ModuleSlot>
   </Stack></Surface>;
@@ -45,7 +45,7 @@ function ResultReadNotice({ status, old, retry }: { status: string; old: boolean
 }
 
 function SnapshotList({ scenario, loading, long }: { scenario: string; loading: string; long: boolean }) {
-  const seed: RecipeSnapshot | undefined = ['first','no-snapshot-error','budget'].includes(scenario) ? undefined : { scope:'all',count:2,observedAt:'2026-10-30 14:32 上海时间',task:'paused' };
+  const seed: RecipeSnapshot | undefined = ['first','no-snapshot-error','budget'].includes(scenario) ? undefined : { scope:'all',count:1,observedAt:scenario === 'stale' ? '2026-10-29 14:32 上海时间' : '2026-10-30 14:32 上海时间',task:'paused',stale:scenario === 'stale' };
   const read = useMemo(() => syntheticRecipeRead(scenario), [scenario]);
   const state = useAsyncSnapshotRecipe(read, seed);
   const same = state.snapshot?.scope === state.scope;
@@ -56,7 +56,7 @@ function SnapshotList({ scenario, loading, long }: { scenario: string; loading: 
   useEffect(() => () => clearTimeout(searchTimer.current), []);
   return <Stack gap={3} data-snapshot-list data-read-status={state.status}>
     <Inline gap={2}>
-      <Button variant="secondary" busy={waiting && state.cause === 'manual'} busyLabel="正在读取现有结果" onClick={state.retry}>读取现有结果</Button>
+      <Button variant="secondary" disabled={state.paused || !state.visible} busy={waiting && state.cause === 'manual'} busyLabel="正在读取现有结果" onClick={state.retry}>读取现有结果</Button>
       <Button variant="quiet" onClick={state.togglePause}>{state.paused ? '恢复读取' : '暂停读取'}</Button>
       <Button variant="quiet" onClick={() => { clearTimeout(searchTimer.current); setSearch('搜索筛选正在读取'); searchTimer.current = setTimeout(() => { setSearch('搜索筛选读取完成（合成）'); setSearchApplied(true); }, 500); }}>演示搜索反馈</Button>
     </Inline>
@@ -72,7 +72,7 @@ function SnapshotList({ scenario, loading, long }: { scenario: string; loading: 
       <div data-async-result={item.value}>
         {state.scope === item.value && <Stack gap={3}>
           {(!same && waiting) ? <AsyncResourceCard kind={item.value} first />
-            : same && state.snapshot ? state.snapshot.count === 0 ? <EmptyState title="此范围没有资源" description="读取已完成，这是有效空结果。" /> : <AsyncResourceCard kind={item.value} loading={loading} long={long} partial={scenario === 'partial'} />
+            : same && state.snapshot ? state.snapshot.count === 0 ? <EmptyState title="此范围没有资源" description="读取已完成，这是有效空结果。" /> : <AsyncResourceCard kind={item.value} loading={loading} long={long} partial={scenario === 'partial'} fieldPending={waiting} />
             : <Text>此范围尚无可读快照；{state.status === 'paused' ? '请恢复读取。' : '可重试读取。'}</Text>}
           {searchApplied && <Text tone="muted">搜索反馈仅演示独立请求，不改变合成资源。</Text>}
         </Stack>}

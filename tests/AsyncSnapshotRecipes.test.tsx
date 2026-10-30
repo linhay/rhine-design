@@ -48,7 +48,14 @@ it('pauses on visibility loss, aborts pending work, and re-reads on restore', as
   expect(result.current.snapshot?.task).toBe('failed');
   visibility.mockReturnValue('visible'); act(() => document.dispatchEvent(new Event('visibilitychange')));
   expect(signals).toHaveLength(2); expect(result.current.status).toBe('refreshing');
-  unmount(); expect(signals[1].aborted).toBe(true);
+  act(() => result.current.togglePause());
+  visibility.mockReturnValue('hidden'); act(() => document.dispatchEvent(new Event('visibilitychange')));
+  visibility.mockReturnValue('visible'); act(() => document.dispatchEvent(new Event('visibilitychange')));
+  expect(result.current.status).toBe('paused'); expect(signals).toHaveLength(2);
+  act(() => result.current.togglePause()); expect(signals).toHaveLength(3);
+  unmount(); expect(signals[2].aborted).toBe(true);
+  act(() => document.dispatchEvent(new Event('visibilitychange')));
+  expect(signals).toHaveLength(3);
 });
 
 it('keeps old summary attribution verbatim during a Tab read, without page busy or update text', async () => {
@@ -66,12 +73,15 @@ it('keeps old summary attribution verbatim during a Tab read, without page busy 
 });
 
 it('preserves known fields on partial reads and finishes unsupported quota without loading forever', () => {
-  const {rerender} = render(<AsyncResourceCard kind="key" partial />);
+  const {rerender} = render(<AsyncResourceCard kind="key" partial fieldPending />);
   expect(screen.getByText('此接入方式不提供额度')).toBeInTheDocument();
   expect(screen.getByText('1.28 USD')).toBeInTheDocument();
   expect(screen.getByText('本周期费用尚未读取')).toBeInTheDocument();
   expect(screen.getByText('上次历史：12 次请求 · 2026-10-29')).toBeInTheDocument();
   expect(screen.getByText('历史读取失败')).toBeInTheDocument();
+  rerender(<AsyncResourceCard kind="key" partial />);
+  expect(screen.getByText('费用未知，未提供读数')).toBeInTheDocument();
+  expect(screen.queryByText('本周期费用尚未读取')).not.toBeInTheDocument();
   rerender(<AsyncResourceCard kind="oauth" loading="5" />);
   const hidden = document.querySelector('[data-module="5"] .rhine-async-slot-content')!;
   expect(hidden).toHaveAttribute('inert'); expect(hidden).toHaveStyle({visibility:'hidden'});
@@ -81,7 +91,7 @@ it('keeps failed/paused task snapshots separate from read errors and awaits copy
   vi.useFakeTimers(); render(<DiagnosticSnapshotRecipe />);
   fireEvent.change(screen.getByLabelText('诊断任务状态'),{target:{value:'failed'}});
   fireEvent.change(screen.getByLabelText('诊断读取状态'),{target:{value:'error'}});
-  expect(screen.getByText('failed')).toBeInTheDocument();
+  expect(screen.getByText('任务状态：')).toHaveTextContent('failed');
   expect(screen.getByText('读取失败，以下保留上次读取记录')).toBeInTheDocument();
   expect(screen.getByText('覆盖率：未知 · 未提供观测时间')).toBeInTheDocument();
   fireEvent.click(screen.getByLabelText('合成复制失败'));
@@ -102,4 +112,15 @@ it('clears card, search, mock-copy and request timers on unmount', () => {
   fireEvent.click(screen.getByRole('button',{name:'复制诊断命令'}));
   expect(vi.getTimerCount()).toBeGreaterThan(0);
   unmount(); expect(vi.getTimerCount()).toBe(0);
+});
+
+
+it('does not render the new scope as ready while an effect has yet to start its request', async () => {
+  const renders: {scope:string;status:string}[]=[];
+  let first=true;
+  const read:RecipeRead=scope=>{if(first){first=false;return Promise.resolve({snapshot:{scope,count:2,task:'paused'}});}return new Promise(()=>{});};
+  const {result}=renderHook(()=>{const state=useAsyncSnapshotRecipe(read,seed);renders.push({scope:state.scope,status:state.status});return state;});
+  await flush();expect(result.current.status).toBe('ready');
+  act(()=>result.current.switchScope('oauth'));
+  expect(renders.filter(state=>state.scope==='oauth').every(state=>state.status==='loading')).toBe(true);
 });
