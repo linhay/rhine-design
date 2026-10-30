@@ -11,7 +11,8 @@ const outcome = (value: string) => fireEvent.change(screen.getByLabelText('提�
 const saved = () => screen.getByTestId('parameter-saved-version');
 
 it('has four sources, eleven complete results, no override model, and previews ten linked changes without saving', () => {
-  setup(); expect(screen.getAllByRole('textbox', { hidden: true })).toHaveLength(4);
+  setup(); expect(screen.getAllByRole('textbox')).toHaveLength(4);
+  expect(screen.getByRole('region', { name: '配置参数' })).toHaveAttribute('tabindex', '0');
   const preview = screen.getByRole('region', { name: '完整生成结果' });
   expect(within(preview).getAllByRole('listitem')).toHaveLength(11);
   expect(screen.getByRole('button', { name: '核对并提交' })).toBeDisabled();
@@ -25,14 +26,14 @@ it('has four sources, eleven complete results, no override model, and previews t
   fireEvent.click(within(d).getByRole('button', { name: '返回编辑' }));
   expect(screen.getByLabelText('统一版本')).toHaveValue('15.0.0-rc.1+synthetic'); expect(saved()).toHaveTextContent('12.4.0');
 });
-it('reveals and focuses invalid hidden parameters only on submit and does not label invalid output as valid', () => {
+it('keeps all parameters exposed and focuses invalid fields only on submit without valid output', () => {
   setup(); change('移动应用构建号', 'bad');
   const field = screen.getByLabelText('移动应用构建号');
-  expect(field.closest('details')).not.toHaveAttribute('open'); expect(field).not.toHaveFocus();
+  expect(field.closest('details')).toBeNull(); expect(field).toBeVisible(); expect(field).not.toHaveFocus();
   expect(screen.getByRole('region', { name: '完整生成结果' })).toHaveTextContent('待校验');
   expect(screen.queryByRole('listitem')).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: '核对并提交' }));
-  expect(field.closest('details')).toHaveAttribute('open'); expect(field).toHaveFocus(); expect(field).toHaveAttribute('aria-invalid', 'true');
+  expect(field.closest('details')).toBeNull(); expect(field).toHaveFocus(); expect(field).toHaveAttribute('aria-invalid', 'true');
   expect(screen.queryByRole('dialog')).toBeNull();
   change('移动应用构建号', '9000'); change('独立软件版本', '');
   fireEvent.click(screen.getByRole('button', { name: '核对并提交' })); expect(screen.getByLabelText('独立软件版本')).toHaveFocus();

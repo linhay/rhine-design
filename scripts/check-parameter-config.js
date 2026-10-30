@@ -1,8 +1,8 @@
 // Run with playwright-cli run-code --filename scripts/check-parameter-config.js
-// against the production ?fixture=parameter-config. ?probe=clip is a negative control.
+// against the production ?fixture=parameter-config. ?probe=clip / inputs-clip are negative controls.
 async page => {
   page.setDefaultTimeout(6000);
-  const base = page.url().split('/').slice(0, 3).join('/'), probe = page.url().includes('probe=clip') ? 'clip' : null;
+  const base = page.url().split('/').slice(0, 3).join('/'), probe = page.url().split('probe=')[1]?.split('&')[0] || null;
   const results = [], interactions = [], errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   const assert = (ok, message) => { if (!ok) throw new Error(message); };
@@ -27,9 +27,12 @@ async page => {
       await page.goto(fixture(c.theme, c.zoom));
       const version = page.getByRole('textbox', { name: '统一版本', exact: true });
       const preview = page.getByRole('region', { name: '完整生成结果' });
-      assert(await page.getByRole('textbox').count() === 1, 'low frequency inputs are initially exposed');
+      assert(await page.getByRole('textbox').count() === 4, 'four parameters must be exposed without expansion');
+      assert(await page.locator('.rhine-parameter-config__inputs details').count() === 0, 'parameters retain a disclosure');
+      assert(await preview.locator('.rhine-badge').count() === 11, 'expected eleven identity badges');
+      assert(await page.locator('.rhine-parameter-config').getByText(/统一版本机制|独立版本机制|合成固定模板/).count() === 0, 'persistent mechanism explanations remain');
       assert(await preview.getByRole('listitem').count() === 11, 'expected eleven results');
-      // Real forward/reverse traversal must not reach retained closed input DOM.
+      // Real forward/reverse traversal must not reach retained closed service controls.
       await version.focus();
       for (const key of ['Tab', 'Shift+Tab']) for (let i = 0; i < 10; i++) {
         await page.keyboard.press(key);
@@ -40,26 +43,53 @@ async page => {
         return { sideBySide: b.left > a.left + a.width - 1, inputWidth: a.width, previewWidth: b.width };
       });
       assert(layout.sideBySide === (c.width === 880 && c.zoom === 1), 'container layout differs from expected columns');
-      await summary('独立参数').focus(); await page.keyboard.press('Enter');
       assert(await page.getByRole('textbox').count() === 4, 'expected exactly four text parameters');
       await version.fill('18.0.0-rc.123456789012345678901234567890+synthetic.long.metadata');
       const fields = await page.getByRole('textbox').evaluateAll(elements => elements.map(e => {
-        const r = e.getBoundingClientRect(), p = e.closest('fieldset').getBoundingClientRect();
+        const r = e.getBoundingClientRect(), p = e.closest('[role=region]').getBoundingClientRect();
         return { width: r.width, left: r.left, right: r.right, frameLeft: p.left, frameRight: p.right };
       }));
       assert(fields.every(r => r.width >= 100 && r.left >= r.frameLeft && r.right <= r.frameRight + 1), 'input inner frame clips fields');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'document horizontal overflow');
-      if (probe === 'clip') await preview.evaluate(e => { e.style.maxHeight = '80px'; e.style.overflow = 'hidden'; });
-      await preview.focus();
-      assert(await preview.evaluate(e => parseFloat(getComputedStyle(e).outlineWidth) >= 2), 'result keyboard focus outline missing');
+      const inputs = page.getByRole('region', { name: '配置参数', exact: true });
+      if (probe) await (probe === 'inputs-clip' ? inputs : preview).evaluate(e => { e.style.overflow = 'hidden'; });
+      const positions = () => page.locator('.rhine-parameter-config__heading, .rhine-parameter-config__inputs h4, .rhine-parameter-config__preview h4').evaluateAll(es => es.map(e => ({ top: e.getBoundingClientRect().top, left: e.getBoundingClientRect().left })));
+      const stable = (a, b) => a.every((r, i) => Math.abs(r.top - b[i].top) < 1 && Math.abs(r.left - b[i].left) < 1);
+      // Focus may legitimately bring a stacked region into the page viewport. Measure after focus.
+      await inputs.evaluate(e => { e.scrollTop = 0; }); await preview.evaluate(e => { e.scrollTop = 0; });
+      await inputs.focus(); const inputPositions = await positions();
+      assert(await inputs.evaluate(e => parseFloat(getComputedStyle(e).outlineWidth) >= 2 && getComputedStyle(e).overscrollBehaviorY === 'contain'), 'input keyboard focus/overscroll containment missing');
+      await page.keyboard.press('PageDown'); await page.waitForTimeout(180);
+      const inputDelta = await inputs.evaluate(e => e.scrollTop);
+      assert(inputDelta > 0, 'actual PageDown did not scroll inputs');
+      assert(await preview.evaluate(e => e.scrollTop) === 0, 'input scroll moved preview');
+      assert(stable(inputPositions, await positions()), 'input scrolling moved title or submit action');
+      const lastInput = page.getByRole('textbox', { name: '独立软件版本' });
+      assert(await reaches(lastInput, '.rhine-parameter-config__scroll'), 'last input unreachable inside input frame');
+      // Both focused scroll regions can be left in either direction using the keyboard.
+      await inputs.focus(); await page.keyboard.press('Tab');
+      assert(await page.evaluate(() => document.activeElement?.getAttribute('role') !== 'region'), 'Tab trapped in input region');
+      await inputs.focus(); await page.keyboard.press('Shift+Tab');
+      assert(!await inputs.evaluate(e => e.contains(document.activeElement)), 'reverse Tab trapped in input region');
+      await preview.focus(); const previewPositions = await positions(), inputStart = await inputs.evaluate(e => e.scrollTop);
+      assert(await preview.evaluate(e => parseFloat(getComputedStyle(e).outlineWidth) >= 2 && getComputedStyle(e).overscrollBehaviorY === 'contain'), 'result keyboard focus/overscroll containment missing');
       const start = await preview.evaluate(e => e.scrollTop);
       await page.keyboard.press('PageDown'); await page.waitForTimeout(180);
       const scrolled = await preview.evaluate(e => e.scrollTop);
       assert(scrolled > start, 'actual PageDown did not scroll results');
-      await page.keyboard.press('Control+End');
+      assert(await inputs.evaluate(e => e.scrollTop) === inputStart, 'preview scroll moved inputs');
+      assert(stable(previewPositions, await positions()), 'preview scrolling moved title or submit action');
+      assert(await preview.evaluate(e => ![...e.querySelectorAll('*')].some(n => /auto|scroll/.test(getComputedStyle(n).overflowY))), 'preview retains nested scrolling');
+      await page.keyboard.press('Tab'); assert(!await preview.evaluate(e => e.contains(document.activeElement)), 'Tab trapped in preview');
+      await preview.focus(); await page.keyboard.press('Shift+Tab'); assert(!await preview.evaluate(e => e.contains(document.activeElement)), 'reverse Tab trapped in preview');
       await preview.evaluate(e => { e.scrollTop = e.scrollHeight; });
       const last = preview.getByRole('listitem').last();
       assert(await reaches(last, '.rhine-parameter-config__results'), 'last result clipped by actual inner frame');
+      const badgesFit = await preview.locator('.rhine-badge').evaluateAll(es => es.every(e => {
+        const r = e.getBoundingClientRect(), c = e.closest('[role=region]').getBoundingClientRect();
+        return r.width > 0 && r.left >= c.left - 1 && r.right <= c.right + 1;
+      }));
+      assert(badgesFit, 'identity badge clips horizontally');
       // Range fragments of the longest generated text must fit its content box.
       const wrapped = await preview.locator('li').first().locator('pre').evaluate(e => {
         const range = document.createRange(); range.selectNodeContents(e); const r = e.getBoundingClientRect();
@@ -95,9 +125,11 @@ async page => {
       await dialog.getByRole('button', { name: '返回编辑' }).click(); await settle();
       assert(await review().evaluate(e => e === document.activeElement), 'cancel did not return focus');
       assert((await version.inputValue()).startsWith('18.0.0-rc.'), 'cancel lost draft');
-      if (c.theme === 'rhine' && c.width === 880 && c.zoom === 1)
+      if (c.theme === 'rhine' && c.width === 880 && c.zoom === 1) {
+        await inputs.evaluate(e => { e.scrollTop = 0; }); await preview.evaluate(e => { e.scrollTop = 0; });
         await page.screenshot({ path: 'output/playwright/parameter-config-wide.png', fullPage: true });
-      results.push({ ...c, pass: true, layout, minFieldWidth: Math.min(...fields.map(r => r.width)), pageDownDelta: scrolled - start, dialogBody: body });
+      }
+      results.push({ ...c, pass: true, layout, minFieldWidth: Math.min(...fields.map(r => r.width)), inputPageDownDelta: inputDelta, pageDownDelta: scrolled - start, independentScrollAndStableHeadings: true, dialogBody: body });
     } catch (error) { results.push({ ...c, pass: false, error: String(error) }); }
   }
   if (!probe) for (const mode of ['normal', 'system-reduced', 'manual-reduced']) {
@@ -106,10 +138,12 @@ async page => {
       await page.setViewportSize({ width: 400, height: 648 });
       await page.goto(fixture('rhine', 2, mode === 'manual-reduced' ? 'reduced' : 'system'));
       const version = page.getByLabel('统一版本', { exact: true });
-      await summary('独立参数').click();
       const mobile = page.getByRole('textbox', { name: '移动应用构建号' }); await mobile.fill('invalid');
-      await summary('独立参数').click(); await review().click();
-      assert(await mobile.evaluate(e => e === document.activeElement && e.closest('details').open), 'invalid hidden field not expanded/focused');
+      await review().click();
+      assert(await mobile.evaluate(e => {
+        const r = e.getBoundingClientRect(), c = e.closest('[role=region]').getBoundingClientRect();
+        return e === document.activeElement && !e.closest('details') && r.top >= c.top && r.bottom <= c.bottom;
+      }), 'invalid exposed field not focused inside visible input frame');
       assert((await page.getByRole('region', { name: '完整生成结果' }).textContent()).includes('待校验'), 'invalid results labeled valid');
       await mobile.fill('9100'); await version.fill('13.0.0');
       await summary('合成服务控制').click(); await page.getByRole('combobox', { name: '提交结果' }).selectOption('error');
@@ -137,7 +171,7 @@ async page => {
       assert(await page.getByTestId('parameter-saved-version').textContent() === '12.5.0' && await version.inputValue() === '15.0.0', 'canceled response overwrote later draft');
       await review().click(); d = page.getByRole('dialog'); await d.getByRole('button', { name: '确认提交' }).click(); await d.waitFor({ state: 'detached' });
       assert(await page.getByTestId('parameter-saved-version').textContent() === '15.0.0', 'final save failed');
-      interactions.push({ mode, pass: true, duration, paths: ['hidden-invalid', 'duplicate', 'error-retry', 'conflict-reopen', 'refresh-retain', 'cancel-stale', 'success'] });
+      interactions.push({ mode, pass: true, duration, paths: ['exposed-invalid', 'duplicate', 'error-retry', 'conflict-reopen', 'refresh-retain', 'cancel-stale', 'success'] });
     } catch (error) { interactions.push({ mode, pass: false, error: String(error) }); }
   }
   await page.emulateMedia({ reducedMotion: 'no-preference' });

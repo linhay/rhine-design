@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { Button, Dialog, Disclosure, Fieldset, Inline, Notice, Select, Stack, Surface, Text, TextField } from '../components';
+import { Badge, Button, Dialog, Disclosure, Inline, Notice, Select, Stack, Surface, Text, TextField } from '../components';
 import { ThemeProvider, type ThemeName } from '../components/theme';
 import './parameter-config.css';
 
@@ -31,7 +31,7 @@ function resultsFor(p: Parameters) {
 type Plan = { before: Parameters; after: Parameters };
 
 export function ParameterConfigGallery() {
-  const id = useId(), lowFrequency = useRef<HTMLDetailsElement>(null), opener = useRef<HTMLButtonElement>(null);
+  const id = useId(), opener = useRef<HTMLButtonElement>(null);
   const statusHeading = useRef<HTMLDivElement>(null);
   const [draft, setDraft] = useState(initial), [baseline, setBaseline] = useState(initial);
   const [plan, setPlan] = useState<Plan | null>(null), [open, setOpen] = useState(false);
@@ -55,7 +55,6 @@ export function ParameterConfigGallery() {
     if (!valid) {
       flushSync(() => setValidated(true));
       const key = fields.find(({ key }) => errors[key])!.key;
-      if (key !== 'version' && lowFrequency.current) lowFrequency.current.open = true;
       document.getElementById(`${id}-${key}`)?.focus();
       return;
     }
@@ -78,7 +77,6 @@ export function ParameterConfigGallery() {
     onChange={e => { setDraft(current => ({ ...current, [key]: e.target.value })); setMessage(''); }} />;
   return <Stack gap={4}>
     <Text as="h2" variant="section">参数与生成预览</Text>
-    <Text tone="muted">合成固定模板 · 仅本页内存。预览不会提交，真实模板、权限与持久化由宿主验证。</Text>
     <Surface className="rhine-parameter-config">
       <Stack gap={4}>
         <Inline className="rhine-parameter-config__heading" gap={3}>
@@ -89,18 +87,15 @@ export function ParameterConfigGallery() {
         {message && <Text role="status">{message}</Text>}
         <div className="rhine-parameter-config__layout">
           <div className="rhine-parameter-config__inputs">
-            <Fieldset legend="源参数" disabled={busy}>
-              {field(fields[0])}
-              <details ref={lowFrequency} className="rhine-parameter-config__details">
-                <summary>独立参数（3）</summary>
-                <Stack gap={3}>{fields.slice(1).map(field)}</Stack>
-              </details>
-            </Fieldset>
+            <Text as="h4" variant="heading">源参数</Text>
+            <div role="region" aria-label="配置参数" tabIndex={0} className="rhine-parameter-config__scroll">
+              <Stack gap={3}>{fields.map(field)}</Stack>
+            </div>
           </div>
           <div className="rhine-parameter-config__preview">
             <Text as="h4" variant="heading">生成结果{valid ? '（11）' : ' · 待校验'}</Text>
-            <div role="region" aria-label="完整生成结果" tabIndex={0} className="rhine-parameter-config__results">
-              {valid ? <ol>{results.map(r => <li key={r.label}><Text as="strong" variant="label">{r.label}</Text><pre>{r.value}</pre></li>)}</ol> :
+            <div role="region" aria-label="完整生成结果" tabIndex={0} className="rhine-parameter-config__scroll rhine-parameter-config__results">
+              {valid ? <ol>{results.map(r => <li key={r.label}><Inline><Badge>{r.label}</Badge></Inline><pre>{r.value}</pre></li>)}</ol> :
                 <Notice tone="warning" title="待校验：参数不完整或格式非法">修正源参数后才生成有效结果。</Notice>}
             </div>
           </div>
