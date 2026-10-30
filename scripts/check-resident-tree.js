@@ -15,6 +15,10 @@ async page => {
   const button = name => page.getByRole('button', { name, exact: true });
   const selected = async id => check(await item(id).getAttribute('aria-selected') === 'true', `selection missing ${id}`);
   const focusIs = locator => locator.evaluate(element => element === document.activeElement);
+  const visibleRow = async id => item(id).locator(':scope > .rhine-browse-row').evaluate(el => {
+    const row = el.getBoundingClientRect(), tree = el.closest('[role=tree]').getBoundingClientRect();
+    return row.top >= tree.top - 1 && row.bottom <= tree.bottom + 1;
+  });
   const geometry = async () => page.evaluate(() => {
     const tree = document.querySelector('[role=tree]');
     const last = tree.querySelector('[data-node-id="alpha-item-13"]'); last.scrollIntoView({ block: 'nearest' });
@@ -35,6 +39,8 @@ async page => {
     check(result.lastVisible, 'last tree row is not scroll reachable');
     check(result.levels.some(node => node.level === '8') && result.levels.every(node => node.expanded === null || node.children), 'hierarchy/group metadata');
     check(await page.locator('[role=treeitem][tabindex="0"]').count() === 1, 'not one tree stop');
+    await item('alpha-root').focus(); await page.keyboard.press('End'); check(await visibleRow('alpha-item-13'),'End focused row is outside actual tree viewport');
+    await page.keyboard.press('Home'); check(await visibleRow('alpha-root'),'Home focused row is outside actual tree viewport');
     const separator = page.getByRole('separator');
     if (await separator.count()) { await separator.focus(); await separator.press('ArrowRight'); check(await separator.getAttribute('aria-valuenow') === '50', 'keyboard separator'); }
     // Walk actual Tab order: narrow hidden separator must not receive focus.
@@ -42,7 +48,7 @@ async page => {
     check((await page.evaluate(() => document.activeElement?.getAttribute('role') === 'separator')) === (width / zoom - 24 >= 600), 'hidden separator in actual Tab order');
     return { ...result, textRects: result.textRects.length };
   });
-  if (probe === 'clip') return { pass: !failures.length && !errors.length, rows, failures, errors };
+  if (probe === 'clip' || probe === 'focus') return { pass: !failures.length && !errors.length, rows, failures, errors };
   await run({ kind: 'keyboard-selection-focus' }, async () => {
     await open(); await item('alpha-root').focus();
     await page.keyboard.press('ArrowRight'); check(await focusIs(item('alpha-depth-0')), 'right did not go to first child'); await selected('alpha-root');
@@ -54,7 +60,7 @@ async page => {
     await page.keyboard.press('End'); check(await focusIs(item('alpha-item-13')), 'End'); await selected('alpha-root');
     await page.keyboard.press('Space'); await selected('alpha-item-13');
     await page.keyboard.press('Home'); await selected('alpha-item-13');
-    await page.keyboard.press('Tab'); await page.keyboard.press('Shift+Tab'); check(await focusIs(item('alpha-item-13')), 'reentry did not focus selection');
+    await page.keyboard.press('Tab'); await page.keyboard.press('Shift+Tab'); check(await focusIs(item('alpha-item-13')), 'reentry did not focus selection'); check(await visibleRow('alpha-item-13'),'selected reentry row outside tree viewport');
     await page.keyboard.press('ArrowUp'); check(await focusIs(item('alpha-item-12')), 'up');
     await page.keyboard.press('Enter'); await selected('alpha-item-12');
     return { arrows: true, independentSelection: true, reentrySelected: true };
@@ -64,7 +70,7 @@ async page => {
     // External data mutation through the real host action without moving focus.
     await item('alpha-depth-6').press('Enter');
     await button('移除选中子树').evaluate(element => element.click());
-    check(await focusIs(item('alpha-depth-5')), 'deleted focus not restored to surviving parent');
+    check(await focusIs(item('alpha-depth-5')), 'deleted focus not restored to surviving parent'); check(await visibleRow('alpha-depth-5'),'recovered parent row outside tree viewport');
     const stable = await item('alpha-depth-5').elementHandle();
     await button('刷新快照').evaluate(element => element.click()); await page.waitForTimeout(550);
     check(await item('alpha-depth-5').evaluate((el, prior) => el === prior, stable), 'refresh remounted node');

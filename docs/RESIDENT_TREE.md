@@ -17,7 +17,7 @@
 
 键盘与所有权依据 [WAI-ARIA APG Tree View](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/)。显式层级元数据不代替父子 group 所有权；DOM 检查也不代表真实读屏验收。
 
-示例采用嵌套 `role=tree` / `treeitem` / `group`，每项同时明确 `aria-level`、`aria-posinset`、`aria-setsize`，分支有 `aria-expanded`，选择有 `aria-selected`；每个展开父项直接包含子项 group，不能只用视觉缩进表达层级。折叠子项实际卸载。树项无嵌套可 Tab 控件，单一项 `tabIndex=0`，其他项 `-1`；空树由容器接受唯一停靠。DOM id 由实例前缀和稳定 DTO id 组成，刷新不换 key。
+示例采用嵌套 `role=tree` / `treeitem` / `group`，每项同时明确 `aria-level`、`aria-posinset`、`aria-setsize`，分支有 `aria-expanded`，选择有 `aria-selected`；每个展开父项直接包含子项 group，不能只用视觉缩进表达层级。折叠子项实际卸载。树项无嵌套可 Tab 控件，单一项 `tabIndex=0`，其他项 `-1`；空树由容器接受唯一停靠。DOM id 由实例前缀和稳定 DTO id 组成，刷新不换 key。嵌套 treeitem 的外框包含整个子树，不能把 wrapper 获焦当成行已可见：先 preventScroll 聚焦，再将对应可见行滚入树的实际内框；Tab 再进入、Home/End 与删除恢复都要验收可见行。
 
 | 键 | 行为 |
 | --- | --- |

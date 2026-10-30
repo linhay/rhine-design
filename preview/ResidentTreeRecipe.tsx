@@ -32,6 +32,10 @@ function visibleNodes(nodes: BrowseNode[], expanded: Set<string>) {
   walk(null, 1);
   return rows;
 }
+function focusTreeRow(element: HTMLElement | null | undefined) {
+  element?.focus({ preventScroll: true });
+  (element?.querySelector<HTMLElement>(':scope > .rhine-browse-row') ?? element)?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+}
 export function ResidentTree({ nodes, selected, hovered, expanded, updated, updateRevision = 0, onExpanded, onSelect, onHover }: TreeProps) {
   const prefix = useId();
   const root = useRef<HTMLDivElement>(null), ownsFocus = useRef(false), previous = useRef(nodes);
@@ -61,7 +65,7 @@ export function ResidentTree({ nodes, selected, hovered, expanded, updated, upda
     setFocused(active);
     if (ownsFocus.current) {
       const next = root.current?.querySelector<HTMLElement>('[tabindex="0"]') ?? root.current;
-      next?.focus();
+      focusTreeRow(next);
     }
   }, [nodes, active, focused]);
   useLayoutEffect(() => {
@@ -69,7 +73,7 @@ export function ResidentTree({ nodes, selected, hovered, expanded, updated, upda
   }, [selected, nodes, expanded]);
   const focus = (id: string) => {
     setFocused(id);
-    Array.from(root.current?.querySelectorAll<HTMLElement>('[data-node-id]') ?? []).find(element => element.dataset.nodeId === id)?.focus();
+    focusTreeRow(Array.from(root.current?.querySelectorAll<HTMLElement>('[data-node-id]') ?? []).find(element => element.dataset.nodeId === id));
   };
   const toggle = (id: string) => { const next = new Set(expanded); if (next.has(id)) next.delete(id); else next.add(id); onExpanded(next); };
   const renderRow = ({ node, level, position, size }: typeof rows[number]): ReactNode => {
@@ -79,7 +83,7 @@ export function ResidentTree({ nodes, selected, hovered, expanded, updated, upda
         aria-expanded={branch ? expanded.has(node.id) : undefined} aria-selected={selected === node.id}
         tabIndex={active === node.id ? 0 : -1} data-hovered={hovered === node.id || undefined} data-updated={updated === node.id || undefined} data-update-cycle={updated === node.id ? updateRevision % 2 : undefined}
         className="rhine-browse-item"
-        onFocus={event => { if (event.target === event.currentTarget) setFocused(node.id); }}
+        onFocus={event => { if (event.target === event.currentTarget) { setFocused(node.id); event.currentTarget.querySelector<HTMLElement>(':scope > .rhine-browse-row')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); } }}
         onClick={event => { event.stopPropagation(); focus(node.id); if ((event.target as Element).closest('[data-disclosure]')) toggle(node.id); else onSelect(node.id); }}
         onKeyDown={event => {
           const index = rows.findIndex(row => row.node.id === node.id);
