@@ -133,3 +133,45 @@ it('unlocks generation only after an explicit read confirms a known settled resu
   await act(async () => result.current.run('generate')); expect(result.current.generations).toBe(1);
   expect(transport.mock.calls.map(call => call[0])).toEqual(['read', 'read', 'generate']);
 });
+
+it('treats a rejected generate response as unknown and requires a settled read before another write', async () => {
+  const transport = vi.fn<ReportTransport>().mockRejectedValueOnce(new Error('Response lost'))
+    .mockResolvedValueOnce('unknown').mockResolvedValueOnce('completed').mockResolvedValue('completed');
+  const { result } = renderHook(() => usePeriodicReport('A:week', 'completed', transport));
+  await act(async () => result.current.run('generate'));
+  expect(result.current.status).toBe('unknown'); expect(result.current.pending).toBeNull(); expect(result.current.summary).toBe(true);
+  await act(async () => result.current.run('generate')); expect(transport).toHaveBeenCalledTimes(1);
+  await act(async () => result.current.run('read')); expect(result.current.status).toBe('unknown');
+  await act(async () => result.current.run('generate')); expect(transport).toHaveBeenCalledTimes(2);
+  await act(async () => result.current.run('read')); expect(result.current.status).toBe('completed');
+  await act(async () => result.current.run('generate')); expect(result.current.generations).toBe(2);
+  expect(transport.mock.calls.map(call => call[0])).toEqual(['generate', 'read', 'read', 'generate']);
+});
+it('allows retry when the transport explicitly confirms failed', async () => {
+  const transport = vi.fn<ReportTransport>().mockResolvedValueOnce('failed').mockResolvedValueOnce('completed');
+  const { result } = renderHook(() => usePeriodicReport('A:week', 'idle', transport));
+  await act(async () => result.current.run('generate')); expect(result.current.status).toBe('failed');
+  await act(async () => result.current.run('generate')); expect(result.current.status).toBe('completed');
+  expect(transport.mock.calls.map(call => call[0])).toEqual(['generate', 'generate']);
+});
+it('keeps an idle report completed through repeated read-only refreshes', async () => {
+  vi.useFakeTimers(); render(<PeriodicReportGallery />);
+  fireEvent.change(screen.getByLabelText('报告合成场景'), { target: { value: 'idle' } });
+  fireEvent.click(screen.getByRole('button', { name: '生成当前对象报告' })); await advance(1800);
+  for (let i = 0; i < 3; i++) {
+    fireEvent.click(screen.getByRole('button', { name: '刷新状态' })); await advance(450);
+    expect(document.querySelector('[data-report]')).toHaveAttribute('data-report-status', 'completed');
+    expect(document.querySelector('[data-report]')).toHaveAttribute('data-generation-count', '1');
+    expect(screen.getByRole('heading', { name: '活动摘要' })).toBeVisible();
+  }
+});
+it('stores synthetic confirmed outcomes by scope without resetting or leaking them on reads', async () => {
+  vi.useFakeTimers(); const transport = syntheticReportTransport('idle');
+  const call = async (op: 'generate' | 'read', scope: string) => {
+    const pending = transport(op, scope, new AbortController().signal, () => {});
+    await advance(op === 'generate' ? 1800 : 450); return pending;
+  };
+  expect(await call('generate', 'A:week')).toBe('completed');
+  expect(await call('read', 'A:month')).toBe('idle'); expect(await call('read', 'B:week')).toBe('idle');
+  expect(await call('read', 'A:week')).toBe('completed'); expect(await call('read', 'A:week')).toBe('completed');
+});

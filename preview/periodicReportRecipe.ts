@@ -35,16 +35,24 @@ export function sourceHref(id: string, days: DailyReport[]) {
 }
 export type ReportTransport = (operation: 'generate' | 'read', scope: string, signal: AbortSignal, generating: () => void) => Promise<ReportStatus>;
 export function syntheticReportTransport(scenario: string): ReportTransport {
-  return (operation, _scope, signal, generating) => new Promise((resolve, reject) => {
+  const initial: ReportStatus = ['failed', 'unknown', 'queued', 'generating', 'idle'].includes(scenario) ? scenario as ReportStatus : scenario === 'response-lost' ? 'idle' : 'completed';
+  const confirmed = new Map<string, ReportStatus>();
+  return (operation, scope, signal, generating) => new Promise((resolve, reject) => {
     let phase: ReturnType<typeof setTimeout> | undefined;
     const cleanup = () => { clearTimeout(phase); clearTimeout(done); signal.removeEventListener('abort', abort); };
     const abort = () => { cleanup(); reject(new DOMException('Aborted', 'AbortError')); };
-    const outcome: ReportStatus = scenario === 'failed' ? 'failed' : scenario === 'unknown' ? 'unknown' : scenario === 'queued' ? 'queued' : scenario === 'generating' ? 'generating' : scenario === 'idle' ? 'idle' : 'completed';
     if (operation === 'generate') phase = setTimeout(generating, 350);
     const done = setTimeout(() => {
       cleanup();
       if (operation === 'read' && scenario === 'read-error') reject(new Error('Synthetic read failure'));
-      else resolve(operation === 'generate' && !['failed', 'unknown'].includes(scenario) ? 'completed' : outcome);
+      else if (operation === 'read') resolve(confirmed.get(scope) ?? initial);
+      else {
+        const outcome = scenario === 'failed' ? 'failed' : scenario === 'unknown' ? 'unknown' : 'completed';
+        confirmed.set(scope, outcome);
+        // The synthetic service completed, but its write response was lost. Only a read can establish that fact in the UI.
+        if (scenario === 'response-lost') reject(new Error('Synthetic generation response lost'));
+        else resolve(outcome);
+      }
     }, operation === 'read' ? 450 : 1800);
     signal.addEventListener('abort', abort, { once: true });
     if (signal.aborted) abort();
@@ -77,7 +85,8 @@ export function usePeriodicReport(scope: string, initial: ReportStatus, transpor
       setFeedback(operation === 'read' ? '已读取现有状态，未发起生成。' : next === 'completed' ? 'AI 摘要已生成，工作完成情况仍需核对。' : '没有确认生成成功；每日资料仍可查看。');
     } catch {
       if (!current()) return;
-      if (operation === 'read') setReadError(true); else setStatus('failed');
+      if (operation === 'read') setReadError(true);
+      else { setStatus('unknown'); setFeedback('未收到生成确认，请刷新核对；不能重复生成。'); }
     } finally {
       if (current()) { active.current = null; setPending(null); }
     }

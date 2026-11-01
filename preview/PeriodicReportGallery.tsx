@@ -5,11 +5,11 @@ import { ThemeProvider, type ThemeName } from '../components/theme';
 import { dailyReports, evidenceCoverage, reportPeriods, sourceHref, sourceRecords, syntheticReportTransport, usePeriodicReport, type Period, type ReportStatus } from './periodicReportRecipe';
 import './periodic-report.css';
 
-const scenarios = [['completed', '完成·证据不足'], ['idle', '尚未生成'], ['empty', '已确认空日报'], ['queued', '排队'], ['generating', '生成中'], ['failed', '生成失败'], ['unknown', '结果待核对'], ['invalid', '非法模型引用'], ['read-error', '状态读取失败']] as const;
+const scenarios = [['completed', '完成·证据不足'], ['idle', '尚未生成'], ['empty', '已确认空日报'], ['queued', '排队'], ['generating', '生成中'], ['failed', '生成失败'], ['unknown', '结果待核对'], ['invalid', '非法模型引用'], ['read-error', '状态读取失败'], ['response-lost', '生成响应丢失']] as const;
 function Report({ period, person, scenario, long }: { period: Period; person: string; scenario: string; long: boolean }) {
   const range = reportPeriods[period], days = dailyReports(period, scenario === 'empty'), coverage = evidenceCoverage(days);
   const transport = useMemo(() => syntheticReportTransport(scenario), [scenario]);
-  const initial: ReportStatus = ['idle', 'queued', 'generating', 'failed', 'unknown'].includes(scenario) ? scenario as ReportStatus : 'completed';
+  const initial: ReportStatus = ['idle', 'queued', 'generating', 'failed', 'unknown'].includes(scenario) ? scenario as ReportStatus : scenario === 'response-lost' ? 'idle' : 'completed';
   const state = usePeriodicReport(`${person}:${period}`, initial, transport);
   const root = useRef<HTMLDivElement>(null);
   const busy = state.pending === 'generate';
