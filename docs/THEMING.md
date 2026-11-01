@@ -147,3 +147,27 @@ import { Background, Surface } from '@linhey/rhine-design';
 兼容已有源码调用：`roleTone` 的原有三种值与显式 `theme` / `none` 均保留；省略 `decoration` 的正文及 `AppShell` 改为 `auto`，默认纯色。需要旧版正文纹理的调用方显式传入 `decoration="theme"`。侧栏显式传入 `theme` 现在也会开启纹理；默认仍关闭。以上能力自 0.5.0 提供，不属于 npm 0.4.0。
 
 主题选择组件 [ThemePicker / ThemePreview](THEME_PICKER.md) 自 0.8.0 提供；静态预览避免嵌套 Provider。接入时核对源码与实际安装包，不由 main 展台推断发布范围。
+
+## 颜色角色验收
+
+现有四主题的代表场景由 `scripts/check-theme-roles.js` 在生产展台上量测，执行与边界见 [贡献流程](../CONTRIBUTING.md#颜色角色检查)。复用按钮、聊天检查的 sRGB 相对亮度算式，新增透明背景逐层合成、状态分类与定向反例；不引入配色生成器、外部字体或运行依赖。
+
+| 角色 | 实际入口与状态 | 判断 |
+| --- | --- | --- |
+| 强调填充上的文字 | `?fixture=neutral` 的 Button 默认、hover、busy | 文字按实际字号/字重取阈值 |
+| 强调文字 | Dialog / Popover 内的 Link、hover | 使用实际浮层背景，不拿品牌原色代替文字角色 |
+| 正文与辅助文字 | TextField 值/placeholder 与 Textarea 边界、Dialog 标题/说明、DataTable 表头/单元格/hover | 透明层逐层合成；不只取最近的非透明字符串 |
+| 状态文字 | TextField 错误、Notice 警告/成功、DataTable 读取失败 | 文字阈值；错误文字、输入保留与状态语义另验 |
+| 必要非文本状态 | TextField 边界/错误边界、Tabs 选中指示、键盘焦点环 | 与实际相邻背景比，不比较非相邻的 default/hover 两种颜色 |
+| 场景表面 | `#backgrounds` 的 canvas/content/sidebar/surface/overlay/media | 先测默认 auto，再通过真实选择器切换 none 对照；已有网格/点阵按全部透明度端点及多层交点计算保守下限 |
+| 禁用与装饰 | 禁用 Button；装饰分隔线、非必要按钮边界、模态遮罩 | 禁用值留作观察，与规范豁免分开；装饰项 N/A，不机械要求 3:1 |
+
+依据 [WCAG 2.2 SC 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)：普通文字至少 4.5:1，大字至少 3:1；脚本以 CSS 24px，或至少 14pt（56/3px）且粗体作为大字边界，比较前不四舍五入。禁用控件文字属于豁免，豁免不代表达到了某个另行约定的产品可读性目标。APCA 不替代本项 WCAG 验收。
+
+[SC 1.4.11](https://www.w3.org/TR/WCAG22/#non-text-contrast) 对识别控件及状态所需的视觉信息要求至少 3:1；[W3C 边界说明](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html#boundaries)明确：文字或图标已足以识别控件时，不要求额外的可见外框。焦点测量不等于覆盖全部焦点面积、遮挡、键盘或读屏要求。
+
+战术主题输入边界修复（#151，未发布）：仅非禁用 TextField / Textarea 的边界改为 `#69737d`，错误边框恢复 `--rhine-error` 优先级。焦点内描边和背景扫光保留，通用 `--rhine-control` 与装饰线不变；npm 0.11.3 不含该修复。
+
+本检查只证明列出的当前源码样本，不是全库 WCAG 合规认证，也不证明 npm 发行或消费项目。仅识别现有单色透明扫光、双线网格、圆点图案的固定形状；逐层组合所有端点（含交点），用前景/背景亮度区间计算保守下限，不宣称逐像素采样。未知图像、其他渐变形状或祖先整体透明度出现时输出 `UNMEASURED` 并使结果失败，不能把未知当作通过。长文、裁剪、原生缩放、状态语义继续按各自入口验收。
+
+[#150](https://github.com/linhay/rhine-design/issues/150) 的石墨夜间、瑞士蓝与书卷阅读仍是研究提案：本节不新增 ThemeName、ThemePicker 元数据或已确认偏好。纯配色/完整风格与正文阅读模式分别评估；未来候选可以复用这套验收，但仍需其自身契约与真实展台，不能由几组静态配色推导完成。
