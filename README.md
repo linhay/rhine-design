@@ -167,6 +167,7 @@ export function App() {
 | 工作空间文件/笔记与关联往返 | [对象阅读组合](docs/OBJECT_READING.md) | [对象阅读](https://linhay.github.io/rhine-design/#object-reading) |
 | OpenAPI 与第三方技术文档只读集成 | [技术阅读器配方](docs/TECHNICAL_READER.md) | 规范配方，尚无运行展台 |
 | 场景与交互选型 | [使用规范](docs/INTERACTION_PATTERNS.md) | [场景指南](https://linhay.github.io/rhine-design/#patterns) |
+| 周期摘要、证据覆盖与每日来源 | [周期报告配方（源码）](docs/PERIODIC_REPORTS.md) | [周期报告与跨日来源](https://linhay.github.io/rhine-design/#periodic-report) |
 | 个人订阅、渠道受众与失效恢复 | [个人事件通知配方（源码）](docs/PERSONAL_NOTIFICATIONS.md) | [个人事件通知](https://linhay.github.io/rhine-design/#personal-notifications) |
 | 少量源参数与只读生成结果 | [参数与预览组合](docs/PARAMETER_CONFIG.md) | [参数与生成预览](https://linhay.github.io/rhine-design/#parameter-config) |
 | 日期快捷项、范围草稿与确认 | [日期筛选组合](docs/DATE_RANGE_FILTER.md) | [日期筛选](https://linhay.github.io/rhine-design/#date-range-filter) |
