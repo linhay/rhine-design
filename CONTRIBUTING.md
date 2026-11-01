@@ -121,6 +121,21 @@ playwright-cli -s=p0-validation close
 
 新增断言用正常场景与有针对性的破坏对照证明能抓到目标问题。反例只在隔离测试页面或临时浏览器状态中注入，不改正式组件来迎合检查。`npm run check` 包含 JSDOM、类型与构建，不自动运行上述真实浏览器矩阵；CSS zoom 不等于浏览器原生缩放。完整库变更仍按原流程运行 `npm run check`，制品发布/消费仍需固定 tarball 独立验收。
 
+## 颜色角色检查
+
+对构建后的生产预览运行 `scripts/check-theme-roles.js`。它复用 `?fixture=neutral`、`#actions`、`#forms`、`#feedback`、`#data`、`#overlays` 和 `#backgrounds` 的真实组件，不新增测试专用运行路由。矩阵为四主题 ×（400/520/880 宽度 × CSS zoom 1/2，以及 880 宽度系统/手动减少动态）；记录每个样本的角色、计算样式背景链、原始比值、阈值与状态。必须核对返回的 `pass`、`failures`、`errors`，CLI 成功不等于验收通过。
+
+```sh
+playwright-cli -s=theme-roles open http://127.0.0.1:18497/
+playwright-cli -s=theme-roles run-code --filename scripts/check-theme-roles.js
+```
+
+同一脚本分别从 `?roleProbe=text`、`?roleProbe=alpha`、`?roleProbe=focus`、`?roleProbe=texture` 起跑，临时破坏真实 Button 标签、Link 前景透明度、键盘焦点环或默认背景网格交点；每次自动限制为一个代表场景。四种反例应返回 `pass:false`，分别命中对应角色的低对比度；超时、定位失败、脚本异常不能算反例有效。反例不修改源码，导航后消失。`?roleQuick=1` 仅供一个场景调试；`?roleTheme=arknights` 可限制单主题，不能把子集当作完整矩阵通过。纹理反例中，黑底上每层40%白线单独满足白字对比度，两层交点不满足，证明不能漏算多层叠加。
+
+审阅回归另用 `?roleProbe=luminance`、`?roleProbe=opacity`、`?roleProbe=display`：分别注入绿底红色透明扫光/黑字、控件及 Tabs 指示伪元素自身透明度、指示伪元素 `display:none`。旧算法对三者均假通过；修正后应分别命中颜色下限 FAIL、被测 opacity 的 UNMEASURED、不可见指示 FAIL，均须完整执行且无定位/页面错误。RGB 通道包络也应用于“以填充识别边界”的替代路径，不能在那里退回端点亮度比较。
+
+文字和必要非文本信息的阈值、禁用豁免、装饰边界与不支持的绘制类型见 [主题颜色角色](docs/THEMING.md#颜色角色验收)。该项没有替代已有按钮尺寸、聊天布局、焦点恢复、长文和裁剪检查，也不以 CSS zoom 宣称原生 200% 缩放通过。保存初始失败、最终脚本与构建摘要及浏览器版本；仅修改检查/文档且未改产品源码时，不制造 runtime 变更或发布 tarball。
+
 ## 文档与 AI skill
 
 README 面向首次接触项目的开发者，优先解释用途、安装、示例、兼容性和文档入口。维护者操作放在专门文档中。

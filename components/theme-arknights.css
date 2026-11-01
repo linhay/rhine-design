@@ -161,10 +161,20 @@
   background: #101216;
   border-color: var(--rhine-control);
 }
+/* Editable field boundaries must remain distinguishable on content and overlay surfaces. */
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > input:not(:disabled),
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > textarea:not(:disabled) {
+  border-color: #69737d;
+}
 .rhine-theme[data-rhine-theme="arknights"] .rhine-field input:focus,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-field textarea:focus {
   border-color: var(--ak-accent);
   box-shadow: inset 3px 0 0 var(--ak-accent);
+}
+/* Keep the shared invalid-state contract above the theme's general field rule. */
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > input[aria-invalid=true]:not(:disabled),
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > textarea[aria-invalid=true]:not(:disabled) {
+  border-color: var(--rhine-error);
 }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-check input,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-radio-group input { accent-color: var(--ak-accent); }
