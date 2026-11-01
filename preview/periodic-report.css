@@ -1,0 +1,5 @@
+.rhine-periodic-fixture { padding: var(--rhine-space-4); }
+.rhine-periodic-report { min-width: 0; overflow-wrap: anywhere; }
+.rhine-periodic-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--rhine-space-3); }
+.rhine-periodic-report [data-report] { min-width: 0; }
+.rhine-periodic-report [data-report] .rhine-button { white-space: normal; }
