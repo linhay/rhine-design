@@ -132,6 +132,8 @@ playwright-cli -s=theme-roles run-code --filename scripts/check-theme-roles.js
 
 同一脚本分别从 `?roleProbe=text`、`?roleProbe=alpha`、`?roleProbe=focus`、`?roleProbe=texture` 起跑，临时破坏真实 Button 标签、Link 前景透明度、键盘焦点环或默认背景网格交点；每次自动限制为一个代表场景。四种反例应返回 `pass:false`，分别命中对应角色的低对比度；超时、定位失败、脚本异常不能算反例有效。反例不修改源码，导航后消失。`?roleQuick=1` 仅供一个场景调试；`?roleTheme=arknights` 可限制单主题，不能把子集当作完整矩阵通过。纹理反例中，黑底上每层40%白线单独满足白字对比度，两层交点不满足，证明不能漏算多层叠加。
 
+审阅回归另用 `?roleProbe=luminance`、`?roleProbe=opacity`、`?roleProbe=display`：分别注入绿底红色透明扫光/黑字、控件及 Tabs 指示伪元素自身透明度、指示伪元素 `display:none`。旧算法对三者均假通过；修正后应分别命中颜色下限 FAIL、被测 opacity 的 UNMEASURED、不可见指示 FAIL，均须完整执行且无定位/页面错误。RGB 通道包络也应用于“以填充识别边界”的替代路径，不能在那里退回端点亮度比较。
+
 文字和必要非文本信息的阈值、禁用豁免、装饰边界与不支持的绘制类型见 [主题颜色角色](docs/THEMING.md#颜色角色验收)。该项没有替代已有按钮尺寸、聊天布局、焦点恢复、长文和裁剪检查，也不以 CSS zoom 宣称原生 200% 缩放通过。保存初始失败、最终脚本与构建摘要及浏览器版本；仅修改检查/文档且未改产品源码时，不制造 runtime 变更或发布 tarball。
 
 ## 文档与 AI skill

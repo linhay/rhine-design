@@ -13,6 +13,8 @@ async page => {
   const settle = () => page.waitForTimeout(400);
   const measure = async (locator, role, kind = 'text', pseudo = null) => {
     await locator.scrollIntoViewIfNeeded();
+    const probeControlOpacity = probe === 'opacity' && ['Button/focus','TextField/boundary'].includes(role);
+    if (probeControlOpacity) await locator.evaluate(e=>e.style.opacity='0.1');
     const value = await locator.evaluate((el, { kind, pseudo }) => {
       const css = getComputedStyle(el, pseudo), chain = [];
       const rgba = value => {
@@ -25,7 +27,17 @@ async page => {
       };
       const over = (a, b) => a.slice(0, 3).map((v, i) => v * a[3] + b[i] * (1 - a[3])).concat(1);
       const lum = c => c.slice(0, 3).map(v => v / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4).reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0);
-      const contrast = (a, b) => (Math.max(lum(a), lum(b)) + .05) / (Math.min(lum(a), lum(b)) + .05);
+      // Compositing is affine in each alpha, so endpoint combinations bound
+      // each RGB channel. Luminance is monotone in each channel, but need not
+      // be monotone along a mixed-channel color path (e.g. red over green).
+      const luminanceRange = colors => [
+        lum([0,1,2].map(i=>Math.min(...colors.map(c=>c[i])))),
+        lum([0,1,2].map(i=>Math.max(...colors.map(c=>c[i])))),
+      ];
+      const contrastLowerBound = (foregrounds, backgrounds) => {
+        const [fMin,fMax] = luminanceRange(foregrounds), [bMin,bMax] = luminanceRange(backgrounds);
+        return fMax < bMin ? (bMin+.05)/(fMax+.05) : bMax < fMin ? (fMin+.05)/(bMax+.05) : 1;
+      };
       const shadowColor = css.boxShadow.match(/rgba?\([^)]+\)/)?.[0];
       const shadowGeometry = css.boxShadow.replace(/rgba?\([^)]+\)/, '').trim();
       const insetFocus = kind === 'focus' && css.outlineStyle === 'none' && !!shadowColor && /^0px 0px 0px [1-9][\d.]*px inset$/.test(shadowGeometry);
@@ -54,6 +66,7 @@ async page => {
         }
         if (Number(layer.opacity) !== 1) opacityIssues.push('ancestor opacity: ' + layer.opacity);
       }
+      if (Number(css.opacity) !== 1) opacityIssues.push('measured opacity: ' + css.opacity);
       unsupported.push(...opacityIssues);
       const disabled = el.matches(':disabled,[aria-disabled=true]');
       const raw = kind === 'boundary' ? css.borderTopColor : kind === 'focus' ? (insetFocus ? shadowColor : css.outlineColor) : kind === 'indicator' ? css.backgroundColor : css.color;
@@ -63,18 +76,18 @@ async page => {
         return fg;
       });
       const bg = backgrounds[0], fg = foregrounds[0];
-      const b = backgrounds.map(lum), f = foregrounds.map(lum);
-      // Conservative luminance interval: overlapping intervals cannot certify
-      // contrast. The plain solid case reduces to the existing exact formula.
-      let ratio = backgrounds.length === 1 ? contrast(fg,bg) : Math.max(...f) < Math.min(...b) ? (Math.min(...b)+.05)/(Math.max(...f)+.05) : Math.max(...b) < Math.min(...f) ? (Math.min(...f)+.05)/(Math.max(...b)+.05) : 1;
-      const boundaryFillRatio = kind === 'boundary' ? Math.min(...backgrounds.map(bg => contrast(over(rgba(css.backgroundColor),bg),bg))) : null;
+      // Channel envelopes include interior luminance extrema. Overlapping
+      // foreground/background intervals cannot certify contrast.
+      let ratio = contrastLowerBound(foregrounds, backgrounds);
+      const boundaryFillRatio = kind === 'boundary' ? contrastLowerBound(backgrounds.map(bg=>over(rgba(css.backgroundColor),bg)),backgrounds) : null;
       if (boundaryFillRatio !== null) ratio = Math.max(ratio,boundaryFillRatio);
       const large = parseFloat(css.fontSize) >= 24 || (parseFloat(css.fontSize) >= 56 / 3 && parseFloat(css.fontWeight) >= 700);
       const threshold = kind === 'text' ? (large ? 3 : 4.5) : 3;
-      const visible = !!el.getClientRects().length && css.visibility === 'visible';
+      const visible = !!el.getClientRects().length && css.visibility === 'visible' && css.display !== 'none';
       const drawn = kind === 'focus' ? (insetFocus || (css.outlineStyle !== 'none' && parseFloat(css.outlineWidth) > 0)) && el.matches(':focus-visible') : kind === 'indicator' ? css.content !== 'none' && css.transform !== 'matrix(0, 0, 0, 1, 0, 0)' : kind === 'boundary' ? boundaryFillRatio >= 3 || (css.borderTopStyle !== 'none' && parseFloat(css.borderTopWidth) > 0) : true;
-      return { raw, foreground: fg, background: bg, ratio, boundaryFillRatio, ratioBound: backgrounds.length > 1, backgrounds, insetFocus, threshold, disabled, visible, drawn, unsupported, chain, fontSize: css.fontSize, fontWeight: css.fontWeight, text: (el.value || el.textContent || '').trim().slice(0, 90) };
+      return { measuredOpacity: css.opacity, measuredDisplay: css.display, raw, foreground: fg, background: bg, ratio, boundaryFillRatio, ratioBound: backgrounds.length > 1, backgroundLuminanceRange: luminanceRange(backgrounds), foregroundLuminanceRange: luminanceRange(foregrounds), backgrounds, insetFocus, threshold, disabled, visible, drawn, unsupported, chain, fontSize: css.fontSize, fontWeight: css.fontWeight, text: (el.value || el.textContent || '').trim().slice(0, 90) };
     }, { kind, pseudo });
+    if (probeControlOpacity) await locator.evaluate(e=>e.style.removeProperty('opacity'));
     const sample = { ...context, role, kind, pseudo, ...value, status: value.disabled ? 'EXEMPT' : value.unsupported.length ? 'UNMEASURED' : value.visible && value.drawn && value.ratio >= value.threshold ? 'PASS' : 'FAIL' };
     samples.push(sample);
     check(sample.status === 'PASS' || sample.status === 'EXEMPT', { ...context, role, kind, status: sample.status, ratio: value.ratio, threshold: value.threshold, unsupported: value.unsupported });
@@ -117,6 +130,7 @@ async page => {
       await measure(page.locator('.rhine-field__error'),'TextField/error'); await measure(field,'TextField/error boundary','boundary');
       await keyboardFocus(field,'TextField/error focus');
       const edit = page.getByRole('tab',{name:'编辑',exact:true});
+      if (probe === 'opacity' || probe === 'display') await page.addStyleTag({content:'.rhine-tabs__list button::after {'+(probe === 'opacity'?'opacity:0':'display:none')+'!important}'});
       await measure(edit,'Tabs/selected'); await measure(edit,'Tabs/selected indicator','indicator','::after');
       const details = page.getByRole('tab',{name:'详情',exact:true});
       await details.hover(); await settle(); await measure(details,'Tabs/hover');
@@ -170,11 +184,16 @@ async page => {
           e.style.backgroundImage='linear-gradient(rgba(255,255,255,.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.4) 1px, transparent 1px)';
           for(const text of e.querySelectorAll('.rhine-text'))text.style.color='rgb(255,255,255)';
         });
+        if (probe === 'luminance' && decoration === 'auto') await page.locator('.ds-background-scenes .rhine-background[data-tone=canvas]').evaluate(e=>{
+          e.style.backgroundColor='rgb(0,255,0)';
+          e.style.backgroundImage='linear-gradient(105deg, rgba(255,0,0,0) 30%, rgb(255,0,0) 50%, rgba(255,0,0,0) 70%)';
+          for(const text of e.querySelectorAll('.rhine-text'))text.style.color='rgb(0,0,0)';
+        });
         for(const role of ['canvas','content','sidebar','surface','overlay','media']) {
           const scene=page.locator(`.ds-background-scenes .rhine-background[data-tone=${role}]`);
           await measure(scene.locator('.rhine-text').last(),`Background/${role}/${decoration}`);
         }
-        if(probe === 'texture') await page.locator('.ds-background-scenes .rhine-background[data-tone=canvas]').evaluate(e=>{e.removeAttribute('style');for(const text of e.querySelectorAll('.rhine-text'))text.removeAttribute('style');});
+        if(probe === 'texture' || probe === 'luminance') await page.locator('.ds-background-scenes .rhine-background[data-tone=canvas]').evaluate(e=>{e.removeAttribute('style');for(const text of e.querySelectorAll('.rhine-text'))text.removeAttribute('style');});
       }
       scenarios.push({...context,status:'COMPLETED'});
     } catch(error) { failures.push({...context,role:'scenario',error:String(error)}); scenarios.push({...context,status:'INCOMPLETE'}); }
