@@ -90,12 +90,12 @@ ResponsiveActions 及竖点 moreVertical（未发布）：基于真实容器的�
 
 Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用候选）与 `statusDisplay="compact"`（常规状态仅保留读屏通知、读取失败持续可见），默认兼容；原 `error` 保持候选读取失败语义。见[状态与字段校验](../docs/COMBOBOX_FEEDBACK.md)（#115，未发布）。
 
-### 连续通知事件（#160，未发布）
+### 连续通知寿命（#160，未发布）
 
-`eventId?: string | number` 由宿主在确有新事件时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 按 React effect 的 Object.is 规则比较（数字 1 与字符串 "1" 不同），文字节点也保留同一身份规则。id 不应在 render 中随机生成，不是队列或去重服务。
+`eventId?: string | number` 仅标识通知寿命，由宿主在确有新通知需要完整展示时长时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 按 React effect 的 Object.is 规则比较（数字 1 与字符串 "1"、0 与 -0 不同）。id 不应在 render 中随机生成，不是队列或去重服务。
 
 同一事件 hover、内部 focus 或页面隐藏时暂停，恢复后使用剩余时长。暂停期间新事件将剩余时长设为完整 duration，直到所有暂停原因解除才起算。新事件提交后旧 timer 失效；如果旧到期先发生，宿主的新事件仍需设置 open=true。warning/error 或 duration≤0 常显，手动关闭与关闭后重开保持。
 
-通知不主动抢焦点。新 id 仅替换 live-region 内的文字节点，保留通知容器与关闭按钮 DOM、焦点和暂停状态；同 id 不人为制造播报。success/info 等采用 status（polite），error 采用 alert；快速多次事件由辅助技术调度，不能保证每条排队或逐条播完。关键结果仍应有页面内持久入口。DOM 变化或 AX 树不能证明实际语音，重复播报须按浏览器/读屏组合另行验收。
+通知不主动抢焦点。仅更新 id 不重挂文字子树，保留现有容器、关闭按钮焦点和暂停状态。既有 success/info 等 status（polite）、error alert 及 aria-atomic 语义保持；eventId 不控制或保证相同文案再次播报，重复读屏输出不属于本次功能范围。关键结果仍应有页面内持久入口。计时、DOM 和焦点测试不代表实际读屏输出。
 
 真实反馈展台提供连续同文案、延迟新事件（用于保持关闭按钮焦点）、普通重渲染、错误/警告及长文。页面退出清理延迟事件，不向已卸载组件提交。

@@ -5,7 +5,7 @@ import { ToastEventGallery } from '../preview/ToastEventGallery';
 
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 const advance = (ms: number) => act(() => vi.advanceTimersByTime(ms));
-describe('Toast event identity', () => {
+describe('Toast lifetime identity', () => {
   it('gives an identical new event a full lifetime near expiry, without callback/render renewal', () => {
     vi.useFakeTimers(); const close = vi.fn();
     const view = (eventId: number) => <Toast eventId={eventId} open title="完成" onOpenChange={value => close(value)} duration={1000} />;
@@ -29,19 +29,19 @@ describe('Toast event identity', () => {
     if (pause === 'focus') expect(button).toHaveFocus();
     toggle(false); advance(999); expect(close).not.toHaveBeenCalled(); advance(1); expect(close).toHaveBeenCalledExactlyOnceWith(false);
   });
-  it('updates only live-region text for a new identity and leaves a focused close button mounted', () => {
+  it('preserves visible content and the focused close button when only lifetime identity changes', () => {
     const close = vi.fn(); const view = (eventId: string) => <Toast eventId={eventId} open title="完成" onOpenChange={close} />;
     const { rerender } = render(view('a')); const button = screen.getByRole('button'), text = screen.getByText('完成');
     act(() => button.focus()); rerender(view('a')); expect(screen.getByText('完成')).toBe(text);
-    rerender(view('b')); expect(screen.getByText('完成')).not.toBe(text); expect(screen.getByRole('button')).toBe(button); expect(button).toHaveFocus();
+    rerender(view('b')); expect(screen.getByText('完成')).toBe(text); expect(screen.getByRole('button')).toBe(button); expect(button).toHaveFocus();
     fireEvent.click(button); expect(close).toHaveBeenCalledWith(false);
   });
-  it.each([[1, '1'], [0, -0]] as const)('keeps timer and text identity aligned for %s → %s', (first, second) => {
+  it.each([[1, '1'], [0, -0]] as const)('renews lifetime for Object.is-distinct identities %s → %s without remounting content', (first, second) => {
     vi.useFakeTimers(); const close = vi.fn();
     const view = (eventId: string | number) => <Toast eventId={eventId} open title="完成" onOpenChange={close} duration={1000} />;
     const { rerender } = render(view(first)); advance(999);
     const button = screen.getByRole('button'), text = screen.getByText('完成'); act(() => button.focus());
-    rerender(view(second)); expect(screen.getByText('完成')).not.toBe(text); expect(screen.getByRole('button')).toBe(button); expect(button).toHaveFocus();
+    rerender(view(second)); expect(screen.getByText('完成')).toBe(text); expect(screen.getByRole('button')).toBe(button); expect(button).toHaveFocus();
     act(() => button.blur()); advance(999); expect(close).not.toHaveBeenCalled(); advance(1); expect(close).toHaveBeenCalledExactlyOnceWith(false);
   });
   it.each(['error', 'warning'] as const)('keeps %s events persistent and clears timers on exit', tone => {

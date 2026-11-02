@@ -24,11 +24,11 @@ async page => {
   const hidden = await state('background');
   if (!hidden.hidden) {
     await page.bringToFront(); await other.close();
-    return { pass: failures.length === 0, failures, samples, interval: second.time-first.time, visibility: 'SKIPPED: browser automation did not background document; native visibility acceptance remains pending', scope: 'Browser real timers, DOM click and real Tab; no speech claim.' };
+    return { pass: failures.length === 0, failures, samples, interval: second.time-first.time, visibility: 'SKIPPED: browser automation did not background document; visibilitychange timer logic is covered by unit tests; no native background claim', scope: 'Browser real timers, DOM click and real Tab; no speech claim.' };
   }
   await page.waitForTimeout(5200); await page.bringToFront(); await other.close();
   check((await state('visibility-resumed')).open, 'hidden-not-paused'); await page.waitForTimeout(3200);
   check((await state('visibility-remaining')).open, 'hidden-lost-remaining'); await page.waitForTimeout(1100);
   check(!(await state('visibility-expired')).open, 'hidden-not-expiring');
-  return {pass:failures.length===0, failures, samples, interval:second.time-first.time, scope:'Browser timers, DOM click and real Tab; native screen reader speech not covered.'};
+  return {pass:failures.length===0, failures, samples, interval:second.time-first.time, scope:'Browser timers, DOM click and real Tab; repeated screen-reader output is outside this feature.'};
 }
