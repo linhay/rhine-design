@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import {
   Badge, Button, Checkbox, DateRangePicker, EmptyState, Inline, ListFilterBar,
   Select, Skeleton, Stack, Surface, Text, type DateRange,
 } from '../components';
 
-type PreviewState = 'normal' | 'loading' | 'empty' | 'error' | 'disabled';
+type PreviewState = 'normal' | 'delayed' | 'loading' | 'empty' | 'error' | 'disabled';
 const records = [
   { id: 'design-review', title: '核对页面设计与窄屏布局', person: '示例成员', state: 'done', reviewed: true, date: '2026-10-24' },
   { id: 'component-review', title: '整理共享组件与交互规则', person: '组件维护者', state: 'running', reviewed: false, date: '2026-10-23' },
@@ -26,6 +26,7 @@ function usePreviewRefresh() {
 }
 
 function SessionListExample({ mode, embedded = false }: { mode: PreviewState; embedded?: boolean }) {
+  const searchId = useId();
   const [query, setQuery] = useState('');
   const [state, setState] = useState('all');
   const [sort, setSort] = useState('newest');
@@ -39,6 +40,12 @@ function SessionListExample({ mode, embedded = false }: { mode: PreviewState; em
   const pending = mode === 'loading' || refreshing;
   const label = embedded ? '人员会话筛选' : '录制会话筛选';
   const reset = () => { setQuery(''); setState('all'); setSort('newest'); setPerson('all'); setReviewed(false); setRange({ start: '', end: '' }); setDateResetKey(key => key + 1); };
+  const clearFromEmpty = () => {
+    // Hand off before the empty action unmounts; responses never schedule focus.
+    document.getElementById(searchId)?.focus();
+    reset();
+    if (mode === 'delayed') refresh();
+  };
   // Gallery records are synthetic; production hosts send these values to their own query service.
   const rows = mode === 'empty' ? [] : records.filter(row =>
     (state === 'all' || row.state === state) &&
@@ -70,7 +77,7 @@ function SessionListExample({ mode, embedded = false }: { mode: PreviewState; em
   };
   return <Stack gap={4} style={embedded ? { maxWidth: 420, width: '100%' } : undefined}>
     <ListFilterBar label={label}
-      search={{ label: '搜索会话', placeholder: '搜索消息或会话 ID', value: query, disabled, onChange: event => setQuery(event.target.value) }}
+      search={{ id: searchId, label: '搜索会话', placeholder: '搜索消息或会话 ID', value: query, disabled, onChange: event => setQuery(event.target.value) }}
       primary={embedded ? common : [...common, reviewField]}
       filters={[
         ...(embedded ? [reviewField] : []),
@@ -100,12 +107,13 @@ function SessionListExample({ mode, embedded = false }: { mode: PreviewState; em
         <Inline gap={2}><Text as="h4" variant="label">{row.person}</Text><Badge>{row.state === 'done' ? '已完成' : '进行中'}</Badge></Inline>
         <Text>{row.title}</Text><Text variant="caption" tone="muted">{row.id}</Text>
       </Stack>
-    </Surface>) : <EmptyState title="没有匹配的会话" description="试试其他条件。" action={!disabled ? <Button variant="secondary" onClick={reset}>清除筛选</Button> : undefined} />}
+    </Surface>) : <EmptyState title="没有匹配的会话" description="试试其他条件。" action={!disabled ? <Button variant="secondary" onClick={clearFromEmpty}>清除筛选</Button> : undefined} />}
     {!!exportCount && <Text role="status" variant="caption" tone="muted">已触发 {exportCount} 次示例操作；展台不生成或下载文件。</Text>}
   </Stack>;
 }
 
 function StatisticsExample({ mode }: { mode: PreviewState }) {
+  const platformId = useId();
   const [scope, setScope] = useState('all');
   const [platform, setPlatform] = useState('all');
   const [metric, setMetric] = useState('cost');
@@ -115,11 +123,17 @@ function StatisticsExample({ mode }: { mode: PreviewState }) {
   const disabled = mode === 'disabled';
   const pending = mode === 'loading' || refreshing;
   const reset = () => { setScope('all'); setPlatform('all'); setMetric('cost'); setRange({ start: '2026-10-24', end: '2026-10-24' }); setDateResetKey(key => key + 1); };
+  const noUsage = mode === 'empty' || platform !== 'all';
+  const clearFromEmpty = () => {
+    document.getElementById(platformId)?.focus();
+    reset();
+    if (mode === 'delayed') refresh();
+  };
   return <Stack gap={4}>
     <ListFilterBar label="部门用量筛选"
       primary={[
         { id: 'platform', label: '平台', activeLabel: platform === 'all' ? undefined : platform, onClear: disabled ? undefined : () => setPlatform('all'),
-          control: <Select label="平台" value={platform} disabled={disabled} onChange={event => setPlatform(event.target.value)}><option value="all">全部平台</option><option>OpenAI</option></Select> },
+          control: <Select id={platformId} label="平台" value={platform} disabled={disabled} onChange={event => setPlatform(event.target.value)}><option value="all">全部平台</option><option>OpenAI</option></Select> },
         { id: 'metric', label: '排行依据', activeLabel: metric === 'cost' ? undefined : 'Token 排行', onClear: disabled ? undefined : () => setMetric('cost'),
           control: <Select label="排行依据" value={metric} disabled={disabled} onChange={event => setMetric(event.target.value)}><option value="cost">消费排行</option><option value="tokens">Token 排行</option></Select> },
       ]}
@@ -131,10 +145,10 @@ function StatisticsExample({ mode }: { mode: PreviewState }) {
           control: <DateRangePicker key={dateResetKey} label="统计日期" value={range} onValueChange={setRange} disabled={disabled} clearable={false} /> },
       ]}
       onReset={disabled ? undefined : reset} refresh={{ onClick: refresh, busy: pending, disabled }} pending={pending}
-      result={pending ? undefined : mode === 'empty' ? '当前范围无用量' : `${dateLabel(range)} · ${scope === 'all' ? '所有可见部门' : scope}`}
+      result={pending ? undefined : noUsage ? '当前范围无用量' : `${dateLabel(range)} · ${scope === 'all' ? '所有可见部门' : scope}`}
       error={mode === 'error' ? '统计读取失败，暂不能确认当前范围结果。' : undefined}
     />
-    {pending ? <Skeleton label="正在读取用量" lines={2} /> : mode === 'empty' ? <EmptyState title="当前范围没有用量" description="可更改范围或日期后重试。" /> : <Surface><Stack gap={2}>
+    {pending ? <Skeleton label="正在读取用量" lines={2} /> : noUsage ? <EmptyState title="当前范围没有用量" description="可更改范围或日期后重试。" action={!disabled ? <Button variant="secondary" onClick={clearFromEmpty}>清除筛选</Button> : undefined} /> : <Surface><Stack gap={2}>
       <Text as="h4" variant="label">示例统计结果</Text><Text variant="caption" tone="muted">统计范围、日期与排行方式由宿主控制；此处仅展示合成数据。</Text>
       <Text numeric>{metric === 'cost' ? '$ 8.42' : '1,400,000 Token'}</Text>
     </Stack></Surface>}
@@ -148,7 +162,7 @@ export function ListFilterBarGallery() {
     <p className="ds-caption">搜索、最多两个常显条件和一个业务操作；其他条件按需展开。对应 Rhine #19，查询与权限由宿主管理。</p>
     <Stack gap={6}>
       <Select label="示例状态" value={mode} onChange={event => setMode(event.target.value as PreviewState)}>
-        <option value="normal">正常 / 有数据</option><option value="loading">加载中</option><option value="empty">无结果</option><option value="error">读取失败</option><option value="disabled">条件不可修改</option>
+        <option value="normal">正常 / 有数据</option><option value="delayed">清除后异步恢复</option><option value="loading">加载中</option><option value="empty">无结果</option><option value="error">读取失败</option><option value="disabled">条件不可修改</option>
       </Select>
       <Stack gap={3}>
         <Text as="h3" variant="heading">独立列表</Text>
