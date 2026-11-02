@@ -67,7 +67,7 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 - Checkbox接受原生input属性及indeterminate；混合状态在点击后应由调用方重算，不使用readOnly模拟锁定（原生checkbox无只读行为）。RadioGroup与Switch都是受控，Textarea沿用原生readOnly和disabled语义。
 - CopyButton接受`value/label/copy?`，copy适配器返回Promise。等待成功后提示；value变化后忽略旧请求结果，错误不暴露异常正文。宿主原生平台接入应提供平台适配器并做真实剪贴板验收。
 - ConfirmDialog的`onConfirm`返回void或Promise；等待时阻止再次确认、取消和Escape，成功后关闭，失败保留内容供重试。任务超时/取消能力由业务回调负责，不让Promise无限悬挂。默认焦点在取消按钮。
-- Toast由`open/onOpenChange/title/description/tone/duration`控制；默认5秒，duration≤0常驻，warning/error始终常驻。重复打开同一条已打开通知不会重置计时；要作为新通知应更换key或先关闭。不要把凭证、异常正文等敏感数据放进通知。
+- Toast由`open/onOpenChange/title/description/tone/duration`控制；默认5秒，duration≤0常驻，warning/error始终常驻。同一事件的普通重渲染（包括回调引用变化）不重置计时。连续同文案的新事件使用可选 `eventId`，见下节；不要通过更换整个 Toast 的 key 或先关闭再打开表达新事件，以免卸载持焦按钮。不要把凭证、异常正文等敏感数据放进通知。
 - Stack/Inline/Grid的gap取`1/2/3/4/6/8/12`，对应间距token；Grid的minWidth以px计，窄容器自动收缩。Icon的name使用导出IconName类型，不以自由文本插入SVG。
 
 ## 设计展台验收
@@ -89,3 +89,13 @@ RemoteMultiSelect `tagDensity` 与 MappingEditor `groupedSourceLayout` 的未发
 ResponsiveActions 及竖点 moreVertical（未发布）：基于真实容器的文字/图标/菜单、动态权限与焦点契约见[容器自适应动作](../docs/RESPONSIVE_ACTIONS.md)。
 
 Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用候选）与 `statusDisplay="compact"`（常规状态仅保留读屏通知、读取失败持续可见），默认兼容；原 `error` 保持候选读取失败语义。见[状态与字段校验](../docs/COMBOBOX_FEEDBACK.md)（#115，未发布）。
+
+### 连续通知寿命（#160，未发布）
+
+本次新增保证限于页面可见期间。`eventId?: string | number` 仅标识通知寿命，由宿主在确有新通知需要完整展示时长时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 按 React effect 的 Object.is 规则比较（数字 1 与字符串 "1"、0 与 -0 不同）。id 不应在 render 中随机生成，不是队列或去重服务。
+
+可见页面中，同一事件 hover 或内部 focus 时暂停，恢复后使用剩余时长；暂停期间新事件将剩余时长设为完整 duration，直到全部 hover/focus 暂停原因解除才起算。新事件提交后旧 timer 失效；如果旧到期先发生，宿主的新事件仍需设置 open=true。warning/error 或 duration≤0 常显，手动关闭与关闭后重开保持。既有 document.hidden 处理保留兼容，visibilitychange 逻辑有单测；真实窗口后台及隐藏期间新事件的展示时长不属于本次新增验收或对外保证。
+
+通知不主动抢焦点。仅更新 id 不重挂文字子树，保留现有容器、关闭按钮焦点和暂停状态。既有 success/info 等 status（polite）、error alert 及 aria-atomic 语义保持；eventId 不控制或保证相同文案再次播报，重复读屏输出不属于本次功能范围。关键结果仍应有页面内持久入口。计时、DOM 和焦点测试不代表实际读屏输出。
+
+真实反馈展台提供连续同文案、延迟新事件（用于保持关闭按钮焦点）、普通重渲染、错误/警告及长文。页面退出清理延迟事件，不向已卸载组件提交。

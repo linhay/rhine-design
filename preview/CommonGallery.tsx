@@ -1,7 +1,8 @@
+import { ToastEventGallery } from './ToastEventGallery';
 import { useState } from 'react';
 import { ThemeProvider, type ThemeName } from '../components/theme';
 import { ComboboxStateGallery } from './ComboboxStateGallery';
-import { Badge, Button, Checkbox, Combobox, ConfirmDialog, CopyButton, DataTable, Dialog, Divider, Grid, Icon, IconButton, Inline, KeyValue, Link, Menu, Metric, Pagination, Popover, RadioGroup, SearchField, Select, Stack, Surface, Switch, Text, Textarea, TextField, Toast, Tooltip, type TableSort } from '../components/index';
+import { Badge, Button, Checkbox, Combobox, ConfirmDialog, CopyButton, DataTable, Dialog, Divider, Grid, Icon, IconButton, Inline, KeyValue, Link, Menu, Metric, Pagination, Popover, RadioGroup, SearchField, Select, Stack, Surface, Switch, Text, Textarea, TextField, Tooltip, type TableSort } from '../components/index';
 
 const demoRows = [{ id:'request-a', time:'14:59:18', model:'gpt-6.1-sol', tokens:9600 }, { id:'request-b', time:'14:58:18', model:'gpt-6-sol', tokens:0 }];
 const demoOptions = [{value:'a',label:'研究工作区'}, {value:'disabled',label:'归档工作区',disabled:true}, {value:'b',label:'共享工作区'}];
@@ -10,7 +11,7 @@ export function CommonGallery({ section }: { section?: string }) {
   const [tableState,setTableState]=useState('normal'), [page,setPage]=useState(1), [sort,setSort]=useState<TableSort>();
   const [checked,setChecked]=useState(false), [mixed,setMixed]=useState(true), [radio,setRadio]=useState('daily'), [switchOn,setSwitchOn]=useState(false);
   const [query,setQuery]=useState(''), [queryEvent,setQueryEvent]=useState('尚未提交'), [candidateQuery,setCandidateQuery]=useState(''), [candidate,setCandidate]=useState<string|null>(null), [candidateState,setCandidateState]=useState('normal');
-  const [toast,setToast]=useState(false), [toastTone,setToastTone]=useState<'success'|'error'>('success'), [confirmFail,setConfirmFail]=useState(false), [action,setAction]=useState('尚无操作');
+  const [confirmFail,setConfirmFail]=useState(false), [action,setAction]=useState('尚无操作');
   return <>
     {(!section || section === 'data') && <section id="data"><div className="ds-section-title"><span>06</span><h2>数据与分页 · 完整表达状态</h2></div>
       <Surface><Stack><Grid minWidth={150}><Metric label="请求次数" value={128} description="失败 3 次"/><Metric label="预估费用" value="$5.44" description="3 次未计价"/><Metric label="平均耗时" value={null} unit="s" description="暂不可用"/><Metric label="总 Token" value={null} loading/></Grid><Divider/><KeyValue items={[{key:'mode',label:'本地配置',value:'OAuth'},{key:'model',label:'推荐模型',value:'gpt-6.1-sol'},{key:'state',label:'同步状态',value:<Badge tone="success">运行中</Badge>}]}/></Stack></Surface>
@@ -33,7 +34,7 @@ export function CommonGallery({ section }: { section?: string }) {
       <Menu label="更多操作" trigger={<Button variant="secondary">更多操作</Button>} items={[{id:'refresh',label:'刷新',onSelect:()=>setAction('菜单：刷新')},{id:'disabled',label:'导出（暂不可用）',disabled:true,onSelect:()=>{}},{id:'archive',label:'归档示例',danger:true,onSelect:()=>setAction('菜单：归档示例')}]}/>
       <Dialog trigger={<Button variant="secondary">打开对话框</Button>} title="编辑工作区" description="此对话框仅演示输入、焦点与关闭行为。"><Stack><TextField label="工作区名称" defaultValue="研究工作区"/><Textarea label="工作区说明"/><Popover trigger={<Button variant="secondary">对话框内详情</Button>} title="嵌套详情"><Text>Escape先关闭当前气泡，再返回对话框。</Text></Popover></Stack></Dialog>
       <ConfirmDialog trigger={<Button variant="danger">打开确认框</Button>} title="停止演示任务？" description="这是合成操作，不会修改实际同步。默认焦点在取消按钮。" confirmLabel="停止演示任务" danger onConfirm={async()=>{if(confirmFail)throw new Error('demo');setAction('确认已完成（演示）');}}/>
-    </Inline><Checkbox label="模拟确认操作失败" checked={confirmFail} onChange={event=>setConfirmFail(event.target.checked)}/><Text variant="caption" tone="muted">{action}。Tab/方向键/Escape可操作；减少动态保留相同功能。</Text><Divider/><Inline><Button variant="secondary" onClick={()=>{setToastTone('success');setToast(true);}}>显示成功通知</Button><Button variant="secondary" onClick={()=>{setToastTone('error');setToast(true);}}>显示错误通知</Button></Inline><Toast placement="floating" open={toast} onOpenChange={setToast} tone={toastTone} title={toastTone==='success'?'演示操作已完成':'演示操作失败'} description={toastTone==='success'?'5秒后关闭；悬停、聚焦或页面隐藏时暂停。':'错误通知保持显示，请重试或手动关闭。'}/></Stack></Surface></section>}
+    </Inline><Checkbox label="模拟确认操作失败" checked={confirmFail} onChange={event=>setConfirmFail(event.target.checked)}/><Text variant="caption" tone="muted">{action}。Tab/方向键/Escape可操作；减少动态保留相同功能。</Text><Divider/><ToastEventGallery /></Stack></Surface></section>}
   </>;
 }
 
