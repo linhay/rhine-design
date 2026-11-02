@@ -33,3 +33,7 @@ Button 保留 primary/secondary/quiet/danger、busy 与 disabled；Link 保留�
 2026-10-29 阅读 [Grok Bot 官方设计说明](https://x.ai/news/designing-grok-bot) 的应用示意，采用白正文、浅灰导航、黑灰操作与柔和边界，降低阅读界面的装饰权重；这是 Rhine 的独立中性主题。没有复制名称、角色、品牌资产或业务信息架构；不引入参考站点依赖。
 
 真实展台 `?theme=neutral#neutral` 与隔离 fixture `?fixture=neutral` 提供 Button / Link / TextField / SearchField / Tabs / Dialog / AppShell、错误、禁用、等待与主题切换。固定包和浏览器证据见 [中性主题验收](THEME_NEUTRAL_VERIFICATION.md)。源码合并、Pages 展台、npm 发行与消费迁移分别验收；本改动不发布 npm、不替换产品样稿。
+
+## 编辑布局配方
+
+[报告、发布说明与概览](EDITORIAL_LAYOUT.md)示范 neutral 兼容的局部编辑排版与可选瑞士蓝变量。它是源码组合，尚未发布；不改变 neutral 默认几何或扩展 ThemeName。

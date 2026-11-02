@@ -156,6 +156,7 @@ export function App() {
 | 主题 | 文档 | 在线预览 |
 | --- | --- | --- |
 | 聊天消息、卡片与历史（源码候选） | [Agent Chat](docs/AGENT_CHAT.md) | [聊天消息与记录](https://linhay.github.io/rhine-design/#agent-chat) |
+| 编辑布局与局部配色（源码） | [编辑布局配方](docs/EDITORIAL_LAYOUT.md) | [报告、发布说明与概览](https://linhay.github.io/rhine-design/#editorial-layout) |
 | 视觉基础与组合原则 | [设计规范](docs/DESIGN_SYSTEM.md) | [视觉基础](https://linhay.github.io/rhine-design/#foundation) |
 | 间距、分组与卡片组合 | [Spacing](components/SPACING.md) | [间距与组合](https://linhay.github.io/rhine-design/#spacing) |
 | 字体、文字层级与数值 | [Typography](components/TYPOGRAPHY.md) | [字体与文字](https://linhay.github.io/rhine-design/#typography) |
