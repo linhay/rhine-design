@@ -61,3 +61,11 @@ playwright-cli -s=reading run-code --filename scripts/check-object-reading-state
 检查准备与脚本失败亦保留：初次命令使用机器默认Node25，正式检查改Node24；CLI沙箱URL未定义；普通重开对照在初始恢复frame前写入700导致0，增加对初始稳定状态的等待后复现正常700；关闭归焦需等待Radix默认归焦再比较迟到焦点；长tabpanel不能要求整篇同时可见。后续重跑不覆盖前次记录，不把这些准备/断言错误算作产品回归。
 
 排除本次功能：依赖人工的实际读屏和阅读偏好、原生缩放完整矩阵、其他浏览器引擎、真实文件/权限/后台请求服务；不记PASS，不安排用户补验。16→18px重排的语义位置仍属于#150研究，不新增字号设置或段落身份公共模型。未发布npm，未修改UIKit。
+
+### 审阅补充：就绪状态与已提交DOM
+
+PR #179 的 `discussion_r4440596012` 经源码核对后，将 `ready.current` 更新移到恢复effect之前、每次提交执行的useLayoutEffect；就绪条件不变。异步frame/scroll/ResizeObserver只读取已提交内容的状态，不读取未提交render写入的值。
+
+`tests/ObjectReadingCommit.test.tsx` 使用React transition/Suspense，在旧错误占位仍可见时挂起正文就绪render，执行排队frame/scroll，再丢弃该更新并重试。普通700恢复为正常对照；旧61dd实现最终得到0（FAIL），修正后得到700（PASS）。Text挂起、宿主场景回调及JSDOM滚动范围均为测试夹具；它证明提交时序和缓存隔离，不冒充真实浏览器并发时序、布局或服务故障。初版夹具缺少几何、文本查询歧义以及原生select导致同步fallback的准备失败保留，不计作产品反例。
+
+原61dd候选、542文件tarball及其40+6/30闭环/270状态/10减少动态证据保持原身份。审阅修正另建最终head、不可变包和全新消费者；新旧manifest与验证结果分别记录，不重打旧包。既有600ms等待焦点guard不变，无额外busy焦点修复。

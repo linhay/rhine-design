@@ -25,7 +25,7 @@ function ObjectReader({ object, active, scenario, tab, onTab, positions, navigat
   const restore = useRef<(restart?: boolean) => void>(() => {});
   const readable = !loading && !['loading', 'error', 'restricted', 'unsupported'].includes(scenario);
   const ready = useRef(false);
-  ready.current = tab !== 'content' || readable;
+  useLayoutEffect(() => { ready.current = tab !== 'content' || readable; });
   const cancelRequest = () => { clearTimeout(request.current); request.current = undefined; setLoading(false); };
   const load = () => {
     cancelRequest(); restore.current(true); setLoading(true);
