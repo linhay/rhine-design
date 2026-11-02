@@ -27,6 +27,8 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 ## 版本与源码范围
 
+**0.12.0 发布候选**正在核验，涵盖 main 已合并的 71 个源码组件、五主题与组合配方；正式 registry 确认前，下方 0.11.3 安装命令仍是已发布基线。迁移时须补齐 `ThemeName` 的 `neutral` / `graphite` 穷举分支；候选范围、剩余缺口及发布状态见 [0.12.0 发布记录](docs/releases/0.12.0.md)。
+
 - **当前已发布版本：0.11.3**。主入口包含 ChatThread / ChatCard，共 69 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。发布是否可安装以 npm registry 为准。
 - **0.11.0 新增**：产品评审 `/review`、`/review/vite`，摘要页签 `Tabs description/status`、`Toast placement="floating"`、`SegmentedControl size="compact"` 及相邻 Disclosure 分隔线与生产动效修正。npm 0.10.0 不包含这些新增 API。
 - **0.11.2 聊天组合**：消息分组、结构化卡片及历史跟随见 [Agent Chat](docs/AGENT_CHAT.md)，不在 0.11.0 制品中。
