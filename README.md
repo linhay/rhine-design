@@ -16,16 +16,18 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、71 个源码组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。它将设计规范、72 个源码组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **71 个源码可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
+- **72 个源码可组合组件**：覆盖布局、表单、数据、导航、浮层和反馈。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
 基于 React 与 Radix UI，采用 [Apache-2.0](LICENSE) 许可证。
 
 ## 版本与源码范围
+
+**0.12.0 发布候选**正在核验，涵盖 main 已合并的 72 个源码组件、五主题与组合配方；正式 registry 确认前，下方 0.11.3 安装命令仍是已发布基线。迁移时须补齐 `ThemeName` 的 `neutral` / `graphite` 穷举分支；候选范围、剩余缺口及发布状态见 [0.12.0 发布记录](docs/releases/0.12.0.md)。
 
 - **当前已发布版本：0.11.3**。主入口包含 ChatThread / ChatCard，共 69 个组件，统计不含类型及独立 `/theme` 入口的 ThemeProvider、hook 和元数据。发布是否可安装以 npm registry 为准。
 - **0.11.0 新增**：产品评审 `/review`、`/review/vite`，摘要页签 `Tabs description/status`、`Toast placement="floating"`、`SegmentedControl size="compact"` 及相邻 Disclosure 分隔线与生产动效修正。npm 0.10.0 不包含这些新增 API。
@@ -336,7 +338,7 @@ skill 中提供以下参考入口：
 
 `MappingEditor` 提供受控来源→目标编辑列表：双侧原生Select、稳定行id、只读/禁用/错误、窄容器重排及增删焦点。模板保存与应用分离、逐目标差异和混合值意图由官方合成组合示范，业务服务与持久化归宿主。见[契约与组合](docs/TEMPLATE_SETTINGS.md)及展台 `#template-settings`；正式npm0.11.3不包含此组件。
 
-`ResponsiveActions` 按实际容器依次呈现文字、图标和竖点菜单，保留44px目标与键盘焦点；源码主入口现有71个组件，发布0.11.3仍为69个。见[容器动作契约](docs/RESPONSIVE_ACTIONS.md)与展台 `#responsive-actions`。
+`ResponsiveActions` 按实际容器依次呈现文字、图标和竖点菜单，保留44px目标与键盘焦点；源码主入口现有72个组件，发布0.11.3仍为69个。见[容器动作契约](docs/RESPONSIVE_ACTIONS.md)与展台 `#responsive-actions`。
 
 ## 常驻层级浏览组合
 
