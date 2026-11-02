@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement, type ReactNode } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement, type ReactNode } from 'react';
 import * as DialogBase from '@radix-ui/react-dialog';
 import * as AlertBase from '@radix-ui/react-alert-dialog';
 import * as PopoverBase from '@radix-ui/react-popover';
@@ -9,6 +9,7 @@ import { IconButton } from './Actions';
 import './drawer-placement.css';
 import './dialog-settings.css';
 import { useFloatingScale, useFloatingSide } from './useFloatingScale';
+import { useCompositionEscape } from './useCompositionEscape';
 
 const dialogDismiss = new WeakMap<Element, () => void>();
 
@@ -28,6 +29,9 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
   const { ref, container } = useScope();
   const [localOpen, setLocalOpen] = useState(false);
   const [content, setContent] = useState<HTMLDivElement | null>(null);
+  const compositionScope = useRef<HTMLDivElement>(null);
+  useCompositionEscape(compositionScope);
+  const attachContent = useCallback((node: HTMLDivElement | null) => { compositionScope.current = node; setContent(node); }, []);
   const changeOpen = (next: boolean) => { setLocalOpen(next); onOpenChange?.(next); };
   useLayoutEffect(() => {
     if (!content) return;
@@ -73,7 +77,7 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
   const bodyScrollRegion = bounded && !settings && !sidePanel;
   const panes = <><div className="rhine-dialog__main"><div className="rhine-dialog__head"><DialogBase.Title className="rhine-text rhine-text--section">{title}</DialogBase.Title>{!sideNavigation && closeButton}</div>{hasDescription && <DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description>}<div className="rhine-dialog__body" tabIndex={bodyScrollRegion ? 0 : undefined} role={bodyScrollRegion ? 'region' : undefined} aria-label={bodyScrollRegion ? `${title}内容` : undefined}>{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content" tabIndex={bounded ? 0 : undefined} role={bounded ? 'region' : undefined} aria-label={bounded ? `${title}内容` : undefined}>{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</>;
   return <span className="rhine-overlay-anchor" ref={ref}><DialogBase.Root open={open ?? localOpen} onOpenChange={changeOpen}><DialogBase.Trigger asChild>{trigger}</DialogBase.Trigger><DialogBase.Portal container={container}>
-    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={onCloseAutoFocus} {...(!hasDescription ? { 'aria-describedby': undefined } : {})} data-side={drawer ? side : undefined}
+    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content ref={attachContent} onEscapeKeyDown={escape} onCloseAutoFocus={onCloseAutoFocus} {...(!hasDescription ? { 'aria-describedby': undefined } : {})} data-side={drawer ? side : undefined}
       style={height == null ? undefined : { '--rhine-dialog-height': typeof height === 'number' ? `${height}px` : height } as CSSProperties}
       className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${settings ? ' rhine-dialog--settings' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}${bounded ? ' rhine-dialog--bounded' : ''}`}>
       {bounded ? <div className="rhine-dialog__scroll">{panes}</div> : panes}
@@ -85,6 +89,9 @@ export function ConfirmDialog({ trigger, title, description, confirmLabel = '确
   const { ref, container } = useScope(); const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState(false);
   const pending = useRef(false), mounted = useRef(true);
   const [content, setContent] = useState<HTMLDivElement | null>(null);
+  const compositionScope = useRef<HTMLDivElement>(null);
+  useCompositionEscape(compositionScope);
+  const attachContent = useCallback((node: HTMLDivElement | null) => { compositionScope.current = node; setContent(node); }, []);
   useLayoutEffect(() => {
     if (!content) return;
     // A newly focused alert can precede Radix's top-layer registration, just
@@ -100,7 +107,7 @@ export function ConfirmDialog({ trigger, title, description, confirmLabel = '确
     catch { if (mounted.current) setError(true); }
     finally { pending.current = false; if (mounted.current) setBusy(false); }
   };
-  return <span className="rhine-overlay-anchor" ref={ref}><AlertBase.Root open={open} onOpenChange={next => { if (!pending.current) { setOpen(next); setError(false); } }}><AlertBase.Trigger asChild>{trigger}</AlertBase.Trigger><AlertBase.Portal container={container}><AlertBase.Overlay className="rhine-overlay" /><AlertBase.Content ref={setContent} className="rhine-dialog" aria-busy={busy} onEscapeKeyDown={event => { if (busy) event.preventDefault(); }}>
+  return <span className="rhine-overlay-anchor" ref={ref}><AlertBase.Root open={open} onOpenChange={next => { if (!pending.current) { setOpen(next); setError(false); } }}><AlertBase.Trigger asChild>{trigger}</AlertBase.Trigger><AlertBase.Portal container={container}><AlertBase.Overlay className="rhine-overlay" /><AlertBase.Content ref={attachContent} className="rhine-dialog" aria-busy={busy} onEscapeKeyDown={event => { if (busy) event.preventDefault(); }}>
     <AlertBase.Title className="rhine-text rhine-text--section">{title}</AlertBase.Title><AlertBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</AlertBase.Description>{error && <Notice tone="error" title="操作未完成">请重试，或取消后检查。</Notice>}
     <div className="rhine-dialog__actions"><AlertBase.Cancel asChild><Button variant="secondary" disabled={busy}>取消</Button></AlertBase.Cancel><Button variant={danger ? 'danger' : 'primary'} busy={busy} onClick={run}>{confirmLabel}</Button></div>
   </AlertBase.Content></AlertBase.Portal></AlertBase.Root></span>;
@@ -109,7 +116,9 @@ interface OverlayControl { open?: boolean; onOpenChange?: (open: boolean) => voi
 export interface PopoverProps extends OverlayControl { trigger: ReactElement; title: string; children: ReactNode; showHeader?: boolean }
 export function Popover({ trigger, title, children, open, onOpenChange, side, showHeader = true }: PopoverProps) {
   const { ref, container } = useScope();
-  const floatingRef = useFloatingScale(undefined, 'popover');
+  const compositionScope = useRef<HTMLDivElement>(null);
+  useCompositionEscape(compositionScope);
+  const floatingRef = useFloatingScale(compositionScope, 'popover');
   const floatingSide = useFloatingSide(ref, side, 300);
   return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
 }

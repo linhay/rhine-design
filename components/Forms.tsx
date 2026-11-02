@@ -4,6 +4,7 @@ import { Button, type Choice } from './components';
 import { Icon, IconButton } from './Actions';
 import { useFloatingScale } from './useFloatingScale';
 import './checkbox-row.css';
+import { useCompositionEscape } from './useCompositionEscape';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string;
@@ -80,6 +81,7 @@ export function Combobox({ label, labelAction, query, onQueryChange, value, onVa
   const releaseTabGuard = useRef<(() => void) | undefined>(undefined);
   useEffect(() => () => releaseTabGuard.current?.(), []);
   const root = useRef<HTMLDivElement>(null);
+  useCompositionEscape(root);
   const [container, setContainer] = useState<HTMLElement>();
   useLayoutEffect(() => { setContainer((root.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
   const [internalOpen, setInternalOpen] = useState(false), [active, setActive] = useState<string | null>(null), [draft, setDraft] = useState<string | null>(null);

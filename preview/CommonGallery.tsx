@@ -29,9 +29,9 @@ export function CommonGallery({ section }: { section?: string }) {
     {(!section || section === 'utilities') && <section id="utilities"><div className="ds-section-title"><span>08</span><h2>操作与布局 · 按同一规则组合</h2></div><Surface><Stack><Inline><Link href="#typography">查看文字规范</Link><IconButton icon="refresh" label="刷新示例" onClick={()=>setAction('已点击刷新')}/><IconButton icon="close" label="不可关闭" disabled/><Icon name="info"/><Text variant="caption">图标提供辅助识别；按钮始终有名称。</Text></Inline><Divider/><Inline><CopyButton value="Rhine Design · 组件复制示例" label="复制演示文字"/><CopyButton value="demo" label="演示复制失败" copy={()=>Promise.reject(new Error('demo'))}/></Inline><Text variant="caption" tone="muted">Stack / Inline / Grid / Divider 在本页直接参与布局，无额外业务状态。</Text></Stack></Surface></section>}
     {(!section || section === 'overlays') && <section id="overlays"><div className="ds-section-title"><span>09</span><h2>浮层与反馈 · 焦点有来有回</h2></div><Surface><Stack><Inline>
       <Tooltip content="可用额度可能延迟更新，以最新采集结果为准。"><IconButton label="额度说明" icon="info"/></Tooltip>
-      <Popover trigger={<Button variant="secondary">查看详情</Button>} title="工作区详情"><Stack><Text>气泡用于补充内容，不阻断页面。</Text><Link href="#data">查看数据组件</Link></Stack></Popover>
+      <Popover trigger={<Button variant="secondary">查看详情</Button>} title="工作区详情"><Stack><Text>气泡用于补充内容，不阻断页面。</Text><TextField label="详情草稿" defaultValue="合成备注"/><Link href="#data">查看数据组件</Link></Stack></Popover>
       <Menu label="更多操作" trigger={<Button variant="secondary">更多操作</Button>} items={[{id:'refresh',label:'刷新',onSelect:()=>setAction('菜单：刷新')},{id:'disabled',label:'导出（暂不可用）',disabled:true,onSelect:()=>{}},{id:'archive',label:'归档示例',danger:true,onSelect:()=>setAction('菜单：归档示例')}]}/>
-      <Dialog trigger={<Button variant="secondary">打开对话框</Button>} title="编辑工作区" description="此对话框仅演示输入、焦点与关闭行为。"><Stack><TextField label="工作区名称" defaultValue="研究工作区"/><Textarea label="工作区说明"/><Popover trigger={<Button variant="secondary">对话框内详情</Button>} title="嵌套详情"><Text>Escape先关闭当前气泡，再返回对话框。</Text></Popover></Stack></Dialog>
+      <Dialog trigger={<Button variant="secondary">打开对话框</Button>} title="编辑工作区" description="此对话框仅演示输入、焦点与关闭行为。"><Stack><TextField label="工作区名称" defaultValue="研究工作区"/><Textarea label="工作区说明"/><Popover trigger={<Button variant="secondary">对话框内详情</Button>} title="嵌套详情"><Stack><Text>Escape先关闭当前气泡，再返回对话框。</Text><TextField label="详情备注" defaultValue="合成输入法草稿"/><Combobox label="嵌套候选" query={candidateQuery} onQueryChange={setCandidateQuery} value={candidate} onValueChange={option=>{setCandidate(option.value);setCandidateQuery(option.label);}} options={demoOptions}/></Stack></Popover></Stack></Dialog>
       <ConfirmDialog trigger={<Button variant="danger">打开确认框</Button>} title="停止演示任务？" description="这是合成操作，不会修改实际同步。默认焦点在取消按钮。" confirmLabel="停止演示任务" danger onConfirm={async()=>{if(confirmFail)throw new Error('demo');setAction('确认已完成（演示）');}}/>
     </Inline><Checkbox label="模拟确认操作失败" checked={confirmFail} onChange={event=>setConfirmFail(event.target.checked)}/><Text variant="caption" tone="muted">{action}。Tab/方向键/Escape可操作；减少动态保留相同功能。</Text><Divider/><Inline><Button variant="secondary" onClick={()=>{setToastTone('success');setToast(true);}}>显示成功通知</Button><Button variant="secondary" onClick={()=>{setToastTone('error');setToast(true);}}>显示错误通知</Button></Inline><Toast placement="floating" open={toast} onOpenChange={setToast} tone={toastTone} title={toastTone==='success'?'演示操作已完成':'演示操作失败'} description={toastTone==='success'?'5秒后关闭；悬停、聚焦或页面隐藏时暂停。':'错误通知保持显示，请重试或手动关闭。'}/></Stack></Surface></section>}
   </>;
@@ -40,4 +40,9 @@ export function CommonGallery({ section }: { section?: string }) {
 export function DataCaptionFixture() {
   const params = new URLSearchParams(location.search);
   return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') === 'manual' ? 'reduced' : 'system'}><main style={{padding:16}}><CommonGallery section="data" /></main></ThemeProvider>;
+}
+
+export function OverlayCompositionFixture() {
+  const params = new URLSearchParams(location.search);
+  return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') === 'manual' ? 'reduced' : 'system'}><main style={{padding:16}}><CommonGallery section="overlays" /></main></ThemeProvider>;
 }

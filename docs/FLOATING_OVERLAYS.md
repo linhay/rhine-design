@@ -33,3 +33,13 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 `showHeader={false}` 省略可见标题和关闭按钮整行，但必填title继续命名浮层；默认true兼容现有内容。保持图标切换、外点/Escape关闭和键盘归焦。账号与用量的组合、稳定反馈及宿主状态职责见[托盘用量](TRAY_USAGE.md)。
 
 快速键盘退出嵌套下拉时，Radix在异步卸载回调后恢复父FocusScope；这一间隙用临时focusin保护维持最近的Modal内焦点，父约束恢复即清理，组件卸载也清理。快速连续键可能保持当前内部焦点，但不能落到背景；正常Tab循环随后恢复。check-combobox-modal-focus.js先断言即时包含关系，再单独检查恢复后的循环，不用预先延时掩盖失败。
+
+## 输入法与 Escape（#163，未发布）
+
+Dialog/Drawer、Popover、ConfirmDialog 与 Combobox 的组合输入优先于外层 Escape 关闭。组合期间的 Escape 仅停止传播到应用键盘处理，不调用 preventDefault，保留输入法自身取消候选的默认行为。compositionend 后的独立 Escape 按当前浮层层级退出；不增加吞下一次按键或固定延迟窗口，不永久排除输入框。
+
+保护读取同一字段的 compositionstart/end、KeyboardEvent.isComposing 及兼容 keyCode 229。失焦清除当前字段标记，卸载移除监听；嵌套 Portal 独立注册自己的输入范围。此保护不会改变普通 Escape、Tab、busy 确认或字段自身的草稿恢复规则。应用层 window 捕获监听若先于组件自行关闭，需要宿主遵守相同组合输入优先规则。
+
+浏览器/系统可能先报告 compositionend，再发 isComposing=false 且非229的 Escape（Safari 等环境须实测）。该序列与真正独立 Escape 无法可靠区分，不猜测固定等待时间；不会声称覆盖未提供信号的输入法。合成事件不能证明系统候选窗取消/选词；验收分别记录浏览器、输入法与事件序列。
+
+真实展台 `#overlays` 含普通 Dialog、Popover、嵌套备注与 Combobox；独立入口 `?fixture=overlay-composition&theme=rhine` 支持五主题以及 `motion=manual`。只使用合成草稿。回归测试验证三种组合信号、结束后退出与 defaultPrevented=false；生产浏览器及原生输入法证据另外记录。
