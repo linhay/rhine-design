@@ -3,6 +3,7 @@ async page => {
   const base = new URL(page.url()).origin, probe = new URL(page.url()).searchParams.get('graphiteProbe');
   const rows = [], errors = [], motions = [];
   const onError = error => errors.push(String(error)); page.on('pageerror', onError);
+  if(probe === 'preview') await page.route('**/graphite-*.png', route => route.abort());
   const assert = (ok, message) => { if (!ok) throw new Error(message); };
   const cases = probe ? [{width:400,zoom:2,mode:'normal'}] : [400,520,880].flatMap(width=>[1,2].map(zoom=>({width,zoom,mode:'normal'}))).concat(['system','manual'].map(mode=>({width:880,zoom:1,mode})));
   for (const {width,zoom,mode} of cases) {
@@ -46,7 +47,11 @@ async page => {
         assert(await originalDialog.evaluate(e=>e.isConnected) && await note.inputValue()==='浮层保留的草稿','dialog remounted/draft lost');
         assert(await radio.evaluate(e=>e===document.activeElement),'theme focus lost');
       }
-      await page.waitForFunction(()=>[...document.querySelectorAll('[role=dialog] .rhine-theme-preview img')].every(e=>e.complete&&e.naturalWidth===960));
+      await page.waitForFunction(()=>{
+        const previews=[...document.querySelectorAll('[role=dialog] .rhine-theme-preview')];
+        return previews.length===5&&previews.every(e=>['ready','error'].includes(e.dataset.state));
+      });
+      assert(await dialog.locator('.rhine-theme-preview img').evaluateAll(images=>images.length===5&&images.every(e=>e.complete&&e.naturalWidth===960)),'five theme previews not loaded');
       const paint=await dialog.evaluate(e=>({background:getComputedStyle(e).backgroundColor,scheme:getComputedStyle(e).colorScheme}));
       assert(paint.background==='rgb(39, 46, 51)' && paint.scheme==='dark','graphite portal paint missing');
       const box=await dialog.boundingBox(); assert(box.x>=0&&box.x+box.width<=width+1&&box.y>=0&&box.y+box.height<=901,'dialog bounds');
@@ -95,5 +100,6 @@ async page => {
     }catch(error){shell.push({width,zoom,pass:false,error:String(error)});}
   }
   await page.emulateMedia({reducedMotion:'no-preference'}); page.off('pageerror',onError);
+  if(probe === 'preview') await page.unroute('**/graphite-*.png');
   return {pass:rows.every(r=>r.pass)&&motions.every(r=>r.pass)&&shell.every(r=>r.pass)&&!errors.length,probe,rows,motions,shell,errors};
 }

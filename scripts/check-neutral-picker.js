@@ -1,10 +1,13 @@
 async page => {
  page.setDefaultTimeout(3000);
  const base=await page.evaluate(()=>location.origin),rows=[];
- for(const width of [400,520,880])for(const zoom of [1,2]){
+ const probe=new URL(page.url()).searchParams.get('pickerProbe');
+ if(probe==='preview')await page.route('**/graphite-*.png',route=>route.abort());
+ for(const width of (probe?[400]:[400,520,880]))for(const zoom of (probe?[2]:[1,2])){
   try{
    await page.setViewportSize({width,height:900});await page.goto(`${base}/?fixture=theme-picker&theme=neutral&zoom=${zoom}`);
-   await page.waitForFunction(()=>[...document.querySelectorAll('.rhine-theme-preview img')].every(e=>e.complete&&e.naturalWidth===960),null,{timeout:5000});
+   await page.waitForFunction(()=>{const previews=[...document.querySelectorAll('.rhine-theme-preview')];return previews.length===5&&previews.every(e=>['ready','error'].includes(e.dataset.state))},null,{timeout:5000});
+   if(!await page.locator('.rhine-theme-preview img').evaluateAll(images=>images.length===5&&images.every(e=>e.complete&&e.naturalWidth===960)))throw Error('five theme previews not loaded');
    const radios=page.getByRole('radio');if(await radios.count()!==5)throw Error('five themes missing');
    const selected=page.getByRole('radio',{name:'中性 · 黑白轻量'});await selected.focus();await page.keyboard.press('ArrowLeft');
    if(!await page.getByRole('radio',{name:'橙趣 · 粗描边'}).isChecked())throw Error('keyboard selection failed');
@@ -21,5 +24,6 @@ async page => {
    rows.push({width,zoom,pass:true});
   }catch(e){rows.push({width,zoom,pass:false,error:String(e)});}
  }
- return {pass:rows.every(r=>r.pass),rows};
+ if(probe==='preview')await page.unroute('**/graphite-*.png');
+ return {pass:rows.every(r=>r.pass),probe,rows};
 }
