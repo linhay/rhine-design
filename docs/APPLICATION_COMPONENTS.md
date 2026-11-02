@@ -159,7 +159,9 @@ RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误�
 - `expansion={keys,onChange,getChildren?,renderDetail?,canExpand?}`：子行按宿主顺序展开，层级有文字说明；renderDetail 为独立 region，可与子行共存。keys 由宿主管理，折叠不清空选择；不请求子数据、不更改导出范围。大树的加载与虚拟化由宿主决定，本组件不内置虚拟表格。
 - `rowLabel` 默认 rowKey，建议传业务可读名称，供选择/展开按钮命名。所有层级 rowKey 必须全局唯一稳定。
 - 选择列只显示 checkbox/radio，完整“选择 + rowLabel”和表头“选择当前可见行”以视觉隐藏文本保留原生标签名称（#172，未发布，0.11.3 不含）。标签提供至少 44×44 CSS px 点击区域，列按控件及密度内距收紧，不让重复长名称决定行高；名称列应完整展示对象身份并允许换行。单选、全选、mixed、禁选和 focus-visible 沿用原生输入；普通 Checkbox 的可见标签不变。
-- `stickyHeader/maxHeight`：提供明确局部滚动区；列可设 `width/sticky/stickyOffset`。多列固定默认按实测 CSS 布局宽度自动累计 offset，显式 stickyOffset 优先；需为正文至少保留一个可读列，不将多列固定到遮满窄屏。展台固定右侧两个窄列。
+- `stickyHeader/maxHeight`：提供明确局部滚动区；列可设 `width/sticky/stickyOffset`。多列固定默认按实测 CSS 布局宽度自动累计 offset，显式 stickyOffset 优先。
+- 固定列按实际容器预算自动降级（#173，未发布，0.11.3 不含）：左右各以 `max(offset + 实测列宽)` 计固定带范围，二者相加后，另外预留**最宽非固定业务列或选择/展开辅助列**的完整实测宽度。该总量大于滚动区 `clientWidth` 时，全部列临时取消固定；空间恢复则恢复原固定方向和偏移。全业务列固定时仍为辅助列预留宽度；没有非固定/辅助列时仅比较固定带范围。不会仅用44px选择控件替代正文预算。
+- 预算观察滚动容器及表头尺寸，使用局部 `clientWidth/offsetWidth`，不混入 CSS zoom 后的屏幕矩形。行不卸载，选择/展开及焦点节点保留；固定带同步作为水平滚动留白，焦点进入或尺寸/策略变化时将表内焦点就近滚回可见区（不主动更换焦点），`stickyHeader` 独立继续工作；所有必要列、完整身份和操作仍在同一局部横滚区。窄容器操作可能需要横滚，不隐藏列、不缩字、不自动决定列的重要性。宿主仍可用现有 `sticky` 参数取消固定；只按窗口宽度或声明 `width` 设断点不足以替代真实容器/自动表格布局的测量。
 - `density="comfortable" | "compact"`：默认单元格内距为 12/16px 或 6/12px；橙趣 comfortable 为 16/12px，compact 同为 6/12px。业务文字 14px、层级说明 12px，操作仍为 44px。tokens：`--rhine-table-cell-padding`、`--rhine-table-header-bg`、`--rhine-table-hover-bg`、`--rhine-table-selected-bg`；选中底色优先于悬停，固定列使用不透明底色。
 - `Pagination.onPageSizeChange` 和 `pageSizeOptions`：仅回传页大小意图，宿主决定是否回到第一页、是否取消请求。total 已知时推导页数；未知时依赖 hasNext。库不筛选、排序、请求或切割全量 rows。
 

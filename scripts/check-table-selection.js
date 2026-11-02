@@ -73,7 +73,7 @@ async page => {
             await all.focus(); await page.keyboard.press('Space');
             check(await all.isChecked() && !(await table.getByRole('checkbox', { name: '选择不可选择的记录' }).isChecked()), { kind: 'select-all-eligible-only', context });
             await page.getByRole('navigation', { name: '项目记录分页' }).getByRole('button', { name: '下一页' }).click();
-            check((await page.getByRole('status').last().innerText()).includes('off-page') && (await page.getByRole('status').last().innerText()).includes('one'), { kind: 'off-page-keys-retained', context });
+            check((await page.getByRole('status').filter({ hasText: /^已选 \d+ 项/ }).innerText()).includes('off-page') && (await page.getByRole('status').filter({ hasText: /^已选 \d+ 项/ }).innerText()).includes('one'), { kind: 'off-page-keys-retained', context });
             await page.getByRole('navigation', { name: '项目记录分页' }).getByRole('button', { name: '上一页' }).click();
             check(await first.isChecked(), { kind: 'selection-survives-page-return', context });
           } else {

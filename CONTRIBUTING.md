@@ -87,6 +87,7 @@ npm run check
 | Steps 回退焦点 | `scripts/check-steps-focus.js`：真实 `#navigation`，Enter/Space 首步/中间/完成回退、拒绝/外部变化、同步提交/宿主交焦、连续操作/Tab、草稿/错误，五主题 × 880/520/400、短屏、200% CSS zoom、系统/手动减少动态。`?stepsProbe=lost-focus` 应命中焦点回到文档的 FAIL；不代表原生缩放或读屏语音。 |
 | 表单/错误 | `tests/Patterns.test.tsx`、`tests/SettingsDialog.test.tsx` 和设置交互脚本：失败保留输入，摘要只随失败提交定位、链接回字段不变路由；选择/关闭不等于保存 |
 | 有界布局/操作区 | `scripts/check-settings-bounded.js`：真实内框、长导航/操作、末项滚动可达、按钮完整和命中范围；保留 398px iframe 内宽及 CSS zoom 的独立标识 |
+| 固定列预算 | `scripts/check-table-sticky.js`：五主题、1280/880/520 CSS100及400 CSS200、六种固定布局；观察实际内框，逐字符滚动及起/中/末命中、真实Tab/Enter、动态收缩/恢复焦点和旧结果。`?stickyProbe=force-pin`强制恢复窄框右固定须明确失败；`?stickyQuick=1`仅定向调试。选择/展开列与全部业务列固定组合也需验证；`tests/DataParity.test.tsx`包含嵌套表头和空字符串列key反例。 |
 | 表格选择列 | `scripts/check-table-selection.js`：五主题 × 880/100%、520/100%、400/200% CSS zoom × 两密度 × 单/多选，检查完整名称、44px 标签、长中文/无空格标识行高、真实 Tab/Space/方向键、mixed/禁选/跨页、加载与旧数据。`?selectionProbe=visible-label` 恢复可见长标签，必须命中行高/标签断言；固定列预算另由 #173 验证，本脚本通过展台的“固定右侧列”开关隔离该问题。 |
 | 紧凑数值/长文 | `scripts/check-compact-layouts.js`：正常/零/未知/长文；关键数值的行片段不被 hidden/clip 祖先截断，滚动内容另验滚到后可达；document.scrollWidth 不溢出不能替代 |
 | 反馈可读/纠错闭环 | `scripts/check-p0-feedback.js`：三主题、正常/系统/手动减少动态，400×648 下设置失败/成功路径及 CSS zoom 1/2 的逐行滚动、裁剪祖先与遮挡采样；另测 200% 下 ErrorSummary 定位、回字段、保留输入和修正后结果 |
