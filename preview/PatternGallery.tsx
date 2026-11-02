@@ -1,5 +1,6 @@
+import { StepsGallery } from './StepsGallery';
 import { useId, useState } from 'react';
-import { Dialog, Link, Inline, StatusTimeline, TimelineLegend, Badge, Breadcrumbs, Button, Drawer, ErrorSummary, Fieldset, KeyValue, Metric, Notice, Select, SideNav, Stack, Steps, Surface, Text, TextField, type FieldError } from '../components';
+import { Dialog, Link, Inline, StatusTimeline, TimelineLegend, Badge, Breadcrumbs, Button, Drawer, ErrorSummary, Fieldset, KeyValue, Metric, Notice, Select, SideNav, Stack, Surface, Text, TextField, type FieldError } from '../components';
 import './patterns.css';
 
 export const scenarios = [
@@ -21,7 +22,7 @@ export const scenarios = [
 ] as const;
 
 export function PatternGallery({ section }: { section: string }) {
-  const [step, setStep] = useState(0), [chapter, setChapter] = useState('overview');
+  const [chapter, setChapter] = useState('overview');
   const [choice, setChoice] = useState('navigation');
   const [monitor, setMonitor] = useState('normal');
   const [previewScope, setPreviewScope] = useState('primary');
@@ -31,7 +32,7 @@ export function PatternGallery({ section }: { section: string }) {
   const scenario = scenarios.find(item => item[0] === choice)!;
   if (section === 'navigation') return <section id="navigation"><div className="ds-section-title"><span>NAV</span><h2>去哪里，现在到哪一步。</h2></div><p className="ds-caption">导航表达空间层级，步骤表达任务顺序。当前位置始终有文字与边界提示。</p>
     <Surface><Breadcrumbs items={[{label:'设计总览',href:'#top'},{label:'导航与步骤'}]} /><div className="ds-navigation-demo"><SideNav aria-label="工作区演示导航" currentId={chapter} groups={[{label:'工作区',items:[{id:'overview',label:'概览',href:'#navigation',icon:'chart'},{id:'records',label:'记录',href:'#navigation',icon:'connection'},{id:'settings',label:'设置',href:'#navigation',icon:'info'}]}]} onNavigate={(item,event) => {event.preventDefault(); setChapter(item.id);}}/><div className="ds-navigation-content"><Badge>SideNav</Badge><h3>{({overview:'概览',records:'记录',settings:'设置'})[chapter]}</h3><Text>20px线性图标辅助识别，文字始终可见。44px操作行、4px行间距，选中项以苔绿底和细边界标识，不使用外链箭头。图标可选；长名称自然换行。页面路由、数据和权限由业务提供。</Text></div></div></Surface>
-    <Surface className="ds-gap-top"><h3>Steps · 验证后推进</h3><Steps current={step} onStepChange={setStep} items={[{id:'scope',label:'选择范围',description:'确认任务边界'},{id:'setup',label:'完成配置',description:'校验必填信息'},{id:'review',label:'核对结果',description:'完成后才显示成功'}]}/><div className="ds-row ds-gap-top"><Button onClick={()=>setStep(value=>Math.min(3,value+1))} disabled={step===3}>模拟本步完成</Button><Button variant="secondary" onClick={()=>setStep(0)}>重置步骤</Button></div><p role="status" className="ds-caption">{step===3?'全部完成 · 合成演示':'未完成的步骤不能点击跳过；已完成步骤可返回。'}</p></Surface>
+    <StepsGallery/>
   </section>;
   if (section === 'form-workflow') return <section id="form-workflow"><div className="ds-section-title"><span>FORM</span><h2>让问题可定位，让输入被保留。</h2></div><p className="ds-caption">试着直接提交，再点击错误摘要回到字段。这里只做本地验证，不发送或保存数据。</p>
     <Surface><form noValidate onSubmit={event => {

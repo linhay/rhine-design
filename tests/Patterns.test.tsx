@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { flushSync } from 'react-dom';
+import { StepsGallery } from '../preview/StepsGallery';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Breadcrumbs, Drawer, ErrorSummary, Fieldset, SideNav, Steps, TextField } from '../components';
@@ -34,6 +37,50 @@ describe('navigation and form workflow contracts', () => {
     rerender(<Steps items={items} current={3}/>);
     expect(screen.getAllByText('已完成')).toHaveLength(3);
     expect(document.querySelector('[aria-current=step]')).toBeNull();
+  });
+  it.each(['accept', 'flush'])('focuses the accepted current step after %s updates without adding a Tab stop', mode => {
+    render(<StepsGallery/>);
+    fireEvent.change(screen.getByRole('combobox',{name:'回退处理'}),{target:{value:mode}});
+    const list=screen.getByRole('list',{name:'编辑任务步骤'});
+    const trigger=within(list).getByRole('button',{name:'返回完成配置'});
+    trigger.focus(); fireEvent.click(trigger);
+    const current=within(list).getByText('完成配置').closest('li')!;
+    expect(current).toHaveFocus(); expect(current).toHaveAttribute('tabindex','-1');
+    expect(current).toHaveAttribute('aria-current','step');
+    expect(trigger.isConnected).toBe(false);
+    const first=within(list).getByRole('button',{name:'返回选择范围'});
+    first.focus(); fireEvent.click(first);
+    expect(within(list).getByText('选择范围').closest('li')).toHaveFocus();
+    expect(within(list).queryAllByRole('button')).toHaveLength(0);
+    expect(screen.getByRole('textbox',{name:'任务备注'})).toHaveValue('合成任务草稿');
+  });
+  it.each(['focus', 'layout', 'flush-focus'])('preserves host focus with %s handoff', mode => {
+    render(<StepsGallery/>);
+    fireEvent.change(screen.getByRole('combobox',{name:'回退处理'}),{target:{value:mode}});
+    const trigger=screen.getByRole('button',{name:'返回完成配置'});
+    trigger.focus(); fireEvent.click(trigger);
+    expect(screen.getByRole('heading',{name:'编辑内容'})).toHaveFocus();
+  });
+  it('consumes rejected intent and leaves later external changes and programmatic clicks alone', () => {
+    render(<StepsGallery/>);
+    fireEvent.change(screen.getByRole('combobox',{name:'回退处理'}),{target:{value:'reject'}});
+    const trigger=screen.getByRole('button',{name:'返回完成配置'});
+    trigger.focus(); fireEvent.click(trigger); expect(trigger).toHaveFocus();
+    const draft=screen.getByRole('textbox',{name:'任务备注'}); draft.focus();
+    fireEvent.click(screen.getByRole('button',{name:'外部切换步骤'}));
+    expect(draft).toHaveFocus();
+    fireEvent.change(screen.getByRole('combobox',{name:'回退处理'}),{target:{value:'accept'}});
+    fireEvent.click(screen.getByRole('button',{name:'返回选择范围'}));
+    expect(draft).toHaveFocus();
+  });
+  it('does not redirect focus when the host accepts a different step', () => {
+    function Host() {
+      const [current,setCurrent]=useState(3);
+      return <Steps items={[{id:'a',label:'输入'},{id:'b',label:'核对'},{id:'c',label:'完成'}]} current={current} onStepChange={()=>flushSync(()=>setCurrent(2))}/>;
+    }
+    render(<Host/>);
+    const trigger=screen.getByRole('button',{name:'返回输入'}); trigger.focus(); fireEvent.click(trigger);
+    expect(trigger).toHaveFocus();
   });
   it('groups fields semantically and supports native disabled fieldsets', () => {
     render(<Fieldset legend="连接" hint="只读任务暂不可编辑" disabled><TextField label="地址"/></Fieldset>);

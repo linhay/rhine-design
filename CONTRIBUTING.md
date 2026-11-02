@@ -84,6 +84,7 @@ npm run check
 | --- | --- |
 | 浮层/关闭/动态偏好 | `scripts/check-settings-interactions.js`：关闭前后正反向 Tab 排除隐藏内容，嵌套 Escape/归焦；正常、系统/手动减少动态均完成失败保留输入与成功保存，结果及祖先非隐藏/非透明且结果有非零尺寸（不代表已验证裁剪或遮挡），不能只检查时长为零 |
 | Tabs | `tests/TabsLayout.test.tsx` 与 `scripts/check-tabs-layout.js`：禁用项、关系与受控状态；切离含输入面板后实际走 Tab/Shift+Tab，再返回核对草稿，不能只数 hidden/ARIA；栏内操作使用 `tests/TabsActions.test.tsx` 与 `scripts/check-tabs-actions.js` 验证整行线、44px/20px、普通/摘要长文、Tab隔离、busy、Dialog归焦与缺线反例 |
+| Steps 回退焦点 | `scripts/check-steps-focus.js`：真实 `#navigation`，Enter/Space 首步/中间/完成回退、拒绝/外部变化、同步提交/宿主交焦、连续操作/Tab、草稿/错误，五主题 × 880/520/400、短屏、200% CSS zoom、系统/手动减少动态。`?stepsProbe=lost-focus` 应命中焦点回到文档的 FAIL；不代表原生缩放或读屏语音。 |
 | 表单/错误 | `tests/Patterns.test.tsx`、`tests/SettingsDialog.test.tsx` 和设置交互脚本：失败保留输入，摘要只随失败提交定位、链接回字段不变路由；选择/关闭不等于保存 |
 | 有界布局/操作区 | `scripts/check-settings-bounded.js`：真实内框、长导航/操作、末项滚动可达、按钮完整和命中范围；保留 398px iframe 内宽及 CSS zoom 的独立标识 |
 | 对象阅读恢复 | `scripts/check-object-reading-recovery.js`：五主题各8组短屏/CSS zoom/减少动态，正常重开、失败重试与加载完成、正文/来源/关联及真实键盘；保存位置、焦点名称/可见几何/命中同时检查。`scripts/check-object-reading-recovery-lifecycle.js`：600ms等待中主动滚轮/键盘、换页签/关闭/取消/对象切换。`?readingQuick=1`仅代表基线子集；旧源码两个FAIL与正常700对照保留。 |
@@ -162,3 +163,7 @@ skill 会被单独复制安装，Markdown 相对链接必须留在 `skills/rhine
 [GitHub Pages](https://linhay.github.io/rhine-design/) 展示 `main` 的组件与演示。现有 CI 先执行 `npm run check`，成功后只上传 `dist/` 并部署；Pull Request 运行检查，不发布站点。工作流也支持在 `main` 手动重跑。
 
 Vite 使用相对资源路径，兼容 `/rhine-design/` 子路径。调整构建或静态资源时，检查在线页面、CSS、JS 和 Logo SVG 均能正常加载，以及 `#motion`、`#startup` 直接访问和重播。
+
+### Steps 浏览器回归
+
+`check-steps-focus.js` 是接受 ego-browser `Page` 的异步函数表达式。按已安装 ego-browser 使用指南创建或恢复本任务空间，在同一轮中导航至生产 `/#navigation`，读取脚本并调用该函数；保存返回的完整 JSON，核对 `pass`、`failures` 和各样本的实际 viewport。浏览器键盘负责 Enter/Space/Tab，DOM 操作仅用于准备状态和定位焦点。将 URL 改为 `/?stepsProbe=lost-focus#navigation` 验证定向失焦反例；普通场景须通过、反例须明确命中 meaningful/current focus，异常不算检出。名称首行 Range 与编号需同时满足视口/裁剪祖先几何及命中检查；仅列表项与视口相交不算定位可辨认。400×700 CSS zoom 2 还覆盖长文/错误、flush 返回中间步骤，旧候选应命中名称起始不可见。截图必须在设置视口的同一浏览器轮次采集，避免工具轮次结束后视口恢复导致图文证据不一致。
