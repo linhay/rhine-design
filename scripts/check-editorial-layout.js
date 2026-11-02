@@ -62,9 +62,13 @@ async page => {
         if (Number(layer.opacity) !== 1) opacityIssues.push('ancestor opacity: ' + layer.opacity);
       }
       if (Number(css.opacity) !== 1) opacityIssues.push('measured opacity: ' + css.opacity);
+      const strokePainted=kind==='graphic' && css.stroke!=='none' && parseFloat(css.strokeWidth)>0 && Number(css.strokeOpacity)>0 && rgba(css.stroke)[3]>0;
+      const fillPainted=kind==='graphic' && css.fill!=='none' && Number(css.fillOpacity)>0 && rgba(css.fill)[3]>0;
+      if(strokePainted && Number(css.strokeOpacity)!==1)opacityIssues.push('stroke opacity: '+css.strokeOpacity);
+      if(fillPainted && Number(css.fillOpacity)!==1)opacityIssues.push('fill opacity: '+css.fillOpacity);
       unsupported.push(...opacityIssues);
       const disabled = el.matches(':disabled,[aria-disabled=true]');
-      const raw = kind === 'boundary' ? css.borderTopColor : kind === 'focus' ? (insetFocus ? shadowColor : css.outlineColor) : kind === 'indicator' ? css.backgroundColor : kind === 'graphic' ? (css.stroke !== 'none' ? css.stroke : css.fill) : css.color;
+      const raw = kind === 'boundary' ? css.borderTopColor : kind === 'focus' ? (insetFocus ? shadowColor : css.outlineColor) : kind === 'indicator' ? css.backgroundColor : kind === 'graphic' ? (strokePainted ? css.stroke : fillPainted ? css.fill : 'rgba(0,0,0,0)') : css.color;
       const foregrounds = backgrounds.map(bg => {
         let fg = over(rgba(raw), bg);
         if (disabled && Number(css.opacity) !== 1) fg = over([...fg.slice(0,3), Number(css.opacity)], bg);
@@ -79,9 +83,9 @@ async page => {
       const large = parseFloat(css.fontSize) >= 24 || (parseFloat(css.fontSize) >= 56 / 3 && parseFloat(css.fontWeight) >= 700);
       const threshold = kind === 'text' ? (large ? 3 : 4.5) : 3;
       const visible = !!el.getClientRects().length && css.visibility === 'visible' && css.display !== 'none';
-      const graphicPainted = (css.stroke !== 'none' && parseFloat(css.strokeWidth) > 0 && parseFloat(css.strokeOpacity) > 0 && rgba(css.stroke)[3] > 0) || (css.fill !== 'none' && parseFloat(css.fillOpacity) > 0 && rgba(css.fill)[3] > 0);
+      const graphicPainted = strokePainted || fillPainted;
       const drawn = kind === 'focus' ? (insetFocus || (css.outlineStyle !== 'none' && parseFloat(css.outlineWidth) > 0)) && el.matches(':focus-visible') : kind === 'indicator' ? css.content !== 'none' && css.transform !== 'matrix(0, 0, 0, 1, 0, 0)' : kind === 'boundary' ? boundaryFillRatio >= 3 || (css.borderTopStyle !== 'none' && parseFloat(css.borderTopWidth) > 0) : kind === 'graphic' ? graphicPainted : true;
-      return { measuredOpacity: css.opacity, measuredDisplay: css.display, raw, foreground: fg, background: bg, ratio, boundaryFillRatio, ratioBound: backgrounds.length > 1, backgroundLuminanceRange: luminanceRange(backgrounds), foregroundLuminanceRange: luminanceRange(foregrounds), backgrounds, insetFocus, threshold, disabled, visible, drawn, unsupported, chain, fontSize: css.fontSize, fontWeight: css.fontWeight, text: (el.value || el.textContent || '').trim().slice(0, 90) };
+      return { paint: kind==='graphic' ? {stroke:css.stroke,strokeWidth:css.strokeWidth,strokeOpacity:css.strokeOpacity,fill:css.fill,fillOpacity:css.fillOpacity,strokePainted,fillPainted} : null, measuredOpacity: css.opacity, measuredDisplay: css.display, raw, foreground: fg, background: bg, ratio, boundaryFillRatio, ratioBound: backgrounds.length > 1, backgroundLuminanceRange: luminanceRange(backgrounds), foregroundLuminanceRange: luminanceRange(foregrounds), backgrounds, insetFocus, threshold, disabled, visible, drawn, unsupported, chain, fontSize: css.fontSize, fontWeight: css.fontWeight, text: (el.value || el.textContent || '').trim().slice(0, 90) };
     }, { kind, pseudo });
     if (probeControlOpacity) await locator.evaluate(e=>e.style.removeProperty('opacity'));
     const sample = { ...context, role, kind, pseudo, ...value, status: value.disabled ? 'EXEMPT' : value.unsupported.length ? 'UNMEASURED' : value.visible && value.drawn && value.ratio >= value.threshold ? 'PASS' : 'FAIL' };
@@ -95,7 +99,7 @@ async page => {
   };
   const allCases=[400,520,880].flatMap(width=>[1,2].map(zoom=>({width,zoom,motion:'normal'}))).concat(['system','manual'].map(motion=>({width:880,zoom:1,motion})));
   const cases=quick||probe?[{width:880,zoom:1,motion:'normal'}]:allCases;
-  const scenes=quick||probe?[['chart','unknown-marker'].includes(probe)?'overview':'report']:['report','release','overview'];
+  const scenes=quick||probe?[['chart','unknown-marker','graphic-opacity','inactive-paint'].includes(probe)?'overview':'report']:['report','release','overview'];
   const palettes=quick||probe?['swiss']:paletteFilter?[paletteFilter]:['neutral','swiss'];
   const layouts=['editorial'];
   const sceneLabels={report:'研究报告',release:'发布说明',overview:'数据概览'};
@@ -157,6 +161,14 @@ async page => {
       if(scene==='overview'){
         if(probe==='chart')await main.locator('.rhine-chart__line').evaluate(e=>e.style.strokeWidth='0');
         if(probe==='unknown-marker')await main.locator('.rhine-chart__missing').evaluate(e=>e.style.strokeWidth='0');
+        if(probe==='inactive-paint'){
+          await main.locator('.rhine-chart__line').evaluate(e=>{e.style.fill='rgba(0,0,0,0)';e.style.fillOpacity='0.01';});
+          await main.locator('.rhine-chart__missing').evaluate(e=>{const b=e.getBBox(),color=getComputedStyle(e).stroke;e.setAttribute('d',`M${b.x+b.width/2},${b.y}L${b.x+b.width},${b.y+b.height/2}L${b.x+b.width/2},${b.y+b.height}L${b.x},${b.y+b.height/2}Z`);e.style.stroke='rgba(0,0,0,0)';e.style.strokeOpacity='0.01';e.style.fill=color;e.style.fillOpacity='1';});
+        }
+        if(probe==='graphic-opacity'){
+          await main.locator('.rhine-chart__line').evaluate(e=>e.style.strokeOpacity='0.01');
+          await main.locator('.rhine-chart__missing').evaluate(e=>{const b=e.getBBox(),color=getComputedStyle(e).stroke;e.setAttribute('d',`M${b.x+b.width/2},${b.y}L${b.x+b.width},${b.y+b.height/2}L${b.x+b.width/2},${b.y+b.height}L${b.x},${b.y+b.height/2}Z`);e.style.stroke='none';e.style.fill=color;e.style.fillOpacity='0.01';});
+        }
         const drawn=await main.locator('.rhine-chart__line').evaluate(e=>{const s=getComputedStyle(e);return s.stroke!=='none'&&parseFloat(s.strokeWidth)>0&&parseFloat(s.opacity)===1&&e.getClientRects().length>0;});
         check(drawn,{...context,role:'chart-stroke'});
         const chart=main.locator('svg.rhine-chart__plot');await chart.focus();await page.keyboard.press('Home');await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');
