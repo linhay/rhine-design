@@ -3,6 +3,7 @@ import { AppShell, AppShellToggle, IconButton, Inline, Background, Button, Check
 import type { Choice } from '../components/components';
 import './extensions.css';
 import { NumberValidationGallery } from './NumberValidationGallery';
+import { TableStickyGallery } from './TableStickyGallery';
 
 const longName = '非常长的工作区名称与跨区域协作资料—Workspace-2026-archive';
 const sampleImage = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640"><rect width="960" height="640" fill="#d2dacf"/><circle cx="720" cy="150" r="65" fill="#f8f2d8"/><path d="M0 520 310 140 620 550 800 280 960 500V640H0Z" fill="#536b5d"/><path d="M0 560 320 400 610 590 960 480V640H0Z" fill="#293f37"/></svg>')}`;
@@ -80,6 +81,7 @@ export function AdvancedDataGallery() {
       <Pagination label="项目记录分页" page={page} pageSize={pageSize} total={unknown ? undefined : 28} hasNext={page < 3} disabled={state === 'disabled'} loading={state === 'loading'} showFirstButton showLastButton onPageChange={setPage} onPageSizeChange={size => { setPageSize(size); setPage(1); }} />
       <p role="status">已选 {keys.length} 项：{keys.join(', ') || '无'}。排序意图：{sort ? `${sort.key} ${sort.direction}` : '无'}；分页只回传意图。</p>
     </Stack></Surface>
+    <TableStickyGallery />
   </section>;
 }
 
