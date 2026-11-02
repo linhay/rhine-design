@@ -28,11 +28,11 @@ function locateHeading(element: HTMLElement | null) {
   element?.focus({ preventScroll: true });
   element?.scrollIntoView({ block: 'start' });
 }
-function RecordDetails({ row, unit }: { row: RecordRow; unit: string }) {
-  const [open, setOpen] = useState(false), [saved, setSaved] = useState('尚无备注'), [draft, setDraft] = useState('');
+function RecordDetails({ row, unit, saved, onSave }: { row: RecordRow; unit: string; saved: string; onSave: (note: string) => void }) {
+  const [open, setOpen] = useState(false), [draft, setDraft] = useState('');
   return <Dialog title="记录详情" open={open} onOpenChange={next => { if (next) setDraft(saved); setOpen(next); }}
     trigger={<Button variant="quiet" aria-label={`查看${row.title}详情`}>详情</Button>}
-    footer={<><Button variant="secondary" onClick={() => setOpen(false)}>取消编辑</Button><Button onClick={() => { setSaved(draft); setOpen(false); }}>保存本地备注</Button></>}>
+    footer={<><Button variant="secondary" onClick={() => setOpen(false)}>取消编辑</Button><Button onClick={() => { onSave(draft); setOpen(false); }}>保存本地备注</Button></>}>
     <Stack gap={4}>
       <Text as="h3" variant="heading" data-evidence="record-title">{row.title}</Text>
       <Text data-evidence="record-value">{row.value == null ? `未知 ${unit} · 读取失败，等待补采` : `${row.value} ${unit} · ${row.status}`}</Text>
@@ -46,6 +46,7 @@ function RecordDetails({ row, unit }: { row: RecordRow; unit: string }) {
 function Scenario({ config }: { config: typeof configs[number] }) {
   const [filter, setFilter] = useState('all'), [sort, setSort] = useState<TableSort>(), [draft, setDraft] = useState('下次继续核对未知记录。');
   const [save, setSave] = useState('idle');
+  const [savedNotes, setSavedNotes] = useState<Record<string, string>>({});
   const [followHypothesis, setFollowHypothesis] = useState(false);
   const headingId = useId();
   const section = useRef<HTMLElement>(null);
@@ -111,7 +112,7 @@ function Scenario({ config }: { config: typeof configs[number] }) {
           { key: 'title', header: '记录', rowHeader: true, width: 230, render: row => row.title },
           { key: 'value', header: config.measure, sortable: true, width: 120, align: 'right', render: row => <span data-evidence="table-value">{row.value ?? '未知'} {config.unit}</span> },
           { key: 'status', header: '状态', width: 120, render: row => <Badge tone={row.status === '已核对' ? 'success' : row.status === '读取失败' ? 'error' : 'warning'}>{row.status}</Badge> },
-          { key: 'details', header: '操作', width: 100, render: row => <RecordDetails row={row} unit={config.unit} /> },
+          { key: 'details', header: '操作', width: 100, render: row => <RecordDetails row={row} unit={config.unit} saved={savedNotes[row.id] ?? '尚无备注'} onSave={note => setSavedNotes(notes => ({ ...notes, [row.id]: note }))} /> },
         ]} />
       </Stack></Surface>
       <Surface className="rhine-editorial-panel rhine-editorial-draft"><Stack gap={4}>

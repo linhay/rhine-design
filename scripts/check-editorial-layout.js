@@ -8,9 +8,10 @@ async page => {
   const settle=()=>page.waitForTimeout(220);let context;
   const measure = async (locator, role, kind = 'text', pseudo = null) => {
     await locator.scrollIntoViewIfNeeded();
-    const probeControlOpacity = probe === 'opacity' && ['Button/focus','TextField/boundary'].includes(role);
+    const probeControlOpacity = probe === 'opacity' && ['return-focus','textarea-boundary'].includes(role);
     if (probeControlOpacity) await locator.evaluate(e=>e.style.opacity='0.1');
-    const value = await locator.evaluate((el, { kind, pseudo }) => {
+    const strokeOnly = kind==='graphic' && ['chart-line','chart-missing'].includes(role);
+    const value = await locator.evaluate((el, { kind, pseudo, strokeOnly }) => {
       const css = getComputedStyle(el, pseudo), chain = [];
       const rgba = value => {
         // Browser resolves CSS Color 4 too; no hand-parsed color(srgb) fallback.
@@ -62,9 +63,13 @@ async page => {
         if (Number(layer.opacity) !== 1) opacityIssues.push('ancestor opacity: ' + layer.opacity);
       }
       if (Number(css.opacity) !== 1) opacityIssues.push('measured opacity: ' + css.opacity);
+      const strokePainted=kind==='graphic' && css.stroke!=='none' && parseFloat(css.strokeWidth)>0 && Number(css.strokeOpacity)>0 && rgba(css.stroke)[3]>0;
+      const fillPainted=kind==='graphic' && !strokeOnly && css.fill!=='none' && Number(css.fillOpacity)>0 && rgba(css.fill)[3]>0;
+      if(strokePainted && Number(css.strokeOpacity)!==1)opacityIssues.push('stroke opacity: '+css.strokeOpacity);
+      if(fillPainted && Number(css.fillOpacity)!==1)opacityIssues.push('fill opacity: '+css.fillOpacity);
       unsupported.push(...opacityIssues);
       const disabled = el.matches(':disabled,[aria-disabled=true]');
-      const raw = kind === 'boundary' ? css.borderTopColor : kind === 'focus' ? (insetFocus ? shadowColor : css.outlineColor) : kind === 'indicator' ? css.backgroundColor : kind === 'graphic' ? (css.stroke !== 'none' ? css.stroke : css.fill) : css.color;
+      const raw = kind === 'boundary' ? css.borderTopColor : kind === 'focus' ? (insetFocus ? shadowColor : css.outlineColor) : kind === 'indicator' ? css.backgroundColor : kind === 'graphic' ? (strokePainted ? css.stroke : fillPainted ? css.fill : 'rgba(0,0,0,0)') : css.color;
       const foregrounds = backgrounds.map(bg => {
         let fg = over(rgba(raw), bg);
         if (disabled && Number(css.opacity) !== 1) fg = over([...fg.slice(0,3), Number(css.opacity)], bg);
@@ -79,9 +84,10 @@ async page => {
       const large = parseFloat(css.fontSize) >= 24 || (parseFloat(css.fontSize) >= 56 / 3 && parseFloat(css.fontWeight) >= 700);
       const threshold = kind === 'text' ? (large ? 3 : 4.5) : 3;
       const visible = !!el.getClientRects().length && css.visibility === 'visible' && css.display !== 'none';
-      const drawn = kind === 'focus' ? (insetFocus || (css.outlineStyle !== 'none' && parseFloat(css.outlineWidth) > 0)) && el.matches(':focus-visible') : kind === 'indicator' ? css.content !== 'none' && css.transform !== 'matrix(0, 0, 0, 1, 0, 0)' : kind === 'boundary' ? boundaryFillRatio >= 3 || (css.borderTopStyle !== 'none' && parseFloat(css.borderTopWidth) > 0) : true;
-      return { measuredOpacity: css.opacity, measuredDisplay: css.display, raw, foreground: fg, background: bg, ratio, boundaryFillRatio, ratioBound: backgrounds.length > 1, backgroundLuminanceRange: luminanceRange(backgrounds), foregroundLuminanceRange: luminanceRange(foregrounds), backgrounds, insetFocus, threshold, disabled, visible, drawn, unsupported, chain, fontSize: css.fontSize, fontWeight: css.fontWeight, text: (el.value || el.textContent || '').trim().slice(0, 90) };
-    }, { kind, pseudo });
+      const graphicPainted = strokePainted || fillPainted;
+      const drawn = kind === 'focus' ? (insetFocus || (css.outlineStyle !== 'none' && parseFloat(css.outlineWidth) > 0)) && el.matches(':focus-visible') : kind === 'indicator' ? css.content !== 'none' && css.transform !== 'matrix(0, 0, 0, 1, 0, 0)' : kind === 'boundary' ? boundaryFillRatio >= 3 || (css.borderTopStyle !== 'none' && parseFloat(css.borderTopWidth) > 0) : kind === 'graphic' ? graphicPainted : true;
+      return { paint: kind==='graphic' ? {stroke:css.stroke,strokeWidth:css.strokeWidth,strokeOpacity:css.strokeOpacity,fill:css.fill,fillOpacity:css.fillOpacity,strokePainted,fillPainted,strokeOnly} : null, measuredOpacity: css.opacity, measuredDisplay: css.display, raw, foreground: fg, background: bg, ratio, boundaryFillRatio, ratioBound: backgrounds.length > 1, backgroundLuminanceRange: luminanceRange(backgrounds), foregroundLuminanceRange: luminanceRange(foregrounds), backgrounds, insetFocus, threshold, disabled, visible, drawn, unsupported, chain, fontSize: css.fontSize, fontWeight: css.fontWeight, text: (el.value || el.textContent || '').trim().slice(0, 90) };
+    }, { kind, pseudo, strokeOnly });
     if (probeControlOpacity) await locator.evaluate(e=>e.style.removeProperty('opacity'));
     const sample = { ...context, role, kind, pseudo, ...value, status: value.disabled ? 'EXEMPT' : value.unsupported.length ? 'UNMEASURED' : value.visible && value.drawn && value.ratio >= value.threshold ? 'PASS' : 'FAIL' };
     samples.push(sample);
@@ -94,7 +100,7 @@ async page => {
   };
   const allCases=[400,520,880].flatMap(width=>[1,2].map(zoom=>({width,zoom,motion:'normal'}))).concat(['system','manual'].map(motion=>({width:880,zoom:1,motion})));
   const cases=quick||probe?[{width:880,zoom:1,motion:'normal'}]:allCases;
-  const scenes=quick||probe?[probe==='chart'?'overview':'report']:['report','release','overview'];
+  const scenes=quick||probe?[['chart','unknown-marker','graphic-opacity','inactive-paint','missing-fill-only'].includes(probe)?'overview':'report']:['report','release','overview'];
   const palettes=quick||probe?['swiss']:paletteFilter?[paletteFilter]:['neutral','swiss'];
   const layouts=['editorial'];
   const sceneLabels={report:'研究报告',release:'发布说明',overview:'数据概览'};
@@ -105,7 +111,7 @@ async page => {
     const startFailures=failures.length;
     try{
       await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:motion==='system'?'reduce':'no-preference'});
-      await page.goto(shell ? `${base}/?theme=graphite#editorial-layout` : `${base}/?fixture=editorial-layout&scene=${scene}&palette=${palette}&zoom=${zoom}&motion=${motion}`);
+      await page.goto(shell ? `${base}/?theme=graphite&editorialCase=${scene}-${palette}-${width}-${zoom}-${motion}#editorial-layout` : `${base}/?fixture=editorial-layout&scene=${scene}&palette=${palette}&zoom=${zoom}&motion=${motion}`);
       if(shell){
         await page.evaluate(zoom=>document.documentElement.style.zoom=String(zoom),zoom);
         await page.getByLabel('局部配色',{exact:true}).selectOption(palette);
@@ -155,6 +161,14 @@ async page => {
       }
       if(scene==='overview'){
         if(probe==='chart')await main.locator('.rhine-chart__line').evaluate(e=>e.style.strokeWidth='0');
+        if(probe==='unknown-marker')await main.locator('.rhine-chart__missing').evaluate(e=>e.style.strokeWidth='0');
+        if(probe==='missing-fill-only')await main.locator('.rhine-chart__missing').evaluate(e=>{e.style.stroke='none';e.style.fill='black';});
+        if(probe==='inactive-paint')await main.locator('.rhine-chart__line').evaluate(e=>{e.style.fill='rgba(0,0,0,0)';e.style.fillOpacity='0.01';});
+        if(probe==='graphic-opacity')await main.locator('.rhine-chart__line').evaluate(e=>e.style.strokeOpacity='0.01');
+        if(['graphic-opacity','inactive-paint'].includes(probe)){
+          await main.locator('svg.rhine-chart__plot').evaluate((svg,probe)=>{const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');rect.setAttribute('class','rhine-paint-probe');rect.setAttribute('x','10');rect.setAttribute('y','10');rect.setAttribute('width','20');rect.setAttribute('height','20');rect.style.fill='rgb(32,38,49)';rect.style.fillOpacity=probe==='graphic-opacity'?'0.01':'1';rect.style.stroke='rgba(0,0,0,0)';rect.style.strokeOpacity='0.01';svg.append(rect);},probe);
+          await measure(main.locator('.rhine-paint-probe'),'paint-control-fill','graphic');
+        }
         const drawn=await main.locator('.rhine-chart__line').evaluate(e=>{const s=getComputedStyle(e);return s.stroke!=='none'&&parseFloat(s.strokeWidth)>0&&parseFloat(s.opacity)===1&&e.getClientRects().length>0;});
         check(drawn,{...context,role:'chart-stroke'});
         const chart=main.locator('svg.rhine-chart__plot');await chart.focus();await page.keyboard.press('Home');await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');
@@ -165,10 +179,16 @@ async page => {
       const sort=table.locator('thead button');await sort.focus();await page.keyboard.press('Enter');await page.keyboard.press('Enter');
       if(probe==='sort')await table.evaluate(e=>{const body=e.querySelector('tbody');body.prepend(body.lastElementChild);});
       assert((await table.locator('tbody tr').first().innerText()).includes(highTitle[scene]),'descending-sort-result');assert((await table.locator('tbody tr').last().innerText()).includes('未知'),'unknown sorted last');
+      const readyTrigger=table.locator('tbody tr').filter({has:page.locator('.rhine-tone-success')}).getByRole('button',{name:/^查看/});
+      const readyName=await readyTrigger.getAttribute('aria-label'),readyNote=`${scene} 已核对记录备注`;const readyDialog=page.getByRole('dialog',{name:'记录详情'});
+      await readyTrigger.focus();await page.keyboard.press('Enter');await readyDialog.waitFor();await readyDialog.getByLabel('详情备注').fill(readyNote);await readyDialog.getByRole('button',{name:'保存本地备注'}).click();await readyDialog.waitFor({state:'detached'});await settle();
+      await main.getByLabel('记录筛选',{exact:true}).selectOption('attention');assert(await table.getByRole('button',{name:readyName,exact:true}).count()===0,'ready row must actually unmount');
+      await main.getByLabel('记录筛选',{exact:true}).selectOption('all');const restoredReadyTrigger=table.getByRole('button',{name:readyName,exact:true});await restoredReadyTrigger.focus();await page.keyboard.press('Enter');await readyDialog.waitFor();
+      assert(await readyDialog.getByLabel('详情备注').inputValue()===readyNote,'ready saved note survives attention/all filter');await readyDialog.getByLabel('详情备注').fill('取消已核对记录草稿');await page.keyboard.press('Escape');await readyDialog.waitFor({state:'detached'});await settle();
       await main.getByLabel('记录筛选',{exact:true}).selectOption('attention');assert(await table.locator('tbody tr').count()===2,'filter result');
       const scroll=await table.evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth}));
       if(scroll.scroll>scroll.width+1){await table.focus();for(let n=0;n<6;n++)await page.keyboard.press('ArrowRight');await page.waitForTimeout(150);assert(await table.evaluate(e=>e.scrollLeft>0),'table keyboard scroll');}
-      const trigger=table.getByRole('button',{name:/^查看/}).first();await trigger.focus();
+      const trigger=table.getByRole('button',{name:/^查看/}).first();const savedTriggerName=await trigger.getAttribute('aria-label');await trigger.focus();
       const reachable=await trigger.evaluate(e=>{const a=e.closest('.rhine-table-scroll').getBoundingClientRect(),b=e.getBoundingClientRect();return b.left>=a.left-1&&b.right<=a.right+1;});assert(reachable,'detail column reachable');
       await page.keyboard.press('Enter');const dialog=page.getByRole('dialog',{name:'记录详情'});await dialog.waitFor();await settle();const originalDialog=await dialog.elementHandle();
       const dialogDraft=dialog.getByLabel('详情备注');await dialogDraft.fill('保留详情草稿');
@@ -185,8 +205,16 @@ async page => {
       const box=await dialog.boundingBox();assert(box.x>=-1&&box.x+box.width<=width+1&&box.y>=-1&&box.y+box.height<=1001,'dialog viewport bounds');
       await dialog.getByRole('button',{name:'取消编辑',exact:true}).click();await dialog.waitFor({state:'detached'});await settle();assert(await trigger.evaluate(e=>e===document.activeElement),'cancel return focus');
       await page.keyboard.press('Enter');await dialog.waitFor();assert(await dialog.getByLabel('详情备注').inputValue()==='尚无备注','cancel must not commit');
-      await dialog.getByLabel('详情备注').fill('已核对本地备注');await dialog.getByRole('button',{name:'保存本地备注'}).click();await dialog.waitFor({state:'detached'});await settle();
-      await page.keyboard.press('Enter');await dialog.waitFor();assert(await dialog.getByLabel('详情备注').inputValue()==='已核对本地备注','explicit save retained');await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});await settle();assert(await trigger.evaluate(e=>e===document.activeElement),'Escape return focus');
+      const savedNote=`${scene} 已核对本地备注`;
+      await dialog.getByLabel('详情备注').fill(savedNote);await dialog.getByRole('button',{name:'保存本地备注'}).click();await dialog.waitFor({state:'detached'});await settle();
+      await main.getByLabel('记录筛选',{exact:true}).selectOption('ready');
+      assert(await table.getByRole('button',{name:savedTriggerName,exact:true}).count()===0,'saved row must actually unmount');
+      await main.getByLabel('记录筛选',{exact:true}).selectOption('all');
+      await sort.focus();await page.keyboard.press('Enter');await page.keyboard.press('Enter');await page.keyboard.press('Enter');
+      await main.getByLabel('记录筛选',{exact:true}).selectOption('attention');
+      await trigger.focus();await page.keyboard.press('Enter');await dialog.waitFor();assert(await dialog.getByLabel('详情备注').inputValue()===savedNote,'saved note survives filter remount and sort');
+      await dialog.getByLabel('详情备注').fill('取消不得覆盖已保存备注');await dialog.getByRole('button',{name:'取消编辑',exact:true}).click();await dialog.waitFor({state:'detached'});await settle();
+      await page.keyboard.press('Enter');await dialog.waitFor();assert(await dialog.getByLabel('详情备注').inputValue()===savedNote,'cancel must preserve saved note');await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});await settle();assert(await trigger.evaluate(e=>e===document.activeElement),'Escape return focus');
       if(probe==='focus')await page.addStyleTag({content:'[data-rhine-editorial] button:focus-visible{outline:none!important;box-shadow:none!important}'});
       await keyboardFocus(trigger,'return-focus');
       const field=main.getByLabel('跟进草稿');const originalField=await field.elementHandle();await field.fill('待核对的长中文草稿，保留未知数据与单位。');
@@ -196,8 +224,18 @@ async page => {
       await main.getByRole('button',{name:'模拟等待',exact:true}).click();assert(await primary.getAttribute('aria-busy')==='true','waiting');await main.getByRole('button',{name:'取消等待',exact:true}).click();assert(await primary.getAttribute('aria-busy')!=='true','cancel waiting');
       const popTrigger=main.getByRole('button',{name:'查看数据口径'});await popTrigger.click();await settle();const pop=page.locator('.rhine-popover');
       check(await pop.evaluate((e,p)=>getComputedStyle(e).getPropertyValue('--rhine-green').trim()===(p==='swiss'?'#2348b5':'#343434'),palette),{...context,role:'popover-palette'});await measure(pop.locator('.rhine-text').first(),'popover-text');await page.keyboard.press('Escape');await pop.waitFor({state:'detached'});await settle();assert(await popTrigger.evaluate(e=>e===document.activeElement),'popover focus return');
-      await selectedTab.focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowLeft');assert(await originalField.evaluate(e=>e.isConnected)&&(await field.inputValue()).startsWith('待核对'),'scene tab draft preserved');
+      await selectedTab.focus();await page.keyboard.press('ArrowRight');
+      const nextScene={report:'release',release:'overview',overview:'report'}[scene];const other=page.locator(`section[data-scene=${nextScene}]`);
+      const otherTrigger=other.getByRole('region',{name:`${sceneLabels[nextScene]}明细，可横向滚动`}).locator('tbody tr').nth(1).getByRole('button',{name:/^查看/});await otherTrigger.focus();await page.keyboard.press('Enter');await dialog.waitFor();
+      assert(await dialog.getByLabel('详情备注').inputValue()==='尚无备注','same row id must not share notes across scenes');
+      await dialog.getByLabel('详情备注').fill('取消另一场景草稿');await dialog.getByRole('button',{name:'取消编辑',exact:true}).click();await dialog.waitFor({state:'detached'});await settle();
+      await page.keyboard.press('Enter');await dialog.waitFor();assert(await dialog.getByLabel('详情备注').inputValue()==='尚无备注','other scene cancel must not commit');await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});await settle();
+      await page.getByRole('tab',{name:sceneLabels[nextScene],exact:true}).focus();await page.keyboard.press('ArrowLeft');
+      assert(await originalField.evaluate(e=>e.isConnected)&&(await field.inputValue()).startsWith('待核对'),'scene tab draft preserved');
+      await trigger.focus();await page.keyboard.press('Enter');await dialog.waitFor();assert(await dialog.getByLabel('详情备注').inputValue()===savedNote,'saved note survives scene tabs');await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});await settle();
       for(let i=0;i<12;i++){await page.keyboard.press('Tab');assert(await page.evaluate(()=>!document.activeElement.closest('[hidden],[inert]')),'hidden tab focus leak');}
+      await main.getByLabel('记录筛选',{exact:true}).selectOption('all');await restoredReadyTrigger.focus();await page.keyboard.press('Enter');await readyDialog.waitFor();
+      assert(await readyDialog.getByLabel('详情备注').inputValue()===readyNote,'other record save and cancellation preserve ready note');await page.keyboard.press('Escape');await readyDialog.waitFor({state:'detached'});await settle();await main.getByLabel('记录筛选',{exact:true}).selectOption('attention');
       assert(await main.getByLabel('记录筛选').inputValue()==='attention','filter retained');
       assert(await page.evaluate(()=>location.hash)===initialHash,'section navigation changed gallery route');
       if(shell){
