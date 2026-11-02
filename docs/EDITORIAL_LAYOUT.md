@@ -22,7 +22,7 @@
 - `container-type:inline-size`放在内容包装层；主题根不添加transform、contain或裁剪，以免影响Portal。CSS zoom与实际容器都需要验收，不能仅依赖视口媒体查询。
 - 正式展台已处于GalleryShell的main内，因此场景用section；页内定位直接聚焦/滚动到自身标题，不占用展台hash路由。非活动Tabs面板不可见且不参与顺序聚焦。
 
-最小宿主骨架（类名是应用自己的配方，不是新增组件API）：
+最小宿主骨架（类名是应用自己的配方，不是新增组件API；宿主CSS在neutral主题CSS之后加载）：
 
 ```tsx
 <ThemeProvider theme="neutral" className="rhine-editorial-example">
@@ -37,7 +37,7 @@
 ```
 
 ```css
-.rhine-editorial-example { --rhine-radius-control:3px; --rhine-radius-card:4px; }
+.rhine-theme.rhine-editorial-example { --rhine-radius-control:3px; --rhine-radius-card:4px; }
 .rhine-editorial-content { container-type:inline-size; min-width:0; }
 .rhine-editorial-columns { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
 .rhine-editorial-columns > * { min-width:0; }
