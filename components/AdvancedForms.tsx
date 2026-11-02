@@ -138,7 +138,15 @@ export function NumberField({ label, value, onValueChange, min, max, step = 1, p
     if (!input) return;
     const doc = input.ownerDocument;
     const submit = (event: Event) => {
-      if (event.target !== input.form || !input.form) return;
+      if (event.target !== input.form || !input.form || input.matches(':disabled') || input.readOnly) return;
+      if (!input.validity.valid) {
+        // A later field must not relax this rejected draft and let the host
+        // save its old value. End this attempt before any later listener.
+        event.preventDefault(); event.stopImmediatePropagation();
+        flushSync(() => setShowError(true));
+        input.checkValidity();
+        return;
+      }
       // Keep this listener stable: another field's flushSync may rerender the
       // whole form while the same native submit event is still dispatching.
       flushSync(() => latest.current.commit());

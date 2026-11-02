@@ -88,3 +88,22 @@ it('keeps its submit listener across rerenders and removes it on unmount',()=>{
   unmount();expect(remove).toHaveBeenCalledWith('submit',handlers[0][1],true);
   add.mockRestore();remove.mockRestore();
 });
+it('blocks a rejected earlier draft even if a later field could relax its bound',()=>{
+  const save=vi.fn(),capture=vi.fn();
+  function Pair(){const [amount,setAmount]=useState<number|null>(1),[limit,setLimit]=useState<number|null>(3);return <form noValidate onSubmitCapture={capture} onSubmit={event=>{event.preventDefault();if(event.currentTarget.checkValidity())save(amount,limit);}}><NumberField label="Amount" value={amount} onValueChange={setAmount} max={limit??undefined}/><NumberField label="Limit" value={limit} onValueChange={setLimit}/></form>;}
+  render(<Pair/>);const amount=screen.getByRole('spinbutton',{name:'Amount'}) as HTMLInputElement,limit=screen.getByRole('spinbutton',{name:'Limit'});
+  fireEvent.change(amount,{target:{value:'7'}});fireEvent.change(limit,{target:{value:'10'}});
+  act(()=>amount.form!.requestSubmit());
+  expect(save).not.toHaveBeenCalled();expect(capture).not.toHaveBeenCalled();expect(amount.value).toBe('7');expect(limit).toHaveValue('10');
+  // Explicitly accept the constraint before retrying; rejected submissions do not solve cross-field dependencies.
+  fireEvent.keyDown(limit,{key:'Enter'});act(()=>amount.form!.requestSubmit());
+  expect(save).toHaveBeenCalledExactlyOnceWith(7,10);
+});
+it.each(['outside','first-legend','second-legend'] as const)('respects native disabled fieldset semantics (%s)',position=>{
+  const change=vi.fn(),save=vi.fn();
+  function Group(){const [value,setValue]=useState<number|null>(1.25);const field=<NumberField label="Amount" value={value} precision={1} onValueChange={next=>{change(next);setValue(next);}}/>;return <form onSubmit={event=>{event.preventDefault();save(value);}}><fieldset disabled><legend>{position==='first-legend'?field:'Group'}</legend>{position==='second-legend'?<legend>{field}</legend>:position==='outside'?field:null}</fieldset></form>;}
+  render(<Group/>);const input=screen.getByRole('spinbutton') as HTMLInputElement;
+  expect(input.matches(':disabled')).toBe(position!=='first-legend');
+  act(()=>input.form!.requestSubmit());
+  if(position==='first-legend'){expect(change).toHaveBeenCalledExactlyOnceWith(1.3);expect(save).toHaveBeenCalledExactlyOnceWith(1.3);}else{expect(change).not.toHaveBeenCalled();expect(input.value).toBe('1.25');expect(save).toHaveBeenCalledExactlyOnceWith(1.25);}
+});

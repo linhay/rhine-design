@@ -29,7 +29,20 @@ export function NumberValidationGallery() {
     </Stack></form>
   </Stack>;
 }
+function NumberSubmissionEdge({ kind }: {kind:string}) {
+  const dependency=kind==='dependency', [amount,setAmount]=useState<number|null>(dependency?1:1.25), [limit,setLimit]=useState<number|null>(3);
+  const [accepted,setAccepted]=useState(0), [attempt,setAttempt]=useState(0), [saved,setSaved]=useState('尚未保存');
+  const form=useRef<HTMLFormElement>(null);
+  const field=<NumberField label="数量" name="amount" value={amount} onValueChange={next=>{setAmount(next);setAccepted(n=>n+1);}} max={dependency?limit??undefined:undefined} precision={dependency?undefined:1}/>;
+  return <Stack><Text as="h2" variant="section">提交边界示例</Text><form ref={form} aria-label="提交边界设置" noValidate={dependency} onSubmit={event=>{
+    event.preventDefault();setAttempt(n=>n+1);
+    if(event.currentTarget.checkValidity())setSaved(`已保存：数量 ${amount}，上限 ${limit}`);
+  }}><Stack><Button onMouseDown={event=>event.preventDefault()} onClick={()=>form.current?.requestSubmit()}>提交当前草稿</Button>
+    {dependency?<>{field}<NumberField label="上限" name="limit" value={limit} onValueChange={setLimit}/></>:<fieldset disabled style={{border:0,padding:0,margin:0,minWidth:0}}><legend>{kind==='legend'?field:'禁用分组'}</legend>{kind==='legend'?null:field}</fieldset>}
+    <Text>已接受数量：{amount}；已接受上限：{limit}</Text><Text>数量接受次数：{accepted}；提交处理次数：{attempt}</Text><Notice title={saved}/>
+  </Stack></form>{dependency&&<Text>先输入数量7、上限10。当前上限仍为3时提交应被阻止；先在上限字段按Enter接受10，再提交数量草稿。</Text>}</Stack>;
+}
 export function NumberValidationFixture() {
   const params=new URLSearchParams(location.search);
-  return <ThemeProvider defaultTheme={(params.get('theme')||'rhine') as ThemeName} data-rhine-motion={params.get('motion')==='manual'?'reduced':'system'}><main style={{padding:16}}><NumberValidationGallery/></main></ThemeProvider>;
+  return <ThemeProvider defaultTheme={(params.get('theme')||'rhine') as ThemeName} data-rhine-motion={params.get('motion')==='manual'?'reduced':'system'}><main style={{padding:16}}>{params.has('edge')?<NumberSubmissionEdge kind={params.get('edge')!}/>:<NumberValidationGallery/>}</main></ThemeProvider>;
 }
