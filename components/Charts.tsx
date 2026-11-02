@@ -81,14 +81,26 @@ export function TrendChart({ points, kind = 'bar', activePointId, defaultActiveP
 
 export interface ChartPart extends ChartPoint { tone?: 1 | 2 | 3 | 4 }
 export interface StackedBarProps extends ChartContext { parts: ChartPart[] }
+// Keep ordinary one-decimal labels; only refine labels that would erase a boundary.
+function shareText(value: number, total: number, positiveParts: number) {
+  if (value === 0) return '0.0%';
+  if (positiveParts === 1) return '100.0%';
+  const percent = value / total * 100, rounded = percent.toFixed(1);
+  // Original counts also protect against division underflow and sum rounding.
+  if (rounded === '0.0') return percent < 0.01 ? '<0.01%' : `${percent.toFixed(2)}%`;
+  if (rounded === '100.0') return percent > 99.99 ? '>99.99%' : `${percent.toFixed(2)}%`;
+  return `${rounded}%`;
+}
+
 export function StackedBar({ parts, ...context }: StackedBarProps) {
   const incomplete = parts.some(part => !known(part.value)), invalid = parts.some(part => known(part.value) && part.value < 0);
   const total = parts.reduce((sum, part) => sum + (known(part.value) ? part.value : 0), 0);
   const complete = parts.length > 0 && !incomplete && !invalid && Number.isFinite(total) && total > 0;
+  const positiveParts = parts.filter(part => known(part.value) && part.value > 0).length;
   return <ChartFrame {...context}>
     {complete ? <div className="rhine-chart__stack" role="img" aria-label={`${context.label}：${parts.map(part => `${part.label} ${part.value} ${context.unit}`).join('；')}。完整比例见图例。`}>
       {parts.map((part, index) => part.value! > 0 && <span key={part.id} data-tone={part.tone ?? index % 4 + 1} style={{ flexGrow: part.value! / total } as CSSProperties} />)}
     </div> : <p role="status">{invalid ? '包含负数，无法绘制占比。' : incomplete ? '总量未知，不计算占比。' : total === 0 && parts.length ? '已知总量为 0，无占比。' : '暂无可绘制的占比。'}</p>}
-    <ul className="rhine-chart__parts" aria-label={`${context.label}图例`}>{parts.map((part, index) => <li key={part.id}><span aria-hidden="true" data-tone={part.tone ?? index % 4 + 1} />{part.label}：{context.valueFormatter ? context.valueFormatter(known(part.value) ? part.value : null) : known(part.value) ? part.value : '未知'}{known(part.value) ? ` ${context.unit}` : ''}{complete ? `（${(part.value! / total * 100).toFixed(1)}%）` : ''}</li>)}</ul>
+    <ul className="rhine-chart__parts" aria-label={`${context.label}图例`}>{parts.map((part, index) => <li key={part.id}><span aria-hidden="true" data-tone={part.tone ?? index % 4 + 1} />{part.label}：{context.valueFormatter ? context.valueFormatter(known(part.value) ? part.value : null) : known(part.value) ? part.value : '未知'}{known(part.value) ? ` ${context.unit}` : ''}{complete ? `（${shareText(part.value!, total, positiveParts)}）` : ''}</li>)}</ul>
   </ChartFrame>;
 }
