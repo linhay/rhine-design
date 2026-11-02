@@ -18,11 +18,12 @@ async page => {
           await input.fill(draft);
           if(negative) await input.evaluate(el=>el.setCustomValidity(''));
           assert(!(await input.evaluate(el=>el.validity.valid)),`${mode}: invalid draft considered valid (${draft})`);
-          await save.click();
+          if(draft==='101'){await save.focus();await save.press('Enter');}else await save.click();
           assert((await input.inputValue())===draft,'invalid draft lost');
           const summary=page.getByRole('region',{name:'请修正以下问题',exact:true});await summary.waitFor();
           await page.waitForFunction(()=>document.activeElement?.classList.contains('rhine-error-summary'));
-          const url=page.url();await summary.getByRole('link').filter({hasText:'数量'}).click();
+          const url=page.url(), link=summary.getByRole('link').filter({hasText:'数量'});
+          if(draft==='101'){await link.focus();await link.press('Enter');}else await link.click();
           assert(await input.evaluate(el=>document.activeElement===el),'error link did not focus field');assert(page.url()===url,'error link changed route');
         }
         await input.fill('2.54');
