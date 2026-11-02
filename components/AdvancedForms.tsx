@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type SyntheticEvent } from 'react';
+import { flushSync } from 'react-dom';
 import { Button, TextField, type Choice } from './components';
 import { Combobox, type ComboboxProps } from './Forms';
 import './compact-forms.css';
@@ -92,32 +93,89 @@ export interface NumberFieldProps {
   controls?: boolean;
 }
 export function NumberField({ label, value, onValueChange, min, max, step = 1, precision, disabled, error, readOnly = false, required, name, id, hint, controls = true }: NumberFieldProps) {
-  const [draft, setDraft] = useState(value === null ? '' : String(value));
-  const [localError, setLocalError] = useState('');
-  const composing = useRef(false);
-  useEffect(() => { setDraft(value === null ? '' : String(value)); setLocalError(''); }, [value]);
+  const text = value === null ? '' : String(value);
+  const [editing, setEditing] = useState({ accepted: value, draft: text });
+  const [showError, setShowError] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
+  const composing = useRef(false), root = useRef<HTMLDivElement>(null);
+  let draft = editing.draft;
+  if (!Object.is(editing.accepted, value)) {
+    draft = text;
+    setEditing({ accepted: value, draft });
+    setShowError(false);
+  }
+  const setDraft = (next: string) => setEditing({ accepted: value, draft: next });
   const numericDraft = draft.trim() ? Number(draft) : null;
   const boundsError = (min !== undefined && max !== undefined && min > max) ? '最小值不能大于最大值。' : numericDraft !== null && Number.isFinite(numericDraft) && ((min !== undefined && numericDraft < min) || (max !== undefined && numericDraft > max)) ? `请输入 ${min ?? '−∞'} 至 ${max ?? '+∞'} 之间的数字。` : undefined;
+  const draftError = (candidate: string) => {
+    if (!candidate.trim()) return required ? '请填写数字。' : '';
+    const n = Number(candidate);
+    if (!Number.isFinite(n)) return '请输入有效数字。';
+    if ((min !== undefined && max !== undefined && min > max)) return '最小值不能大于最大值。';
+    if ((min !== undefined && n < min) || (max !== undefined && n > max)) return `请输入 ${min ?? '−∞'} 至 ${max ?? '+∞'} 之间的数字。`;
+    return '';
+  };
+  const validation = (candidate: string) => disabled || readOnly ? '' : error || (composing.current ? '请先完成输入法组词。' : '') || (min !== undefined && max !== undefined && min > max ? '最小值不能大于最大值。' : draftError(candidate));
   const blocked = disabled || readOnly || (min !== undefined && max !== undefined && min > max);
   const normalize = (n: number) => Math.min(max ?? Infinity, Math.max(min ?? -Infinity, Number(n.toFixed(Math.max(0, Math.min(15, precision ?? 12))))));
   const commit = () => {
     if (composing.current || blocked) return;
-    if (!draft.trim()) { setLocalError(''); if (value !== null) onValueChange(null); return; }
-    const n = Number(draft);
-    if (!Number.isFinite(n)) { setLocalError('请输入有效数字。'); return; }
-    if ((min !== undefined && n < min) || (max !== undefined && n > max)) { setLocalError(`请输入 ${min ?? '−∞'} 至 ${max ?? '+∞'} 之间的数字。`); return; }
-    const next = precision === undefined ? n : normalize(n); setDraft(String(next)); setLocalError(''); if (next !== value) onValueChange(next);
+    if (draft.trim() && draftError(draft)) { setShowError(true); return; }
+    const n = draft.trim() ? Number(draft) : null;
+    const next = n === null || precision === undefined ? n : normalize(n);
+    setDraft(next === null ? '' : String(next)); setShowError(!!draftError(draft));
+    if (next !== value) onValueChange(next);
   };
+  const restore = () => { setDraft(text); setShowError(false); };
+  // Public native validity is current even before blur/Enter exposes a message.
+  useLayoutEffect(() => {
+    root.current?.querySelector('input')?.setCustomValidity(validation(draft));
+  });
+  const latest = useRef({ commit, restore, validation, draft, text, showError, blocked });
+  useLayoutEffect(() => { latest.current = { commit, restore, validation, draft, text, showError, blocked }; });
+  useLayoutEffect(() => {
+    const input = root.current?.querySelector('input');
+    if (!input) return;
+    const doc = input.ownerDocument;
+    const submit = (event: Event) => {
+      if (event.target !== input.form || !input.form || input.matches(':disabled') || input.readOnly) return;
+      if (!input.validity.valid) {
+        // A later field must not relax this rejected draft and let the host
+        // save its old value. End this attempt before any later listener.
+        event.preventDefault(); event.stopImmediatePropagation();
+        flushSync(() => setShowError(true));
+        input.checkValidity();
+        return;
+      }
+      // Keep this listener stable: another field's flushSync may rerender the
+      // whole form while the same native submit event is still dispatching.
+      flushSync(() => latest.current.commit());
+    };
+    const windowBlur = (event: Event) => {
+      if (event.target !== event.currentTarget || !composing.current) return;
+      composing.current = false; setIsComposing(false); input.setCustomValidity(latest.current.validation(input.value));
+    };
+    const escape = (event: globalThis.KeyboardEvent) => {
+      const current = latest.current;
+      if (event.target !== input || event.key !== 'Escape' || event.isComposing || event.keyCode === 229 || composing.current || current.blocked) return;
+      if (current.draft !== current.text || current.showError) { event.preventDefault(); event.stopImmediatePropagation(); current.restore(); }
+    };
+    doc.addEventListener('submit', submit, true);
+    doc.defaultView?.addEventListener('keydown', escape, true);
+    doc.defaultView?.addEventListener('blur', windowBlur, true);
+    return () => { doc.removeEventListener('submit', submit, true); doc.defaultView?.removeEventListener('keydown', escape, true); doc.defaultView?.removeEventListener('blur', windowBlur, true); };
+  }, []);
   const move = (direction: number) => {
     if (blocked || composing.current) return;
     const parsed = draft.trim() ? Number(draft) : value ?? 0;
     const next = normalize((Number.isFinite(parsed) ? parsed : value ?? 0) + direction * (Number.isFinite(step) && step ? Math.abs(step) : 1));
-    setDraft(String(next)); setLocalError(''); onValueChange(next);
+    setDraft(String(next)); setShowError(false); if (next !== value) onValueChange(next);
   };
-  return <div className="rhine-number-field"><TextField label={label} id={id} name={name} hint={hint} required={required} readOnly={readOnly} inputMode="decimal" role="spinbutton" aria-valuenow={numericDraft !== null && Number.isFinite(numericDraft) ? numericDraft : undefined} aria-valuemin={min} aria-valuemax={max}
-    value={draft} disabled={disabled} error={error || localError || boundsError} onChange={event => { if (!blocked) { setDraft(event.target.value); setLocalError(''); } }} onBlur={commit}
-    onCompositionStart={() => { composing.current = true; }} onCompositionEnd={() => { composing.current = false; }}
-    onKeyDown={event => { if (event.nativeEvent.isComposing || composing.current || blocked) return; if (event.key === 'Escape' && (draft !== (value === null ? '' : String(value)) || localError)) { event.preventDefault(); event.stopPropagation(); setDraft(value === null ? '' : String(value)); setLocalError(''); } if (event.key === 'Enter') { event.preventDefault(); commit(); } if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); move(event.key === 'ArrowUp' ? 1 : -1); } }} />
+  return <div ref={root} className="rhine-number-field"><TextField label={label} id={id} name={name} hint={hint} required={required} readOnly={readOnly} inputMode="decimal" role="spinbutton" aria-valuenow={numericDraft !== null && Number.isFinite(numericDraft) ? numericDraft : undefined} aria-valuemin={min} aria-valuemax={max}
+    value={draft} disabled={disabled} error={error || boundsError || (showError && !isComposing ? draftError(draft) : '') || undefined}
+    onChange={event => { if (!blocked) { event.currentTarget.setCustomValidity(validation(event.target.value)); setDraft(event.target.value); setShowError(false); } }} onBlur={event => { if (composing.current) { composing.current = false; setIsComposing(false); event.currentTarget.setCustomValidity(validation(event.currentTarget.value)); } else commit(); }} onInvalid={() => setShowError(true)}
+    onCompositionStart={event => { composing.current = true; setIsComposing(true); event.currentTarget.setCustomValidity(validation(draft)); }} onCompositionEnd={event => { composing.current = false; setIsComposing(false); event.currentTarget.setCustomValidity(validation(event.currentTarget.value)); }}
+    onKeyDown={event => { if (event.nativeEvent.isComposing || event.keyCode === 229 || composing.current || blocked) return; if (event.key === 'Enter') { event.preventDefault(); commit(); } if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); move(event.key === 'ArrowUp' ? 1 : -1); } }} />
     {controls && <div className="rhine-inline"><Button variant="secondary" disabled={blocked || (numericDraft !== null && min !== undefined && numericDraft <= min)} onMouseDown={event => event.preventDefault()} onClick={() => move(-1)} aria-label={`减少${label}`}>−</Button><Button variant="secondary" disabled={blocked || (numericDraft !== null && max !== undefined && numericDraft >= max)} onMouseDown={event => event.preventDefault()} onClick={() => move(1)} aria-label={`增加${label}`}>+</Button></div>}
   </div>;
 }
