@@ -1,13 +1,26 @@
 import { useState } from 'react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { DataTable, Pagination } from '../components';
+import { Checkbox, DataTable, Pagination } from '../components';
 
 const rows = [{ id: 'b' }, { id: 'a' }, { id: 'locked' }];
 const columns = [{ key: 'id', header: '标识', render: (row: { id: string }) => row.id }];
 const base = { caption: '记录', rows, columns, rowKey: (row: { id: string }) => row.id };
 
 describe('DataTable framework parity', () => {
+  it.each(['multiple', 'single'] as const)('retains full %s row names, native labels and disabled state beside ordinary visible labels', mode => {
+    const name = '跨区域协作资料'.repeat(12) + 'WorkspaceArchiveABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    render(<><Checkbox label="普通表单标签" /><DataTable {...base} rowLabel={row => row.id === 'b' ? name : row.id}
+      selection={{ mode, keys: ['b'], onChange: () => {}, isDisabled: row => row.id === 'locked' }} /></>);
+    const input = screen.getByRole(mode === 'single' ? 'radio' : 'checkbox', { name: `选择${name}` });
+    expect(input).toBeChecked();
+    expect(input.closest('label')).toHaveTextContent(`选择${name}`);
+    expect(input.closest('td')).toHaveClass('rhine-table__selection');
+    expect(screen.getByRole(mode === 'single' ? 'radio' : 'checkbox', { name: '选择locked' })).toBeDisabled();
+    expect(screen.getByRole('checkbox', { name: '普通表单标签' }).closest('label')).toHaveTextContent('普通表单标签');
+    expect(screen.getByText('普通表单标签').closest('.rhine-table__selection')).toBeNull();
+  });
+
   it('keeps native table and scroll-region names when a duplicate caption is visually hidden', () => {
     const {rerender} = render(<DataTable {...base} />);
     const table = screen.getByRole('table',{name:'记录'});
