@@ -21,7 +21,7 @@ function SideNavRow({ item, current, onNavigate }: { item: NavItem; current: boo
   const trigger = useRef<HTMLButtonElement>(null);
   const hasActions = !!item.actions?.length;
   return <li className={hasActions ? 'rhine-side-nav__row--actions' : undefined}>
-    <a href={item.href} aria-disabled={item.disabled || undefined} tabIndex={item.disabled ? -1 : undefined} aria-current={current ? 'page' : undefined} onClick={event => { if (item.disabled) { event.preventDefault(); return; } onNavigate?.(item, event); }}>{item.icon && <Icon name={item.icon} size={20}/>}<span className="rhine-side-nav__label">{item.label}</span></a>
+    <a href={item.disabled ? undefined : item.href} role={item.disabled ? 'link' : undefined} aria-disabled={item.disabled || undefined} tabIndex={item.disabled ? -1 : undefined} aria-current={current ? 'page' : undefined} onClick={event => { if (item.disabled) { event.preventDefault(); event.stopPropagation(); return; } onNavigate?.(item, event); }} onAuxClick={event => { if (item.disabled) { event.preventDefault(); event.stopPropagation(); } }}>{item.icon && <Icon name={item.icon} size={20}/>}<span className="rhine-side-nav__label">{item.label}</span></a>
     {hasActions && <Menu label={`${item.label}：操作`} trigger={<IconButton ref={trigger} disabled={item.disabled} label={`${item.label}：更多操作`} icon="more" />} items={item.actions!.map(action => ({ ...action, disabled: item.disabled || action.disabled, onSelect: () => { if (!item.disabled && trigger.current) action.onSelect(trigger.current); } }))} />}
   </li>;
 }
