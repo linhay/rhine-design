@@ -10,7 +10,7 @@ async page => {
     try {
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ reducedMotion: zoom === 2 ? 'reduce' : 'no-preference' });
-      await page.goto(`${initial.base}?theme=${theme}#nav-actions`);
+      await page.goto(`${initial.base}?theme=${theme}&case=${width}-${zoom}#nav-actions`);
       await page.evaluate(zoom => { document.documentElement.style.zoom = String(zoom); }, zoom);
       const nav = page.getByRole('navigation', { name: '禁用导航示例', exact: true });
       const blocked = nav.getByRole('link', { name: label, exact: true });
@@ -41,9 +41,11 @@ async page => {
       await nav.getByRole('button', { name: `${label}：更多操作`, exact: true }).click();
       await page.getByRole('menuitem', { name: '查看合成摘要', exact: true }).click();
       check(await page.getByText('导航与动作回调：2', { exact: true }).count() === 1, { ...c, kind: 'trailing-enabled' });
+      await page.waitForFunction(label => document.activeElement?.getAttribute('aria-label') === `${label}：更多操作`, label);
       await blocked.focus();
       // Host state update while focus remains on the link; activation tests above use browser input.
       await page.getByRole('button', { name: '禁用待开放工作区', exact: true }).evaluate(e => e.click());
+      await page.waitForFunction(label => [...document.querySelectorAll('a[aria-disabled=true]')].some(e => e.textContent === label && !e.hasAttribute('href')), label);
       check(await blocked.evaluate(e => e === document.activeElement) && await blocked.getAttribute('href') === null, { ...c, kind: 'dynamic-focus-retained' });
       await page.keyboard.press('Enter');
       check(await page.getByText('导航与动作回调：2', { exact: true }).count() === 1, { ...c, kind: 'disabled-focused-enter' });
@@ -64,6 +66,7 @@ async page => {
       await page.keyboard.press('Escape');
       await dialog.waitFor({ state: 'hidden' });
       await page.getByRole('button', { name: '打开设置禁用示例', exact: true }).waitFor();
+      await page.waitForFunction(() => document.activeElement?.textContent === '打开设置禁用示例');
       check(await page.getByRole('button', { name: '打开设置禁用示例', exact: true }).evaluate(e => e === document.activeElement), { ...c, kind: 'dialog-return-focus' });
       cases.push(c);
     } catch (error) { failures.push({ ...c, kind: 'exception', error: String(error) }); }
