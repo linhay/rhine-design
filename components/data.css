@@ -4,3 +4,9 @@
 .rhine-table__radio { display:flex; align-items:center; gap:8px; min-height:44px; cursor:pointer; }
 .rhine-table__radio input { flex:none; width:18px; height:18px; accent-color:var(--rhine-green); }
 .rhine-table__radio:has(input:disabled) { color:var(--rhine-muted); cursor:default; }
+
+/* Selection names describe the row without repeating its visible identity. */
+.rhine-data .rhine-table .rhine-table__selection { width:1px; }
+.rhine-table__selection label { position:relative; justify-content:center; width:44px; min-width:44px; min-height:44px; gap:0; }
+.rhine-table__selection label > span { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+.rhine-table__selection input { margin:0; }
