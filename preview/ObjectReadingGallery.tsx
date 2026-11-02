@@ -45,8 +45,15 @@ function ObjectReader({ object, active, scenario, tab, onTab, positions, navigat
     const visible = (node: Element) => {
       const bounds = dialog.getBoundingClientRect();
       const rect = node.getBoundingClientRect();
+      // The entering tab panel translates to zero. Keep the anchor inside the
+      // viewport both now and after that existing animation finishes (also at zoom).
+      const panel = node.closest<HTMLElement>('[role="tabpanel"]');
+      const transform = panel && getComputedStyle(panel).transform;
+      const shift = panel && transform && transform !== 'none' && panel.offsetWidth
+        ? new DOMMatrixReadOnly(transform).m42 * panel.getBoundingClientRect().width / panel.offsetWidth : 0;
       return rect.width > 0 && rect.height > 0 && !node.closest('[hidden]')
-        && rect.top >= Math.max(0, bounds.top) + 2 && rect.bottom <= Math.min(innerHeight, bounds.bottom) - 2;
+        && Math.min(rect.top, rect.top - shift) >= Math.max(0, bounds.top) + 2
+        && Math.max(rect.bottom, rect.bottom - shift) <= Math.min(innerHeight, bounds.bottom) - 2;
     };
     const attempt = () => {
       if (!pending || !ready.current || !dialog.clientHeight) return;

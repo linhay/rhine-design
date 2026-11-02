@@ -21,7 +21,12 @@ async page => {
   const open = async () => { await entry.focus(); await page.keyboard.press('Enter'); await dialog.waitFor(); await page.waitForTimeout(220); await settle(); };
   const close = async () => { await page.keyboard.press('Escape'); await dialog.waitFor({ state: 'detached' }); await page.waitForFunction(() => document.activeElement?.getAttribute('aria-label')?.startsWith('阅读：')); };
   const setTop = async top => { await dialog.evaluate((d, top) => { d.scrollTop = top; }, top); await settle(); return dialog.evaluate(d => d.scrollTop); };
-  const savedFocus = async (name, top) => { const state = await focus(); check(Math.abs(state.top - top) < 2, `${name}: position`, state); check(state.visible && state.hit && !!state.name?.trim(), `${name}: meaningful visible hit focus`, state); return state; };
+  const savedFocus = async (name, top) => {
+    const inspect = async suffix => { const state = await focus(); check(Math.abs(state.top - top) < 2, `${name}${suffix}: position`, state); check(state.visible && state.hit && !!state.name?.trim(), `${name}${suffix}: meaningful visible hit focus`, state); return state; };
+    await inspect('');
+    await dialog.evaluate(d => Promise.all(d.getAnimations({subtree:true}).filter(animation => animation.effect?.getComputedTiming().iterations !== Infinity).map(animation => animation.finished.catch(() => {}))));
+    return inspect(' after animation');
+  };
   const cases = quick ? [{ width:880, height:800, zoom:1, mode:'normal' }] : [
     ...[400,520,880].flatMap(width => [1,2].map(zoom => ({width,height:600,zoom,mode:'normal'}))),
     ...['system','manual'].map(mode => ({width:880,height:600,zoom:1,mode})),
