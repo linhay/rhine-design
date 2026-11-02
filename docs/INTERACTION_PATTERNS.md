@@ -106,7 +106,7 @@ SideNav采用44px最小操作行、14/22文字、4px行间距，组间16px；图
 
 | 导出 | 输入与责任 | 键盘、焦点、边界 |
 | --- | --- | --- |
-| SideNav | `groups[{label,items[{id,label,href,icon?}]}]`、`currentId`、`onNavigate(item,event)`；icon为IconName，支持 nav 原生属性 | 原生链接可 Tab、打开新页；宿主接管路由时自行决定是否 preventDefault，保留修饰键语义；不自动滚动、鉴权或请求 |
+| SideNav | `groups[{label,items[{id,label,href,icon?,disabled?}]}]`、`currentId`、`onNavigate(item,event)`；icon为IconName，支持 nav 原生属性 | 启用链接可 Tab、打开新页；禁用项保留名称/current/disabled 语义，移除 href 与 Tab 入口并防守主/辅助激活（#161，未发布，见 SIDE_NAV_ACTIONS）；宿主接管路由时自行决定是否 preventDefault，保留修饰键语义；不自动滚动、鉴权或请求 |
 | Breadcrumbs | `items[{label,href?}]`、`label`；最后一项是当前位置 | 带名称的 nav/ol；最后项 aria-current=page；只传真实父子层级，无 href 项为文本 |
 | Steps | `items[{id,label,description?}]`、`current`、`error?`、`onStepChange?` | current 为从 0 开始的位置，等于项数代表完成；只允许点击已完成步骤；当前项 aria-current=step；错误有文字，不自动推进 |
 | Drawer | 与 Dialog 相同：`trigger,title,description,children,open?,onOpenChange?` | 右侧模态面板；Radix 管理焦点限制、Escape 和归还；最近主题根继承动效偏好；可编辑内容需宿主保留草稿并在受控 onOpenChange 中处理未保存规则 |
