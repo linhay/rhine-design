@@ -1,4 +1,4 @@
-import { useRef, type HTMLAttributes, type MouseEvent } from 'react';
+import { useLayoutEffect, useReducer, useRef, type HTMLAttributes, type MouseEvent } from 'react';
 import { Menu, type MenuItem } from './Overlays';
 import { Icon, IconButton, type IconName } from './Actions';
 
@@ -42,12 +42,30 @@ export interface StepsProps {
 }
 export function Steps({ items, current, label = '任务步骤', error, onStepChange }: StepsProps) {
   const position = Math.max(0, Math.min(current, items.length));
-  return <ol className="rhine-steps" aria-label={label}>{items.map((item, index) => {
+  const list = useRef<HTMLOListElement>(null);
+  const pending = useRef<{ id: string; trigger: HTMLButtonElement } | null>(null);
+  const [, commitFocus] = useReducer((revision: number) => revision + 1, 0);
+  useLayoutEffect(() => {
+    const action = pending.current;
+    pending.current = null;
+    if (!action || items[position]?.id !== action.id || action.trigger.isConnected) return;
+    const active = action.trigger.ownerDocument.activeElement;
+    // A host-selected field/title takes priority over this standalone fallback.
+    if (active && active !== action.trigger.ownerDocument.body && active !== action.trigger.ownerDocument.documentElement) return;
+    (list.current?.children[position] as HTMLElement | undefined)?.focus();
+  });
+  return <ol ref={list} className="rhine-steps" aria-label={label}>{items.map((item, index) => {
     const state = index < position ? 'complete' : index === position ? (error ? 'error' : 'current') : 'pending';
     const status = { complete: '已完成', current: '进行中', error: '需要修正', pending: '未开始' }[state];
     const content = <><span className="rhine-steps__number" aria-hidden="true">{state === 'complete' ? '✓' : String(index + 1).padStart(2, '0')}</span><span><strong>{item.label}</strong><small>{status}{item.description ? ` · ${item.description}` : ''}{state === 'error' ? ` · ${error}` : ''}</small></span></>;
-    return <li key={item.id} data-state={state} aria-current={index === position ? 'step' : undefined}>
-      {onStepChange && index < position ? <button type="button" onClick={() => onStepChange(index)} aria-label={`返回${item.label}`}>{content}</button> : <div>{content}</div>}
+    return <li key={item.id} data-state={state} aria-current={index === position ? 'step' : undefined} tabIndex={index === position ? -1 : undefined}>
+      {onStepChange && index < position ? <button type="button" onClick={event => {
+        const trigger = event.currentTarget;
+        const hadFocus = trigger.ownerDocument.activeElement === trigger;
+        onStepChange(index);
+        // Schedule after the callback so flushSync cannot consume the intent early.
+        if (hadFocus) { pending.current = { id: item.id, trigger }; commitFocus(); }
+      }} aria-label={`返回${item.label}`}>{content}</button> : <div>{content}</div>}
     </li>;
   })}</ol>;
 }

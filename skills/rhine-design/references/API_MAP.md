@@ -81,3 +81,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 未发布 `ResponsiveActions` / `ResponsiveAction`：包内 `components/ResponsiveActions.tsx`，实际容器测量与焦点契约 `docs/RESPONSIVE_ACTIONS.md`；竖点 `IconName.moreVertical` 位于 `components/Actions.tsx`。先核对安装包是否包含对应导出。
 
 - Combobox / RemoteMultiSelect 紧凑状态与独立校验（#115，未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`，契约 `docs/COMBOBOX_FEEDBACK.md`，真实状态 `preview/ComboboxStateGallery.tsx`。原 error 保持候选读取失败语义；validationError 允许从候选纠正，statusDisplay 默认兼容。宿主观测候选配方见 `docs/PARAMETER_CONFIG.md`。
+
+Steps 回退焦点（#174，未发布）：`docs/INTERACTION_PATTERNS.md`、`preview/StepsGallery.tsx`；接受同步回退后补焦当前步骤，宿主交焦优先，拒绝/外部更新不抢焦点，无新 API。
