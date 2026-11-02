@@ -92,9 +92,9 @@ Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用
 
 ### 连续通知寿命（#160，未发布）
 
-`eventId?: string | number` 仅标识通知寿命，由宿主在确有新通知需要完整展示时长时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 按 React effect 的 Object.is 规则比较（数字 1 与字符串 "1"、0 与 -0 不同）。id 不应在 render 中随机生成，不是队列或去重服务。
+本次新增保证限于页面可见期间。`eventId?: string | number` 仅标识通知寿命，由宿主在确有新通知需要完整展示时长时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 按 React effect 的 Object.is 规则比较（数字 1 与字符串 "1"、0 与 -0 不同）。id 不应在 render 中随机生成，不是队列或去重服务。
 
-同一事件 hover、内部 focus 或页面隐藏时暂停，恢复后使用剩余时长。暂停期间新事件将剩余时长设为完整 duration，直到所有暂停原因解除才起算。新事件提交后旧 timer 失效；如果旧到期先发生，宿主的新事件仍需设置 open=true。warning/error 或 duration≤0 常显，手动关闭与关闭后重开保持。
+可见页面中，同一事件 hover 或内部 focus 时暂停，恢复后使用剩余时长；暂停期间新事件将剩余时长设为完整 duration，直到全部 hover/focus 暂停原因解除才起算。新事件提交后旧 timer 失效；如果旧到期先发生，宿主的新事件仍需设置 open=true。warning/error 或 duration≤0 常显，手动关闭与关闭后重开保持。既有 document.hidden 处理保留兼容，visibilitychange 逻辑有单测；真实窗口后台及隐藏期间新事件的展示时长不属于本次新增验收或对外保证。
 
 通知不主动抢焦点。仅更新 id 不重挂文字子树，保留现有容器、关闭按钮焦点和暂停状态。既有 success/info 等 status（polite）、error alert 及 aria-atomic 语义保持；eventId 不控制或保证相同文案再次播报，重复读屏输出不属于本次功能范围。关键结果仍应有页面内持久入口。计时、DOM 和焦点测试不代表实际读屏输出。
 
