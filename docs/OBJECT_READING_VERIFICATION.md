@@ -41,3 +41,23 @@ playwright-cli -s=reading run-code --filename scripts/check-object-reading-state
 ```
 
 再对 arknights、neo-brutalism 重复。脚本返回逐组 PASS，任何抛错或缺少 Result 均不是通过；截图在 `output/playwright/`。原始日志、前轮失败、截图、制品与恢复包保留在本地证据目录，公开摘要仅保留合成结论和精确身份。
+
+
+## 2026-11-02 新增恢复回归
+
+本节补充#61重新接纳的两个恢复反例，保留上方2026-10-28历史交付及#150研究结果。仍是合成固定正文宿主，无新公共API；不是npm发布或真实消费产品升级。
+
+精确基线 `c10cc4e2799c55d2ef86e48182cf82fd8fa66b2a`，Chromium、880×800、CSS zoom 1：普通关闭重开恢复700（正常对照）；稳定错误占位scrollHeight=clientHeight=409，真实Enter重试成功仍为0（FAIL）；正文末尾→关联Enter→Home恢复1559，但正文tab矩形[-1302,-1256]位于Dialog[16,784]之外（FAIL）。快速重试成功不取代稳定占位的失败。
+
+新增回归与验收方法：
+
+- `scripts/check-object-reading-recovery.js`：每主题6组400/520/880宽×CSS zoom 1/2、600px短屏，再加系统/手动减少动态2组；五主题共40组。正常重开、稳定失败后Tab到重试再Enter、加载完成、末尾关联Enter/Home、来源往返、Tab/ShiftTab/Escape。恢复同时核对位置、焦点文字/名称、完整几何及每个行框的实际命中；长tabpanel按可见交集/名称/命中核对。`readingQuick=1`仅单组调试，不冒充完整矩阵。
+- `scripts/check-object-reading-recovery-lifecycle.js`：先证明确实进入600ms等待，再分别滚轮、Tab、换页签、关闭、取消和换对象；完成或取消后检查旧任务没有迟到恢复，主动焦点不被覆盖。
+- 原有 `check-object-reading-browser.js` 与 `check-object-reading-states.js` 继续覆盖关联目标/对话往返、浏览上下文、权限/不可用状态、只读事实及减少动态。当前CLI沙箱缺少Node侧URL全局时，在本地执行副本中仅将URL构造移入page.evaluate，保留原断言。
+- 生产源码与一次性固定tarball的新安装消费者分开执行；候选精确head、tarball/构建/脚本摘要、文件逐项对照与最终结果记录在本次PR及[#61](https://github.com/linhay/rhine-design/issues/61)核验回执中，不能以历史包或开发目录替代。
+
+实现迭代保留的失败：短屏CSS zoom 2使长元信息把来源/关联tab推到窗口下方，需在当前位置无可见正文目标时nearest揭示选中tab；聚焦来源后浏览器自动滚动会覆盖正文记忆，需与主动滚动分开。后者以“聚焦来源→等待滚动→Enter→Home”的确定反例验证，不能用立即激活时偶然保留位置声称修复。
+
+检查准备与脚本失败亦保留：初次命令使用机器默认Node25，正式检查改Node24；CLI沙箱URL未定义；普通重开对照在初始恢复frame前写入700导致0，增加对初始稳定状态的等待后复现正常700；关闭归焦需等待Radix默认归焦再比较迟到焦点；长tabpanel不能要求整篇同时可见。后续重跑不覆盖前次记录，不把这些准备/断言错误算作产品回归。
+
+排除本次功能：依赖人工的实际读屏和阅读偏好、原生缩放完整矩阵、其他浏览器引擎、真实文件/权限/后台请求服务；不记PASS，不安排用户补验。16→18px重排的语义位置仍属于#150研究，不新增字号设置或段落身份公共模型。未发布npm，未修改UIKit。
