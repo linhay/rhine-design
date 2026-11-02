@@ -106,7 +106,7 @@ async page => {
     const startFailures=failures.length;
     try{
       await page.setViewportSize({width,height:1000});await page.emulateMedia({reducedMotion:motion==='system'?'reduce':'no-preference'});
-      await page.goto(shell ? `${base}/?theme=graphite#editorial-layout` : `${base}/?fixture=editorial-layout&scene=${scene}&palette=${palette}&zoom=${zoom}&motion=${motion}`);
+      await page.goto(shell ? `${base}/?theme=graphite&editorialCase=${scene}-${palette}-${width}-${zoom}-${motion}#editorial-layout` : `${base}/?fixture=editorial-layout&scene=${scene}&palette=${palette}&zoom=${zoom}&motion=${motion}`);
       if(shell){
         await page.evaluate(zoom=>document.documentElement.style.zoom=String(zoom),zoom);
         await page.getByLabel('局部配色',{exact:true}).selectOption(palette);
@@ -214,7 +214,7 @@ async page => {
       check(await pop.evaluate((e,p)=>getComputedStyle(e).getPropertyValue('--rhine-green').trim()===(p==='swiss'?'#2348b5':'#343434'),palette),{...context,role:'popover-palette'});await measure(pop.locator('.rhine-text').first(),'popover-text');await page.keyboard.press('Escape');await pop.waitFor({state:'detached'});await settle();assert(await popTrigger.evaluate(e=>e===document.activeElement),'popover focus return');
       await selectedTab.focus();await page.keyboard.press('ArrowRight');
       const nextScene={report:'release',release:'overview',overview:'report'}[scene];const other=page.locator(`section[data-scene=${nextScene}]`);
-      const otherTrigger=other.locator('tbody tr').nth(1).getByRole('button',{name:/^查看/});await otherTrigger.focus();await page.keyboard.press('Enter');await dialog.waitFor();
+      const otherTrigger=other.getByRole('region',{name:`${sceneLabels[nextScene]}明细，可横向滚动`}).locator('tbody tr').nth(1).getByRole('button',{name:/^查看/});await otherTrigger.focus();await page.keyboard.press('Enter');await dialog.waitFor();
       assert(await dialog.getByLabel('详情备注').inputValue()==='尚无备注','same row id must not share notes across scenes');
       await dialog.getByLabel('详情备注').fill('取消另一场景草稿');await dialog.getByRole('button',{name:'取消编辑',exact:true}).click();await dialog.waitFor({state:'detached'});await settle();
       await page.keyboard.press('Enter');await dialog.waitFor();assert(await dialog.getByLabel('详情备注').inputValue()==='尚无备注','other scene cancel must not commit');await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});await settle();
