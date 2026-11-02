@@ -4,6 +4,8 @@
 
 `neutral` 为 #98 新增的未发布源码能力，npm 0.11.3 不包含。完整配色与兼容边界见 [中性主题](THEME_NEUTRAL.md)。
 
+`graphite` 是 #150 授权实现的未发布候选主题，接入、视觉与验收边界见 [石墨夜间主题](THEME_GRAPHITE.md)。
+
 ## 接入一次，随处切换
 
 ```tsx
@@ -22,12 +24,12 @@ export function App() {
 }
 ```
 
-主题入口自动加载基础样式与四套内置主题，不需要另行导入主题 CSS、添加 `.rhine-theme` 或修改 DOM。Provider 渲染一个真实的 `div.rhine-theme`，通过 `data-rhine-theme` 应用主题，不重建子组件。普通组件入口保持独立，不额外加载可选主题。
+主题入口自动加载基础样式与五套内置主题，不需要另行导入主题 CSS、添加 `.rhine-theme` 或修改 DOM。Provider 渲染一个真实的 `div.rhine-theme`，通过 `data-rhine-theme` 应用主题，不重建子组件。普通组件入口保持独立，不额外加载可选主题。
 
 ## API
 
 ```ts
-type ThemeName = 'rhine' | 'arknights' | 'neo-brutalism' | 'neutral';
+type ThemeName = 'rhine' | 'arknights' | 'neo-brutalism' | 'neutral' | 'graphite';
 
 interface ThemeProviderProps extends HTMLAttributes<HTMLDivElement> {
   defaultTheme?: ThemeName;
@@ -150,15 +152,16 @@ import { Background, Surface } from '@linhey/rhine-design';
 
 ## 颜色角色验收
 
-现有四主题的代表场景由 `scripts/check-theme-roles.js` 在生产展台上量测，执行与边界见 [贡献流程](../CONTRIBUTING.md#颜色角色检查)。复用按钮、聊天检查的 sRGB 相对亮度算式，新增透明背景逐层合成、状态分类与定向反例；不引入配色生成器、外部字体或运行依赖。
+现有五主题的代表场景由 `scripts/check-theme-roles.js` 在生产展台上量测，执行与边界见 [贡献流程](../CONTRIBUTING.md#颜色角色检查)。复用按钮、聊天检查的 sRGB 相对亮度算式，新增透明背景逐层合成、状态分类与定向反例；不引入配色生成器、外部字体或运行依赖。
 
 | 角色 | 实际入口与状态 | 判断 |
 | --- | --- | --- |
-| 强调填充上的文字 | `?fixture=neutral` 的 Button 默认、hover、busy | 文字按实际字号/字重取阈值 |
+| 强调填充上的文字 | `?fixture=neutral` 的 Button 默认、hover、busy；`#button-actions` 的启用危险按钮默认/hover/焦点 | 文字按实际字号/字重取阈值 |
 | 强调文字 | Dialog / Popover 内的 Link、hover | 使用实际浮层背景，不拿品牌原色代替文字角色 |
 | 正文与辅助文字 | TextField 值/placeholder 与 Textarea 边界、Dialog 标题/说明、DataTable 表头/单元格/hover | 透明层逐层合成；不只取最近的非透明字符串 |
 | 状态文字 | TextField 错误、Notice 警告/成功、DataTable 读取失败 | 文字阈值；错误文字、输入保留与状态语义另验 |
 | 必要非文本状态 | TextField 边界/错误边界、Tabs 选中指示、键盘焦点环 | 与实际相邻背景比，不比较非相邻的 default/hover 两种颜色 |
+| 选择状态文字 | `#selection` 的 SelectionCard hover 与 selected 标题/说明 | 检查真实叠层背景，保留勾选语义 |
 | 场景表面 | `#backgrounds` 的 canvas/content/sidebar/surface/overlay/media | 先测默认 auto，再通过真实选择器切换 none 对照；已有网格/点阵按全部透明度端点及多层交点计算保守下限 |
 | 禁用与装饰 | 禁用 Button；装饰分隔线、非必要按钮边界、模态遮罩 | 禁用值留作观察，与规范豁免分开；装饰项 N/A，不机械要求 3:1 |
 
@@ -170,4 +173,4 @@ import { Background, Surface } from '@linhey/rhine-design';
 
 本检查只证明列出的当前源码样本，不是全库 WCAG 合规认证，也不证明 npm 发行或消费项目。仅识别现有单色透明扫光、双线网格、圆点图案的固定形状；逐层组合所有端点（含交点），先逐 RGB 通道取上下界，再计算前景/背景亮度包络与对比度下限；不能直接把端点亮度当作内部极值，红绿等相反通道方向可能在 alpha 内部产生更低亮度。包络可能比实际绘制更保守，下限不足时不能直接归为产品缺陷，应进一步复核实际颜色路径/像素，不宣称逐像素采样。未知图像、其他渐变形状、祖先或被测样式（含伪元素）整体透明度不为 1 时输出 `UNMEASURED` 并使结果失败，不能把未知当作通过。伪元素还检查自己的 display/visibility；按钮有矩形不能证明指示线已绘制。长文、裁剪、原生缩放、状态语义继续按各自入口验收。
 
-[#150](https://github.com/linhay/rhine-design/issues/150) 的石墨夜间、瑞士蓝与书卷阅读仍是研究提案：本节不新增 ThemeName、ThemePicker 元数据或已确认偏好。纯配色/完整风格与正文阅读模式分别评估；未来候选可以复用这套验收，但仍需其自身契约与真实展台，不能由几组静态配色推导完成。
+[#150](https://github.com/linhay/rhine-design/issues/150) 的石墨夜间已于 2026-11-02 获用户授权进入实现，并复用本验收。瑞士蓝与书卷阅读仍为研究建议；本次不将阅读模式新增为主题。

@@ -35,7 +35,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 - **Tabs 满栏靠左（未发布）**：`layout="content" fullWidth` 独立控制栏宽，保留内容宽度选项，见[规范与接入](docs/SUMMARY_TABS.md#满栏靠左76未发布)；npm 0.11.3 不含此属性。
 - **展台随源码更新**，在线部署跟随 main；安装包的能力以精确版本和实际导出/实现为准。上述源码变更、历史版本与接入边界统一见[版本记录](CHANGELOG.md)。
 
-四套源码主题（新增未发布的 [neutral](docs/THEME_NEUTRAL.md)）、轨道艺术、设置导航与主题选择等已有能力见下方组件和规范入口；应用组件的 Ant Design / MUI 对照见[对标清单](docs/ANTD_MUI_AUDIT.md)。
+五套源码主题（含未发布的 [neutral](docs/THEME_NEUTRAL.md) 与 [graphite](docs/THEME_GRAPHITE.md)）、轨道艺术、设置导航与主题选择等已有能力见下方组件和规范入口；应用组件的 Ant Design / MUI 对照见[对标清单](docs/ANTD_MUI_AUDIT.md)。
 
 <a id="quick-start"></a>
 
@@ -340,3 +340,5 @@ skill 中提供以下参考入口：
 ## 常驻层级浏览组合
 
 只读树与外部画布、固定/跟随目标、刷新快照和详情复制的配方见[常驻层级浏览](docs/RESIDENT_TREE.md)。展台 `#resident-tree` 使用公开基础组件与语义 HTML，不新增 Tree 公共导出；npm 0.11.3 尚不包含本配方。
+
+石墨夜间主题：见 [接入与展台](docs/THEME_GRAPHITE.md)。当前源码支持 `graphite`，npm 0.11.3 不包含；请勿把源码能力视为已发布 API。

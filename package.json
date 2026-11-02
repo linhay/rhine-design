@@ -29,7 +29,8 @@
       "types": "./review/vite.d.mts",
       "import": "./review/vite.mjs"
     },
-    "./theme-neutral.css": "./components/theme-neutral.css"
+    "./theme-neutral.css": "./components/theme-neutral.css",
+    "./theme-graphite.css": "./components/theme-graphite.css"
   },
   "sideEffects": [
     "./components/index.ts",
