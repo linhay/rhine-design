@@ -36,6 +36,14 @@ describe('Toast event identity', () => {
     rerender(view('b')); expect(screen.getByText('完成')).not.toBe(text); expect(screen.getByRole('button')).toBe(button); expect(button).toHaveFocus();
     fireEvent.click(button); expect(close).toHaveBeenCalledWith(false);
   });
+  it.each([[1, '1'], [0, -0]] as const)('keeps timer and text identity aligned for %s → %s', (first, second) => {
+    vi.useFakeTimers(); const close = vi.fn();
+    const view = (eventId: string | number) => <Toast eventId={eventId} open title="完成" onOpenChange={close} duration={1000} />;
+    const { rerender } = render(view(first)); advance(999);
+    const button = screen.getByRole('button'), text = screen.getByText('完成'); act(() => button.focus());
+    rerender(view(second)); expect(screen.getByText('完成')).not.toBe(text); expect(screen.getByRole('button')).toBe(button); expect(button).toHaveFocus();
+    act(() => button.blur()); advance(999); expect(close).not.toHaveBeenCalled(); advance(1); expect(close).toHaveBeenCalledExactlyOnceWith(false);
+  });
   it.each(['error', 'warning'] as const)('keeps %s events persistent and clears timers on exit', tone => {
     vi.useFakeTimers(); const close = vi.fn();
     const { rerender, unmount } = render(<Toast open eventId={1} title="完成" onOpenChange={close} duration={1000} />);

@@ -23,10 +23,12 @@ export function Toast({ eventId, open, onOpenChange, title, description, tone = 
     const started = Date.now(); const timer = setTimeout(() => { if (active) close.current(false); }, Math.max(0, remaining.current));
     return () => { active = false; clearTimeout(timer); remaining.current = Math.max(0, remaining.current - (Date.now() - started)); };
   }, [eventId, open, hover, focus, hidden, tone, duration, title, description]);
+  // React coerces keys to strings; preserve the Object.is identity used by effects.
+  const textKey = eventId === undefined ? undefined : `${typeof eventId}:${Object.is(eventId, -0) ? '-0' : eventId}`;
   const notification = <div className="rhine-toast-region" data-placement={placement} aria-label="通知">
     <div role={tone === 'error' ? 'alert' : 'status'} aria-atomic="true" className={open ? `rhine-toast rhine-tone-${tone}` : 'rhine-sr-only'}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onFocus={() => setFocus(true)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocus(false); }}>
-      {open && <><div key={eventId}><strong>{title}</strong>{description && <p>{description}</p>}</div><IconButton label="关闭通知" icon="close" onClick={() => onOpenChange(false)} /></>}
+      {open && <><div key={textKey}><strong>{title}</strong>{description && <p>{description}</p>}</div><IconButton label="关闭通知" icon="close" onClick={() => onOpenChange(false)} /></>}
     </div>
   </div>;
   return placement === 'floating' ? <><span ref={anchor} hidden />{container && createPortal(notification, container)}</> : notification;

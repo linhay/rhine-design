@@ -92,7 +92,7 @@ Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用
 
 ### 连续通知事件（#160，未发布）
 
-`eventId?: string | number` 由宿主在确有新事件时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 不应在 render 中随机生成，不是队列或去重服务。
+`eventId?: string | number` 由宿主在确有新事件时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 按 React effect 的 Object.is 规则比较（数字 1 与字符串 "1" 不同），文字节点也保留同一身份规则。id 不应在 render 中随机生成，不是队列或去重服务。
 
 同一事件 hover、内部 focus 或页面隐藏时暂停，恢复后使用剩余时长。暂停期间新事件将剩余时长设为完整 duration，直到所有暂停原因解除才起算。新事件提交后旧 timer 失效；如果旧到期先发生，宿主的新事件仍需设置 open=true。warning/error 或 duration≤0 常显，手动关闭与关闭后重开保持。
 
