@@ -126,6 +126,20 @@ NumberField 支持小数步进（默认 1）；precision 限制为 0–15 位，
 
 NumberField 另有 `readOnly/required/id/name/hint/controls`（按钮默认显示）；Escape 取消未提交草稿并恢复受控值，第二次 Escape 可交给外层浮层。min/max 变化会直接标明当前越界，不伪造用户输入或自动修改宿主值。空值步进按有效范围处理，不再把空字符串当成已达到零边界。
 
+### NumberField 的表单提交（#164，未发布）
+
+当前草稿通过原生 `HTMLInputElement.setCustomValidity` 接入表单校验；宿主使用公开的 `id/name`、`form.elements`、`validity`、`validationMessage`、`checkValidity()` / `reportValidity()` 读取，不依赖私有选择器或可见错误文字。不新增第二套校验回调。非法字符串、越界、配置反向边界、required 空值及外部 `error` 会阻止原生提交；禁用/只读遵循原生 `willValidate=false`，宿主仍需验证其业务模型。
+
+编辑中的 `-` 保留且已不可提交，但直到 blur/Enter 或 invalid 事件才显示格式错误；`1.` 可以继续编辑，提交时解析成 1。范围与外部错误仍即时显示。空草稿仍可提交为 `null` 到宿主，required 表单保持无效。纠正、Escape 恢复、外部 value/min/max/error 更新同步更新原生有效性；不把非法字符串传入 number|null，不因越界自动钳制。步进的既有边界处理保持。输入法组合未完成时阻止提交，结束后仍按 blur/Enter/表单提交约定接受草稿。
+
+原生提交先验证当前草稿；合法草稿在原生 submit 的 document 捕获阶段同步提交给 `onValueChange`，再让 React 的提交处理读取更新后的受控值。因此 `requestSubmit()` 即使没有先 blur，也不能仅因事件时序而保存旧值。宿主应同步接受受控提议，异步业务确认独立执行；不要在早于组件的原生 document/window 捕获监听中读取旧模型并保存。
+
+- 普通 `<form onSubmit>`：浏览器先阻止非法草稿，宿主 onSubmit 仍应先 preventDefault 并再次 checkValidity（提交一个字段可能改变另一个字段的约束），通过后才保存；用 `onInvalidCapture` 收集 `form.elements` 中 `willValidate && !validity.valid` 的字段，阻止原生气泡后交给 ErrorSummary。只有失败提交才更新 `focusKey`；摘要链接回字段且不改变路由。
+- `noValidate`：宿主在 onSubmit 中先 `preventDefault()`，再 `form.checkValidity()`；失败返回，成功才保存同步更新后的值。示例提供此完整路径。
+- 脚本保存：调用 `form.requestSubmit()` 复用同一路径。`form.submit()` 绕过原生校验和 submit 事件；直接调用网络保存函数同样绕过字段协议，不支持作为草稿提交入口。不要仅 checkValidity 后立即读取尚未接受的旧受控值。
+
+真实合成表单位于 `#advanced-forms` 与 `?fixture=number-validation`，包含已有合法数值→非法草稿→阻止保存、多个字段错误摘要、纠正、键盘/脚本保存、外部业务错误和只读/禁用状态。服务端仍独立校验，不将客户端有效性当作业务成功。
+
 TreeSelect 使用 tree/treeitem/group，Tab 进入一个可见节点，上下/Home/End 移动，右键展开或进入首个子项，左键收起或返回父项，Space/Enter 选择。禁选节点可导航和展开，但不能勾选。多选用 aria-checked，单选用 aria-selected。节点 ID 全树唯一稳定；过滤后的祖先与展开状态由宿主提供，选择状态不随结果集消失。
 
 首次进入优先已选可见节点；字符前缀定位不改变选择，`*` 展开同层分支，Ctrl/⌘+A 仅切换可见可选节点。外部收起时焦点回可见祖先。节点 `selectable=false` 用于结构分组；readOnly 允许浏览展开而禁止选择。`name` 为选中 key 生成同名 hidden inputs，disabled 不提交。
