@@ -164,4 +164,4 @@ Vite 使用相对资源路径，兼容 `/rhine-design/` 子路径。调整构建
 
 ### Steps 浏览器回归
 
-`check-steps-focus.js` 是接受 ego-browser `Page` 的异步函数表达式。按已安装 ego-browser 使用指南创建或恢复本任务空间，在同一轮中导航至生产 `/#navigation`，读取脚本并调用该函数；保存返回的完整 JSON，核对 `pass`、`failures` 和各样本的实际 viewport。浏览器键盘负责 Enter/Space/Tab，DOM 操作仅用于准备状态和定位焦点。将 URL 改为 `/?stepsProbe=lost-focus#navigation` 验证定向失焦反例；普通场景须通过、反例须明确命中 meaningful/current focus，异常不算检出。截图必须在设置视口的同一浏览器轮次采集，避免工具轮次结束后视口恢复导致图文证据不一致。
+`check-steps-focus.js` 是接受 ego-browser `Page` 的异步函数表达式。按已安装 ego-browser 使用指南创建或恢复本任务空间，在同一轮中导航至生产 `/#navigation`，读取脚本并调用该函数；保存返回的完整 JSON，核对 `pass`、`failures` 和各样本的实际 viewport。浏览器键盘负责 Enter/Space/Tab，DOM 操作仅用于准备状态和定位焦点。将 URL 改为 `/?stepsProbe=lost-focus#navigation` 验证定向失焦反例；普通场景须通过、反例须明确命中 meaningful/current focus，异常不算检出。名称首行 Range 与编号需同时满足视口/裁剪祖先几何及命中检查；仅列表项与视口相交不算定位可辨认。400×700 CSS zoom 2 还覆盖长文/错误、flush 返回中间步骤，旧候选应命中名称起始不可见。截图必须在设置视口的同一浏览器轮次采集，避免工具轮次结束后视口恢复导致图文证据不一致。

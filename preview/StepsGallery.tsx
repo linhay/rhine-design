@@ -10,7 +10,12 @@ export function StepsGallery() {
   const [long, setLong] = useState(false), [error, setError] = useState(false);
   const title = useRef<HTMLHeadingElement>(null), moveAfterCommit = useRef(false);
   useLayoutEffect(() => {
-    if (moveAfterCommit.current) { moveAfterCommit.current = false; title.current?.focus(); }
+    if (moveAfterCommit.current) {
+      moveAfterCommit.current = false;
+      title.current?.focus();
+      // The host keeps its chosen destination visible after long content changes layout.
+      title.current?.scrollIntoView?.({ block: 'nearest' });
+    }
   });
   const shownItems = long ? items.map(item => ({...item, label:`${item.label}：核对跨阶段的合成任务范围与保留已有工作记录`,description:`${item.description}；较长说明完整换行，返回后继续编辑，不丢失已有输入。`})) : items;
   return <>
@@ -27,7 +32,7 @@ export function StepsGallery() {
       <div className="ds-row ds-gap-top"><Switch label="长步骤说明" checked={long} onCheckedChange={setLong}/><Switch label="保留校验错误" checked={error} onCheckedChange={setError}/></div>
       <Steps label="编辑任务步骤" items={shownItems} current={hostStep} error={error?'请核对范围，已有草稿仍保留。':undefined} onStepChange={index=>{
         if(mode==='reject') return;
-        if(mode==='layout') moveAfterCommit.current=true;
+        if(mode==='layout' || mode==='focus') moveAfterCommit.current=true;
         if(mode.startsWith('flush')) flushSync(()=>setHostStep(index)); else setHostStep(index);
         if(mode==='focus' || mode==='flush-focus') title.current?.focus();
       }}/>

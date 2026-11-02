@@ -52,7 +52,10 @@ export function Steps({ items, current, label = '任务步骤', error, onStepCha
     const active = action.trigger.ownerDocument.activeElement;
     // A host-selected field/title takes priority over this standalone fallback.
     if (active && active !== action.trigger.ownerDocument.body && active !== action.trigger.ownerDocument.documentElement) return;
-    (list.current?.children[position] as HTMLElement | undefined)?.focus();
+    const target = list.current?.children[position] as HTMLElement | undefined;
+    target?.focus({ preventScroll: true });
+    // A long step can exceed the viewport: reveal its identifying start, not its center.
+    target?.querySelector<HTMLElement>('.rhine-steps__number')?.scrollIntoView?.({ block: 'center', inline: 'nearest' });
   });
   return <ol ref={list} className="rhine-steps" aria-label={label}>{items.map((item, index) => {
     const state = index < position ? 'complete' : index === position ? (error ? 'error' : 'current') : 'pending';
