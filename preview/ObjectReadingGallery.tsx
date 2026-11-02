@@ -15,25 +15,94 @@ const paragraphs = Array.from({ length: 18 }, (_, i) => `第 ${i + 1} 段 · 河
 const scenarioLabels: Record<Scenario, string> = { ready: '正常阅读', loading: '正文加载中', error: '正文加载失败', restricted: '正文受限', unsupported: '格式不可预览', 'source-unavailable': '来源不可用', 'no-related': '暂无关联', 'related-unavailable': '关联不可用' };
 
 // Per-object state belongs to this synthetic host, never to Dialog or a data service.
-function ObjectReader({ object, scenario, tab, onTab, positions, navigate, retry }: {
-  object: ReadingObject; scenario: Scenario; tab: ReadingTab; onTab: (tab: ReadingTab) => void;
+function ObjectReader({ object, active, scenario, tab, onTab, positions, navigate, retry }: {
+  object: ReadingObject; active: boolean; scenario: Scenario; tab: ReadingTab; onTab: (tab: ReadingTab) => void;
   positions: Partial<Record<ReadingTab, number>>; navigate: (target: string) => void; retry: () => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(false);
+  const request = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const restore = useRef<(restart?: boolean) => void>(() => {});
+  const readable = !loading && !['loading', 'error', 'restricted', 'unsupported'].includes(scenario);
+  const ready = useRef(false);
+  ready.current = tab !== 'content' || readable;
+  const cancelRequest = () => { clearTimeout(request.current); request.current = undefined; setLoading(false); };
+  const load = () => {
+    cancelRequest(); restore.current(true); setLoading(true);
+    request.current = setTimeout(() => { request.current = undefined; setLoading(false); retry(); }, 600);
+  };
   useLayoutEffect(() => {
-    // Ordinary Dialog owns scrolling. Use its public ARIA role, not private CSS.
+    // The request belongs to this open object and tab, including the exit animation.
+    return cancelRequest;
+  }, [active, object.id, tab]);
+  useLayoutEffect(() => {
     const dialog = root.current?.closest<HTMLElement>('[role="dialog"]');
-    if (!dialog) return;
+    if (!active || !dialog) return;
+    let pending = true;
+    let frame = 0;
+    let headerFocus = false;
     const top = positions[tab] ?? 0;
-    const frame = requestAnimationFrame(() => { dialog.scrollTop = top; dialog.addEventListener('scroll', remember); });
-    function remember() { positions[tab] = dialog!.scrollTop; }
-    return () => { cancelAnimationFrame(frame); dialog.removeEventListener('scroll', remember); };
-  }, [positions, tab]);
-  const content = scenario === 'loading' ? <Skeleton label="正在加载正文" />
-    : scenario === 'error' ? <Notice tone="error" title="正文加载失败" action={<Button onClick={retry}>重试正文</Button>}>元信息仍可查看，也可以关闭后返回目录。</Notice>
+    const visible = (node: Element) => {
+      const bounds = dialog.getBoundingClientRect();
+      const rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && !node.closest('[hidden]')
+        && rect.top >= Math.max(0, bounds.top) + 2 && rect.bottom <= Math.min(innerHeight, bounds.bottom) - 2;
+    };
+    const attempt = () => {
+      if (!pending || !ready.current || !dialog.clientHeight) return;
+      pending = false;
+      dialog.scrollTop = Math.min(top, dialog.scrollHeight - dialog.clientHeight);
+      // Tabs/initial autofocus may now be above the viewport. Hand off only this
+      // restoration's focus, without scrolling away from the saved reading position.
+      const focused = document.activeElement;
+      if (focused && dialog.contains(focused) && visible(focused)) return;
+      const anchor = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-reading-anchor], [role="tab"][aria-selected="true"]') ?? []).find(visible);
+      if (anchor) anchor.focus({ preventScroll: true });
+      else {
+        // A narrow/zoomed metadata header can put even a short tab below view.
+        const selected = root.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]');
+        selected?.focus({ preventScroll: true });
+        selected?.scrollIntoView({ block: 'nearest' });
+      }
+    };
+    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(attempt); };
+    restore.current = (restart = false) => { if (restart) pending = true; schedule(); };
+    const cancel = () => { pending = false; cancelAnimationFrame(frame); };
+    const interact = (event: Event) => {
+      // Explicit retry/completion starts this same recovery; other user intent wins.
+      if ((event.type === 'pointerdown' || event.type === 'keydown') && event.target instanceof Element
+        && event.target.closest('[data-reading-resume]')
+        && (!(event instanceof KeyboardEvent) || ['Enter', ' '].includes(event.key))) return;
+      if (event.type === 'wheel' || event.type === 'touchmove' || event.type === 'pointerdown'
+        || (event instanceof KeyboardEvent && ['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp'].includes(event.key))) headerFocus = false;
+      cancel();
+    };
+    // Focusing a tab may scroll the header into view before its activation. That
+    // focus-owned scroll must not replace the position of the body being left.
+    const focusChanged = (event: FocusEvent) => { headerFocus = event.target instanceof Element && !!event.target.closest('[role="tablist"]'); };
+    const remember = () => { if (!pending && ready.current && !(tab === 'content' && headerFocus)) positions[tab] = dialog.scrollTop; };
+    for (const event of ['wheel', 'touchmove', 'pointerdown', 'keydown']) dialog.addEventListener(event, interact, { passive: true });
+    dialog.addEventListener('scroll', remember);
+    dialog.addEventListener('focusin', focusChanged);
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(schedule);
+    observer?.observe(dialog);
+    if (root.current) observer?.observe(root.current);
+    schedule();
+    return () => {
+      cancel(); observer?.disconnect(); restore.current = () => {};
+      dialog.removeEventListener('scroll', remember);
+      dialog.removeEventListener('focusin', focusChanged);
+      for (const event of ['wheel', 'touchmove', 'pointerdown', 'keydown']) dialog.removeEventListener(event, interact);
+    };
+  }, [active, object.id, positions, tab]);
+  useLayoutEffect(() => { restore.current(); }, [readable]);
+  const content = loading || scenario === 'loading' ? <Stack gap={3}><Skeleton label="正在加载正文" />{loading
+    ? <Button onClick={cancelRequest}>取消加载</Button>
+    : <Button data-reading-resume onClick={load}>完成模拟加载</Button>}</Stack>
+    : scenario === 'error' ? <Notice tone="error" title="正文加载失败" action={<Button data-reading-resume onClick={load}>重试正文</Button>}>元信息仍可查看，也可以关闭后返回目录。</Notice>
     : scenario === 'restricted' ? <Notice title="正文受限">当前仅可查看元信息。归属共享资料库不代表拥有正文权限。</Notice>
     : scenario === 'unsupported' ? <Notice title="格式不可预览">已保留对象信息；请返回目录选择其他文件。</Notice>
-    : <Stack gap={4}><Text as="h3" variant="heading">观察正文</Text>{paragraphs.map((text, i) => <Text key={i}>{text}</Text>)}<Text data-testid="reading-end">正文末段 · 本次阅读到此结束。</Text><Button variant="secondary" onClick={() => { onTab('related'); root.current?.querySelector<HTMLElement>('[role="tab"][aria-label="关联"]')?.focus({ preventScroll: true }); }}>查看关联</Button></Stack>;
+    : <Stack gap={4}><Text as="h3" variant="heading" tabIndex={-1} data-reading-anchor>观察正文</Text>{paragraphs.map((text, i) => <Text key={i}>{text.split(/(?<=。)/).map((sentence, j) => <span key={j} tabIndex={-1} data-reading-anchor>{sentence}</span>)}</Text>)}<Text data-testid="reading-end" tabIndex={-1} data-reading-anchor>正文末段 · 本次阅读到此结束。</Text><Button variant="secondary" onClick={() => { onTab('related'); root.current?.querySelector<HTMLElement>('[role="tab"][aria-label="关联"]')?.focus({ preventScroll: true }); }}>查看关联</Button></Stack>;
   return <div ref={root} className="rhine-reading-content"><Stack gap={4}>
     <KeyValue items={[
       { key: 'owner', label: '归属', value: object.owner },
@@ -88,7 +157,7 @@ export function ObjectReadingGallery() {
                 onOpenChange={next => { if (next) setSelected(object.id); setOpen(next); }}
                 onCloseAutoFocus={event => { if (pendingNavigation.current) { event.preventDefault(); setDestination(pendingNavigation.current); pendingNavigation.current = null; } }}
                 trigger={<Button variant="secondary" onClick={event => triggers.current.set(object.id, event.currentTarget)} aria-label={`阅读：${object.title}`}>{object.title}</Button>}>
-                <ObjectReader object={object} scenario={scenario} tab={tabs[object.id] ?? 'content'} onTab={tab => setTabs(current => ({ ...current, [object.id]: tab }))} positions={savedPositions}
+                <ObjectReader object={object} active={selected === object.id && open} scenario={scenario} tab={tabs[object.id] ?? 'content'} onTab={tab => setTabs(current => ({ ...current, [object.id]: tab }))} positions={savedPositions}
                   navigate={target => { pendingNavigation.current = target; setOpen(false); }} retry={() => setScenario('ready')} />
               </Dialog>
               {selected === object.id && <Text variant="caption" tone="muted">上次阅读的对象</Text>}

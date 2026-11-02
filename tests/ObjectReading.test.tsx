@@ -30,7 +30,7 @@ it('hands focus to a related page, then restores query, type, selected object, t
 
 it.each([
   ['restricted', '正文受限'], ['unsupported', '格式不可预览'], ['loading', '正在加载正文'], ['error', '正文加载失败'],
-])('retains identity and exit for %s without rendering readable content', (scenario, label) => {
+])('retains identity and exit for %s without rendering readable content', async (scenario, label) => {
   render(<ObjectReadingGallery />);
   fireEvent.change(screen.getByRole('combobox', { name: '阅读场景' }), { target: { value: scenario } });
   openNote();
@@ -39,7 +39,7 @@ it.each([
   expect(within(dialog).getByText('访问权限')).toBeVisible();
   expect(within(dialog).getByRole('button', { name: '关闭对话框' })).toBeVisible();
   expect(screen.queryByTestId('reading-end')).not.toBeInTheDocument();
-  if (scenario === 'error') { fireEvent.click(screen.getByRole('button', { name: '重试正文' })); expect(screen.getByTestId('reading-end')).toBeVisible(); }
+  if (scenario === 'error') { fireEvent.click(screen.getByRole('button', { name: '重试正文' })); await waitFor(() => expect(screen.getByTestId('reading-end')).toBeVisible()); }
 });
 
 it.each(['source-unavailable', 'no-related', 'related-unavailable', 'restricted'])('offers no source or relation bypass for %s', scenario => {
@@ -72,4 +72,23 @@ it('moves focus to the visible related tab when leaving the bottom of the body',
   fireEvent.click(jump);
   expect(screen.getByRole('tab', { name: '关联' })).toHaveFocus();
   expect(document.activeElement?.closest('[hidden]')).toBeNull();
+});
+
+// Real scrolling/focus geometry is exercised by check-object-reading-recovery.js.
+it.each(['close', 'tab', 'cancel', 'object'])('cancels a pending synthetic retry on %s', async action => {
+  render(<ObjectReadingGallery />);
+  fireEvent.change(screen.getByRole('combobox', { name: '阅读场景' }), { target: { value: 'error' } });
+  openNote();
+  fireEvent.click(screen.getByRole('button', { name: '重试正文' }));
+  expect(screen.getByText('正在加载正文')).toBeVisible();
+  if (action === 'cancel') fireEvent.click(screen.getByRole('button', { name: '取消加载' }));
+  else if (action === 'tab') fireEvent.click(screen.getByRole('tab', { name: '来源' }));
+  else {
+    fireEvent.click(screen.getByRole('button', { name: '关闭对话框' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    if (action === 'object') fireEvent.click(screen.getByRole('button', { name: /^阅读：共享文件/ }));
+  }
+  await new Promise(resolve => setTimeout(resolve, 700));
+  expect(screen.queryByTestId('reading-end')).not.toBeInTheDocument();
+  expect(screen.getByRole('combobox', { name: '阅读场景', hidden: true })).toHaveValue('error');
 });
