@@ -12,7 +12,7 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 </ThemeProvider>
 ```
 
-CSS-only 接入先加载 `@linhey/rhine-design/styles.css`，再加载 `@linhey/rhine-design/theme-neutral.css`，使用 `.rhine-theme[data-rhine-theme="neutral"]`。`/theme` 入口自动加载；普通组件入口不自动加载可选主题。ThemePicker 默认提供四项与对应的随包静态预览。主题受控/非受控、并列 Provider、Portal、草稿保留与宿主存储职责沿用 [主题 API](THEMING.md)，不支持嵌套主题根。
+CSS-only 接入先加载 `@linhey/rhine-design/styles.css`，再加载 `@linhey/rhine-design/theme-neutral.css`，使用 `.rhine-theme[data-rhine-theme="neutral"]`。`/theme` 入口自动加载；普通组件入口不自动加载可选主题。ThemePicker 当前源码默认提供五项（新增 graphite 候选）与对应的随包静态预览。主题受控/非受控、并列 Provider、Portal、草稿保留与宿主存储职责沿用 [主题 API](THEMING.md)，不支持嵌套主题根。
 
 ## 配色与组件
 

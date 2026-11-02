@@ -1,0 +1,46 @@
+/* Opt-in quiet dark workspace. Geometry and interaction stay with the components. */
+.rhine-theme[data-rhine-theme="graphite"] {
+  color-scheme: dark;
+  --rhine-bg: #15191c;
+  --rhine-surface: #20262a;
+  --rhine-ink: #e9eced;
+  --rhine-muted: #a2adb2;
+  --rhine-line: #3b454b;
+  --rhine-control: #7c898f;
+  --rhine-selected: #303e3b;
+  --rhine-green: #a5c7b6;
+  --rhine-signal: #d9ad87;
+  --rhine-warning: #e2bb78;
+  --rhine-warning-bg: #342c20;
+  --rhine-error: #f0a39c;
+  --rhine-error-bg: #392726;
+  --rhine-backdrop-bg: #00000099;
+  --rhine-sidebar-bg: #1b2024;
+  --rhine-overlay-bg: #272e33;
+  --rhine-background-mark: #3b454b;
+  --rhine-background-texture: none;
+  --rhine-chart-series-3: #94bedb;
+  --rhine-chart-series-4: #c7acd9;
+  --rhine-radius-card: 12px;
+  --rhine-radius-control: 8px;
+}
+.rhine-theme[data-rhine-theme="graphite"] .rhine-button:not(.rhine-button--secondary):not(.rhine-button--quiet):not(.rhine-button--danger):not(:disabled):not([data-disabled=true]):not([aria-disabled=true]:not([aria-busy=true])) {
+  background: var(--rhine-green);
+  border-color: var(--rhine-green);
+  color: var(--rhine-bg);
+}
+.rhine-theme[data-rhine-theme="graphite"] .rhine-button:not(.rhine-button--secondary):not(.rhine-button--quiet):not(.rhine-button--danger):hover:not(:disabled):not([aria-disabled=true]) {
+  background: #bfd9cb;
+  border-color: #bfd9cb;
+}
+/* The shared danger hover and selection hover are light-theme literals. */
+.rhine-theme[data-rhine-theme="graphite"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) {
+  background: #ffc0b9;
+  border-color: #ffc0b9;
+}
+.rhine-theme[data-rhine-theme="graphite"] .rhine-selection:hover:not([data-disabled=true]) { background: var(--rhine-selected); }
+.rhine-theme[data-rhine-theme="graphite"] :is(.rhine-dialog,.rhine-popover,.rhine-menu,.rhine-combobox__list) {
+  border-radius: var(--rhine-radius-card);
+  box-shadow: 0 16px 48px #00000040;
+}
+.rhine-theme[data-rhine-theme="graphite"] .rhine-shell { border-radius: var(--rhine-radius-card); }

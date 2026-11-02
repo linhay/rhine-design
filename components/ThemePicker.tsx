@@ -4,10 +4,12 @@ import rhine from './assets/theme-previews/rhine.png?no-inline';
 import arknights from './assets/theme-previews/arknights.png?no-inline';
 import neoBrutalism from './assets/theme-previews/neo-brutalism.png?no-inline';
 import neutral from './assets/theme-previews/neutral.png?no-inline';
+import graphite from './assets/theme-previews/graphite.png?no-inline';
 import './theme-picker.css';
 
-const sources: Record<ThemeName, string> = { rhine, arknights, neutral, 'neo-brutalism': neoBrutalism };
+const sources: Record<ThemeName, string> = { rhine, arknights, neutral, graphite, 'neo-brutalism': neoBrutalism };
 const descriptions: Record<ThemeName, string> = {
+  graphite: '石墨灰分层、柔和正文与低饱和绿操作。',
   neutral: '白色正文、浅灰侧栏与黑灰操作。',
   rhine: '暖白纸面、苔绿操作与细线边界。',
   arknights: '深色工作区、明亮信号与切角边界。',

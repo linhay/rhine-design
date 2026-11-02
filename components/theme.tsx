@@ -3,6 +3,7 @@ import './styles.css';
 import './theme-arknights.css';
 import './theme-neo-brutalism.css';
 import './theme-neutral.css';
+import './theme-graphite.css';
 import { themes, type ThemeName } from './themeMetadata';
 export { themes, type ThemeName } from './themeMetadata';
 

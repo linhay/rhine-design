@@ -123,7 +123,7 @@ playwright-cli -s=p0-validation close
 
 ## 颜色角色检查
 
-对构建后的生产预览运行 `scripts/check-theme-roles.js`。它复用 `?fixture=neutral`、`#actions`、`#forms`、`#feedback`、`#data`、`#overlays` 和 `#backgrounds` 的真实组件，不新增测试专用运行路由。矩阵为四主题 ×（400/520/880 宽度 × CSS zoom 1/2，以及 880 宽度系统/手动减少动态）；记录每个样本的角色、计算样式背景链、原始比值、阈值与状态。必须核对返回的 `pass`、`failures`、`errors`，CLI 成功不等于验收通过。
+对构建后的生产预览运行 `scripts/check-theme-roles.js`。它复用 `?fixture=neutral`、`#actions`、`#button-actions`、`#selection`、`#forms`、`#feedback`、`#data`、`#overlays` 和 `#backgrounds` 的真实组件，不新增测试专用运行路由。矩阵为五主题 ×（400/520/880 宽度 × CSS zoom 1/2，以及 880 宽度系统/手动减少动态）；记录每个样本的角色、计算样式背景链、原始比值、阈值与状态。必须核对返回的 `pass`、`failures`、`errors`，CLI 成功不等于验收通过。
 
 ```sh
 playwright-cli -s=theme-roles open http://127.0.0.1:18497/

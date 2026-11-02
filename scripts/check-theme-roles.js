@@ -98,7 +98,7 @@ async page => {
     await measure(locator, role, 'focus');
   };
   const themeFilter = await page.evaluate(() => new URLSearchParams(location.search).get('roleTheme'));
-  const allThemes = ['rhine', 'arknights', 'neo-brutalism', 'neutral'];
+  const allThemes = ['rhine', 'arknights', 'neo-brutalism', 'neutral', 'graphite'];
   const themes = allThemes.includes(themeFilter) ? [themeFilter] : probe || quick ? ['rhine'] : allThemes;
   const cases = probe || quick ? [{width:880,zoom:1,motion:'normal'}] : [400,520,880].flatMap(width => [1,2].map(zoom => ({width,zoom,motion:'normal'}))).concat(['system','manual'].map(motion => ({width:880,zoom:1,motion})));
   for (const theme of themes) for (const scenario of cases) {
@@ -155,6 +155,19 @@ async page => {
       await goto('#actions');
       const empty = page.getByRole('textbox',{name:'显示名称',exact:true});
       await measure(empty,'TextField/placeholder','text','::placeholder');
+      await goto('#button-actions');
+      const danger = page.getByRole('button',{name:'删除记录',exact:true}).first();
+      await measure(danger,'Button/danger'); await danger.hover(); await settle(); await measure(danger,'Button/danger hover');
+      await keyboardFocus(danger,'Button/danger focus');
+      await goto('#selection');
+      const card = page.locator('.rhine-selection');
+      await card.hover(); await settle();
+      await measure(card.locator('strong'),'SelectionCard/hover title');
+      await measure(card.locator('.ds-caption'),'SelectionCard/hover description');
+      if (await card.getAttribute('data-selected') !== 'true') await card.click(); await settle();
+      check(await card.getByRole('checkbox').isChecked(),{...context,role:'SelectionCard/selected semantics'});
+      await measure(card.locator('strong'),'SelectionCard/selected title');
+      await measure(card.locator('.ds-caption'),'SelectionCard/selected description');
       await goto('#forms');
       await measure(page.getByRole('textbox',{name:'备注',exact:true}),'Textarea/boundary','boundary');
       await measure(page.getByRole('textbox',{name:'校验失败示例',exact:true}),'Textarea/error boundary','boundary');

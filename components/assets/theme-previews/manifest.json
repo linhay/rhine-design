@@ -1,5 +1,5 @@
 {
-  "revision": 2,
+  "revision": 3,
   "sourceBaseline": "8c23eea20d55962dc50cae381abc5815ca04677e + neutral candidate",
   "width": 960,
   "height": 600,
@@ -22,6 +22,21 @@
     "arknights.png": "6787af3f88612fcd6f3550114056d6281ce51a2a3b03c9e38eb5235ab14fdb46",
     "neo-brutalism.png": "02faec22e585718e7121411cc71dc0efea86376089c94c1ba7195548bdb73255",
     "neutral.png": "a1d19a5e4646255c04a8ad782f0be9386ac8c8fe41b63bdcc2769e1cfea8d0d7",
-    "rhine.png": "2bbb22a1c6da3afd5f0af079d3977ca4399d1502bba1d908fadb78cd89918049"
+    "rhine.png": "2bbb22a1c6da3afd5f0af079d3977ca4399d1502bba1d908fadb78cd89918049",
+    "graphite.png": "ae10b7e2f90ba7ee681b74ebdf8f8e48b7c3e8c59c7519ba6985eac296177065"
+  },
+  "additions": {
+    "graphite.png": {
+      "sourceBaseline": "effe49881154bae999f0057761a7136b016297e1 + graphite candidate",
+      "capture": "ThemeSample, Chromium, 960x600, CSS zoom 1, reduced motion",
+      "sourceSHA256": {
+        "preview/ThemeSample.tsx": "1922382b1bd075726838323d4cd0b64ad1e0c90118c24fee50b49d77dfb78fcd",
+        "components/theme.tsx": "c39e76321f0bf27b11d7e836af22e127635dca92e3fe5a254744c659a2bd87e8",
+        "components/themeMetadata.ts": "dc068dc85b82f010715de406e4d0b842baa9ebca1d120a8c8fb13f3676777f59",
+        "components/theme-graphite.css": "631830419698ab5aed64eaa4f7f08257fba71b9914c44976589a8398d67b8262",
+        "components/styles.css": "5bf92f36e5ee16c064665d5476a9225a006e51ea7df3a0fc565ad7bcdb468f11",
+        "components/tokens.css": "d6ae0c876d40e17ba80fd4eed5a5e1ff0a58a8fba7d0b3210906f5738ef57d44"
+      }
+    }
   }
 }

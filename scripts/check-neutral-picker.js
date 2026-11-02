@@ -5,7 +5,7 @@ async page => {
   try{
    await page.setViewportSize({width,height:900});await page.goto(`${base}/?fixture=theme-picker&theme=neutral&zoom=${zoom}`);
    await page.waitForFunction(()=>[...document.querySelectorAll('.rhine-theme-preview img')].every(e=>e.complete&&e.naturalWidth===960),null,{timeout:5000});
-   const radios=page.getByRole('radio');if(await radios.count()!==4)throw Error('four themes missing');
+   const radios=page.getByRole('radio');if(await radios.count()!==5)throw Error('five themes missing');
    const selected=page.getByRole('radio',{name:'中性 · 黑白轻量'});await selected.focus();await page.keyboard.press('ArrowLeft');
    if(!await page.getByRole('radio',{name:'橙趣 · 粗描边'}).isChecked())throw Error('keyboard selection failed');
    const draft=page.getByRole('textbox',{name:'未保存草稿'});await draft.fill('继续编辑');
@@ -15,7 +15,7 @@ async page => {
    await page.keyboard.press('Escape');await dialog.waitFor({state:'detached'});
    if(await draft.inputValue()!=='继续编辑')throw Error('draft lost');
    await page.getByRole('checkbox',{name:'模拟预览失败'}).check();
-   await page.waitForFunction(()=>document.querySelectorAll('[data-state=error]').length===4,null,{timeout:3000});
+   await page.waitForFunction(()=>document.querySelectorAll('[data-state=error]').length===5,null,{timeout:3000});
    await page.getByRole('checkbox',{name:'禁用主题选择'}).check();
    if(!await radios.evaluateAll(es=>es.every(e=>e.matches(':disabled'))))throw Error('disabled failure');
    rows.push({width,zoom,pass:true});
