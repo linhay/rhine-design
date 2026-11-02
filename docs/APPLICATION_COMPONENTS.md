@@ -220,7 +220,7 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 `TrendChart({ label, unit, rangeLabel, description, points, kind, stale?, error?, loading? })` 提供 `kind="bar" | "line"`，每个 point 是 `{id,label,value:number|null}`。宿主负责时间桶、排序、聚合、单位与统计说明；组件只映射坐标。零是有效采样，未知值不补零、不插值，折线路径在缺失点处断开；图内 ×、SVG 可访问说明和可展开的原始数据表共同表示缺失。单位、范围与图例均为 HTML 文字，避免窄屏 SVG 缩放导致文字小于 12px。多条资源指标使用多个命名图表组合，不内置数据请求或图表引擎。
 
-`StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，保留一位小数，不是健康分数或成功率。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
+`StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，常规保留一位小数，不是健康分数或成功率。未发布修复（#158）：若一位小数会把非零/非全量写成 0.0% / 100.0%，改用两位小数；小于 0.01% / 大于 99.99% 的非边界值显示 `<0.01%` / `>99.99%`。真正零/全量仍为 0.0% / 100.0%，原始正值项决定是否全量。计数、色段权重不舍入、不设最小宽度；文字合计不保证 100%。图例为始终可读的静态列表，不额外加入 Tab 停靠点，键盘用户可滚动阅读。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
 
 两类图表新增 `valueFormatter(value:number|null)`；非有限值以 null 传入。TrendChart 刻度与逐点文字采用格式化，原始数据表保留原数值；StackedBar 格式化图例但不改变比例算法，零分段不占色带空间。TrendChart 可聚焦图形后用左右/Home/End，或悬停/轻触查看同一时段。`activePointId/defaultActivePointId/onActivePointChange` 支持受控高亮与多图联动；null 清除高亮，丢失 ID 不替代为别的样本。高亮值以 HTML 文字播报，缺失桶仍可查看。
 
