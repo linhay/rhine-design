@@ -11,7 +11,7 @@ async page => {
   const hitTarget = locator => locator.evaluate(el => {
     const b = el.getBoundingClientRect(), r = el.closest('.rhine-table-scroll').getBoundingClientRect();
     const x = b.left + b.width / 2, y = b.top + b.height / 2, hit = document.elementFromPoint(x, y);
-    return { x, y, visible: b.left >= r.left - 1 && b.right <= r.right + 1 && y > r.top && y < Math.min(r.bottom, innerHeight), hit: !!hit && (el.contains(hit) || el.closest('label')?.contains(hit)), focused: document.activeElement === el, outline: getComputedStyle(el).outlineStyle, shadow: getComputedStyle(el).boxShadow, focusVisible: el.matches(':focus-visible') };
+    return { x, y, visible: b.left >= r.left - 1 && b.right <= r.right + 1 && y > r.top && y < Math.min(r.bottom, innerHeight), hit: !!(hit && (el.contains(hit) || el.closest('label')?.contains(hit))), focused: document.activeElement === el, outline: getComputedStyle(el).outlineStyle, shadow: getComputedStyle(el).boxShadow, focusVisible: el.matches(':focus-visible') };
   });
   try {
     for (const theme of quick || probe ? ['rhine'] : ['rhine', 'arknights', 'neo-brutalism', 'neutral', 'graphite']) {
@@ -23,11 +23,7 @@ async page => {
           await page.getByLabel('固定列组合', { exact: true }).selectOption(layout);
           await page.evaluate(z => { document.documentElement.style.zoom = String(z); }, zoom);
           await settle();
-          if (probe === 'force-pin') await table.evaluate(el => {
-            for (const row of el.rows) {
-              const cell = row.cells[row.cells.length - 1]; if (cell) { cell.setAttribute('data-sticky', 'right'); cell.style.right = '0px'; }
-            }
-          });
+          if (probe === 'force-pin') await page.addStyleTag({ content: '.rhine-table tbody tr > :last-child {position:sticky!important;right:0!important;min-width:200px!important;z-index:1!important}' });
           const initial = await geometry();
           check(width !== 1280 || initial.pinned.length > 0, { kind: 'wide-preserves-pinning', context, initial });
           check(width !== 400 || initial.pinned.length === 0, { kind: 'narrow-unpins', context, initial });

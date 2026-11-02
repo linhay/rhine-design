@@ -26,7 +26,7 @@ export function TableStickyGallery() {
   const baseColumns: DataColumn<Row>[] = [
     { key: 'id', header: '标识', width: 80, render: row => row.id },
     { key: 'owner', header: '归属', width: 96, render: row => row.owner },
-    { key: 'name', header: '完整名称', width: 300, rowHeader: true, render: row => <Stack gap={1}><span>{row.name}</span><Button variant="quiet" onClick={() => setMessage(`已打开 ${row.id}`)}>打开记录</Button></Stack> },
+    { key: 'name', header: '完整名称', width: 300, rowHeader: true, render: row => <Stack gap={1}><span>{row.name}</span><Button style={{ alignSelf: 'flex-start' }} variant="quiet" onClick={() => setMessage(`已打开 ${row.id}`)}>打开记录</Button></Stack> },
     { key: 'count', header: '条目数', width: 160, align: 'right', render: row => row.count },
     { key: 'status', header: '状态', width: 80, render: row => row.status },
     { key: 'action', header: '操作', width: 112, render: row => <Button variant="secondary" onClick={() => setMessage(`已查看 ${row.id}`)}>查看记录</Button> },
