@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { DisabledNavigationGallery } from './DisabledNavigationGallery';
 import { Dialog, Select, SideNav, Stack, Text, Toolbar } from '../components';
 export function NavActionsGallery() {
   const [width, setWidth] = useState('520');
@@ -8,6 +9,7 @@ export function NavActionsGallery() {
   const returnFocus = useRef<HTMLButtonElement | null>(null);
   const label = long ? '跨区域联合研究项目与长期设计验证的合成工作区' : '合成工作区';
   return <section id="nav-actions"><Stack gap={6}>
+    <DisabledNavigationGallery />
     <Toolbar title="导航行操作" description="导航链接与更多操作互为兄弟，空动作不占位。">
       <Select label="导航容器宽度" value={width} onChange={e => setWidth(e.target.value)}>{['400', '520', '880'].map(value => <option key={value}>{value}</option>)}</Select>
       <Select label="导航标题" value={long ? 'long' : 'normal'} onChange={e => setLong(e.target.value === 'long')}><option value="normal">普通</option><option value="long">长标题</option></Select>

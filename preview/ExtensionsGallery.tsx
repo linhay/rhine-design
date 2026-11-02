@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AppShell, AppShellToggle, IconButton, Inline, Background, Button, Checkbox, DataTable, DateField, DateRangePicker, Dialog, EmptyState, MediaCard, MediaViewer, Notice, NumberField, Pagination, RemoteMultiSelect, Select, SideNav, Skeleton, Stack, Surface, TextField, TreeSelect, type AppShellProps, type DateRange, type TreeNode, type TableSort } from '../components';
 import type { Choice } from '../components/components';
 import './extensions.css';
+import { NumberValidationGallery } from './NumberValidationGallery';
 
 const longName = '非常长的工作区名称与跨区域协作资料—Workspace-2026-archive';
 const sampleImage = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640"><rect width="960" height="640" fill="#d2dacf"/><circle cx="720" cy="150" r="65" fill="#f8f2d8"/><path d="M0 520 310 140 620 550 800 280 960 500V640H0Z" fill="#536b5d"/><path d="M0 560 320 400 610 590 960 480V640H0Z" fill="#293f37"/></svg>')}`;
@@ -61,7 +62,7 @@ export function AdvancedFormsGallery() {
       <Surface><RemoteMultiSelect label="远程项目" query={query} onQueryChange={setQuery} value={selected} onValueChange={setSelected} options={state === 'empty' ? [] : options} loading={pending || state === 'loading'} error={error} disabled={disabled} readOnly={readOnly} hint="已选标签跨查询保留；选择后可继续添加。" /></Surface>
       <Surface><Stack gap={4}><Checkbox label="树多选模式" checked={multiple} onChange={event => { setMultiple(event.target.checked); setKeys([]); }} /><TreeSelect label="项目层级" nodes={state === 'empty' ? [] : nodes} value={keys} onValueChange={setKeys} expandedKeys={expanded} onExpandedChange={setExpanded} multiple={multiple} disabled={disabled} readOnly={readOnly} loading={state === 'loading'} error={error} /><p>选中键：{keys.join(', ') || '无'}；父子勾选互不联动。</p></Stack></Surface>
     </div>
-  </section>;
+  <div className="ds-gap-top"><NumberValidationGallery /></div></section>;
 }
 
 interface DemoRow { id: string; name: string; disabled?: boolean; children?: DemoRow[] }

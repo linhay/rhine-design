@@ -126,6 +126,20 @@ NumberField 支持小数步进（默认 1）；precision 限制为 0–15 位，
 
 NumberField 另有 `readOnly/required/id/name/hint/controls`（按钮默认显示）；Escape 取消未提交草稿并恢复受控值，第二次 Escape 可交给外层浮层。min/max 变化会直接标明当前越界，不伪造用户输入或自动修改宿主值。空值步进按有效范围处理，不再把空字符串当成已达到零边界。
 
+### NumberField 的表单提交（#164，未发布）
+
+当前草稿通过原生 `HTMLInputElement.setCustomValidity` 接入表单校验；宿主使用公开的 `id/name`、`form.elements`、`validity`、`validationMessage`、`checkValidity()` / `reportValidity()` 读取，不依赖私有选择器或可见错误文字。不新增第二套校验回调。非法字符串、越界、配置反向边界、required 空值及外部 `error` 会阻止原生提交；禁用/只读遵循原生 `willValidate=false`，也不在submit中接受草稿或精度归一化；禁用状态按原生 `:disabled` 判断，包含祖先fieldset，首个legend的例外交给浏览器。宿主仍需验证其业务模型。
+
+编辑中的 `-` 保留且已不可提交，但直到 blur/Enter 或 invalid 事件才显示格式错误；`1.` 可以继续编辑，提交时解析成 1。范围与外部错误仍即时显示。空草稿在blur/Enter仍可提交为 `null` 到宿主，required表单保持无效；submit遇到无效草稿则直接阻止本次尝试。纠正、Escape 恢复、外部 value/min/max/error 更新同步更新原生有效性；不把非法字符串传入 number|null，不因越界自动钳制。步进的既有边界处理保持。输入法组合未完成时阻止提交，结束后仍按 blur/Enter/表单提交约定接受草稿。
+
+原生提交先验证当前草稿；合法草稿在原生 submit 的 document 捕获阶段同步提交给 `onValueChange`，再让 React 的提交处理读取更新后的受控值。某字段在轮到它时仍无效，会阻止本次submit及其后续监听传播并触发invalid；仅preventDefault不足以阻止忽略该标记的宿主保存。后注册字段不得在同次事件里放宽约束后让宿主保存先前被拒绝字段的旧值。用户应先纠正草稿，或以blur/Enter先确认约束字段，再重新提交；不承诺自动求解相互依赖或回滚已接受的较早字段。因此 `requestSubmit()` 即使没有先 blur，也不能仅因事件时序而保存旧值。宿主应同步接受受控提议，异步业务确认独立执行；不要在早于组件的原生 document/window 捕获监听中读取旧模型并保存。
+
+- 普通 `<form onSubmit>`：浏览器先阻止非法草稿，宿主 onSubmit 仍应先 preventDefault 并再次 checkValidity（提交一个字段可能改变另一个字段的约束），通过后才保存；用 `onInvalidCapture` 收集 `form.elements` 中 `willValidate && !validity.valid` 的字段，阻止原生气泡后交给 ErrorSummary。只有失败提交才更新 `focusKey`；摘要链接回字段且不改变路由。
+- `noValidate`：NumberField仍会拦截本次轮到它时无效的草稿，宿主用onInvalidCapture收集摘要；若submit到达宿主，在 onSubmit 中先 `preventDefault()`，再 `form.checkValidity()`；失败返回，成功才保存同步更新后的值。示例提供此完整路径。
+- 脚本保存：调用 `form.requestSubmit()` 复用同一路径。`form.submit()` 绕过原生校验和 submit 事件；直接调用网络保存函数同样绕过字段协议，不支持作为草稿提交入口。不要仅 checkValidity 后立即读取尚未接受的旧受控值。
+
+真实合成表单位于 `#advanced-forms` 与 `?fixture=number-validation`；附加 `&edge=dependency` / `fieldset` / `legend` 可复验先注册依赖字段与原生禁用分组例外。默认组合包含已有合法数值→非法草稿→阻止保存、多个字段错误摘要、纠正、键盘/脚本保存、外部业务错误和只读/禁用状态。服务端仍独立校验，不将客户端有效性当作业务成功。
+
 TreeSelect 使用 tree/treeitem/group，Tab 进入一个可见节点，上下/Home/End 移动，右键展开或进入首个子项，左键收起或返回父项，Space/Enter 选择。禁选节点可导航和展开，但不能勾选。多选用 aria-checked，单选用 aria-selected。节点 ID 全树唯一稳定；过滤后的祖先与展开状态由宿主提供，选择状态不随结果集消失。
 
 首次进入优先已选可见节点；字符前缀定位不改变选择，`*` 展开同层分支，Ctrl/⌘+A 仅切换可见可选节点。外部收起时焦点回可见祖先。节点 `selectable=false` 用于结构分组；readOnly 允许浏览展开而禁止选择。`name` 为选中 key 生成同名 hidden inputs，disabled 不提交。
@@ -206,7 +220,7 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 `TrendChart({ label, unit, rangeLabel, description, points, kind, stale?, error?, loading? })` 提供 `kind="bar" | "line"`，每个 point 是 `{id,label,value:number|null}`。宿主负责时间桶、排序、聚合、单位与统计说明；组件只映射坐标。零是有效采样，未知值不补零、不插值，折线路径在缺失点处断开；图内 ×、SVG 可访问说明和可展开的原始数据表共同表示缺失。单位、范围与图例均为 HTML 文字，避免窄屏 SVG 缩放导致文字小于 12px。多条资源指标使用多个命名图表组合，不内置数据请求或图表引擎。
 
-`StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，保留一位小数，不是健康分数或成功率。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
+`StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，常规保留一位小数，不是健康分数或成功率。未发布修复（#158）：若一位小数会把非零/非全量写成 0.0% / 100.0%，改用两位小数；小于 0.01% / 大于 99.99% 的非边界值显示 `<0.01%` / `>99.99%`。真正零/全量仍为 0.0% / 100.0%，原始正值项决定是否全量。计数、色段权重不舍入、不设最小宽度；文字合计不保证 100%。图例为始终可读的静态列表，不额外加入 Tab 停靠点，键盘用户可滚动阅读。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
 
 两类图表新增 `valueFormatter(value:number|null)`；非有限值以 null 传入。TrendChart 刻度与逐点文字采用格式化，原始数据表保留原数值；StackedBar 格式化图例但不改变比例算法，零分段不占色带空间。TrendChart 可聚焦图形后用左右/Home/End，或悬停/轻触查看同一时段。`activePointId/defaultActivePointId/onActivePointChange` 支持受控高亮与多图联动；null 清除高亮，丢失 ID 不替代为别的样本。高亮值以 HTML 文字播报，缺失桶仍可查看。
 
