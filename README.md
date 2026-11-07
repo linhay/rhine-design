@@ -193,6 +193,9 @@ export function App() {
 | 模板驱动批量设置与来源映射 | [MappingEditor 与模板组合](docs/TEMPLATE_SETTINGS.md) | [模板设置](https://linhay.github.io/rhine-design/#template-settings) |
 | 容器内文字、图标与更多操作切换 | [ResponsiveActions](docs/RESPONSIVE_ACTIONS.md) | [响应式操作](https://linhay.github.io/rhine-design/#responsive-actions) |
 | 常驻只读树、外部画布与详情 | [层级浏览配方](docs/RESIDENT_TREE.md) | [常驻层级浏览](https://linhay.github.io/rhine-design/#resident-tree) |
+| 只读计划与 Worker Job 登记 | [登记配方](docs/SCHEDULED_JOB_REGISTRY.md) | 宿主组合配方 |
+| 消费限额草稿、批量预览与发布状态 | [限额组合](docs/BULK_LIMITS_COMPOSITION.md) | 宿主组合配方 |
+| 紧凑部门导航栏与图标动作 | [部门导航配方](docs/COMPACT_DEPARTMENT_HEADER.md) | 宿主组合配方 |
 
 展台包含键盘、长文、加载、错误和减少动态示例。目录与内容独立滚动，章节链接可分享；离开章节会卸载其演示。组件选型也可参考 [Ant Design / MUI 对照](docs/ANTD_MUI_AUDIT.md)。本地运行方式见[贡献指南](CONTRIBUTING.md#本地开发)。
 
