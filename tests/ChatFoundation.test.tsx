@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { AgentRow, Composer, MessageBubble } from '../components';
+import { AgentInspector, AgentList, AgentRow, ChatHeader, ChatShell, Composer, MessageBubble, MessageList, WorkspaceRail } from '../components';
 
 describe('Chat Foundation primitives', () => {
   it('renders Agent status as text and exposes selected state', () => {
@@ -35,5 +35,31 @@ describe('Chat Foundation primitives', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('提交失败');
     fireEvent.submit(screen.getByRole('button', { name: '发送消息' }).closest('form')!);
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('keeps the shell as slots and exposes host controlled Agent filtering', () => {
+    const onQueryChange = vi.fn();
+    const onSelect = vi.fn();
+    render(<AgentList agents={[{ id: 'a', searchText: 'Research', identity: 'Research', status: 'ready' }]} selectedId="a" query="Research" onQueryChange={onQueryChange} onSelect={onSelect} />);
+    const row = screen.getByRole('button', { name: 'Research准备就绪' });
+    expect(row).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(row);
+    expect(onSelect).toHaveBeenCalledWith('a');
+    fireEvent.change(screen.getByRole('textbox', { name: '搜索 Agent' }), { target: { value: 'Writer' } });
+    expect(onQueryChange).toHaveBeenCalledWith('Writer');
+    const close = vi.fn();
+    render(<ChatShell rail={<WorkspaceRail items={[{ id: 'chat', label: '聊天', icon: '⌁' }]} activeId="chat" />} sidebar={<AgentList agents={[]} query="" onQueryChange={vi.fn()} />} content={<ChatHeader identity="Research" />} inspector={<AgentInspector identity="Research" onClose={close} />} />);
+    expect(screen.getByRole('navigation', { name: '工作区导航' })).toBeVisible();
+    expect(screen.getByRole('banner')).toHaveTextContent('Research');
+    fireEvent.click(screen.getByRole('button', { name: '关闭详情' }));
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it('renders explicit message list states without taking ownership of data', () => {
+    render(<MessageList messages={[]} loading="读取中" error="读取失败" unknown="结果未知" />);
+    expect(screen.getByRole('log', { name: '聊天记录' })).toHaveTextContent('暂无消息');
+    expect(screen.getByRole('status')).toHaveTextContent('读取中');
+    expect(screen.getByRole('alert')).toHaveTextContent('读取失败');
+    expect(screen.getByText('结果未知')).toBeVisible();
   });
 });
