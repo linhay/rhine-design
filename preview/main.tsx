@@ -28,6 +28,7 @@ import { DenseFilterControlsGallery } from './DenseFilterControlsGallery';
 import { CheckboxRowGallery } from './CheckboxRowGallery';
 import { ComponentTypographyGallery } from './ComponentTypographyGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
+import { ChatFoundationGallery } from './ChatFoundationGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -59,6 +60,7 @@ function Gallery() {
     {section === 'component-typography' && <ComponentTypographyGallery />}
     {section === 'summary-tabs' && <SummaryTabsGallery />}
     {section === 'backgrounds' && <BackgroundGallery />}
+    {section === 'chat-foundation' && <ChatFoundationGallery />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}
     {section === 'neutron-star' && <NeutronStarGallery />}
