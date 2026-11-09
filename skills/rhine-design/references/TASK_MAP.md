@@ -4,9 +4,14 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 
 | Task | First reference (relative to package root) | Implementation / example |
 | --- | --- | --- |
+| Agent chat, member grouping, inline cards, observation and history scrolling | `docs/AGENT_CHAT.md` (source candidate after 0.11.0) | `components/Chat.tsx`, `preview/ChatGallery.tsx`; `/#agent-chat`; host owns transitions, requests and permissions |
 | Application shell, backgrounds, media, advanced inputs, controlled tables | `docs/APPLICATION_COMPONENTS.md` (0.5.0) | `preview/ExtensionsGallery.tsx`; `/#app-shell`, `/#advanced-forms`, `/#advanced-data`, `/#media` |
 | Workspace header, duplicate page titles, optional breadcrumbs | `docs/APPLICATION_COMPONENTS.md` → 平级工作区顶部操作区 (source guideline) | `preview/ExtensionsGallery.tsx`; `/#app-shell`; keep status/actions, navigation restore and accessible page identity |
+| Product design review shell, synthetic HTTP/platform scenes, static deployment | `docs/REVIEW_TOOL.md` (since 0.11.0; not npm 0.10.0) | `review/`, `examples/review/http`, `examples/review/platform`; separate `/review` and `/review/vite` exports |
 | Theme integration, switching, controlled preferences | `docs/THEMING.md` (0.4.0) | `components/theme.tsx`, `preview/GalleryShell.tsx` |
+| Workspace files/notes, centered reading, source/relations and return context | `docs/OBJECT_READING.md` (source composition; verify installed Dialog.onCloseAutoFocus) | `preview/ObjectReadingGallery.tsx`; `/#object-reading`; existing public components, no filesystem/permission service |
+| Independent automation cards, persistent intent, runtime facts, uncertain writes and drain completion | `docs/AUTOMATION_SETTINGS.md` (unreleased source recipe) | `preview/AutomationSettingsGallery.tsx`; `/#automation-settings`; existing components, host owns persistence/permissions/observation |
+| Periodic AI reports, evidence coverage and cross-day sources | `docs/PERIODIC_REPORTS.md` (unreleased source recipe) | `preview/PeriodicReportGallery.tsx`; `/#periodic-report`; host owns dates, timezone, generation, source validation and schedule |
 | Scenario selection, navigation, form recovery, monitoring | `docs/INTERACTION_PATTERNS.md` (0.4.0; check installed version) | `preview/PatternGallery.tsx`; research in `docs/REFERENCE_RESEARCH.md` |
 | Date presets, visible date ranges, custom-range drafts and confirmation | `docs/DATE_RANGE_FILTER.md` (source pattern using existing 0.6.0 APIs) | `preview/DateRangeFilterGallery.tsx`; `/#date-range-filter`; no public DateRangeFilter component |
 | Visual direction, colors, spacing, layout | `docs/DESIGN_SYSTEM.md` | `components/tokens.css`, `components/Layout.tsx` |
@@ -30,3 +35,5 @@ Run the library showcase with `npm ci && npm run dev` in a source checkout. Defa
 For host pages, keep product-specific drafts in the host project. The library's `preview/` demonstrates reusable behavior, not business APIs. Labels such as “candidate” or “preview” in motion docs identify experiments; check whether the behavior is actually exported before integrating it.
 
 For 0.8.0 theme-comparison cards, settings navigation, or floating CSS zoom boundaries, read `docs/THEME_PICKER.md`, `docs/SETTINGS_DIALOG.md`, and `docs/FLOATING_OVERLAYS.md` respectively. Preview routes: `#theme-picker`, `#settings-dialog`, `#overlay-bounds`. Do not infer package availability from the main gallery.
+
+常驻层级浏览树与外部几何画布：核对安装包是否包含 `docs/RESIDENT_TREE.md`、`preview/ResidentTreeRecipe.tsx` 与 `preview/resident-tree.css`；这是示例组合，不是新的 Tree 公共导出，npm 0.11.3 尚不包含。焦点、选择与展开分离，固定/跟随目标及数据请求由宿主维护。

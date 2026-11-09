@@ -1,0 +1,4 @@
+.preview-tray-anchor { display:flex; justify-content:center; }
+.preview-tray-feedback { display:grid; }
+/* Every state contributes to the same intrinsic height, including wrapped error + retry. */
+.preview-tray-feedback > div { grid-area:1 / 1; display:flex; flex-direction:column; align-items:flex-start; gap:var(--rhine-space-2); }

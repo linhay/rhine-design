@@ -54,3 +54,7 @@
 .rhine-table__depth { display:block; white-space:nowrap; color:var(--rhine-muted); font-size:12px; }
 .rhine-table .rhine-check label { min-height:44px; }
 .rhine-pagination .rhine-select { width:auto; }
+
+/* Direct action slots: keep hidden restore controls mounted without an empty bar. */
+.rhine-shell__content-header[data-collapse-empty]:empty,
+.rhine-shell__content-header[data-collapse-empty]:has(> [hidden]):not(:has(> :not([hidden]))) { display:none; }

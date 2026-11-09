@@ -1,0 +1,4 @@
+.rhine-notification-fixture { padding: var(--rhine-space-4); }
+#personal-notifications .rhine-inline { flex-wrap: wrap; }
+#personal-notifications .rhine-inline > *, [data-notification-rule] { min-width: 0; }
+#personal-notifications .rhine-text, [data-notification-audience] .rhine-text { overflow-wrap: anywhere; }

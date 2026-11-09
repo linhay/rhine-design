@@ -130,8 +130,8 @@
   outline: none;
   box-shadow: inset 0 0 0 2px var(--rhine-ink);
 }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger { background: var(--rhine-error); border-color: var(--rhine-error); color: var(--rhine-ink); }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #c93a32; border-color: #c93a32; }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger { background: var(--rhine-error); border-color: var(--rhine-error); color: var(--ak-accent-ink); }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #e74b40; border-color: #e74b40; }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform:none; }
 
 /* 图标按钮保持方形小切角 */
@@ -161,10 +161,20 @@
   background: #101216;
   border-color: var(--rhine-control);
 }
+/* Editable field boundaries must remain distinguishable on content and overlay surfaces. */
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > input:not(:disabled),
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > textarea:not(:disabled) {
+  border-color: #69737d;
+}
 .rhine-theme[data-rhine-theme="arknights"] .rhine-field input:focus,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-field textarea:focus {
   border-color: var(--ak-accent);
   box-shadow: inset 3px 0 0 var(--ak-accent);
+}
+/* Keep the shared invalid-state contract above the theme's general field rule. */
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > input[aria-invalid=true]:not(:disabled),
+.rhine-theme[data-rhine-theme="arknights"] .rhine-field > textarea[aria-invalid=true]:not(:disabled) {
+  border-color: var(--rhine-error);
 }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-check input,
 .rhine-theme[data-rhine-theme="arknights"] .rhine-radio-group input { accent-color: var(--ak-accent); }
@@ -304,3 +314,5 @@
 .rhine-theme[data-rhine-theme="arknights"][data-rhine-motion=reduced] .rhine-button {
   transition: none;
 }
+
+.rhine-theme[data-rhine-theme="arknights"] .rhine-button:focus-visible:not(.rhine-button--secondary):not(.rhine-button--quiet) { box-shadow:inset 0 0 0 2px var(--ak-accent-ink); }

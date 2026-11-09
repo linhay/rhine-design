@@ -39,6 +39,8 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
 
 ## 三种外壳布局
 
+第三方技术阅读器由宿主管页面导航与主题决策；该产品采用独立全宽阅读页和阅读器自有目录，通过返回入口回到管理工作台，避免与工作台侧栏同时占宽。单一当前契约包含拟交付接口，不制造当前/草案 Tabs，工程阶段留在工程记录。阅读器在 iframe 内按实际安装 tokens 局部适配正文，hash 保持内部归属；只读、下载、失败恢复和键盘边界见[技术阅读器组合](TECHNICAL_READER.md)。这是局部产品配方，不改变 AppShell 现有布局/API 或引入第三方依赖。
+
 ### 内联控制按钮（0.8.0）
 
 默认 `controls="header"` 保持既有顶部操作栏。宿主已有页面导航栏时可用 `controls="inline"`：没有 `header` 内容就不生成顶部横栏。将 `AppShellToggle placement="panel"` 放入侧栏品牌区，将对应的 `placement="content"` 放入正文导航栏；每个面板各放一对。`panel` 默认 navigation，可选 secondary；`iconOnly` 使用已有 IconButton。不要另写折叠状态、复制 Drawer 或用 CSS 隐藏默认横栏。
@@ -55,6 +57,8 @@ import { ThemeProvider } from '@linhey/rhine-design/theme';
   <Content />
 </AppShell>
 ```
+
+仅含动作的顶部可选 `collapseEmptyContentHeader`（未发布，默认false），直传恢复控件与条件动作，按hidden可见性折叠；具体结构限制和设置页组合见[设置页组合](SETTINGS_DIALOG.md#设置页组合53未发布)。
 
 ### 工作区导航栏（0.8.0）
 
@@ -108,7 +112,7 @@ SideNav 继续负责当前项、长名称和 aria-current；Drawer 继续负责 
 | DateRangePicker | 上述范围 + `value={start,end}`、`presets=[{label,value}]`、`compact?` | 两个原生日期输入，自定义范围、受控预设、清空；compact 合并为一体区间框；结束日期下界取 start/min 较晚者；反向范围显示错误，不静默调换 |
 | NumberField | `value: number\|null`、`onValueChange/min/max/step/precision/disabled/error` | 编辑中保存字符串；失焦/Enter 提交；无效及越界输入保留并报错；上下键/按钮步进与钳制边界；空字符串提交 null |
 | TreeSelect | `nodes/value/onValueChange/expandedKeys/onExpandedChange/multiple`、loading/error/disabled | 节点为 `{id,label,disabled?,children?}`；父子独立选择，默认单选；调用方提供搜索后的树，不做全量过滤 |
-| RemoteMultiSelect | `query/onQueryChange/value/onValueChange/options`、loading/error/disabled、`maxVisibleTags?` | value 是完整 `{value,label,disabled?}[]`，已选标签不依赖本次结果；不重复选中；清空保留禁选标签；maxVisibleTags 限制常显数量并提供展开/收起，展开区域有界滚动 |
+| RemoteMultiSelect | `query/onQueryChange/value/onValueChange/options`、loading/error/disabled、`maxVisibleTags?` | value 是完整 `{value,label,disabled?}[]`，已选标签不依赖本次结果；再次点击已选候选取消；清空保留禁选标签；maxVisibleTags 限制常显数量并提供展开/收起，展开区域有界滚动 |
 
 日期 min/max 约束原生日历和表单有效性；手动编辑、业务校验及最终提交由宿主验证。原生日期面板位于浏览器 UI，不放在受裁剪的自定义浮层。日历外观、屏幕阅读器和移动 WebView 行为由具体浏览器决定，不声称提供自绘日历。预设必须使用宿主计算好的日期；不得以本机时区代替产品时区。没有“今天”隐式计算。
 
@@ -122,11 +126,27 @@ NumberField 支持小数步进（默认 1）；precision 限制为 0–15 位，
 
 NumberField 另有 `readOnly/required/id/name/hint/controls`（按钮默认显示）；Escape 取消未提交草稿并恢复受控值，第二次 Escape 可交给外层浮层。min/max 变化会直接标明当前越界，不伪造用户输入或自动修改宿主值。空值步进按有效范围处理，不再把空字符串当成已达到零边界。
 
+### NumberField 的表单提交（#164，未发布）
+
+当前草稿通过原生 `HTMLInputElement.setCustomValidity` 接入表单校验；宿主使用公开的 `id/name`、`form.elements`、`validity`、`validationMessage`、`checkValidity()` / `reportValidity()` 读取，不依赖私有选择器或可见错误文字。不新增第二套校验回调。非法字符串、越界、配置反向边界、required 空值及外部 `error` 会阻止原生提交；禁用/只读遵循原生 `willValidate=false`，也不在submit中接受草稿或精度归一化；禁用状态按原生 `:disabled` 判断，包含祖先fieldset，首个legend的例外交给浏览器。宿主仍需验证其业务模型。
+
+编辑中的 `-` 保留且已不可提交，但直到 blur/Enter 或 invalid 事件才显示格式错误；`1.` 可以继续编辑，提交时解析成 1。范围与外部错误仍即时显示。空草稿在blur/Enter仍可提交为 `null` 到宿主，required表单保持无效；submit遇到无效草稿则直接阻止本次尝试。纠正、Escape 恢复、外部 value/min/max/error 更新同步更新原生有效性；不把非法字符串传入 number|null，不因越界自动钳制。步进的既有边界处理保持。输入法组合未完成时阻止提交，结束后仍按 blur/Enter/表单提交约定接受草稿。
+
+原生提交先验证当前草稿；合法草稿在原生 submit 的 document 捕获阶段同步提交给 `onValueChange`，再让 React 的提交处理读取更新后的受控值。某字段在轮到它时仍无效，会阻止本次submit及其后续监听传播并触发invalid；仅preventDefault不足以阻止忽略该标记的宿主保存。后注册字段不得在同次事件里放宽约束后让宿主保存先前被拒绝字段的旧值。用户应先纠正草稿，或以blur/Enter先确认约束字段，再重新提交；不承诺自动求解相互依赖或回滚已接受的较早字段。因此 `requestSubmit()` 即使没有先 blur，也不能仅因事件时序而保存旧值。宿主应同步接受受控提议，异步业务确认独立执行；不要在早于组件的原生 document/window 捕获监听中读取旧模型并保存。
+
+- 普通 `<form onSubmit>`：浏览器先阻止非法草稿，宿主 onSubmit 仍应先 preventDefault 并再次 checkValidity（提交一个字段可能改变另一个字段的约束），通过后才保存；用 `onInvalidCapture` 收集 `form.elements` 中 `willValidate && !validity.valid` 的字段，阻止原生气泡后交给 ErrorSummary。只有失败提交才更新 `focusKey`；摘要链接回字段且不改变路由。
+- `noValidate`：NumberField仍会拦截本次轮到它时无效的草稿，宿主用onInvalidCapture收集摘要；若submit到达宿主，在 onSubmit 中先 `preventDefault()`，再 `form.checkValidity()`；失败返回，成功才保存同步更新后的值。示例提供此完整路径。
+- 脚本保存：调用 `form.requestSubmit()` 复用同一路径。`form.submit()` 绕过原生校验和 submit 事件；直接调用网络保存函数同样绕过字段协议，不支持作为草稿提交入口。不要仅 checkValidity 后立即读取尚未接受的旧受控值。
+
+真实合成表单位于 `#advanced-forms` 与 `?fixture=number-validation`；附加 `&edge=dependency` / `fieldset` / `legend` 可复验先注册依赖字段与原生禁用分组例外。默认组合包含已有合法数值→非法草稿→阻止保存、多个字段错误摘要、纠正、键盘/脚本保存、外部业务错误和只读/禁用状态。服务端仍独立校验，不将客户端有效性当作业务成功。
+
 TreeSelect 使用 tree/treeitem/group，Tab 进入一个可见节点，上下/Home/End 移动，右键展开或进入首个子项，左键收起或返回父项，Space/Enter 选择。禁选节点可导航和展开，但不能勾选。多选用 aria-checked，单选用 aria-selected。节点 ID 全树唯一稳定；过滤后的祖先与展开状态由宿主提供，选择状态不随结果集消失。
 
 首次进入优先已选可见节点；字符前缀定位不改变选择，`*` 展开同层分支，Ctrl/⌘+A 仅切换可见可选节点。外部收起时焦点回可见祖先。节点 `selectable=false` 用于结构分组；readOnly 允许浏览展开而禁止选择。`name` 为选中 key 生成同名 hidden inputs，disabled 不提交。
 
-RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误提交。加载或失败时禁止选择旧候选，已选项仍显示且可移除；默认选中后保持候选列表打开，`closeOnSelect=true` 恢复选完关闭。`clearQueryOnSelect` 默认 false；新增 readOnly/clearable/placeholder/hint/name。空查询 Backspace 删除最后一个可移除标签，标签删除/清空后回输入框；锁定标签保留。name 以同名 hidden inputs 提交受控 keys。单选 Combobox 的默认关闭行为不变。异步取消、序列检查、服务端查询和时区解释全部归宿主。展台有可取消的本地延迟结果演示，但不是生产数据层。
+RemoteMultiSelect 自 0.11.3 提供可选 `activeValue/onActivateValue` 让已选标签正文成为查看详情的按钮，与移除按钮并列。激活仅收起搜索并通知宿主，不改变选择或提交表单；当前项使用主题描边与 `aria-pressed`。原生按钮支持 Enter/Space。disabled（含单项 disabled）禁止激活；readOnly 禁止修改选择但允许激活查看。未传回调保留原标签行为。宿主负责当前对象、独立草稿和移除后的回退。见 [#69](https://github.com/linhay/rhine-design/issues/69)。
+
+RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误提交。加载或失败时禁止选择旧候选，已选项仍显示且可移除；默认选中后保持候选列表打开，可再次点击或方向键+Enter取消已选候选；真正禁用/锁定项不可更改。打开多选候选时，输入框Tab进入“完成选择”，Shift+Tab返回输入框；从完成按钮继续Tab关闭候选并沿输入框后的正常控件前进。面板底部“完成选择”只收起候选并归焦输入框，保留查询和值，不提交宿主表单；最终保存由宿主负责。Escape或点击外部也保留草稿。`closeOnSelect=true` 恢复选完关闭。`clearQueryOnSelect` 默认 false；新增 readOnly/clearable/placeholder/hint/name。空查询 Backspace 删除最后一个可移除标签，标签×移除与清空统一归焦输入框并收起候选；输入框内空查询Backspace删除则保留原展开/收起状态，不因归焦改变候选状态。仅重新点击、输入或方向键才展开。没有可移除项（含0项或只有锁定项）时隐藏“清空选择”；锁定标签保留。name 以同名 hidden inputs 提交受控 keys。单选 Combobox 的默认关闭行为不变。异步取消、序列检查、服务端查询和时区解释全部归宿主。展台有可取消的本地延迟结果演示，但不是生产数据层。
 
 分组底色 `--rhine-field-group-bg`；树缩进 `--rhine-tree-indent`；其余输入、选择、错误和焦点继续用既有语义 tokens，字号不低于 12px。
 
@@ -134,10 +154,14 @@ RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误�
 
 所有新参数可选，原表格保持原生 table 语义。此处提供可展开的层级表格，不实现可编辑 ARIA treegrid；键盘使用 Tab 与原生 checkbox/button，不冒充网格方向键导航。
 
+- `caption` 始终为必填的非空表格名称。新增可选 `captionVisibility="visible" | "hidden"`（未发布，0.11.3 不含）：默认 visible 保持既有标题；已有邻近可见区域标题时可选 hidden，只以共享视觉隐藏样式隐藏原生 caption，表格与可聚焦横滚 region 的名称仍由完整 caption 提供。不要传空字符串、使用 display:none 或 aria-hidden 删除名称，也不以该参数隐藏整个表格或滚动入口。
 - `selection={keys,onChange,isDisabled?}`：keys 为稳定 rowKey 数组，可包含其他页/查询中的记录。表头只选择/取消当前可见且未禁选的行；保留不可见和禁选键，部分选中为 mixed。加载时禁用选择。
 - `expansion={keys,onChange,getChildren?,renderDetail?,canExpand?}`：子行按宿主顺序展开，层级有文字说明；renderDetail 为独立 region，可与子行共存。keys 由宿主管理，折叠不清空选择；不请求子数据、不更改导出范围。大树的加载与虚拟化由宿主决定，本组件不内置虚拟表格。
 - `rowLabel` 默认 rowKey，建议传业务可读名称，供选择/展开按钮命名。所有层级 rowKey 必须全局唯一稳定。
-- `stickyHeader/maxHeight`：提供明确局部滚动区；列可设 `width/sticky/stickyOffset`。多列固定默认按实测 CSS 布局宽度自动累计 offset，显式 stickyOffset 优先；需为正文至少保留一个可读列，不将多列固定到遮满窄屏。展台固定右侧两个窄列。
+- 选择列只显示 checkbox/radio，完整“选择 + rowLabel”和表头“选择当前可见行”以视觉隐藏文本保留原生标签名称（#172，未发布，0.11.3 不含）。标签提供至少 44×44 CSS px 点击区域，列按控件及密度内距收紧，不让重复长名称决定行高；名称列应完整展示对象身份并允许换行。单选、全选、mixed、禁选和 focus-visible 沿用原生输入；普通 Checkbox 的可见标签不变。
+- `stickyHeader/maxHeight`：提供明确局部滚动区；列可设 `width/sticky/stickyOffset`。多列固定默认按实测 CSS 布局宽度自动累计 offset，显式 stickyOffset 优先。
+- 固定列按实际容器预算自动降级（#173，未发布，0.11.3 不含）：左右各以 `max(offset + 实测列宽)` 计固定带范围，二者相加后，另外预留**最宽非固定业务列或选择/展开辅助列**的完整实测宽度。该总量大于滚动区 `clientWidth` 时，全部列临时取消固定；空间恢复则恢复原固定方向和偏移。全业务列固定时仍为辅助列预留宽度；没有非固定/辅助列时仅比较固定带范围。不会仅用44px选择控件替代正文预算。
+- 预算观察滚动容器及表头尺寸，使用局部 `clientWidth/offsetWidth`，不混入 CSS zoom 后的屏幕矩形。行不卸载，选择/展开及焦点节点保留；固定带同步作为水平滚动留白，焦点进入或尺寸/策略变化时将表内焦点就近滚回可见区（不主动更换焦点），`stickyHeader` 独立继续工作；所有必要列、完整身份和操作仍在同一局部横滚区。窄容器操作可能需要横滚，不隐藏列、不缩字、不自动决定列的重要性。宿主仍可用现有 `sticky` 参数取消固定；只按窗口宽度或声明 `width` 设断点不足以替代真实容器/自动表格布局的测量。
 - `density="comfortable" | "compact"`：默认单元格内距为 12/16px 或 6/12px；橙趣 comfortable 为 16/12px，compact 同为 6/12px。业务文字 14px、层级说明 12px，操作仍为 44px。tokens：`--rhine-table-cell-padding`、`--rhine-table-header-bg`、`--rhine-table-hover-bg`、`--rhine-table-selected-bg`；选中底色优先于悬停，固定列使用不透明底色。
 - `Pagination.onPageSizeChange` 和 `pageSizeOptions`：仅回传页大小意图，宿主决定是否回到第一页、是否取消请求。total 已知时推导页数；未知时依赖 hasNext。库不筛选、排序、请求或切割全量 rows。
 
@@ -183,7 +207,7 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 时间条默认色块高 28px，悬停或聚焦选中块高 36px；compact 轨道高 28px，44px 命中区垂直居中。完整时间条沿用 44px 轨道；图例尺寸独立，不随色块加高。
 
-`StatusTimelineList({ label, items, emptyLabel? })` 统一标题、摘要、备注、分隔与 compact 时间条。同一列表一次只展开一条详情；鼠标切换记录不抢焦点，键盘进入详情后退出返回对应时间条，嵌套 Dialog 的下一次 Escape 才关闭外层。行删除、禁用或历史变为空时关闭旧详情。
+`StatusTimelineList({ label, items, emptyLabel?, density? })` 统一标题、摘要、备注、分隔与 compact 时间条。同一列表一次只展开一条详情；鼠标切换记录不抢焦点，键盘进入详情后退出返回对应时间条，嵌套 Dialog 的下一次 Escape 才关闭外层。行删除、禁用或历史变为空时关闭旧详情。
 
 每项为 `StatusTimelineItem`：稳定的 `id`、文字 `title`、可选 `summary: ReactNode`、`note`、`unavailableLabel`，以及 `timeline: { segments, startLabel, endLabel, disabled? } | null`。null 表示历史不可用，空 segments 表示没有时段；两者均不冒充健康。`emptyLabel` 默认“暂无历史记录”，`unavailableLabel` 默认“历史记录暂不可用 · 未知”。摘要由宿主提供，0 与未知应明确区分。行 ID 和时段 ID 不使用数组索引，确保排序或刷新后保留正确身份。
 
@@ -199,7 +223,7 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 `TrendChart({ label, unit, rangeLabel, description, points, kind, stale?, error?, loading? })` 提供 `kind="bar" | "line"`，每个 point 是 `{id,label,value:number|null}`。宿主负责时间桶、排序、聚合、单位与统计说明；组件只映射坐标。零是有效采样，未知值不补零、不插值，折线路径在缺失点处断开；图内 ×、SVG 可访问说明和可展开的原始数据表共同表示缺失。单位、范围与图例均为 HTML 文字，避免窄屏 SVG 缩放导致文字小于 12px。多条资源指标使用多个命名图表组合，不内置数据请求或图表引擎。
 
-`StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，保留一位小数，不是健康分数或成功率。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
+`StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，常规保留一位小数，不是健康分数或成功率。未发布修复（#158）：若一位小数会把非零/非全量写成 0.0% / 100.0%，改用两位小数；小于 0.01% / 大于 99.99% 的非边界值显示 `<0.01%` / `>99.99%`。真正零/全量仍为 0.0% / 100.0%，原始正值项决定是否全量。计数、色段权重不舍入、不设最小宽度；文字合计不保证 100%。图例为始终可读的静态列表，不额外加入 Tab 停靠点，键盘用户可滚动阅读。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
 
 两类图表新增 `valueFormatter(value:number|null)`；非有限值以 null 传入。TrendChart 刻度与逐点文字采用格式化，原始数据表保留原数值；StackedBar 格式化图例但不改变比例算法，零分段不占色带空间。TrendChart 可聚焦图形后用左右/Home/End，或悬停/轻触查看同一时段。`activePointId/defaultActivePointId/onActivePointChange` 支持受控高亮与多图联动；null 清除高亮，丢失 ID 不替代为别的样本。高亮值以 HTML 文字播报，缺失桶仍可查看。
 
@@ -226,3 +250,25 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 - `/#monitoring`：结构化时段详情与紧凑条、柱形趋势、缺失点折线、已知/未知占比、文本替代及空/陈旧/错误状态。
 
 页首切换三主题及减少动态不重建当前展台；切换章节会卸载演示。自动测试验证受控行为，浏览器与版本验收单独记录于 [验证记录](ISSUE_VALIDATION.md)。精确版本的制品校验和与消费验证按 [发布流程](RELEASING.md)保留。
+
+远程分页契约见 [REMOTE_PAGINATION](REMOTE_PAGINATION.md)，标签激活与分页均自 0.11.3 提供。
+
+RemoteMultiSelect/Combobox完成或Escape后的延迟归焦只处理原输入框、关闭浮层和失焦/守卫节点；用户或宿主已移到其他控件时不再抢回。快速重开仍按打开代次拒绝旧关闭回调，Tab离开保留现有Dialog边界保护。此补充为#78源码修复，尚未发布。
+
+### 可激活长标签的窄正文（#69 回归修复，未发布）
+
+激活正文与移除按钮保持并列键盘目标，均至少44×44 CSS px。可激活长标签在折叠及展开状态都允许换行，不裁掉名称；完整名称与aria-pressed保留，移除空间不被正文挤占。maxVisibleTags仍控制常显标签数量，展开区域继续有界垂直滚动；不改变非激活标签既有的紧凑显示契约。激活按钮的专用收缩规则必须比通用标签按钮的flex:none更具体，内部文字span也要允许收缩与任意长词换行，不能只依靠CSS导入顺序。
+
+合成展台“141px窄正文标签”在有界Dialog中复用RemoteSelectionExample，约束选择器有效宽度上限为141 CSS px（Neo主题400px/200%时受Dialog边框影响为140px，覆盖更窄边界），使用公开组件，不在产品侧增加CSS覆盖。真实生产及固定制品后置styles.css需验证三主题×400/520/880×100/200% CSS zoom的折叠/展开、完整名称、活动状态、激活/移除、键盘、只读/禁用及焦点保护。CSS zoom不代表原生网页缩放；合成分页不代表真实服务。0.11.3历史正式验收保持有效，本项修复未发布，原消费升级/临时覆盖删除另验。
+
+脚本：`check-remote-tag-wrap.js`量测141px、标签/按钮边界、文字与正文横溢出并验证交互；`prepare-remote-wrap-consumer.mjs <tarball> <new-directory>`从固定包复制同一合成展台，以公开入口加后置公共CSS构建，包含模板焦点回归入口。
+
+`StatusTimelineList.density`及单行`TimelineLegend.density`新增可选`compact`，默认`default`保持兼容；紧凑组合须保留外层`Stack gap={1}`以容纳44px命中区，见[密度契约](COMPACT_ACCOUNT_PATTERNS.md#时间条与图例的紧凑密度23-新增未发布)。该参数尚未发布。
+
+### 字段标题附属动作（未发布）
+
+Combobox / RemoteMultiSelect 可传 `labelAction`，保留 string label 与已选列表名称；动作是 label 旁独立节点，独立获取目录复用 secondary Button、标题轻量切换可用 quiet，获取只更新候选且不更改选择或草稿。可用性、busy、取消和迟到结果由宿主处理。无动作布局兼容；见[标题动作契约](FIELD_LABEL_ACTION.md)。
+
+RemoteMultiSelect 的 `tagDensity="compact"` 与 `maxVisibleTags` 独立；28px细指针/44px粗或混合输入、完整值换行和原交互契约见[紧凑标签](COMPACT_TEMPLATE.md)。此为未发布增量。
+
+Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用候选）与 `statusDisplay="compact"`（常规状态仅保留读屏通知、读取失败持续可见），默认兼容；原 `error` 保持候选读取失败语义。见[状态与字段校验](COMBOBOX_FEEDBACK.md)（#115，未发布）。

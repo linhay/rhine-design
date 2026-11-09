@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-当前主入口 `components/index.ts` 共 67 个组件（不含类型及独立 `/theme` 入口）；0.9.0 新增 ListFilterBar 后，0.10.0 保持此数量。0.8.0 为 66 个，包含 NeutronStarBackdrop、StatusTimelineList、AppShellToggle、ButtonLink、ThemePicker 与 ThemePreview；0.6.0 为 60 个，0.5.0 为 59 个，0.4.0 为 48 个，0.3.0 为 40 个。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[未发布记录](../CHANGELOG.md#未发布)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+当前源码主入口 `components/index.ts` 共71个组件（不含类型及独立 `/theme` 入口），其中MappingEditor、ResponsiveActions为未发布候选；正式0.11.3为69个。历史0.9.0新增ListFilterBar后为67个，0.10.0保持67个。0.8.0 为 66 个，包含 NeutronStarBackdrop、StatusTimelineList、AppShellToggle、ButtonLink、ThemePicker 与 ThemePreview；0.6.0 为 60 个，0.5.0 为 59 个，0.4.0 为 48 个，0.3.0 为 40 个。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[0.11.0 记录](../CHANGELOG.md#01102026-10-27)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 中子星艺术、主题物品和生命周期见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)与[轨道背景契约](../docs/ORBIT_BACKDROP.md)。安装版本与源码导出分别核对。
 
@@ -63,16 +63,18 @@ export function Example() {
 | Surface | padding=default/none；HTML div 属性 | 默认24px内距；none仅取消容器padding，适合纯表格；静态分区，无点击语义；padding自0.9.1提供，见[#24](https://github.com/linhay/rhine-design/issues/24) |
 | Background（0.5.0） | roleTone=canvas/content/sidebar/surface/overlay/media；decoration=auto/theme/none；appearance={color,textColor,texture,textureSize}；HTML div 属性 | 默认正文纯色；仅画布默认使用主题纹理；局部覆盖不创建主题根或定位上下文；完整配置见[场景背景](../docs/THEMING.md#场景背景050) |
 | SelectionCard | label；selected；onSelectedChange；disabled；showIndicator=true；children | 原生 checkbox 可取消；是否单选由上层控制；showIndicator=false 仅视觉隐藏勾选框，保留键盘与读屏，卡片边界表达选中；内部不嵌套按钮/链接/其他输入 |
-| TextField | label；hint；error；原生 input 属性 | label 与 id 自动关联；错误与提示组成 aria-describedby；输入值由调用方管理 |
-| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status为未发布新增，npm 0.10.0 不含，见下文 |
-| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth?；size=default/compact | compact为卡片局部操作的32px视觉/44px命中（未发布，npm 0.10.0 不含）；原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
+| TextField | 非空 label；labelVisibility="visible"（默认）/"hidden"；hint；error；原生 input 属性 | label 与 id 自动关联；隐藏只影响视觉；错误与提示组成 aria-describedby；输入值由调用方管理；[单搜索契约](../docs/SINGLE_SEARCH.md)（显隐能力自 0.11.2 提供） |
+| Tabs | label；items[{value,label,content,disabled?,description?,status?}]；value；onValueChange；layout=content/fill；fullWidth=false；actions?；className? | value 必须指向有效可用项；唯一 value；左右/Home/End，跳过禁用项；隐藏面板保留挂载但退出可访问树；description/status自0.11.0新增，npm 0.10.0 不含，见下文 |
+| SegmentedControl | label；items[{value,label,disabled?}]；value；onValueChange；fullWidth?；size=default/compact | compact为卡片局部操作的32px视觉/44px命中（自 0.11.0，npm 0.10.0 不含）；原生 radio，独立 name 防多组干扰；方向键和禁用行为由浏览器提供；fullWidth 为整行等宽选项，标签和选中底色撑满且文字居中 |
 | Notice | tone；title；children；action | error 使用 alert，其余 status；调用方决定显示/移除，不自动倒计时关闭错误 |
 | Progress | label；value:number/null；valueText? | null/NaN 为未知进度；数值钳制 0–100；组件不执行或估算真实进度 |
 | Skeleton | label；lines | 1–8 行，默认 3 行；单一可访问加载描述，装饰行隐藏 |
-| Disclosure | title；children；defaultOpen | 非受控原生 details；挂载后 defaultOpen 不作远程控制；支持开合中断与反向，关闭内容退出键盘顺序；连续分组不加组间 gap，相邻 Disclosure 共用一条分隔线（未发布变更，npm 0.10.0 不含） |
+| Disclosure | title；children；defaultOpen | 非受控原生 details；挂载后 defaultOpen 不作远程控制；支持开合中断与反向，关闭内容退出键盘顺序；连续分组不加组间 gap，相邻 Disclosure 共用一条分隔线（自 0.11.0，npm 0.10.0 不含） |
 | EmptyState | title；description；action | 说明当前状态并可给一个下一步动作；不将错误伪装成空数据 |
 
 新增24项API与组合示例见[常用组件契约](./COMMON_COMPONENTS.md)。TextField封装单行输入，Select使用原生单选；需要查询候选时用Combobox。复杂浮层采用Radix Dialog、AlertDialog、Popover、DropdownMenu、Tooltip的无样式基础，莱茵设计提供视觉与动效。Toast只处理单条通知；不加入全局队列、表格引擎、图表包或业务数据层。
+
+插件管理页的摘要卡与密集配置弹窗组合见[插件管理卡片组合配方](../docs/PLUGIN_CARD_COMPOSITION.md)。该配方复用 Surface、Stack、Badge、Inline、Button 和 Dialog；业务数据、权限、草稿与保存结果仍由宿主管理。
 
 0.8.0 的 `StatusTimelineList` 与 `TimelineLegend compact/items` 提供紧凑历史组合及一行短图例；宿主传入完整规则，悬停/聚焦/点按查看。无参 TimelineLegend 仍兼容既有标签。真实样机 `/#compact-account` 同时验证无框额度摘要、配对事实与渐进展示的凭证操作，见[紧凑组合规范](../docs/COMPACT_ACCOUNT_PATTERNS.md)。npm 0.6.0 不提供这些扩展。
 
@@ -141,7 +143,7 @@ export function Example() {
 - 动画不承诺异步任务一定成功；不使用定时器模拟业务完成。预览中的 900ms 保存仅为明确标记的本地演示。
 - 组件不提供全局开启/关闭业务状态的开关；动画是视觉层的可选增强。
 
-### 带说明与状态的 Tabs（未发布，npm 0.10.0 不含）
+### 带说明与状态的 Tabs（自 0.11.0，npm 0.10.0 不含）
 
 完整规格见[带摘要的页签](../docs/SUMMARY_TABS.md)：名称14/22/600、摘要12/18/400，12px上下内距、8px名称/状态、4px摘要间隔、16px页签间距及24px面板间距。独立可交互展台 `/#summary-tabs` 提供局部宽度与状态切换；普通Tabs保持原有间距。
 
@@ -187,3 +189,30 @@ export function Example() {
 - [浮层缩放与边界](../docs/FLOATING_OVERLAYS.md)：Popover、Menu、Tooltip 与时间轴共享 CSS zoom 修正。
 - [设置 Dialog](../docs/SETTINGS_DIALOG.md)：`navigation` 插槽及窄窗/缩放重排。
 - [主题选择](../docs/THEME_PICKER.md)：`ThemePicker` / `ThemePreview`，自 0.8.0 提供，当时组件总数增至 66；0.9.0 新增 ListFilterBar 后为 67。
+
+## 聊天组合（0.11.2）
+
+`ChatThread`、`ChatCard` 提供成员分组、摘要/详情、状态呈现、只读动作约束与历史锚点。后续 #64 的 `ChatCard.detailLabel` / `Disclosure.ariaLabel` 扩展仅在 main，**0.11.2 不包含**；其中 `detailLabel` 只控制短的可见详情标签，对象标题仍保留在折叠控件的可访问名称中。只读对象可把 `Dialog` 阅读入口放在 `summary`，没有 `children` 时不生成折叠层。契约及公开接入见 [Agent Chat](../docs/AGENT_CHAT.md)，展台 `#agent-chat`；不在 npm 0.11.0 内。
+
+#41 自 0.11.2 提供：Button `contentAlign="center" | "between"`，Tabs `layout="content" | "fill"`及TabsProps，Dialog `height`/`footer`；见[紧凑选择组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)与[稳定弹窗](../docs/SETTINGS_DIALOG.md)。
+
+Button.size="standard" | "large"（0.11.2），标准14/22、44px最小高度，大尺寸16/24、52px最小高度；[动作语义与尺寸](../docs/BUTTON_ACTIONS.md)。
+
+#18 自 0.11.2 提供：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。
+
+
+### Tabs 栏宽与选项分配（#76，未发布）
+
+`fullWidth` 默认 `false`，保持现有布局；`layout="content" fullWidth` 将栏和底部分隔线撑满正文，选项仍按内容靠左，长标签自然换行。`layout="fill"` 始终均分可用宽度，`fullWidth={false}` 不取消其原有铺满行为。文字和指示线规则、直接接入例子及版本边界见[页签布局](../docs/SUMMARY_TABS.md#满栏靠左76未发布)。不需要覆盖内部 class。
+
+## 来源→目标编辑（#78，未发布）
+
+`MappingEditor` 与 `MappingEditorProps / MappingEditorRow` 从主入口公开。受控稳定行id、双侧选项及回调、禁用/只读/逐行错误、空态与增删焦点见[完整契约](../docs/TEMPLATE_SETTINGS.md)。模板管理使用现有组件组合，不新增业务数据库或权限服务。
+
+## 时间线语义与结果构成（未发布）
+
+`StatusTimeline` / `TimelineLegend` / `StatusTimelineList` 支持共享 `statusLabels` 与独立 `mode="composition"` 等高结果构成。输入、比例、未知与兼容边界见[时间线契约](../docs/TIMELINE_COMPOSITION.md)。npm 0.11.3 不包含这些属性。
+
+### Tabs 栏内操作（#134，未发布）
+
+`actions?: ReactNode` 放在组件 header 内、tablist 外，与页签共享整行分隔线；`className` 用于宿主布局。无 actions 保留原 tablist / panel DOM。方向键只控制页签，Tab 进入动作。正文传 `items[].content`，参见[栏内操作契约](../docs/SUMMARY_TABS.md#栏内操作候选134未发布)和 `/#summary-tabs` 真实展台。

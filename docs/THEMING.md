@@ -2,6 +2,10 @@
 
 `ThemeProvider`、`useTheme`、`themes` 和相关类型从 `@linhey/rhine-design/theme` 导出。此能力自 0.4.0 提供，npm 0.3.0 不包含；建议固定版本并提交 lockfile。组件仍从 `@linhey/rhine-design` 导入。
 
+`neutral` 为 #98 新增的未发布源码能力，npm 0.11.3 不包含。完整配色与兼容边界见 [中性主题](THEME_NEUTRAL.md)。
+
+`graphite` 是 #150 授权实现的未发布候选主题，接入、视觉与验收边界见 [石墨夜间主题](THEME_GRAPHITE.md)。
+
 ## 接入一次，随处切换
 
 ```tsx
@@ -20,12 +24,12 @@ export function App() {
 }
 ```
 
-主题入口自动加载基础样式与三套内置主题，不需要另行导入主题 CSS、添加 `.rhine-theme` 或修改 DOM。Provider 渲染一个真实的 `div.rhine-theme`，通过 `data-rhine-theme` 应用主题，不重建子组件。普通组件入口保持独立，不额外加载可选主题。
+主题入口自动加载基础样式与五套内置主题，不需要另行导入主题 CSS、添加 `.rhine-theme` 或修改 DOM。Provider 渲染一个真实的 `div.rhine-theme`，通过 `data-rhine-theme` 应用主题，不重建子组件。普通组件入口保持独立，不额外加载可选主题。
 
 ## API
 
 ```ts
-type ThemeName = 'rhine' | 'arknights' | 'neo-brutalism';
+type ThemeName = 'rhine' | 'arknights' | 'neo-brutalism' | 'neutral' | 'graphite';
 
 interface ThemeProviderProps extends HTMLAttributes<HTMLDivElement> {
   defaultTheme?: ThemeName;
@@ -101,11 +105,11 @@ export function App() {
 
 将 `<div className="rhine-theme" data-rhine-theme="arknights">` 替换为 `<ThemeProvider defaultTheme="arknights">`，删除额外主题 CSS 导入；原根节点的布局类、`id`、动效属性直接传给 Provider。需要动态切换时调用 `useTheme().setTheme()`。
 
-旧的 CSS-only 用法继续支持：先导入基础组件样式，再导入 `theme-arknights.css` 或 `theme-neo-brutalism.css`，在根节点设置属性。两种用法选择一种即可，不要为迁移再包一层主题根。
+旧的 CSS-only 用法继续支持：先导入基础组件样式，再导入 `theme-arknights.css` 、`theme-neo-brutalism.css` 或 `theme-neutral.css`，在根节点设置属性。两种用法选择一种即可，不要为迁移再包一层主题根。
 
 ## 场景背景（0.5.0）
 
-`Background` 从组件主入口导出，复用当前主题，不生成主题根。使用 `roleTone` 选择场景；默认是 `content`。主题定义颜色和纹理，业务无需判断当前主题名称。展台 `#backgrounds` 只展示当前选中主题的六类场景；使用右上角主题选择器切换三套内置主题，背景随之同步更新。
+`Background` 从组件主入口导出，复用当前主题，不生成主题根。使用 `roleTone` 选择场景；默认是 `content`。主题定义颜色和纹理，业务无需判断当前主题名称。展台 `#backgrounds` 只展示当前选中主题的六类场景；使用右上角主题选择器切换四套内置主题，背景随之同步更新。
 
 | `roleTone` | 用途 | 默认纹理 | 底色 / 文字变量 |
 | --- | --- | --- | --- |
@@ -145,3 +149,49 @@ import { Background, Surface } from '@linhey/rhine-design';
 兼容已有源码调用：`roleTone` 的原有三种值与显式 `theme` / `none` 均保留；省略 `decoration` 的正文及 `AppShell` 改为 `auto`，默认纯色。需要旧版正文纹理的调用方显式传入 `decoration="theme"`。侧栏显式传入 `theme` 现在也会开启纹理；默认仍关闭。以上能力自 0.5.0 提供，不属于 npm 0.4.0。
 
 主题选择组件 [ThemePicker / ThemePreview](THEME_PICKER.md) 自 0.8.0 提供；静态预览避免嵌套 Provider。接入时核对源码与实际安装包，不由 main 展台推断发布范围。
+
+## 颜色角色验收
+
+现有五主题的代表场景由 `scripts/check-theme-roles.js` 在生产展台上量测，执行与边界见 [贡献流程](../CONTRIBUTING.md#颜色角色检查)。复用按钮、聊天检查的 sRGB 相对亮度算式，新增透明背景逐层合成、状态分类与定向反例；不引入配色生成器、外部字体或运行依赖。
+
+| 角色 | 实际入口与状态 | 判断 |
+| --- | --- | --- |
+| 强调填充上的文字 | `?fixture=neutral` 的 Button 默认、hover、busy；`#button-actions` 的启用危险按钮默认/hover/焦点 | 文字按实际字号/字重取阈值 |
+| 强调文字 | Dialog / Popover 内的 Link、hover | 使用实际浮层背景，不拿品牌原色代替文字角色 |
+| 正文与辅助文字 | TextField 值/placeholder 与 Textarea 边界、Dialog 标题/说明、DataTable 表头/单元格/hover | 透明层逐层合成；不只取最近的非透明字符串 |
+| 状态文字 | TextField 错误、Notice 警告/成功、DataTable 读取失败 | 文字阈值；错误文字、输入保留与状态语义另验 |
+| 必要非文本状态 | TextField 边界/错误边界、Tabs 选中指示、键盘焦点环 | 与实际相邻背景比，不比较非相邻的 default/hover 两种颜色 |
+| 选择状态文字 | `#selection` 的 SelectionCard hover 与 selected 标题/说明 | 检查真实叠层背景，保留勾选语义 |
+| 场景表面 | `#backgrounds` 的 canvas/content/sidebar/surface/overlay/media | 先测默认 auto，再通过真实选择器切换 none 对照；已有网格/点阵按全部透明度端点及多层交点计算保守下限 |
+| 禁用与装饰 | 禁用 Button；装饰分隔线、非必要按钮边界、模态遮罩 | 禁用值留作观察，与规范豁免分开；装饰项 N/A，不机械要求 3:1 |
+
+依据 [WCAG 2.2 SC 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)：普通文字至少 4.5:1，大字至少 3:1；脚本以 CSS 24px，或至少 14pt（56/3px）且粗体作为大字边界，比较前不四舍五入。禁用控件文字属于豁免，豁免不代表达到了某个另行约定的产品可读性目标。APCA 不替代本项 WCAG 验收。
+
+[SC 1.4.11](https://www.w3.org/TR/WCAG22/#non-text-contrast) 对识别控件及状态所需的视觉信息要求至少 3:1；[W3C 边界说明](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html#boundaries)明确：文字或图标已足以识别控件时，不要求额外的可见外框。焦点测量不等于覆盖全部焦点面积、遮挡、键盘或读屏要求。
+
+战术主题输入边界修复（#151，未发布）：仅非禁用 TextField / Textarea 的边界改为 `#69737d`，错误边框恢复 `--rhine-error` 优先级。焦点内描边和背景扫光保留，通用 `--rhine-control` 与装饰线不变；npm 0.11.3 不含该修复。
+
+本检查只证明列出的当前源码样本，不是全库 WCAG 合规认证，也不证明 npm 发行或消费项目。仅识别现有单色透明扫光、双线网格、圆点图案的固定形状；逐层组合所有端点（含交点），先逐 RGB 通道取上下界，再计算前景/背景亮度包络与对比度下限；不能直接把端点亮度当作内部极值，红绿等相反通道方向可能在 alpha 内部产生更低亮度。包络可能比实际绘制更保守，下限不足时不能直接归为产品缺陷，应进一步复核实际颜色路径/像素，不宣称逐像素采样。未知图像、其他渐变形状、祖先或被测样式（含伪元素）整体透明度不为 1 时输出 `UNMEASURED` 并使结果失败，不能把未知当作通过。伪元素还检查自己的 display/visibility；按钮有矩形不能证明指示线已绘制。长文、裁剪、原生缩放、状态语义继续按各自入口验收。
+
+[#150](https://github.com/linhay/rhine-design/issues/150) 的石墨夜间与 neutral 兼容编辑布局已分别完成源码交付；瑞士蓝保留局部配色，书卷采用现有能力的局部正文配方。未新增阅读主题；颜色角色与 appearance 取舍见下节。
+
+
+## 重点变量、成功状态与 appearance 的研究结论
+
+[#150](https://github.com/linhay/rhine-design/issues/150) 与 [#157](https://github.com/linhay/rhine-design/issues/157) 本轮不新增颜色角色 API 或 `system/light/dark` 主题轴。已接受的瑞士蓝局部配方允许蓝色成功强调，并保留可见“已保存/已核对”；未发现当前实际任务要求品牌重点变化而成功色固定。此决定限于已核对需求，不推导“成功必须绿色”或“颜色角色永远不能拆分”。
+
+| 既有变量 | 影响与边界 |
+| --- | --- |
+| `--rhine-green` | 链接、重点动作/焦点、Tabs指示、选择、进度、Logo和成功文字共同使用；变量名不保证实际为绿色 |
+| `--rhine-selected` | 选中及成功tone的背景；只改green不会同时改变这个底色，须按实际前景/底色检查 |
+| `--rhine-chart-series-1` | 独立图表首系列，默认在主题根引用green；可单独覆盖，不必新增图表色API |
+
+**自定义属性别名在声明处解析。** 固定包新安装实测：在neutral主题根只把green改为蓝色，链接、成功文字、Tabs、进度和默认图表首系列同步变化，根部Portal也变化，并列根不变。若只在普通section改green，链接等直接引用会变蓝，但继承自主题根的图表系列仍为原灰色，根部Portal也不变。图表别名不是在每个使用节点重新引用green；需要图表局部覆盖时直接使用既有系列变量，需要完整配色与浮层一致时把成组变量放在拥有Portal的主题根。该section实验是范围反例，不是新的局部主题能力。
+
+蓝色 `#2348b5` 仅用于上述 **neutral 角色实验**，不能据状态保留直接认定跨明暗配色可用。主控保留该根部覆盖再切到graphite时，Portal的14px“已保存”前景为 `rgb(35, 72, 181)`、背景为 `rgb(39, 46, 51)`，对比度约 **1.748:1，FAIL**，低于普通文字4.5:1要求。这是局部覆盖跨风格的反例，不是默认graphite缺陷；切换风格须撤除该覆盖，或独立验证适配后的前景/背景。已有16项断言只证明角色映射、范围与节点/草稿/焦点保留，不证明保留蓝色覆盖后的跨明暗对比度。
+
+嵌套ThemeProvider仍抛错，手写嵌套根同样不受支持；使用并列Provider隔离。背景组件的`appearance`只管理该元素绘制，不是明暗模式轴，也不把普通内容节点的局部颜色传给Portal。
+
+当前明确的夜间风格由graphite提供，中性浅色由neutral提供；尚无每个风格各自light/dark配色的独立需求或映射约定。因此不建立五风格×两模式矩阵，不增加系统跟随或持久化机制。实测系统color-scheme变更不替换显式neutral/graphite；宿主通过现有受控ThemeProvider切换这两种风格时，浮层节点、输入草稿和操作焦点保留。宿主可以按实际需求选择既有风格，库不替宿主决定“系统深色应该切到哪套品牌”。这些观察不冒充五套主题的全新颜色验收。
+
+书卷方向采用[局部长文配方](READING_RECIPE.md)，不以阅读排版新增主题。已交付石墨、编辑布局和颜色检查不重复建设。研究固定源码与包身份、实际覆盖和排除项见长文配方的验证记录；没有npm发布或消费方升级。

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { AppShell, AppShellToggle, IconButton, Inline, Background, Button, Checkbox, DataTable, DateField, DateRangePicker, Dialog, EmptyState, MediaCard, MediaViewer, Notice, NumberField, Pagination, RemoteMultiSelect, Select, SideNav, Skeleton, Stack, Surface, TextField, TreeSelect, type AppShellProps, type DateRange, type TreeNode, type TableSort } from '../components';
 import type { Choice } from '../components/components';
 import './extensions.css';
+import { NumberValidationGallery } from './NumberValidationGallery';
+import { TableStickyGallery } from './TableStickyGallery';
 
 const longName = '非常长的工作区名称与跨区域协作资料—Workspace-2026-archive';
 const sampleImage = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640"><rect width="960" height="640" fill="#d2dacf"/><circle cx="720" cy="150" r="65" fill="#f8f2d8"/><path d="M0 520 310 140 620 550 800 280 960 500V640H0Z" fill="#536b5d"/><path d="M0 560 320 400 610 590 960 480V640H0Z" fill="#293f37"/></svg>')}`;
@@ -61,24 +63,25 @@ export function AdvancedFormsGallery() {
       <Surface><RemoteMultiSelect label="远程项目" query={query} onQueryChange={setQuery} value={selected} onValueChange={setSelected} options={state === 'empty' ? [] : options} loading={pending || state === 'loading'} error={error} disabled={disabled} readOnly={readOnly} hint="已选标签跨查询保留；选择后可继续添加。" /></Surface>
       <Surface><Stack gap={4}><Checkbox label="树多选模式" checked={multiple} onChange={event => { setMultiple(event.target.checked); setKeys([]); }} /><TreeSelect label="项目层级" nodes={state === 'empty' ? [] : nodes} value={keys} onValueChange={setKeys} expandedKeys={expanded} onExpandedChange={setExpanded} multiple={multiple} disabled={disabled} readOnly={readOnly} loading={state === 'loading'} error={error} /><p>选中键：{keys.join(', ') || '无'}；父子勾选互不联动。</p></Stack></Surface>
     </div>
-  </section>;
+  <div className="ds-gap-top"><NumberValidationGallery /></div></section>;
 }
 
 interface DemoRow { id: string; name: string; disabled?: boolean; children?: DemoRow[] }
-const demoRows: DemoRow[] = [{ id: 'one', name: longName, children: [{ id: 'child', name: '子记录 / 保留层级' }] }, { id: 'locked', name: '不可选择的记录', disabled: true }, ...Array.from({ length: 8 }, (_, i) => ({ id: `row-${i}`, name: `记录 ${i + 3}` }))];
+const demoRows: DemoRow[] = [{ id: 'one', name: longName, children: [{ id: 'child', name: '子记录 / 保留层级' }] }, { id: 'locked', name: '不可选择的记录', disabled: true }, { id: 'identifier', name: 'WorkspaceArchive2026UnbrokenIdentifierABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' }, ...Array.from({ length: 8 }, (_, i) => ({ id: `row-${i}`, name: `记录 ${i + 3}` }))];
 export function AdvancedDataGallery() {
   const [state, setState] = useState('ready'), [keys, setKeys] = useState<string[]>(['off-page']), [expanded, setExpanded] = useState<string[]>(['one']);
   const [page, setPage] = useState(1), [pageSize, setPageSize] = useState(10), [unknown, setUnknown] = useState(false), [compact, setCompact] = useState(false);
-  const [single, setSingle] = useState(false), [hideSelectAll, setHideSelectAll] = useState(false), [sort, setSort] = useState<TableSort>();
+  const [single, setSingle] = useState(false), [hideSelectAll, setHideSelectAll] = useState(false), [pinned, setPinned] = useState(true), [sort, setSort] = useState<TableSort>();
   return <section><div className="ds-section-title"><span>DATA</span><h2>受控选择、层级与服务端分页</h2></div>
-    <div className="ds-extension-controls"><StateControl value={state} onChange={setState} /><Checkbox label="未知总数" checked={unknown} onChange={event => setUnknown(event.target.checked)} /><Checkbox label="紧凑密度" checked={compact} onChange={event => setCompact(event.target.checked)} /><Checkbox label="表格单选" checked={single} onChange={event => { setSingle(event.target.checked); setKeys([]); }} /><Checkbox label="隐藏全选" checked={hideSelectAll} onChange={event => setHideSelectAll(event.target.checked)} /></div>
+    <div className="ds-extension-controls"><StateControl value={state} onChange={setState} /><Checkbox label="未知总数" checked={unknown} onChange={event => setUnknown(event.target.checked)} /><Checkbox label="紧凑密度" checked={compact} onChange={event => setCompact(event.target.checked)} /><Checkbox label="表格单选" checked={single} onChange={event => { setSingle(event.target.checked); setKeys([]); }} /><Checkbox label="隐藏全选" checked={hideSelectAll} onChange={event => setHideSelectAll(event.target.checked)} /><Checkbox label="固定右侧列" checked={pinned} onChange={event => setPinned(event.target.checked)} /></div>
     <p className="ds-caption">多选表头只作用于当前可见且可选的行，保留跨页键；单选选取新记录会替换旧键。子行与详情独立呈现。右侧两列自动累计固定偏移，表格内部滚动。排序演示仅回传意图，不请求后端。</p>
     <Surface><Stack gap={4}><DataTable caption="项目记录" rows={state === 'empty' ? [] : page === 1 ? demoRows : [{ id: 'next-page', name: '宿主返回的第二页' }]} rowKey={row => row.id} rowLabel={row => row.name} loading={state === 'loading'} error={state === 'error' ? '读取失败，保留上次数据。' : undefined} onRetry={() => setState('ready')}
       selection={{ keys, onChange: setKeys, mode: single ? 'single' : 'multiple', hideSelectAll, isDisabled: row => !!row.disabled || state === 'disabled' }} expansion={{ keys: expanded, onChange: setExpanded, getChildren: row => row.children ?? [], renderDetail: row => <p>独立详情：{row.name}。导出与查询由宿主实现。</p> }} sort={sort} onSortChange={setSort} onSortReset={() => setSort(undefined)} density={compact ? 'compact' : 'comfortable'} stickyHeader maxHeight={420}
-      columns={[{ key: 'name', header: '项目名称', width: 300, rowHeader: true, sortable: true, render: row => row.name }, { key: 'id', header: '标识', width: 80, sticky: 'right', render: row => row.id }, { key: 'action', header: '操作（固定）', width: 112, sticky: 'right', render: row => <Button variant="secondary" disabled={state === 'disabled'} onClick={() => setExpanded([...new Set([...expanded, row.id])])}>查看详情</Button> }]} />
+      columns={[{ key: 'name', header: '项目名称', width: 300, rowHeader: true, sortable: true, render: row => row.name }, { key: 'id', header: '标识', width: 80, sticky: pinned ? 'right' : undefined, render: row => row.id }, { key: 'action', header: '操作', width: 112, sticky: pinned ? 'right' : undefined, render: row => <Button variant="secondary" disabled={state === 'disabled'} onClick={() => setExpanded([...new Set([...expanded, row.id])])}>查看详情</Button> }]} />
       <Pagination label="项目记录分页" page={page} pageSize={pageSize} total={unknown ? undefined : 28} hasNext={page < 3} disabled={state === 'disabled'} loading={state === 'loading'} showFirstButton showLastButton onPageChange={setPage} onPageSizeChange={size => { setPageSize(size); setPage(1); }} />
       <p role="status">已选 {keys.length} 项：{keys.join(', ') || '无'}。排序意图：{sort ? `${sort.key} ${sort.direction}` : '无'}；分页只回传意图。</p>
     </Stack></Surface>
+    <TableStickyGallery />
   </section>;
 }
 

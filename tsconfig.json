@@ -20,13 +20,16 @@
     "types": [
       "vite/client",
       "node"
-    ]
+    ],
+    "allowJs": true
   },
   "include": [
     "components",
     "preview",
     "tests",
     "vite.config.ts",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "review",
+    "examples/review"
   ]
 }

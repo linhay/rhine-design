@@ -1,0 +1,6 @@
+.template-settings-context { container-type: inline-size; min-width: 0; }
+.template-settings-layout { display: grid; gap: var(--rhine-space-4); min-width: 0; }
+.template-settings-targets, .template-settings-feature { min-width: 0; }
+@container (min-width: 600px) {
+  .template-settings-layout--batch { grid-template-columns: 11rem minmax(0, 1fr); align-items: start; }
+}

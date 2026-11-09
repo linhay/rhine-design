@@ -32,9 +32,9 @@
 .rhine-switch label { display:flex; position:relative; align-items:center; gap:12px; min-height:44px; cursor:pointer; }
 .rhine-switch input { position:absolute; opacity:0; width:1px; height:1px; }
 .rhine-switch__track { display:inline-flex; width:36px; height:22px; border:1px solid var(--rhine-control); border-radius:12px; padding:3px; flex:none; background:var(--rhine-surface); transition:background-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
-.rhine-switch__track>span { width:14px; height:14px; border-radius:50%; background:var(--rhine-muted); transition:transform var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.rhine-switch__track>span { position:relative; inset-inline-start:0; width:14px; height:14px; border-radius:50%; background:var(--rhine-muted); transition:inset-inline-start var(--rhine-duration-hover) var(--rhine-ease-standard); }
 .rhine-switch input:checked+.rhine-switch__track { background:var(--rhine-green); border-color:var(--rhine-green); }
-.rhine-switch input:checked+.rhine-switch__track>span { transform:translateX(14px); background:var(--rhine-surface); }
+.rhine-switch input:checked+.rhine-switch__track>span { inset-inline-start:14px; background:var(--rhine-surface); }
 .rhine-switch input:focus-visible+.rhine-switch__track { outline:2px solid var(--rhine-green); outline-offset:3px; }
 .rhine-switch input:disabled~span { opacity:.6; cursor:default; }
 .rhine-field textarea { font:var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); color:var(--rhine-ink); background:var(--rhine-surface); border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-control); padding:10px 12px; min-height:88px; resize:vertical; width:100%; transition:border-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
@@ -47,6 +47,8 @@
 .rhine-combobox__list [role=option],.rhine-combobox__empty { padding:12px; min-height:44px; cursor:pointer; overflow-wrap:anywhere; }
 .rhine-combobox__list [role=option][data-active=true],.rhine-combobox__list [role=option][aria-selected=true] { background:var(--rhine-selected); }
 .rhine-combobox__list [role=option][aria-disabled=true],.rhine-combobox__empty { color:var(--rhine-muted); cursor:default; }
+.rhine-combobox__check { display:inline-block; width:1.5em; font-weight:600; }
+.rhine-combobox__completion { position:sticky; bottom:0; display:flex; gap:var(--rhine-space-2); justify-content:flex-end; padding:var(--rhine-space-1) var(--rhine-space-2); border-top:1px solid var(--rhine-control); background:var(--rhine-overlay-bg); }
 .rhine-overlay-anchor { display:inline-block; vertical-align:middle; max-width:100%; }
 .rhine-overlay { position:fixed; inset:0; background:var(--rhine-backdrop-bg); z-index:40; }
 .rhine-dialog { position:fixed; z-index:41; top:50%; left:50%; transform:translate(-50%,-50%); width:min(480px,calc(100% - 32px)); max-height:calc(100% - 32px); overflow:auto; padding:24px; border:1px solid var(--rhine-line); border-radius:4px; background:var(--rhine-overlay-bg); color:var(--rhine-overlay-text); box-shadow:0 16px 48px #242b2826; }
@@ -78,3 +80,18 @@
 .rhine-popover[data-state=open],.rhine-menu[data-state=open],.rhine-combobox__list[data-state=open],.rhine-tooltip[data-state=delayed-open],.rhine-tooltip[data-state=instant-open] { animation:rhine-enter var(--rhine-duration-overlay) var(--rhine-ease-standard); }
 @keyframes rhine-overlay-fade { from { opacity:0; } to { opacity:1; } }
 @media(forced-colors:active) { .rhine-switch__track { border-color:ButtonText; }.rhine-switch input:checked+.rhine-switch__track { background:Highlight; }.rhine-switch__track>span { background:ButtonText; }.rhine-switch input:checked+.rhine-switch__track>span { background:HighlightText; }.rhine-dialog,.rhine-tooltip,.rhine-menu,.rhine-popover { border:1px solid CanvasText; } }
+
+.rhine-switch--row { width:100%; min-width:0; }
+.rhine-switch--row > label { width:100%; justify-content:space-between; }
+.rhine-switch--row .rhine-switch__label { order:-1; min-width:0; overflow-wrap:anywhere; }
+.rhine-switch input[aria-readonly=true]~span { cursor:default; }
+
+/* A standalone switch retains its hit/focus space without a label column. */
+.rhine-switch.rhine-switch--hidden-label { flex:none; width:fit-content; max-width:100%; }
+.rhine-switch.rhine-switch--hidden-label label { width:44px; min-width:44px; min-height:44px; gap:0; justify-content:center; }
+
+/* Optional heading keeps the action outside the label and the accessible name. */
+.rhine-combobox__heading { display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; min-width:0; }
+.rhine-combobox__heading>label { flex:1 1 160px; min-width:0; overflow-wrap:anywhere; font-weight:500; }
+.rhine-combobox__label-action { min-width:0; max-width:100%; margin-inline-start:auto; }
+.rhine-combobox__label-action .rhine-button { white-space:normal; text-align:start; }

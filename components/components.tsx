@@ -5,13 +5,15 @@ const classes = (...parts: (string | false | undefined)[]) => parts.filter(Boole
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'quiet' | 'danger';
+  size?: 'standard' | 'large';
+  contentAlign?: 'center' | 'between';
   busy?: boolean;
   busyLabel?: string;
 }
-export function Button({ variant = 'primary', busy = false, busyLabel = '处理中', disabled, className, children, onClick, type = 'button', ...props }: ButtonProps) {
-  return <button {...props} type={type} disabled={disabled} aria-disabled={busy || disabled || undefined}
-    aria-busy={busy || undefined} className={classes('rhine-button', `rhine-button--${variant}`, className)}
-    onClick={event => { if (busy) { event.preventDefault(); return; } onClick?.(event); }}>
+export function Button({ variant = 'primary', size = 'standard', contentAlign = 'center', busy = false, busyLabel = '处理中', disabled, className, children, onClick, type = 'button', ...props }: ButtonProps) {
+  return <button {...props} type={type} disabled={disabled} aria-disabled={busy || disabled || props['aria-disabled'] || undefined}
+    aria-busy={busy || undefined} className={classes('rhine-button', `rhine-button--${variant}`, size === 'large' && 'rhine-button--large', contentAlign === 'between' && 'rhine-button--between', className)}
+    onClick={event => { if (busy || props['aria-disabled'] === true || props['aria-disabled'] === 'true') { event.preventDefault(); return; } onClick?.(event); }}>
     <span className={busy ? 'rhine-button__ghost' : undefined}>{children}</span>
     {busy && <span className="rhine-button__busy"><span className="rhine-spinner" aria-hidden="true" /><span className="rhine-sr-only">{busyLabel}</span></span>}
   </button>;
@@ -33,24 +35,40 @@ export function SelectionCard({ label, selected, onSelectedChange, disabled = fa
     <span className="rhine-selection__content">{children}</span>
   </label>;
 }
-export function TextField({ label, hint, error, id: providedId, className, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string; error?: string }) {
+export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  labelVisibility?: 'visible' | 'hidden';
+  hint?: string;
+  error?: string;
+}
+export function TextField({ label, labelVisibility = 'visible', hint, error, id: providedId, className, ...props }: TextFieldProps) {
   const generatedId = useId();
   const id = providedId || generatedId;
+  if (!label.trim()) throw new Error('TextField requires a non-empty label.');
   const describedBy = [props['aria-describedby'], hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ');
   return <div className={classes('rhine-field', className)}>
-    <label htmlFor={id}>{label}</label>
-    <input {...props} id={id} aria-invalid={error ? true : props['aria-invalid']} aria-describedby={describedBy || undefined} />
+    <label htmlFor={id} className={labelVisibility === 'hidden' ? 'rhine-sr-only' : undefined}>{label}</label>
+    <input {...props} aria-label={props['aria-label']?.trim() || undefined} aria-labelledby={props['aria-labelledby']?.trim() || undefined} id={id} aria-invalid={error ? true : props['aria-invalid']} aria-describedby={describedBy || undefined} />
     {hint && <span id={`${id}-hint`} className="rhine-field__hint">{hint}</span>}
     {error && <span id={`${id}-error`} className="rhine-field__error" role="alert">{error}</span>}
   </div>;
 }
 export interface Choice { value: string; label: string; disabled?: boolean }
 export interface TabItem extends Choice { content: ReactNode; description?: string; status?: ReactNode }
-export function Tabs({ label, items, value, onValueChange }: { label: string; items: TabItem[]; value: string; onValueChange: (value: string) => void }) {
+export interface TabsProps {
+  label: string; items: TabItem[]; value: string; onValueChange: (value: string) => void;
+  layout?: 'content' | 'fill';
+  /** Stretch the tab bar without changing content-sized options. Defaults to false; fill already stretches. */
+  fullWidth?: boolean;
+  /** Header actions live outside the tablist and share its full-width divider. */
+  actions?: ReactNode;
+  className?: string;
+}
+export function Tabs({ label, items, value, onValueChange, layout = 'content', fullWidth = false, actions, className }: TabsProps) {
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
-  return <div className="rhine-tabs">
-    <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
+  const hasActions = actions != null && actions !== false;
+  const tablist = <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', `rhine-tabs__list--${layout}`, fullWidth && 'rhine-tabs__list--full-width', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       const available = items.map((item, index) => ({ ...item, index })).filter(item => !item.disabled);
       if (!available.length) return;
@@ -66,7 +84,9 @@ export function Tabs({ label, items, value, onValueChange }: { label: string; it
         {item.description || item.status ? <><span className="rhine-tabs__title">{item.label}{item.status && <span id={`${id}-status-${index}`} className="rhine-tabs__status">{item.status}</span>}</span>
           {item.description && <span id={`${id}-description-${index}`} className="rhine-tabs__description">{item.description}</span>}</> : item.label}
       </button>)}
-    </div>
+    </div>;
+  return <div className={classes('rhine-tabs', hasActions && 'rhine-tabs--actions', className)}>
+    {hasActions ? <div className="rhine-tabs__header">{tablist}<div role="group" aria-label={`${label}操作`} className="rhine-tabs__actions">{actions}</div></div> : tablist}
     {items.map((item, index) => <div key={item.value} role="tabpanel" id={`${id}-panel-${index}`} aria-labelledby={`${id}-tab-${index}`}
       hidden={value !== item.value} tabIndex={0} className="rhine-tabs__panel">{item.content}</div>)}
   </div>;
@@ -101,7 +121,7 @@ export function Skeleton({ label = '正在加载', lines = 3 }: { label?: string
     {Array.from({ length: Math.max(1, Math.min(8, Math.floor(lines) || 1)) }, (_, index) => <span aria-hidden="true" key={index} />)}
   </div>;
 }
-export function Disclosure({ title, children, defaultOpen = false }: { title: string; children: ReactNode; defaultOpen?: boolean }) {
+export function Disclosure({ title, children, defaultOpen = false, ariaLabel }: { title: string; children: ReactNode; defaultOpen?: boolean; ariaLabel?: string }) {
   const node = useRef<HTMLDetailsElement>(null);
   const animation = useRef<Animation | null>(null);
   const intent = useRef(defaultOpen);
@@ -151,7 +171,7 @@ export function Disclosure({ title, children, defaultOpen = false }: { title: st
     };
   }
   return <details ref={node} open={open} data-expanded={open} className="rhine-disclosure">
-    <summary onClick={event => { event.preventDefault(); toggle(); }}>{title}<span aria-hidden="true">+</span></summary>
+    <summary aria-label={ariaLabel} onClick={event => { event.preventDefault(); toggle(); }}>{title}<span aria-hidden="true">+</span></summary>
     <div className="rhine-disclosure__content">{children}</div>
   </details>;
 }

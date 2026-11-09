@@ -1,0 +1,9 @@
+.ds-compact-selection { display:grid; gap:16px; }
+.ds-compact-selection__cards { display:grid; gap:12px; }
+.ds-choice-card { padding:12px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.ds-choice-card__info { display:grid; gap:4px; flex:1 1 240px; min-width:0; }
+.ds-choice-card__info h3 { margin:0; }
+.ds-choice-card__status { display:inline-flex; min-width:64px; min-height:32px; }
+.ds-inline-choice { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.ds-inline-choice>.rhine-text { font-size:var(--rhine-text-body); line-height:var(--rhine-leading-body); font-weight:var(--rhine-weight-label); }
+.ds-choice-card__actions { display:flex; align-items:center; gap:8px; flex:none; }

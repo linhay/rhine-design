@@ -1,3 +1,30 @@
+import { ToastEventFixture } from './ToastEventGallery';
+import { TableStickyFixture } from './TableStickyGallery';
+import { NumberValidationFixture } from './NumberValidationGallery';
+import { MetricComparisonGallery, MetricComparisonFixture } from './MetricComparisonGallery';
+import { EditorialGallery, EditorialFixture } from './EditorialGallery';
+import { GraphiteGallery, GraphiteFixture } from './GraphiteGallery';
+import { PeriodicReportGallery, PeriodicReportFixture } from './PeriodicReportGallery';
+import { NotificationGallery, NotificationFixture } from './NotificationGallery';
+import { ObjectLifecycleGallery, ObjectLifecycleFixture } from './ObjectLifecycleGallery';
+import { AutomationSettingsGallery, AutomationSettingsFixture } from './AutomationSettingsGallery';
+import { AsyncSnapshotRecipes, AsyncSnapshotRecipesFixture } from './AsyncSnapshotRecipes';
+import { ResidentTreeGallery, ResidentTreeFixture } from './ResidentTreeGallery';
+import { ParameterConfigGallery, ParameterConfigFixture } from './ParameterConfigGallery';
+import { ListCardRecipes, ListCardRecipesFixture } from './ListCardRecipes';
+import { ChatLayoutFixture } from './ChatLayoutFixture';
+import { ChatMemberLinkFixture } from './ChatMemberLinkFixture';
+import { ResponsiveActionsGallery, ResponsiveActionsFixture } from './ResponsiveActionsGallery';
+import { NeutralGallery, NeutralFixture } from './NeutralGallery';
+import { CompactTemplateGallery, CompactTemplateFixture } from './CompactTemplateGallery';
+import { LabelActionGallery, LabelActionFixture } from './LabelActionGallery';
+import { TimelineDensityFixture } from './TimelineDensityFixture';
+import { TemplateSettingsGallery, TemplateSettingsFixture, SwitchRowsExample, MappingDensityExamples } from './TemplateSettingsGallery';
+import { RemoteSelectionGallery, RemoteSelectionFixture } from './RemoteSelectionGallery';
+import { ObjectReadingGallery, ObjectReadingFixture } from './ObjectReadingGallery';
+import { SettingsCompositionGallery, SettingsCompositionFixture } from './SettingsCompositionGallery';
+import { TrayUsageGallery, TrayUsageFixture } from './TrayUsageGallery';
+import { ChatGallery } from './ChatGallery';
 import { BackgroundFiltersFixture } from './BackgroundFiltersFixture';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -6,7 +33,7 @@ import './preview.css';
 import { OverlayBoundsFixture, OverlayBoundsGallery } from './OverlayBoundsGallery';
 import { SettingsDialogGallery, SettingsDialogFixture } from './SettingsDialogGallery';
 import { ThemePickerGallery, ThemePickerFixture } from './ThemePickerGallery';
-import { CommonGallery } from './CommonGallery';
+import { CommonGallery, DataCaptionFixture } from './CommonGallery';
 import { MotionGallery } from './MotionGallery';
 import { StartupGallery } from './StartupGallery';
 import { PatternGallery } from './PatternGallery';
@@ -27,6 +54,10 @@ import { CompactFilterBarGallery } from './CompactFilterBarGallery';
 import { DenseFilterControlsGallery } from './DenseFilterControlsGallery';
 import { CheckboxRowGallery } from './CheckboxRowGallery';
 import { ComponentTypographyGallery } from './ComponentTypographyGallery';
+import { NavActionsGallery } from './NavActionsGallery';
+import { SingleSearchGallery } from './SingleSearchGallery';
+import { CompactSelectionGallery } from './CompactSelectionGallery';
+import { ButtonActionsGallery } from './ButtonActionsGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
 import { ChatFoundationGallery } from './ChatFoundationGallery';
 
@@ -48,17 +79,39 @@ function Gallery() {
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
   const simulate = () => { setBusy(true); timer.current = setTimeout(() => { setBusy(false); setNotice(true); }, 900); };
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => <>
+    {section === 'metric-comparison' && <MetricComparisonGallery />}
+    {section === 'periodic-report' && <PeriodicReportGallery />}
+    {section === 'personal-notifications' && <NotificationGallery />}
+    {section === 'object-lifecycle' && <ObjectLifecycleGallery />}
+    {section === 'automation-settings' && <AutomationSettingsGallery />}
+    {section === 'parameter-config' && <ParameterConfigGallery />}
+    {section === 'resident-tree' && <ResidentTreeGallery />}
+    {section === 'editorial-layout' && <EditorialGallery />}
+    {section === 'graphite' && <GraphiteGallery />}
+    {section === 'neutral' && <NeutralGallery />}
     {section === 'theme-picker' && <ThemePickerGallery />}
+    {section === 'tray-usage' && <TrayUsageGallery />}
+    {section === 'settings-composition' && <SettingsCompositionGallery />}
+    {section === 'object-reading' && <ObjectReadingGallery />}
+    {section === 'template-settings' && <><TemplateSettingsGallery /><CompactTemplateGallery /><MappingDensityExamples /><SwitchRowsExample /></>}
     {section === 'settings-dialog' && <SettingsDialogGallery />}
     {section === 'overlay-bounds' && <OverlayBoundsGallery />}
     {section === 'monitoring' && <MonitoringGallery />}
     {section === 'date-range-filter' && <DateRangeFilterGallery />}
     {section === 'list-filter-bar' && <ListFilterBarGallery />}
     {section === 'compact-account' && <CompactAccountGallery />}
-    {section === 'compact-filters' && <><CompactFilterBarGallery /><DenseFilterControlsGallery /></>}
+    {section === 'compact-filters' && <><LabelActionGallery /><RemoteSelectionGallery /><CompactFilterBarGallery /><DenseFilterControlsGallery /></>}
     {section === 'checkbox-rows' && <CheckboxRowGallery />}
     {section === 'component-typography' && <ComponentTypographyGallery />}
+    {section === 'nav-actions' && <NavActionsGallery />}
+    {section === 'agent-chat' && <ChatGallery />}
+    {section === 'single-search' && <SingleSearchGallery />}
+    {section === 'compact-selection' && <CompactSelectionGallery />}
+    {section === 'responsive-actions' && <ResponsiveActionsGallery />}
+    {section === 'button-actions' && <ButtonActionsGallery />}
     {section === 'summary-tabs' && <SummaryTabsGallery />}
+    {section === 'list-card-recipes' && <ListCardRecipes />}
+    {section === 'async-snapshot-recipes' && <AsyncSnapshotRecipes />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'chat-foundation' && <ChatFoundationGallery />}
     {section === 'app-shell' && <ShellGallery />}
@@ -151,4 +204,4 @@ function Gallery() {
 
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode>{['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : <Gallery />}</StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('fixture') === 'toast-events' ? <ToastEventFixture /> : new URLSearchParams(location.search).get('fixture') === 'table-sticky' ? <TableStickyFixture /> : new URLSearchParams(location.search).get('fixture') === 'number-validation' ? <NumberValidationFixture /> : new URLSearchParams(location.search).get('fixture') === 'metric-comparison' ? <MetricComparisonFixture /> : new URLSearchParams(location.search).get('fixture') === 'editorial-layout' ? <EditorialFixture /> : new URLSearchParams(location.search).get('fixture') === 'periodic-report' ? <PeriodicReportFixture /> : new URLSearchParams(location.search).get('fixture') === 'personal-notifications' ? <NotificationFixture /> : new URLSearchParams(location.search).get('fixture') === 'object-lifecycle' ? <ObjectLifecycleFixture /> : new URLSearchParams(location.search).get('fixture') === 'automation-settings' ? <AutomationSettingsFixture /> : new URLSearchParams(location.search).get('fixture') === 'data-caption' ? <DataCaptionFixture /> : new URLSearchParams(location.search).get('fixture') === 'async-snapshot-recipes' ? <AsyncSnapshotRecipesFixture /> : new URLSearchParams(location.search).get('fixture') === 'resident-tree' ? <ResidentTreeFixture /> : new URLSearchParams(location.search).get('fixture') === 'parameter-config' ? <ParameterConfigFixture /> : new URLSearchParams(location.search).get('fixture') === 'list-card-recipes' ? <ListCardRecipesFixture /> : new URLSearchParams(location.search).get('fixture') === 'chat-member-link' ? <ChatMemberLinkFixture /> : new URLSearchParams(location.search).get('fixture') === 'responsive-actions' ? <ResponsiveActionsFixture /> : new URLSearchParams(location.search).get('fixture') === 'compact-template' ? <CompactTemplateFixture /> : new URLSearchParams(location.search).get('fixture') === 'chat-layout' ? <ChatLayoutFixture /> : new URLSearchParams(location.search).get('fixture') === 'graphite' ? <GraphiteFixture /> : new URLSearchParams(location.search).get('fixture') === 'neutral' ? <NeutralFixture /> : new URLSearchParams(location.search).get('fixture') === 'label-action' ? <LabelActionFixture /> : new URLSearchParams(location.search).get('fixture') === 'timeline-density' ? <TimelineDensityFixture /> : new URLSearchParams(location.search).get('fixture') === 'template-settings' ? <TemplateSettingsFixture /> : new URLSearchParams(location.search).get('fixture') === 'remote-selection' ? <RemoteSelectionFixture /> : new URLSearchParams(location.search).get('fixture') === 'object-reading' ? <ObjectReadingFixture /> : ['orbit-entry', 'list-filters'].includes(new URLSearchParams(location.search).get('fixture') || '') ? <BackgroundFiltersFixture /> : new URLSearchParams(location.search).get('fixture') === 'overlay-bounds' ? <OverlayBoundsFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-dialog' ? <SettingsDialogFixture /> : new URLSearchParams(location.search).get('fixture') === 'theme-picker' ? <ThemePickerFixture /> : new URLSearchParams(location.search).get('fixture') === 'settings-composition' ? <SettingsCompositionFixture /> : new URLSearchParams(location.search).get('fixture') === 'tray-usage' ? <TrayUsageFixture /> : <Gallery />}</StrictMode>);

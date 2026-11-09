@@ -1,0 +1,6 @@
+.member-link-gallery { width:880px; max-width:100%; min-width:0; margin-inline:auto; }
+.member-link-controls { display:flex; flex-wrap:wrap; gap:var(--rhine-space-4); }
+.member-link-controls > * { min-width:0; max-width:100%; }
+.member-link-gallery [data-member-profile] { overflow-wrap:anywhere; }
+.member-link-gallery [data-member-profile] h2 { margin:0; font:var(--rhine-weight-label) var(--rhine-text-heading)/var(--rhine-leading-heading) var(--rhine-font); }
+.member-link-gallery [data-member-profile] h2:focus-visible { outline:2px solid var(--rhine-green); outline-offset:3px; }

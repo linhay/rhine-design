@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { ThemePicker, ThemePreview } from '../components/ThemePicker';
 
@@ -24,7 +24,9 @@ it('keeps failed previews selectable and retries a replacement source', () => {
 
 it('uses independent radio groups and supports whole-group and per-option disabling', () => {
   render(<><ThemePicker label="一" value="rhine" onValueChange={() => {}} disabled /><ThemePicker label="二" value="rhine" onValueChange={() => {}} options={[{ value: 'rhine' }, { value: 'arknights', disabled: true }]} /></>);
-  const radios = screen.getAllByRole('radio');
-  expect(radios[0]).toBeDisabled(); expect(radios[4]).toBeDisabled();
-  expect(radios[0].getAttribute('name')).not.toBe(radios[3].getAttribute('name'));
+  const first = within(screen.getByRole('group', { name: '一' })).getAllByRole('radio');
+  const second = within(screen.getByRole('group', { name: '二' }));
+  for (const radio of first) expect(radio).toBeDisabled();
+  expect(second.getByRole('radio', { name: '明日方舟 · 战术终端' })).toBeDisabled();
+  expect(first[0].getAttribute('name')).not.toBe(second.getByRole('radio', { name: '莱茵 · 纸面' }).getAttribute('name'));
 });

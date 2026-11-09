@@ -15,7 +15,7 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 | DataTable | 原生表格、caption、行键、列定义、加载/空/失败、排序事件；不本地筛选排序分页 |
 | Pagination | 受控页码、总数、每页大小、加载禁用；总数未知时只依赖hasNext |
 | Link | 原生链接，区分跳转与按钮动作，外部新窗口标识 |
-| Icon / IconButton | 少量常用16/20px线性图标、44px操作目标、可访问名称 |
+| Icon / IconButton | 少量常用16/20px线性图标（含plus）、44px操作目标、可访问名称；IconButton busy保留焦点与名称并阻止重复点击，disabled使用原生禁用（plus/busy为#134未发布候选） |
 | CopyButton | 显式点击后复制；等待真实Promise成功才提示，失败可重试；可注入原生clipboard适配器 |
 | Checkbox | 原生复选框、混合态、label/hint；选中由调用方控制 |
 | Checkbox `layout="row"`（自 0.10.0） | 侧栏整行选择，名称/说明同列、对称内距与主题选中/焦点；默认 form 不变，见[双行多选契约](../docs/CHECKBOX_ROWS.md) |
@@ -26,7 +26,7 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 | Combobox | 受控查询与选中值；候选由调用方返回；方向键/Enter/Escape，IME保护，加载/无结果/错误 |
 | Tooltip | 鼠标与键盘说明、Escape、可悬停；不可放交互控件或关键信息 |
 | Toast | 单条通知、关闭；成功可定时、警告错误持久；hover/focus/页面隐藏暂停计时，无全局队列 |
-| Dialog / ConfirmDialog | 标题描述、焦点限制及归还、Escape、滚动；确认默认聚焦取消，异步失败保留内容 |
+| Dialog / ConfirmDialog | 必填标题（Dialog说明可省略）、焦点限制及归还、Escape、滚动；确认默认聚焦取消，异步失败保留内容 |
 | Popover | 按钮触发非模态详情、边缘避让、Escape与焦点归还；不替代Tooltip |
 | Menu | 操作项/禁用/危险项；方向键/Home/End/输入字符跳转；不是表单选择器 |
 | Divider / Stack / Inline / Grid | 语义分隔线、纵排、可换行横排、自适应网格；只消费间距tokens |
@@ -67,11 +67,35 @@ SideNav、Breadcrumbs、Steps、Drawer、Fieldset、ErrorSummary、StatusTimelin
 - Checkbox接受原生input属性及indeterminate；混合状态在点击后应由调用方重算，不使用readOnly模拟锁定（原生checkbox无只读行为）。RadioGroup与Switch都是受控，Textarea沿用原生readOnly和disabled语义。
 - CopyButton接受`value/label/copy?`，copy适配器返回Promise。等待成功后提示；value变化后忽略旧请求结果，错误不暴露异常正文。宿主原生平台接入应提供平台适配器并做真实剪贴板验收。
 - ConfirmDialog的`onConfirm`返回void或Promise；等待时阻止再次确认、取消和Escape，成功后关闭，失败保留内容供重试。任务超时/取消能力由业务回调负责，不让Promise无限悬挂。默认焦点在取消按钮。
-- Toast由`open/onOpenChange/title/description/tone/duration`控制；默认5秒，duration≤0常驻，warning/error始终常驻。重复打开同一条已打开通知不会重置计时；要作为新通知应更换key或先关闭。不要把凭证、异常正文等敏感数据放进通知。
+- Toast由`open/onOpenChange/title/description/tone/duration`控制；默认5秒，duration≤0常驻，warning/error始终常驻。同一事件的普通重渲染（包括回调引用变化）不重置计时。连续同文案的新事件使用可选 `eventId`，见下节；不要通过更换整个 Toast 的 key 或先关闭再打开表达新事件，以免卸载持焦按钮。不要把凭证、异常正文等敏感数据放进通知。
 - Stack/Inline/Grid的gap取`1/2/3/4/6/8/12`，对应间距token；Grid的minWidth以px计，窄容器自动收缩。Icon的name使用导出IconName类型，不以自由文本插入SVG。
 
 ## 设计展台验收
 
 展台使用当前源码的真实组件；本页重点覆盖数据、表单、操作/布局、反馈/浮层四组。合成数据只演示事件与状态；Clipboard仅复制明确的演示字符串。测试覆盖分页边界、请求状态、异步复制失败、IME、候选列表、通知计时、浮层焦点/Escape与窄窗；原生宿主原生平台和屏幕阅读器仍需App接入后单独验收。
 
-Toast 浮动通知（未发布，npm 0.10.0 不含，见[版本记录](../CHANGELOG.md#未发布)）：`placement="floating"` 通过 Portal 挂到最近主题根，位于视口右下角，距边缘 16px、最大宽度 400px，窄窗两侧各留 16px。默认 inline 行为保持；浮动通知不占内容流、不抢焦点，关闭后不拦截点击；继承主题与减少动态。反馈展台使用浮动模式。成功沿用 5 秒关闭及悬停/聚焦/隐藏暂停，关键错误仍持久。
+Toast 浮动通知（自 0.11.0，npm 0.10.0 不含，见[版本记录](../CHANGELOG.md#01102026-10-27)）：`placement="floating"` 通过 Portal 挂到最近主题根，位于视口右下角，距边缘 16px、最大宽度 400px，窄窗两侧各留 16px。默认 inline 行为保持；浮动通知不占内容流、不抢焦点，关闭后不拦截点击；继承主题与减少动态。反馈展台使用浮动模式。成功沿用 5 秒关闭及悬停/聚焦/隐藏暂停，关键错误仍持久。
+
+SideNav 可选 `NavItem.actions` / `NavAction`，空数组无按钮/空位；菜单触发器与链接为兄弟。菜单到受控 Dialog 的归焦见[导航行操作](../docs/SIDE_NAV_ACTIONS.md)（0.11.2）。
+
+Popover可选 `showHeader={false}`（未发布，默认true）省略可见标题/关闭行；非空title仍为可访问名称，触发器必须具名可聚焦。适用范围、退出与组合契约见[托盘用量](../docs/TRAY_USAGE.md)。
+
+- Switch 的 `labelVisibility="hidden"` 保留必填字符串名称，独立开关无文字占位；适用边界与默认兼容见 `docs/TEMPLATE_SETTINGS.md` 的独立开关标签（#88，未发布）。
+
+Combobox 与 RemoteMultiSelect 的可选标题动作 `labelAction`（未发布）及状态/焦点所有权见[字段标题动作](../docs/FIELD_LABEL_ACTION.md)。
+
+RemoteMultiSelect `tagDensity` 与 MappingEditor `groupedSourceLayout` 的未发布紧凑能力见[模板增量契约](../docs/COMPACT_TEMPLATE.md)，默认行为不变。
+
+ResponsiveActions 及竖点 moreVertical（未发布）：基于真实容器的文字/图标/菜单、动态权限与焦点契约见[容器自适应动作](../docs/RESPONSIVE_ACTIONS.md)。
+
+Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用候选）与 `statusDisplay="compact"`（常规状态仅保留读屏通知、读取失败持续可见），默认兼容；原 `error` 保持候选读取失败语义。见[状态与字段校验](../docs/COMBOBOX_FEEDBACK.md)（#115，未发布）。
+
+### 连续通知寿命（#160，未发布）
+
+本次新增保证限于页面可见期间。`eventId?: string | number` 仅标识通知寿命，由宿主在确有新通知需要完整展示时长时更新；保持同一 Toast 实例和 `open=true`，相同文案也重新获得完整 `duration`。相同 id 的普通重渲染不续期；未传 id 的旧调用兼容，open、文案、tone 或 duration 变化仍按原行为重置。id 按 React effect 的 Object.is 规则比较（数字 1 与字符串 "1"、0 与 -0 不同）。id 不应在 render 中随机生成，不是队列或去重服务。
+
+可见页面中，同一事件 hover 或内部 focus 时暂停，恢复后使用剩余时长；暂停期间新事件将剩余时长设为完整 duration，直到全部 hover/focus 暂停原因解除才起算。新事件提交后旧 timer 失效；如果旧到期先发生，宿主的新事件仍需设置 open=true。warning/error 或 duration≤0 常显，手动关闭与关闭后重开保持。既有 document.hidden 处理保留兼容，visibilitychange 逻辑有单测；真实窗口后台及隐藏期间新事件的展示时长不属于本次新增验收或对外保证。
+
+通知不主动抢焦点。仅更新 id 不重挂文字子树，保留现有容器、关闭按钮焦点和暂停状态。既有 success/info 等 status（polite）、error alert 及 aria-atomic 语义保持；eventId 不控制或保证相同文案再次播报，重复读屏输出不属于本次功能范围。关键结果仍应有页面内持久入口。计时、DOM 和焦点测试不代表实际读屏输出。
+
+真实反馈展台提供连续同文案、延迟新事件（用于保持关闭按钮焦点）、普通重渲染、错误/警告及长文。页面退出清理延迟事件，不向已卸载组件提交。

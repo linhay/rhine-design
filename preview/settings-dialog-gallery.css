@@ -1,0 +1,5 @@
+.rhine-settings-action-short { display:none; }
+@container (max-width:559px) {
+ .rhine-settings-action-full { display:none; }
+ .rhine-settings-action-short { display:inline; }
+}

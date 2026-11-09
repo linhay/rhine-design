@@ -1,0 +1,36 @@
+/* Example composition styles. No private component selectors or new public API. */
+.rhine-browse-workspace { container-type: inline-size; color: var(--rhine-ink); min-width: 0; font: var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); }
+.rhine-browse-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; margin-block: 12px; }
+.rhine-browse-controls > * { min-width: 0; max-width: 100%; }
+.rhine-browse-split { display: grid; grid-template-columns: minmax(0,1fr); gap: 12px; margin-block: 12px; }
+.rhine-browse-pane { min-width: 0; overflow-wrap: anywhere; }
+.rhine-browse-pane > h3 { margin-block: 0 8px; }
+.rhine-browse-tree { max-height: 460px; overflow: auto; border: 1px solid var(--rhine-line); border-radius: var(--rhine-radius-control); padding: 4px; min-height: 44px; }
+.rhine-browse-row { display: flex; min-height: 44px; align-items: start; padding: 6px 4px 6px calc(4px + var(--rhine-browse-depth) * 8px); gap: 4px; border: 1px solid transparent; cursor: pointer; border-radius: var(--rhine-radius-control); box-sizing: border-box; }
+.rhine-browse-row:hover, .rhine-browse-item[data-hovered] > .rhine-browse-row { border-color: var(--rhine-control); }
+.rhine-browse-item[aria-selected=true] > .rhine-browse-row { background: var(--rhine-selected); border-color: var(--rhine-green); }
+.rhine-browse-item:focus-visible > .rhine-browse-row, .rhine-browse-tree:focus-visible, .rhine-browse-canvas:focus-visible, .rhine-browse-separator:focus-visible { outline: 2px solid var(--rhine-green); outline-offset: -2px; }
+.rhine-browse-item { outline: none; }
+.rhine-browse-label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.rhine-browse-label small { font-size: var(--rhine-text-caption); }
+.rhine-browse-id { display: block; color: var(--rhine-muted); }
+.rhine-browse-disclosure { flex: 0 0 44px; text-align: center; min-height: 44px; }
+.rhine-browse-update { display: block; font-size: var(--rhine-text-caption); color: var(--rhine-green); }
+.rhine-browse-item[data-updated] > .rhine-browse-row { animation: rhine-browse-update 1s ease-out; }
+.rhine-browse-item[data-update-cycle="0"] > .rhine-browse-row { animation-name: rhine-browse-update-even; }
+@keyframes rhine-browse-update-even { from { box-shadow: inset 4px 0 var(--rhine-green); background-color: var(--rhine-selected); } to { box-shadow: inset 0 0 transparent; } }
+@keyframes rhine-browse-update { from { box-shadow: inset 4px 0 var(--rhine-green); background-color: var(--rhine-selected); } to { box-shadow: inset 0 0 transparent; } }
+.rhine-browse-separator { display: none; touch-action: none; cursor: col-resize; background: var(--rhine-line); border-radius: var(--rhine-radius-control); }
+.rhine-browse-canvas { aspect-ratio: 4/3; width: 100%; border: 1px solid var(--rhine-line); box-sizing: border-box; }
+.rhine-browse-canvas svg { display: block; width: 100%; height: 100%; }
+.rhine-browse-canvas rect { fill: var(--rhine-surface); stroke: var(--rhine-control); stroke-width: 1; }
+.rhine-browse-canvas rect[data-hovered] { stroke: var(--rhine-signal); stroke-width: 3; }
+.rhine-browse-canvas rect[data-selected] { fill: var(--rhine-selected); stroke: var(--rhine-green); stroke-width: 3; }
+.rhine-browse-detail { min-width: 0; overflow-wrap: anywhere; }
+.rhine-browse-detail pre, .rhine-browse-detail code { white-space: pre-wrap; overflow-wrap: anywhere; }
+@container (min-width: 600px) {
+  .rhine-browse-split { grid-template-columns: minmax(0,var(--rhine-browse-ratio)) 12px minmax(0,1fr); gap: 8px; }
+  .rhine-browse-separator { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { .rhine-browse-item[data-updated] > .rhine-browse-row { animation: none !important; } }
+[data-rhine-motion=reduced] .rhine-browse-item[data-updated] > .rhine-browse-row { animation: none !important; }

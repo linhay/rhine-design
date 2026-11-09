@@ -1,5 +1,6 @@
+import { StepsGallery } from './StepsGallery';
 import { useId, useState } from 'react';
-import { Dialog, Inline, StatusTimeline, TimelineLegend, Badge, Breadcrumbs, Button, Drawer, ErrorSummary, Fieldset, KeyValue, Metric, Notice, Select, SideNav, Stack, Steps, Surface, Text, TextField, type FieldError } from '../components';
+import { Dialog, Link, Inline, StatusTimeline, TimelineLegend, Badge, Breadcrumbs, Button, Drawer, ErrorSummary, Fieldset, KeyValue, Metric, Notice, Select, SideNav, Stack, Surface, Text, TextField, type FieldError } from '../components';
 import './patterns.css';
 
 export const scenarios = [
@@ -7,7 +8,8 @@ export const scenarios = [
   ['tabs', '同一对象的不同视图', 'Tabs / SegmentedControl', 'Tabs 切换独立内容区域；SegmentedControl 改变一个视图的指标或模式。方向键操作，焦点留在选项。', '边界 120ms，面板进入 180ms。', '不要把筛选指标做成全局导航。'],
   ['form', '复杂表单与纠错', 'Fieldset + TextField + ErrorSummary', '按任务分组，提交后同时显示字段错误与顶部摘要。摘要获得焦点，点问题回到字段；保留已填值。', '立即显示错误，不抖动、不滚动循环。', '单字段就地错误即可；不能只给 Toast。'],
   ['steps', '分阶段配置', 'Steps + Fieldset', '当前步骤由业务校验推进；允许返回已完成步骤。步骤完成与真实结果一致。', '当前段 180ms 淡入 / 3px；不自动走步骤。', '未知耗时用 Progress 不确定态；步骤条不是百分比。'],
-  ['detail', '列表中查看记录', 'Drawer + KeyValue', '保持列表上下文，临时查看详情。焦点进入抽屉，Escape 关闭后返回入口。', '160ms / 3px 由右侧进入，关闭即时归还焦点。', '需要长期链接或大量编辑时使用独立详情页。'],
+  ['reading', '文件与笔记阅读', '居中 Dialog + Tabs', '先遵守产品明确的居中偏好；正文、来源与关联同窗切换，关联跳转关闭弹窗，返回恢复阅读上下文。', '160ms 淡入；减少动态立即显示，保留焦点规则。', 'Drawer 也是模态，但不等于居中；操作背景时评估非模态分栏或独立页。'],
+  ['detail', '明确采用侧边详情', 'Drawer + KeyValue', '保持列表上下文，临时查看详情。焦点进入抽屉，Escape 关闭后返回入口。', '160ms / 3px 由右侧进入，关闭即时归还焦点。', '需要长期链接或大量编辑时使用独立详情页。'],
   ['confirm', '不可逆操作', 'ConfirmDialog', '说明对象、影响和明确动词；默认焦点在取消。等待真实结果，失败保留上下文。', '160ms 淡入；等待期间保持尺寸，不延迟结果。', '普通保存不弹二次确认；可撤销操作优先撤销。'],
   ['feedback', '任务结果与系统异常', 'Toast / Notice', '短暂成功用 Toast；字段或区域失败用就地 Notice；需要行动的错误持续显示。', '通知 180ms / 3px；悬停或聚焦暂停倒计时。', '不能让关键错误自动消失，也不抢占焦点。'],
   ['load', '首次读取与重新请求', 'Skeleton / Progress / Button busy', '首次已知结构用骨架；提交用按钮 busy；刷新保留旧数据并标记更新状态。', '内容就绪 180ms 原位淡入；减少动态时静态占位。', '不伪造百分比，不清空用户正在看的内容。'],
@@ -20,7 +22,7 @@ export const scenarios = [
 ] as const;
 
 export function PatternGallery({ section }: { section: string }) {
-  const [step, setStep] = useState(0), [chapter, setChapter] = useState('overview');
+  const [chapter, setChapter] = useState('overview');
   const [choice, setChoice] = useState('navigation');
   const [monitor, setMonitor] = useState('normal');
   const [previewScope, setPreviewScope] = useState('primary');
@@ -30,7 +32,7 @@ export function PatternGallery({ section }: { section: string }) {
   const scenario = scenarios.find(item => item[0] === choice)!;
   if (section === 'navigation') return <section id="navigation"><div className="ds-section-title"><span>NAV</span><h2>去哪里，现在到哪一步。</h2></div><p className="ds-caption">导航表达空间层级，步骤表达任务顺序。当前位置始终有文字与边界提示。</p>
     <Surface><Breadcrumbs items={[{label:'设计总览',href:'#top'},{label:'导航与步骤'}]} /><div className="ds-navigation-demo"><SideNav aria-label="工作区演示导航" currentId={chapter} groups={[{label:'工作区',items:[{id:'overview',label:'概览',href:'#navigation',icon:'chart'},{id:'records',label:'记录',href:'#navigation',icon:'connection'},{id:'settings',label:'设置',href:'#navigation',icon:'info'}]}]} onNavigate={(item,event) => {event.preventDefault(); setChapter(item.id);}}/><div className="ds-navigation-content"><Badge>SideNav</Badge><h3>{({overview:'概览',records:'记录',settings:'设置'})[chapter]}</h3><Text>20px线性图标辅助识别，文字始终可见。44px操作行、4px行间距，选中项以苔绿底和细边界标识，不使用外链箭头。图标可选；长名称自然换行。页面路由、数据和权限由业务提供。</Text></div></div></Surface>
-    <Surface className="ds-gap-top"><h3>Steps · 验证后推进</h3><Steps current={step} onStepChange={setStep} items={[{id:'scope',label:'选择范围',description:'确认任务边界'},{id:'setup',label:'完成配置',description:'校验必填信息'},{id:'review',label:'核对结果',description:'完成后才显示成功'}]}/><div className="ds-row ds-gap-top"><Button onClick={()=>setStep(value=>Math.min(3,value+1))} disabled={step===3}>模拟本步完成</Button><Button variant="secondary" onClick={()=>setStep(0)}>重置步骤</Button></div><p role="status" className="ds-caption">{step===3?'全部完成 · 合成演示':'未完成的步骤不能点击跳过；已完成步骤可返回。'}</p></Surface>
+    <StepsGallery/>
   </section>;
   if (section === 'form-workflow') return <section id="form-workflow"><div className="ds-section-title"><span>FORM</span><h2>让问题可定位，让输入被保留。</h2></div><p className="ds-caption">试着直接提交，再点击错误摘要回到字段。这里只做本地验证，不发送或保存数据。</p>
     <Surface><form noValidate onSubmit={event => {
@@ -44,7 +46,8 @@ export function PatternGallery({ section }: { section: string }) {
     <p className="ds-caption">Fieldset 保留原生分组语义；ErrorSummary 在失败提交后获得焦点；Drawer 继承弹窗的焦点约束与 Escape 关闭。</p>
   </section>;
   if (section !== 'patterns') return null;
-  return <section id="patterns"><div className="ds-section-title"><span>PLAYBOOK</span><h2>先选交互，再选组件。</h2></div><p className="ds-caption">14 个常见场景。按任务、信息持续时间和是否需要打断来选择，动效只解释状态变化。</p><Surface><Select label="我正在设计什么场景" value={choice} onChange={event=>setChoice(event.target.value)}>{scenarios.map(item=><option key={item[0]} value={item[0]}>{item[1]}</option>)}</Select><div className="ds-pattern-detail" key={choice}><Text variant="overline">推荐组合</Text><h3>{scenario[2]}</h3><dl><dt>交互规则</dt><dd>{scenario[3]}</dd><dt>动效规则</dt><dd>{scenario[4]}</dd><dt>避免误用</dt><dd>{scenario[5]}</dd></dl></div></Surface>
+  return <section id="patterns"><div className="ds-section-title"><span>PLAYBOOK</span><h2>先选交互，再选组件。</h2></div><p className="ds-caption">{scenarios.length} 个常见场景。按任务、信息持续时间和是否需要打断来选择，动效只解释状态变化。</p><Surface><Select label="我正在设计什么场景" value={choice} onChange={event=>setChoice(event.target.value)}>{scenarios.map(item=><option key={item[0]} value={item[0]}>{item[1]}</option>)}</Select><div className="ds-pattern-detail" key={choice}><Text variant="overline">推荐组合</Text><h3>{scenario[2]}</h3><dl><dt>交互规则</dt><dd>{scenario[3]}</dd><dt>动效规则</dt><dd>{scenario[4]}</dd><dt>避免误用</dt><dd>{scenario[5]}</dd></dl></div></Surface>
+    {choice==='reading' && <Link href="#object-reading">打开工作空间阅读展台</Link>}
     {choice==='monitor' && <Surface className="ds-gap-top"><Stack><Text variant="section">健康记录时间轴</Text><Text variant="caption">合成数据；键盘方向键、Home / End 或指针查看时段。更新不播放装饰动画。</Text><StatusTimeline label="示例历史时段" startLabel="昨天 15:30" endLabel="今天 15:30" segments={Array.from({length:96},(_,i)=>({id:String(i),label:`时段 ${i+1}`,status:monitor==='unknown'?'unknown':i%23===0?'failed':i%17===0?'degraded':i%11===0?'recovered':i%7===0?'unknown':'healthy'}))}/><TimelineLegend/><Dialog trigger={<Button variant="secondary">左右分栏预览</Button>} title="选择范围" description="左侧操作，右侧查看选择对应的证据。此演示不保存更改。" sidePanel={closeButton => <Stack><Inline role="group" aria-label="预览导航" style={{justifyContent:'space-between'}}><Text as="h3" variant="body">{previewScope==='primary'?'主要资源':'备用资源'} · 健康记录</Text>{closeButton}</Inline><StatusTimeline compact label="范围历史时段" startLabel="昨天" endLabel="今天" segments={Array.from({length:96},(_,i)=>({id:String(i),label:`时段 ${i+1}`,status:previewScope==='primary'?'healthy':'unknown'}))}/><TimelineLegend/></Stack>}><Select label="范围" value={previewScope} onChange={event=>setPreviewScope(event.target.value)}><option value="primary">主要资源</option><option value="backup">备用资源</option></Select></Dialog></Stack></Surface>}
     {choice==='monitor' && <Surface className="ds-gap-top"><Stack><Select label="监控状态演示" value={monitor} onChange={event=>setMonitor(event.target.value)}><option value="normal">正常</option><option value="stale">数据陈旧</option><option value="unknown">首次采集失败</option></Select><div className="ds-row"><Metric label="请求成功率" value={monitor==='unknown'?null:'99.2'} unit="%" description="最近 5 分钟 · 合成数据"/><Badge tone={monitor==='normal'?'success':monitor==='stale'?'warning':'error'}>{monitor==='normal'?'采集正常':monitor==='stale'?'数据已过期':'暂无有效数据'}</Badge></div><KeyValue items={[{key:'time',label:'最后成功采集',value:monitor==='unknown'?null:'14:32:00 · 上海时区（示例）'},{key:'rule',label:'新鲜度规则',value:'超过 60 秒未成功采集即标为陈旧'}]}/>{monitor!=='normal' && <Notice tone={monitor==='stale'?'warning':'error'} title={monitor==='stale'?'显示上次结果，不代表当前状态':'未能获取指标'} action={<Drawer trigger={<Button variant="secondary">查看处理建议</Button>} title="采集恢复建议" description="这是一段监控交互示例，不连接真实系统。"><Text>检查采集器状态与数据源连接，恢复后重新读取。不要把未知值重置为零。</Text></Drawer>}>{monitor==='stale'?'本例模拟超过 60 秒未更新，请检查采集状态。':'首次读取失败，因此数值显示 —。'}</Notice>}</Stack></Surface>}
     <div className="ds-overview-links ds-gap-top"><a href="#navigation"><strong>导航与步骤</strong><span>↗</span><p>侧边栏、层级位置、阶段进度。</p></a><a href="#form-workflow"><strong>表单纠错与抽屉</strong><span>↗</span><p>试一次失败提交，观察焦点与输入保留。</p></a><a href="#motion"><strong>动效实验室</strong><span>↗</span><p>播放、重播和减少动态对照。</p></a><a href="https://github.com/linhay/rhine-design/blob/main/docs/INTERACTION_PATTERNS.md"><strong>完整使用规范</strong><span>↗</span><p>组件选择、代码契约与参考来源。</p></a></div>

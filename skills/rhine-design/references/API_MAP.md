@@ -4,6 +4,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 
 | Exports | Source |
 | --- | --- |
+| ChatThread, ChatCard; ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatMemberLink, ChatStatus, ChatThreadProps, ChatCardProps (source candidate after 0.11.0) | `components/Chat.tsx`；未发布 #110 的 memberLink 原生作者链接与 #99 的 fill/bubble/memberAppearance/compact 见 `docs/AGENT_CHAT.md`（npm 0.11.3 不含）, `docs/AGENT_CHAT.md`; stable IDs, history anchor, explicit resume, readOnly action slots |
 | Checkbox `layout="row"`, CheckboxProps（自 0.10.0） | `components/Forms.tsx`、`docs/CHECKBOX_ROWS.md`；整行双行多选，默认 form 保持兼容；npm 0.9.1 不含此选项 |
 | TrendChart, StackedBar；StatusTimeline.detail（0.5.0） | `components/Charts.tsx`、`components/StatusTimeline.tsx`；`docs/APPLICATION_COMPONENTS.md`，未知不补零；键盘逐点查看、按ID受控高亮/详情、valueFormatter |
 | Background, AppShell（0.5.0）；AppShellToggle（0.8.0） | `components/Background.tsx`、`components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；桌面open与临时drawerOpen独立，断点为容器CSS布局宽度 |
@@ -13,18 +14,19 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
 | 紧凑筛选（自 0.10.0，npm 0.9.1 不含） | `docs/COMPACT_FILTER_CONTROLS.md`；SegmentedControl `fullWidth`、DateRangePicker `compact`、RemoteMultiSelect `maxVisibleTags`、ListFilterBar `drawerDescription` / `drawerResult`；保持默认兼容、完整选择值及加载/错误反馈 |
 | Date presets + confirmed custom range（组合，无新增导出） | `docs/DATE_RANGE_FILTER.md`、`preview/DateRangeFilterGallery.tsx`；复用 SegmentedControl + Button + Popover + DateRangePicker，宿主负责时区、预设和查询 |
-| ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md` |
+| ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md`；未发布 `neutral` 主题见 `docs/THEME_NEUTRAL.md`（npm 0.11.3 不含） |
 | OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
 | NeutronStarBackdrop, NeutronStarBackdropProps (0.8.0) | `components/NeutronStarBackdrop.tsx`；契约 `docs/NEUTRON_STAR_BACKDROP.md`；Three.js drawing modules are internal |
 | Logo | `components/Logo.tsx` |
 | Text | `components/Typography.tsx` |
+| MappingEditor（#78，未发布） | `components/MappingEditor.tsx`；紧凑/分组只读见 `docs/TEMPLATE_SETTINGS.md`（未发布）；受控稳定行id/两侧选项/错误/只读/增删焦点；模板保存与应用分离见 `docs/TEMPLATE_SETTINGS.md`，不提供业务持久化 |
 | Select | `components/Select.tsx` |
 | Toolbar | `components/Toolbar.tsx` |
 | Icon, IconButton, Link, CopyButton | `components/Actions.tsx` |
 | ButtonLink（0.8.0） | `components/Actions.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；原生 anchor/下载语义，同 Button 视觉，busy 保焦点并移除 href |
 | Divider, Stack, Inline, Grid | `components/Layout.tsx` |
 | Metric, KeyValue, DataTable, Pagination | `components/Data.tsx` |
-| Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx` |
+| Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx`；Switch 标签显隐见 `docs/TEMPLATE_SETTINGS.md`（未发布） |
 | Dialog, Drawer (0.4.0), ConfirmDialog, Popover, Menu, Tooltip | `components/Overlays.tsx` |
 | StatusTimeline, TimelineLegend (0.4.0) | `components/StatusTimeline.tsx`；历史证据，不计算健康评分 |
 | TimelineLegend compact/items（0.8.0） | `components/StatusTimeline.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；宿主短标签/完整规则，一行局部滚动，hover/focus/touch 详情 |
@@ -34,7 +36,7 @@ All paths are relative to the matching package root. `package.json` exports, `co
 | Toast | `components/Toast.tsx` |
 | Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState | `components/components.tsx`；Surface 的 `padding="none"` 仅取消表格容器外围内距，默认不变；此选项自 0.9.1 提供，见 `CHANGELOG.md` |
 
-Source-only additions after 0.10.0: `Tabs` / `TabItem` `description` and `status`, `Toast placement="floating"`, and `SegmentedControl size="compact"`. They are absent from npm 0.10.0 even though this checkout retains that version field. Read `CHANGELOG.md` → 未发布 and check the installed implementation before use.
+Additions in 0.11.0: `Tabs` / `TabItem` `description` and `status`, `Toast placement="floating"`, and `SegmentedControl size="compact"`. They are absent from npm 0.10.0. Pin 0.11.0 and read `CHANGELOG.md` before upgrading.
 
 Primary contracts: `components/README.md` and `components/COMMON_COMPONENTS.md`. Find behavioral evidence in `tests/` and composition examples in `preview/`.
 
@@ -53,7 +55,31 @@ API decisions that commonly matter:
 - `Logo` accepts `wordmark` and `label`; its `theme` affects the logo, not the full component library.
 - `OrbitBackdrop` is decorative artwork with built-in pause / resume. Its `reducedMotion` prop can strengthen but never override system reduction; see `docs/ORBIT_BACKDROP.md` for visibility, narrow-window and fallback behavior. In 0.8.0, theme artwork uses an origami paper bird, originium crystals or a strawberry donut; `appearance="original"` preserves the initial orbit. It does not express loading or business progress.
 - `NeutronStarBackdrop` preserves the separate neutron-star artwork. `appearance="theme"` follows existing theme tokens; `original` restores its deep-space palette without replacing the host control theme. It lazy-loads WebGL, freezes under reduction or visibility constraints, and retains static art on failure. It requires 0.8.0 or later; see `docs/NEUTRON_STAR_BACKDROP.md`.
-- `Toast` presents one notification, not a global queue. `DataTable` is not a query or table-state engine.
+- `DataTable.captionVisibility` optionally hides a duplicate native caption visually while retaining table/scroll-region names; default visible. Unreleased source capability: check installed `components/Data.tsx` and `docs/APPLICATION_COMPONENTS.md` before use.
+- `Toast eventId` (unreleased; see COMMON_COMPONENTS.md) identifies notification lifetime while the page is visible, without remounting content or its close button; it does not request or guarantee repeated screen-reader output. `Toast` presents one notification, not a global queue. `DataTable` is not a query or table-state engine.
 - Components in `preview/` are demonstrations. Public API must resolve through a `package.json` export; theme APIs use the separate `/theme` entry.
 
 Available since 0.8.0 (check installed exports): `ThemePicker` / `ThemePreview` in `components/ThemePicker.tsx`, contract `docs/THEME_PICKER.md`; `Dialog.navigation` in `components/Overlays.tsx`, contract `docs/SETTINGS_DIALOG.md`; shared floating CSS zoom behavior in `docs/FLOATING_OVERLAYS.md`.
+
+Product review tooling (since 0.11.0): `/review` exports `defineReview`, URL helpers and scene/session types from `review/index.ts`; `/review/vite` exports Node-only `reviewPlugin` and `reviewProductionGuard` from `review/vite.mjs`, types in `review/vite.d.mts`. Never import the Vite entry into production UI. Read `docs/REVIEW_TOOL.md`; npm 0.10.0 does not contain these entries.
+
+SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTIONS.md`，真实展台 `#nav-actions`；未发布。
+
+单输入即时搜索：TextField / TextFieldProps 的 `labelVisibility="hidden"` 保留非空名称；参见 `docs/SINGLE_SEARCH.md` 与 `#single-search`，未发布。搜索/异步与IME由宿主管理。
+
+#41未发布：Button.contentAlign、Tabs.layout/TabsProps、Dialog.height/footer；先读 `docs/COMPACT_ACCOUNT_PATTERNS.md`、`docs/SETTINGS_DIALOG.md`、`docs/SUMMARY_TABS.md`，展台 `#compact-selection`。
+
+#46未发布：Button.size="standard" | "large"；动作语义先读 `docs/BUTTON_ACTIONS.md`，展台 `#button-actions`。
+
+#18 未发布：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。
+
+- Combobox / RemoteMultiSelect 标题动作（未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`；契约 `docs/FIELD_LABEL_ACTION.md`，真实组合 `preview/LabelActionGallery.tsx`。保持 string label，动作/异步状态由宿主控制。
+
+未发布 #97：`StatusTimeline` / `TimelineLegend` 共享 `statusLabels`；`mode="composition"` 使用四类互斥计数与 coverage，等高精确比例、缺失/不完整/无请求整桶未知；`StatusTimelineList` 透传。源码与契约为 `components/StatusTimeline.tsx`、`docs/TIMELINE_COMPOSITION.md`，展台 `/#monitoring`。npm 0.11.3 不含这些属性。
+紧凑已选标签 `RemoteMultiSelect.tagDensity` 与只读分组来源 `MappingEditor.groupedSourceLayout`：实现分别位于包内 `components/AdvancedForms.tsx`、`components/MappingEditor.tsx`；增量契约与固定底部保存示例位于 `docs/COMPACT_TEMPLATE.md`。源码候选，先核对安装包是否含对应 API。
+
+未发布 `ResponsiveActions` / `ResponsiveAction`：包内 `components/ResponsiveActions.tsx`，实际容器测量与焦点契约 `docs/RESPONSIVE_ACTIONS.md`；竖点 `IconName.moreVertical` 位于 `components/Actions.tsx`。先核对安装包是否包含对应导出。
+
+- Combobox / RemoteMultiSelect 紧凑状态与独立校验（#115，未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`，契约 `docs/COMBOBOX_FEEDBACK.md`，真实状态 `preview/ComboboxStateGallery.tsx`。原 error 保持候选读取失败语义；validationError 允许从候选纠正，statusDisplay 默认兼容。宿主观测候选配方见 `docs/PARAMETER_CONFIG.md`。
+
+Steps 回退焦点（#174，未发布）：`docs/INTERACTION_PATTERNS.md`、`preview/StepsGallery.tsx`；接受同步回退后补焦当前步骤，宿主交焦优先，拒绝/外部更新不抢焦点，无新 API。

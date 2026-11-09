@@ -44,12 +44,12 @@ export function CompactAccountExample({ state = 'normal' }: { state?: AccountSta
       <Text variant="caption" tone="muted">预测暂不可用</Text>
     </Stack>
     <Stack gap={1}>
-      <StatusTimelineList label="资源用量与异常记录" items={[{
+      <StatusTimelineList density="compact" label="资源用量与异常记录" items={[{
         id: 'resource-a', title: '用量与异常记录', summary: '24小时窗口 · 15分钟',
         note: `10/23 00:00 – 10/24 00:00 · 上海${unknown ? ' · 历史记录不完整，仅展示已确认的时段。' : ''}`,
         timeline: { startLabel: '10/23 00:00 · 上海', endLabel: '10/24 00:00 · 上海', segments: unknown ? segments.slice(0, 48) : segments },
       }]} />
-      <TimelineLegend compact label="历史状态图例" items={compactAccountLegend} />
+      <TimelineLegend compact density="compact" label="历史状态图例" items={compactAccountLegend} />
     </Stack>
     <Stack gap={3} className="compact-gallery-facts" data-testid="compact-account-facts">
       <Grid gap={2} className="compact-gallery-facts-meta">

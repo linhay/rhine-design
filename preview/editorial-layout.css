@@ -1,0 +1,30 @@
+/* Host recipe only. Never register a theme or style unrelated theme roots. */
+.rhine-theme[data-rhine-editorial] { --rhine-radius-card:4px; --rhine-radius-control:3px; }
+.rhine-theme[data-rhine-editorial=swiss] {
+  --rhine-bg:#f7f8fa;
+  --rhine-surface:#ffffff;
+  --rhine-content-bg:#f7f8fa;
+  --rhine-sidebar-bg:#eef1f7;
+  --rhine-ink:#202631;
+  --rhine-muted:#566171;
+  --rhine-line:#d5dce7;
+  --rhine-control:#788393;
+  --rhine-green:#2348b5;
+  --rhine-selected:#e9eefc;
+}
+.rhine-editorial-fixture { padding:16px; background:var(--rhine-bg); }
+.rhine-editorial-wrap { min-width:0; container-type:inline-size; }
+.rhine-editorial-controls { padding-bottom:20px; margin-bottom:20px; }
+.rhine-editorial-heading { display:grid; border-top:3px solid var(--rhine-green); padding-top:24px; margin:8px 0 24px; gap:20px; }
+.rhine-editorial-kicker { color:var(--rhine-green); }
+.rhine-editorial-summary { max-width:44em; font-size:16px; line-height:28px; }
+.rhine-editorial-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:24px; }
+.rhine-editorial-grid > * { min-width:0; }
+.rhine-editorial-panel { border:0; border-radius:0; padding:0; background:transparent; }
+.rhine-editorial-records, .rhine-editorial-draft { grid-column:1/-1; border-top:1px solid var(--rhine-line); padding-top:24px; }
+.rhine-editorial-prose { max-width:38em; font-size:16px; line-height:28px; }
+.rhine-editorial-list { margin:0; padding-inline-start:20px; line-height:1.7; overflow-wrap:anywhere; }
+.rhine-editorial-list li + li { margin-top:8px; }
+@container(min-width:640px) {
+  .rhine-editorial-grid { grid-template-columns:minmax(0,2fr) minmax(180px,1fr); gap:32px; }
+}

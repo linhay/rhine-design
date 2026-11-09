@@ -1,0 +1,4 @@
+.rhine-object-reading, .rhine-reading-content { min-width:0; overflow-wrap:anywhere; }
+.rhine-reading-list { display:grid; gap:var(--rhine-space-3); list-style:none; padding:0; margin:0; }
+.rhine-reading-list>li { min-width:0; }
+.rhine-reading-fixture { padding:var(--rhine-space-4); }

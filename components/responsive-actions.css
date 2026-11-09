@@ -1,0 +1,7 @@
+.rhine-responsive-actions { position:relative; width:100%; min-width:44px; }
+.rhine-responsive-actions__row { display:flex; width:max-content; align-items:center; gap:var(--rhine-space-2); }
+.rhine-responsive-actions__row[hidden],.rhine-responsive-actions__menu[hidden] { display:none; }
+.rhine-responsive-actions__row .rhine-button { flex:none; white-space:nowrap; max-width:none; }
+.rhine-responsive-actions__row .rhine-button>span:first-child { display:inline-flex; align-items:center; gap:var(--rhine-space-2); }
+.rhine-responsive-actions__row .rhine-button.rhine-responsive-actions__icon { width:44px; min-width:44px; min-height:44px; padding:10px; }
+.rhine-responsive-actions__measure { position:absolute; inset-block-start:0; inset-inline-start:0; width:0; height:0; overflow:hidden; visibility:hidden; pointer-events:none; }
