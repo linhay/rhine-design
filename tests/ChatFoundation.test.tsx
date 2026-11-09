@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { AgentInspector, AgentList, AgentRow, ChatHeader, ChatShell, Composer, MessageBubble, MessageList, WorkspaceRail } from '../components';
+import { AgentInspector, AgentList, AgentRow, ChatHeader, ChatShell, Composer, MessageBubble, MessageList, WorkspaceRail, chatSessionReducer, initialChatSessionState } from '../components';
 
 describe('Chat Foundation primitives', () => {
   it('renders Agent status as text and exposes selected state', () => {
@@ -61,5 +61,20 @@ describe('Chat Foundation primitives', () => {
     expect(screen.getByRole('status')).toHaveTextContent('读取中');
     expect(screen.getByRole('alert')).toHaveTextContent('读取失败');
     expect(screen.getByText('结果未知')).toBeVisible();
+  });
+
+  it('keeps session transitions in a pure host-owned reducer', () => {
+    const next = chatSessionReducer(initialChatSessionState, { type: 'agent/select', agentId: 'research' });
+    const ready = chatSessionReducer(next, { type: 'phase/set', phase: 'ready' });
+    const drafted = chatSessionReducer(ready, { type: 'draft/set', draft: '继续核对' });
+    expect(drafted).toEqual({
+      phase: 'ready',
+      selectedAgentId: 'research',
+      query: '',
+      draft: '继续核对',
+      inspectorOpen: false,
+      error: null,
+    });
+    expect(chatSessionReducer(drafted, { type: 'error/set', error: '结果未知' })).toMatchObject({ error: '结果未知' });
   });
 });

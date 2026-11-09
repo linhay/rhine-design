@@ -52,7 +52,8 @@ export { ThemePicker, ThemePreview, type ThemePickerProps, type ThemePickerOptio
 export { ChatThread, ChatCard } from './Chat';
 export type { ChatThreadProps, ChatMemberLink, ChatMemberAppearance, ChatCardProps, ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus } from './Chat';
 export { AgentRow, MessageBubble, Composer, WorkspaceRail, AgentList, ChatHeader, MessageList, AgentInspector, ChatShell } from './ChatFoundation';
-export type { AgentRowProps, AgentRowStatus, MessageBubbleProps, ComposerProps, WorkspaceRailItem, WorkspaceRailProps, AgentListItem, AgentListProps, ChatHeaderProps, MessageListItem, MessageListProps, AgentInspectorFact, AgentInspectorProps, ChatShellProps } from './ChatFoundation';
+export { chatSessionReducer, initialChatSessionState } from './ChatFoundation';
+export type { AgentRowProps, AgentRowStatus, MessageBubbleProps, ComposerProps, WorkspaceRailItem, WorkspaceRailProps, AgentListItem, AgentListProps, ChatHeaderProps, MessageListItem, MessageListProps, AgentInspectorFact, AgentInspectorProps, ChatShellProps, ChatShellSlots, ChatShellSlotName, ChatSessionPhase, ChatSessionState, ChatSessionAction } from './ChatFoundation';
 
 export type { TextFieldProps } from './components';
 
