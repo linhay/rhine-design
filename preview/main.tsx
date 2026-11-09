@@ -59,6 +59,7 @@ import { SingleSearchGallery } from './SingleSearchGallery';
 import { CompactSelectionGallery } from './CompactSelectionGallery';
 import { ButtonActionsGallery } from './ButtonActionsGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
+import { ChatFoundationGallery } from './ChatFoundationGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -112,6 +113,7 @@ function Gallery() {
     {section === 'list-card-recipes' && <ListCardRecipes />}
     {section === 'async-snapshot-recipes' && <AsyncSnapshotRecipes />}
     {section === 'backgrounds' && <BackgroundGallery />}
+    {section === 'chat-foundation' && <ChatFoundationGallery />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}
     {section === 'neutron-star' && <NeutronStarGallery />}
