@@ -29,7 +29,17 @@ ChatShell
 └── Responsive / reduced-motion behavior
 ```
 
-展台当前使用组合级实现，便于先评审整体信息层级和交互边界。组件拆解完成后，组合应继续保留为一个可复用的 Chat Foundation 示例。
+展台保留组合级布局，便于评审整体信息层级和交互边界；第一批稳定能力已提取为公开 `AgentRow`、`MessageBubble` 和 `Composer`，组合继续作为可复用的 Chat Foundation 示例。
+
+## 当前实现
+
+源码入口为 `components/ChatFoundation.tsx`，样式入口为 `components/chat-foundation.css`，三项能力从主入口公开：
+
+- `AgentRow`：受控选中、宿主身份内容、预览和工作中/就绪/离线文字状态；点击只回调 `onSelect`。
+- `MessageBubble`：作者、时间、Agent/本人方向、正文、引用和宿主动作插槽；正文仍由宿主传入 React 内容或 Markdown 结果。
+- `Composer`：受控文本、Enter 提交、Shift+Enter 换行、忙碌/禁用、附件与动作插槽；提交回调只表示用户提交了当前草稿。
+
+三项组件不请求数据、不写入消息、不推断 Agent 成功或权限结果。其余 `ChatShell`、`WorkspaceRail`、`AgentList`、`ChatHeader`、`MessageList` 和 `AgentInspector` 仍按拆解顺序保留在契约阶段，暂不伪装成已公开 API。
 
 ## 建议公开组件
 
@@ -69,7 +79,7 @@ ChatShell
 ## 设计系统拆解顺序
 
 1. 先从现有 `AppShell`、`SideNav`、`Text`、`Badge`、`Divider`、`Textarea`、`Button`、`IconButton`、`Notice` 和 `Surface` 确定组合契约。
-2. 提取 `AgentRow`、`MessageBubble` 和 `Composer` 的稳定视觉与交互状态，补充对应测试和展台案例。
+2. 提取 `AgentRow`、`MessageBubble` 和 `Composer` 的稳定视觉与交互状态，补充对应测试和展台案例。当前三项已完成并从主入口公开。
 3. 提取 `ChatShell`、`AgentList`、`MessageList`、`Inspector` 的响应式布局契约；再评估哪些能力应公开导出。
 4. 将本展台中的局部 `rhine-chat-*` 样式迁移为公共 tokens/组件样式；消费项目不应复制这份 CSS。
 5. 在 400/520/880/1200 宽度、200% 缩放、键盘/焦点、错误/空/加载、主题和减少动态下验证。
