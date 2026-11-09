@@ -194,9 +194,9 @@ export function Example() {
 
 `ChatThread`、`ChatCard` 提供成员分组、摘要/详情、状态呈现、只读动作约束与历史锚点。后续 #64 的 `ChatCard.detailLabel` / `Disclosure.ariaLabel` 扩展仅在 main，**0.11.2 不包含**；其中 `detailLabel` 只控制短的可见详情标签，对象标题仍保留在折叠控件的可访问名称中。只读对象可把 `Dialog` 阅读入口放在 `summary`，没有 `children` 时不生成折叠层。契约及公开接入见 [Agent Chat](../docs/AGENT_CHAT.md)，展台 `#agent-chat`；不在 npm 0.11.0 内。
 
-### Chat Foundation 第一批能力（main，尚未发布）
+### Chat Foundation 能力（main，尚未发布）
 
-`AgentRow`、`MessageBubble`、`Composer` 从 `components/ChatFoundation.tsx` 公开，用于 Agent 工作区的受控组合。三者只呈现宿主传入的身份、消息内容、状态和回调：`AgentRow` 不负责搜索或路由，`MessageBubble` 不负责 Markdown 解析或消息协议，`Composer` 不负责投递、线程或权限。稳定输入、失败保留草稿与键盘行为见 [Chat Foundation 契约](../docs/CHAT_FOUNDATION.md)；当前源码展台已改用这三项，npm 制品尚未包含它们。
+`ChatShell`、`WorkspaceRail`、`AgentList`、`AgentRow`、`ChatHeader`、`MessageList`、`MessageBubble`、`Composer`、`AgentInspector` 从 `components/ChatFoundation.tsx` 公开，用于 Agent 工作区的受控组合。它们只呈现宿主传入的身份、消息内容、状态和回调：列表不请求服务端，消息不解析业务协议，Composer 不负责投递、线程或权限，Shell 不负责路由。稳定输入、失败保留草稿、窄屏和键盘行为见 [Chat Foundation 契约](../docs/CHAT_FOUNDATION.md)；当前源码展台已改用这些能力，npm 制品尚未包含它们。
 
 #41 自 0.11.2 提供：Button `contentAlign="center" | "between"`，Tabs `layout="content" | "fill"`及TabsProps，Dialog `height`/`footer`；见[紧凑选择组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)与[稳定弹窗](../docs/SETTINGS_DIALOG.md)。
 

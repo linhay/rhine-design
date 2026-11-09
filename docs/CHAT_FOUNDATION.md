@@ -29,17 +29,23 @@ ChatShell
 └── Responsive / reduced-motion behavior
 ```
 
-展台保留组合级布局，便于评审整体信息层级和交互边界；第一批稳定能力已提取为公开 `AgentRow`、`MessageBubble` 和 `Composer`，组合继续作为可复用的 Chat Foundation 示例。
+展台保留组合级布局，便于评审整体信息层级和交互边界；Chat Foundation 的布局、列表、消息和输入能力已提取为公开受控组件，组合继续作为可复用的 Chat Foundation 示例。
 
 ## 当前实现
 
-源码入口为 `components/ChatFoundation.tsx`，样式入口为 `components/chat-foundation.css`，三项能力从主入口公开：
+源码入口为 `components/ChatFoundation.tsx`，样式入口为 `components/chat-foundation.css`，以下能力从主入口公开：
 
 - `AgentRow`：受控选中、宿主身份内容、预览和工作中/就绪/离线文字状态；点击只回调 `onSelect`。
 - `MessageBubble`：作者、时间、Agent/本人方向、正文、引用和宿主动作插槽；正文仍由宿主传入 React 内容或 Markdown 结果。
 - `Composer`：受控文本、Enter 提交、Shift+Enter 换行、忙碌/禁用、附件与动作插槽；提交回调只表示用户提交了当前草稿。
+- `WorkspaceRail`：宿主传入工作区项、当前项和 footer，使用原生按钮与 `aria-current`。
+- `AgentList`：受控搜索值与 Agent 数据，负责本地候选过滤并组合 `AgentRow`；不请求服务端。
+- `ChatHeader`：身份、状态说明、操作和详情入口插槽。
+- `MessageList`：日期分隔、消息组合以及宿主传入的空、加载、错误、未知和工作中状态。
+- `AgentInspector`：身份、事实、动作和关闭回调；不推断业务事实。
+- `ChatShell`：Rail、侧栏、正文和 Inspector 插槽及窄屏详情覆盖布局。
 
-三项组件不请求数据、不写入消息、不推断 Agent 成功或权限结果。其余 `ChatShell`、`WorkspaceRail`、`AgentList`、`ChatHeader`、`MessageList` 和 `AgentInspector` 仍按拆解顺序保留在契约阶段，暂不伪装成已公开 API。
+这些组件不请求数据、不写入消息、不推断 Agent 成功或权限结果；组件之间只通过 ReactNode、受控值和宿主回调组合。
 
 ## 建议公开组件
 
@@ -79,9 +85,9 @@ ChatShell
 ## 设计系统拆解顺序
 
 1. 先从现有 `AppShell`、`SideNav`、`Text`、`Badge`、`Divider`、`Textarea`、`Button`、`IconButton`、`Notice` 和 `Surface` 确定组合契约。
-2. 提取 `AgentRow`、`MessageBubble` 和 `Composer` 的稳定视觉与交互状态，补充对应测试和展台案例。当前三项已完成并从主入口公开。
-3. 提取 `ChatShell`、`AgentList`、`MessageList`、`Inspector` 的响应式布局契约；再评估哪些能力应公开导出。
-4. 将本展台中的局部 `rhine-chat-*` 样式迁移为公共 tokens/组件样式；消费项目不应复制这份 CSS。
+2. 提取 `AgentRow`、`MessageBubble` 和 `Composer` 的稳定视觉与交互状态，补充对应测试和展台案例。已完成并从主入口公开。
+3. 提取 `ChatShell`、`WorkspaceRail`、`AgentList`、`ChatHeader`、`MessageList`、`AgentInspector` 的响应式布局契约。已完成并从主入口公开。
+4. 将本展台中的局部 `rhine-chat-*` 样式迁移为公共 tokens/组件样式；消费项目不应复制这份 CSS。公共组件样式已覆盖提取能力，展台保留组合级布局样式。
 5. 在 400/520/880/1200 宽度、200% 缩放、键盘/焦点、错误/空/加载、主题和减少动态下验证。
 
 ## 不纳入本次基石
@@ -93,4 +99,4 @@ ChatShell
 
 ## 验证边界
 
-当前展台是组合设计与交互契约草案，使用合成 Agent 和消息数据，不连接 OpenMausBot 或 Octora 运行时。组件库拆解后需要分别验证公共组件 API、视觉展台和消费项目接入；本展台通过不等于业务消息或 Agent 行为验收。
+当前展台使用合成 Agent 和消息数据，不连接 OpenMausBot 或 Octora 运行时。公共组件 API、视觉展台和消费项目接入仍需分别验证；本展台通过不等于业务消息或 Agent 行为验收。
