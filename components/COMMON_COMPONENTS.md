@@ -99,3 +99,5 @@ Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用
 通知不主动抢焦点。仅更新 id 不重挂文字子树，保留现有容器、关闭按钮焦点和暂停状态。既有 success/info 等 status（polite）、error alert 及 aria-atomic 语义保持；eventId 不控制或保证相同文案再次播报，重复读屏输出不属于本次功能范围。关键结果仍应有页面内持久入口。计时、DOM 和焦点测试不代表实际读屏输出。
 
 真实反馈展台提供连续同文案、延迟新事件（用于保持关闭按钮焦点）、普通重渲染、错误/警告及长文。页面退出清理延迟事件，不向已卸载组件提交。
+
+SideNav 源码候选支持 `NavItem.children` 嵌套子项：使用原生嵌套列表与链接，子链接保持独立 `href`，仅精确匹配 `currentId` 的链接有 `aria-current="page"`。父项禁用时，所有后代链接与操作同时禁用；恢复父项后保留子项自己的禁用状态。不使用 tree/menu 角色，不接管路由或浏览器历史。

@@ -3,7 +3,7 @@ import { Menu, type MenuItem } from './Overlays';
 import { Icon, IconButton, type IconName } from './Actions';
 
 export interface NavAction extends Omit<MenuItem, 'onSelect'> { onSelect: (trigger: HTMLButtonElement) => void }
-export interface NavItem { id: string; label: string; href: string; disabled?: boolean; icon?: IconName; actions?: readonly NavAction[] }
+export interface NavItem { id: string; label: string; href: string; disabled?: boolean; icon?: IconName; actions?: readonly NavAction[]; children?: readonly NavItem[] }
 export interface NavGroup { label: string; items: readonly NavItem[] }
 export interface SideNavProps extends HTMLAttributes<HTMLElement> {
   groups: readonly NavGroup[]; currentId: string;
@@ -12,17 +12,22 @@ export interface SideNavProps extends HTMLAttributes<HTMLElement> {
 export function SideNav({ groups, currentId, onNavigate, className = '', 'aria-label': label = '主导航', ...props }: SideNavProps) {
   return <nav {...props} aria-label={label} className={`rhine-side-nav ${className}`}>
     {groups.map(group => <div className="rhine-side-nav__group" key={group.label}><p>{group.label}</p><ul>
-      {group.items.map(item => <SideNavRow key={item.id} item={item} current={currentId === item.id} onNavigate={onNavigate} />)}
+      {group.items.map(item => <SideNavRow key={item.id} item={item} currentId={currentId} onNavigate={onNavigate} />)}
     </ul></div>)}
   </nav>;
 }
 
-function SideNavRow({ item, current, onNavigate }: { item: NavItem; current: boolean; onNavigate?: SideNavProps['onNavigate'] }) {
+function SideNavRow({ item, currentId, onNavigate, ancestorDisabled = false }: { item: NavItem; currentId: string; onNavigate?: SideNavProps['onNavigate']; ancestorDisabled?: boolean }) {
   const trigger = useRef<HTMLButtonElement>(null);
   const hasActions = !!item.actions?.length;
-  return <li className={hasActions ? 'rhine-side-nav__row--actions' : undefined}>
-    <a href={item.disabled ? undefined : item.href} role={item.disabled ? 'link' : undefined} aria-disabled={item.disabled || undefined} tabIndex={item.disabled ? -1 : undefined} aria-current={current ? 'page' : undefined} onClick={event => { if (item.disabled) { event.preventDefault(); event.stopPropagation(); return; } onNavigate?.(item, event); }} onAuxClick={event => { if (item.disabled) { event.preventDefault(); event.stopPropagation(); } }}>{item.icon && <Icon name={item.icon} size={20}/>}<span className="rhine-side-nav__label">{item.label}</span></a>
-    {hasActions && <Menu label={`${item.label}：操作`} trigger={<IconButton ref={trigger} disabled={item.disabled} label={`${item.label}：更多操作`} icon="more" />} items={item.actions!.map(action => ({ ...action, disabled: item.disabled || action.disabled, onSelect: () => { if (!item.disabled && trigger.current) action.onSelect(trigger.current); } }))} />}
+  const disabled = ancestorDisabled || item.disabled;
+  const current = currentId === item.id;
+  return <li>
+    <div className={hasActions ? 'rhine-side-nav__row--actions' : undefined}>
+      <a href={disabled ? undefined : item.href} role={disabled ? 'link' : undefined} aria-disabled={disabled || undefined} tabIndex={disabled ? -1 : undefined} aria-current={current ? 'page' : undefined} onClick={event => { if (disabled) { event.preventDefault(); event.stopPropagation(); return; } onNavigate?.(item, event); }} onAuxClick={event => { if (disabled) { event.preventDefault(); event.stopPropagation(); } }}>{item.icon && <Icon name={item.icon} size={20}/>}<span className="rhine-side-nav__label">{item.label}</span></a>
+      {hasActions && <Menu label={`${item.label}：操作`} trigger={<IconButton ref={trigger} disabled={disabled} label={`${item.label}：更多操作`} icon="more" />} items={item.actions!.map(action => ({ ...action, disabled: disabled || action.disabled, onSelect: () => { if (!disabled && trigger.current) action.onSelect(trigger.current); } }))} />}
+    </div>
+    {!!item.children?.length && <ul className="rhine-side-nav__children" aria-label={`${item.label}子导航`}>{item.children.map(child => <SideNavRow key={child.id} item={child} currentId={currentId} ancestorDisabled={disabled} onNavigate={onNavigate} />)}</ul>}
   </li>;
 }
 

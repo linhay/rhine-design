@@ -6,7 +6,7 @@ Rhine Design 已有布局、导航、文字、表单、浮层和反馈组件，�
 
 本提案把完整界面作为一个可交互展台提交，供 Rhine Design 逐步拆解组件。它只定义呈现结构、交互状态和公开契约，不绑定 Bot、成员、线程、权限、模型、事件或后端。
 
-预览入口：`#chat-foundation`
+预览入口：`#chat-foundation`。左侧三级目录为“应用能力 → Chat 基石 → 组件”；父入口保留完整工作区，九个子项分别展示 ChatShell、WorkspaceRail、AgentList、AgentRow、ChatHeader、MessageList、MessageBubble、Composer、AgentInspector。子项使用 `#chat-foundation-shell`、`#chat-foundation-workspace-rail`、`#chat-foundation-agent-list`、`#chat-foundation-agent-row`、`#chat-foundation-header`、`#chat-foundation-message-list`、`#chat-foundation-message-bubble`、`#chat-foundation-composer`、`#chat-foundation-inspector`，支持直接访问、刷新和浏览器前进/后退；底部能力清单已移除。
 
 ## 组合结构
 

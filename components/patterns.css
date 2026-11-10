@@ -41,3 +41,7 @@
 .rhine-side-nav__row--actions { display:flex; align-items:center; gap:var(--rhine-space-1); min-width:0; }
 .rhine-side-nav__row--actions>a { flex:1; min-width:0; }
 .rhine-side-nav__row--actions>.rhine-overlay-anchor { flex:none; }
+
+.rhine-side-nav ul.rhine-side-nav__children { margin:var(--rhine-space-1) 0 var(--rhine-space-2) var(--rhine-space-3); padding-inline-start:var(--rhine-space-2); border-inline-start:1px solid var(--rhine-line); }
+.rhine-side-nav__children a { min-height:36px; padding:6px var(--rhine-space-2); font-size:var(--rhine-text-caption); }
+@media (hover:none),(pointer:coarse) { .rhine-side-nav__children a { min-height:44px; } }

@@ -60,6 +60,8 @@ import { CompactSelectionGallery } from './CompactSelectionGallery';
 import { ButtonActionsGallery } from './ButtonActionsGallery';
 import { SummaryTabsGallery } from './SummaryTabsGallery';
 import { ChatFoundationGallery } from './ChatFoundationGallery';
+import { ChatFoundationComponentGallery } from './ChatFoundationComponentGallery';
+import { isChatFoundationComponent } from './chat-foundation-navigation';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -114,6 +116,7 @@ function Gallery() {
     {section === 'async-snapshot-recipes' && <AsyncSnapshotRecipes />}
     {section === 'backgrounds' && <BackgroundGallery />}
     {section === 'chat-foundation' && <ChatFoundationGallery />}
+    {isChatFoundationComponent(section) && <ChatFoundationComponentGallery componentId={section} />}
     {section === 'app-shell' && <ShellGallery />}
     {section === 'orbit' && <OrbitGallery />}
     {section === 'neutron-star' && <NeutronStarGallery />}

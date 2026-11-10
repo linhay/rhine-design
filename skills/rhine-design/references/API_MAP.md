@@ -84,3 +84,5 @@ SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTI
 - Combobox / RemoteMultiSelect 紧凑状态与独立校验（#115，未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`，契约 `docs/COMBOBOX_FEEDBACK.md`，真实状态 `preview/ComboboxStateGallery.tsx`。原 error 保持候选读取失败语义；validationError 允许从候选纠正，statusDisplay 默认兼容。宿主观测候选配方见 `docs/PARAMETER_CONFIG.md`。
 
 Steps 回退焦点（#174，未发布）：`docs/INTERACTION_PATTERNS.md`、`preview/StepsGallery.tsx`；接受同步回退后补焦当前步骤，宿主交焦优先，拒绝/外部更新不抢焦点，无新 API。
+
+SideNav 源码候选支持 `NavItem.children` 嵌套链接；父项禁用会同时禁用后代，当前页只标记精确匹配项。Chat Foundation 九个组件展台入口见 `docs/CHAT_FOUNDATION.md`，左侧目录为“应用能力 → Chat 基石 → 组件”；未发布。
