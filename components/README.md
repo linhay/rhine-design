@@ -198,7 +198,7 @@ export function Example() {
 
 `ChatShell`、`WorkspaceRail`、`AgentList`、`AgentRow`、`ChatHeader`、`MessageList`、`MessageBubble`、`Composer`、`AgentInspector` 从 `components/ChatFoundation.tsx` 公开，用于 Agent 工作区的受控组合。它们只呈现宿主传入的身份、消息内容、状态和回调：列表不请求服务端，消息不解析业务协议，Composer 不负责投递、线程或权限，Shell 不负责路由。稳定输入、失败保留草稿、窄屏和键盘行为见 [Chat Foundation 契约](../docs/CHAT_FOUNDATION.md)；当前源码展台已改用这些能力，npm 制品尚未包含它们。
 
-实现按 `chat-foundation/primitives`、`chat-foundation/composition` 和 `chat-foundation/state` 分层；`ChatSessionState` 与 `chatSessionReducer` 只提供宿主 controller/store 可选用的纯状态契约，不接管消息、网络或权限。
+新增 `ChatPane`、`MessageMeta`、`MessageContent`、`MessageActions`、`DayDivider`、`MessageStatus`、`MessageRenderer`；`MessageList.renderers` 支持按类型替换消息呈现。实现位于 `chat-foundation/` 内独立的组件同名文件；原 primitives/composition 保留为兼容导出。`ChatSessionState` 与 `chatSessionReducer` 只提供宿主 controller/store 可选用的纯状态契约，不接管消息、网络或权限。
 
 #41 自 0.11.2 提供：Button `contentAlign="center" | "between"`，Tabs `layout="content" | "fill"`及TabsProps，Dialog `height`/`footer`；见[紧凑选择组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)与[稳定弹窗](../docs/SETTINGS_DIALOG.md)。
 

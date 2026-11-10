@@ -6,34 +6,32 @@ Rhine Design 已有布局、导航、文字、表单、浮层和反馈组件，�
 
 本提案把完整界面作为一个可交互展台提交，供 Rhine Design 逐步拆解组件。它只定义呈现结构、交互状态和公开契约，不绑定 Bot、成员、线程、权限、模型、事件或后端。
 
-预览入口：`#chat-foundation`。左侧三级目录为“应用能力 → Chat 基石 → 组件”；父入口保留完整工作区，九个子项分别展示 ChatShell、WorkspaceRail、AgentList、AgentRow、ChatHeader、MessageList、MessageBubble、Composer、AgentInspector。子项使用 `#chat-foundation-shell`、`#chat-foundation-workspace-rail`、`#chat-foundation-agent-list`、`#chat-foundation-agent-row`、`#chat-foundation-header`、`#chat-foundation-message-list`、`#chat-foundation-message-bubble`、`#chat-foundation-composer`、`#chat-foundation-inspector`，支持直接访问、刷新和浏览器前进/后退；底部能力清单已移除。
+预览入口：`#chat-foundation`。左侧三级目录为“应用能力 → Chat 基石 → 组件”；父入口保留完整工作区，16 个子项各有真实组件展台。原九个 hash 保持兼容，新增 `#chat-foundation-pane`、`#chat-foundation-message-meta`、`#chat-foundation-message-content`、`#chat-foundation-message-actions`、`#chat-foundation-day-divider`、`#chat-foundation-message-status`、`#chat-foundation-message-renderer`。支持直接访问、刷新与前进/后退；底部能力清单已移除。
 
 ## 组合结构
 
 ```text
 ChatShell
 ├── WorkspaceRail
-├── AgentList
-│   ├── AgentSearch
-│   ├── AgentRow
-│   └── AgentListEmpty
+├── AgentList → AgentRow
 ├── ChatPane
 │   ├── ChatHeader
 │   ├── MessageList
 │   │   ├── DayDivider
-│   │   ├── MessageBubble
-│   │   ├── MessageActions
-│   │   └── WorkingIndicator
-│   ├── Composer
-│   └── AgentInspector
-└── Responsive / reduced-motion behavior
+│   │   ├── MessageRenderer → 默认 MessageBubble / 宿主渲染组件
+│   │   │   ├── MessageMeta
+│   │   │   ├── MessageContent
+│   │   │   └── MessageActions
+│   │   └── MessageStatus
+│   └── Composer
+└── AgentInspector
 ```
 
 展台保留组合级布局，便于评审整体信息层级和交互边界；Chat Foundation 的布局、列表、消息和输入能力已提取为公开受控组件，组合继续作为可复用的 Chat Foundation 示例。
 
 ## 当前实现
 
-源码入口为 `components/ChatFoundation.tsx`（兼容性 barrel），实现按 DSH 风格拆为 `components/chat-foundation/primitives.tsx`、`components/chat-foundation/composition.tsx` 和 `components/chat-foundation/state.ts`；样式入口为 `components/chat-foundation.css`。以下能力从主入口公开：
+源码入口为 `components/ChatFoundation.tsx`（兼容性 barrel）；`components/chat-foundation/` 内每个组件有独立的同名文件，`primitives.tsx` 与 `composition.tsx` 只保留兼容导出，`state.ts` 保存纯状态契约，`message-types.ts` 保存稳定消息身份。样式入口为 `components/chat-foundation.css`。以下能力从主入口公开：
 
 - `AgentRow`：受控选中、宿主身份内容、预览和工作中/就绪/离线文字状态；点击只回调 `onSelect`。
 - `MessageBubble`：作者、时间、Agent/本人方向、正文、引用和宿主动作插槽；正文仍由宿主传入 React 内容或 Markdown 结果。
@@ -45,6 +43,11 @@ ChatShell
 - `AgentInspector`：身份、事实、动作和关闭回调；不推断业务事实。
 - `ChatShell`：Rail、侧栏、正文和 Inspector 插槽及按工作区实际容器宽度切换的详情覆盖布局。
 
+- `ChatPane`：组合 `header`、`messages`、`composer` 三个显式插槽，不订阅会话、不处理投递。
+- `MessageMeta` / `MessageContent` / `MessageActions`：独立的作者时间、正文引用和常驻操作区域；可供宿主自己的消息渲染器组合。`MessageActions` 使用命名 group，quiet 按钮保持灰色小文字和可见焦点。
+- `DayDivider` / `MessageStatus`：宿主格式化的日期与显式 empty/loading/error/unknown/working 状态；错误使用 alert，加载/工作中使用 status。
+- `MessageRenderer`：根据 `message.kind` 选择 `MessageRenderers` 中的 React 组件；未配置的 Agent/个人消息均回退到 `MessageBubble`。`MessageList.renderers` 接入同一契约，列表继续以宿主消息 `id` 为 key。
+
 这些组件不请求数据、不写入消息、不推断 Agent 成功或权限结果；组件之间只通过 ReactNode、受控值和宿主回调组合。
 
 消息头像与正文气泡顶部对齐；作者/时间、正文、操作各占独立行，隐藏或显示操作不会改变头像位置。无头像时不保留头像列。
@@ -53,9 +56,30 @@ ChatShell
 
 Inspector 的头像与名称/职责并列，信息项采用标签/值双列，关闭与设置入口保持可达。布局由公共 `ChatShell` 管理四个插槽的固定列，展台不再覆盖列定义；缺少 Rail 或侧栏时不会把正文或详情挪入其他插槽列。
 
+## DSH 固定源码对照
+
+本轮对照 [deepseek-ai/deepseek-harness @ f3803c9](https://github.com/deepseek-ai/deepseek-harness/tree/f3803c96974ad4a94195fb97e5c637e9c2a3afe3)，具体职责对应如下；独立编写 React 实现，未复制 DSH 的运行时或业务模型。
+
+| DSH 源码职责 | Rhine 实现 |
+| --- | --- |
+| `ui-chat/src/client/chat/ChatView.tsx` 组合会话视图 | `ChatPane` 只组合头部、消息和输入，宿主拥有会话状态 |
+| `ChatNodeSeat.tsx` / `register-node-renderers.ts` 按节点类型选取渲染器 | `MessageRenderer` / `MessageList.renderers` 按 agent/person 选择组件，缺省回退；不引入全局插件服务 |
+| `MessageItem.tsx` 与 `MessageIconActions.tsx` 分离内容与操作 | `MessageBubble` 组合 `MessageMeta`、`MessageContent`、`MessageActions`，保留本项目常驻灰色文字操作 |
+| 会话服务/投影与视图分离 | `state.ts` 只提供 UI reducer，消息数据、协议和提交副作用在宿主；完整展台实际使用 reducer |
+
+DSH 还包含工具、推理、审批、重试、事件投影和分组树等业务节点，本契约没有实现这些协议，也不以简单 `MessageRenderers` 宣称覆盖 DSH 的完整 slot registry。当前目标是通用设计组件的职责与扩展边界。
+
+组件类型与渲染函数应在模块级定义，避免每次宿主 render 都创建新的组件类型而重置局部状态。同一 `id` 在消息更新、前插和重排时保持组件身份；宿主主动更换 renderer 组件类型时，React 会按正常规则重新挂载。组件不自动维护滚动位置或执行复制/朗读。
+
+```tsx
+const renderers: MessageRenderers = { agent: ResearchMessage };
+// ResearchMessage 可组合 MessageMeta / MessageContent / MessageActions。
+<MessageList messages={hostMessages} renderers={renderers} />
+```
+
 ## 状态与槽位契约
 
-`ChatSessionState`、`ChatSessionAction` 和 `chatSessionReducer` 是无副作用的宿主状态契约。它只保存会话阶段、当前 Agent、搜索词、草稿、详情面板和错误；消息投影、网络请求、线程创建、权限和投递结果仍由消费方的 controller/store 持有。组件可以直接消费 reducer 产出的受控值，也可以映射到自己的状态机。
+`ChatSessionState`、`ChatSessionAction` 和 `chatSessionReducer` 是无副作用的宿主状态契约。它只保存会话阶段、当前 Agent、搜索词、草稿、详情面板和错误；消息投影、网络请求、线程创建、权限和投递结果仍由消费方的 controller/store 持有。完整 Chat 展台实际通过 `useReducer(chatSessionReducer, ...)` 持有 Agent、搜索、草稿、错误和详情状态；消费方也可以映射到自己的状态机。
 
 `ChatShell` 的 `rail`、`sidebar`、`content` 和 `inspector` 已作为命名插槽保持稳定；插槽内容由宿主或插件组合，Shell 不解析其业务数据。这样可以在不复制核心 Chat 组件的情况下追加工作区入口、操作和详情内容。
 
@@ -99,7 +123,7 @@ Inspector 的头像与名称/职责并列，信息项采用标签/值双列，�
 1. 先从现有 `AppShell`、`SideNav`、`Text`、`Badge`、`Divider`、`Textarea`、`Button`、`IconButton`、`Notice` 和 `Surface` 确定组合契约。
 2. 提取 `AgentRow`、`MessageBubble` 和 `Composer` 的稳定视觉与交互状态，补充对应测试和展台案例。已完成并从主入口公开。
 3. 提取 `ChatShell`、`WorkspaceRail`、`AgentList`、`ChatHeader`、`MessageList`、`AgentInspector` 的响应式布局契约。已完成并从主入口公开。
-4. 将实现拆为 primitives、composition 和 headless state 三层；保持原有公开导入路径和受控组件 API。已完成。
+4. 每个组件独立文件，消息内容/操作/状态/渲染分离，保留兼容导出与公开 API；完整展台实际接通宿主 reducer。已完成。
 5. 将本展台中的局部 `rhine-chat-*` 样式迁移为公共 tokens/组件样式；消费项目不应复制这份 CSS。公共组件样式已覆盖提取能力，展台保留组合级布局样式。
 6. 在 400/520/880/1200 宽度、200% 缩放、键盘/焦点、错误/空/加载、主题和减少动态下验证。
 

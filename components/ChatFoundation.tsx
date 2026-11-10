@@ -1,7 +1,2 @@
-/**
- * Backward-compatible entry point for the Chat Foundation.
- *
- * The implementation is split into primitives, composition and headless state
- * so hosts can keep DSH-style ownership boundaries without changing imports.
- */
+/** Compatible public entry for independently composed Chat components and host-owned state. */
 export * from './chat-foundation';
