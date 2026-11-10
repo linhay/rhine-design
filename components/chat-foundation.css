@@ -8,10 +8,18 @@
 .rhine-chat-status { width:7px; height:7px; border-radius:50%; background:var(--rhine-green); }
 .rhine-chat-status--working { background:var(--rhine-signal); }
 .rhine-chat-status--offline { background:var(--rhine-muted); }
-.rhine-chat-message { display:flex; align-items:flex-start; min-width:0; max-width:740px; margin:0 auto var(--rhine-space-5); }
-.rhine-chat-message--person { flex-direction:row-reverse; justify-content:flex-start; }
-.rhine-chat-message-copy { display:flex; min-width:0; max-width:calc(100% - 44px); flex-direction:column; align-items:flex-start; }
-.rhine-chat-message--person .rhine-chat-message-copy { align-items:flex-end; }
+.rhine-chat-message { display:grid; grid-template-columns:minmax(0,1fr); align-items:start; column-gap:9px; min-width:0; max-width:740px; margin:0 auto var(--rhine-space-5); }
+.rhine-chat-message--with-avatar { grid-template-columns:auto minmax(0,1fr); }
+.rhine-chat-message--person.rhine-chat-message--with-avatar { grid-template-columns:minmax(0,1fr) auto; }
+.rhine-chat-message-copy { display:contents; }
+.rhine-chat-message-copy > * { grid-column:1; min-width:0; justify-self:start; }
+.rhine-chat-message--with-avatar .rhine-chat-message-copy > * { grid-column:2; }
+.rhine-chat-message--person .rhine-chat-message-copy > * { grid-column:1; justify-self:end; }
+.rhine-chat-message-avatar { grid-column:1; grid-row:2; display:flex; align-self:start; }
+.rhine-chat-message--person .rhine-chat-message-avatar { grid-column:2; }
+.rhine-chat-message-copy > .rhine-chat-meta { grid-row:1; }
+.rhine-chat-message-copy > .rhine-chat-bubble { grid-row:2; }
+.rhine-chat-message-copy > .rhine-chat-message-actions { grid-row:3; }
 .rhine-chat-meta { display:flex; align-items:baseline; gap:var(--rhine-space-2); margin-bottom:5px; font:var(--rhine-weight-regular) var(--rhine-text-caption)/var(--rhine-leading-caption) var(--rhine-font); }
 .rhine-chat-meta__author { color:var(--rhine-ink); font-weight:var(--rhine-weight-label); }
 .rhine-chat-meta time { color:var(--rhine-muted); }

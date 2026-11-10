@@ -48,8 +48,8 @@ export interface MessageBubbleProps {
 
 /** Presents one message and leaves content rendering to the host. */
 export function MessageBubble({ author, avatar, time, children, kind = 'agent', quote, actions, className = '' }: MessageBubbleProps) {
-  return <article className={`rhine-chat-message rhine-chat-message--${kind} ${className}`}>
-    {avatar}
+  return <article className={`rhine-chat-message rhine-chat-message--${kind}${avatar != null ? ' rhine-chat-message--with-avatar' : ''} ${className}`}>
+    {avatar != null && <div className="rhine-chat-message-avatar">{avatar}</div>}
     <div className="rhine-chat-message-copy">
       <div className="rhine-chat-meta"><span className="rhine-chat-meta__author">{author}</span>{time != null && <time>{time}</time>}</div>
       <div className="rhine-chat-bubble">{children}{quote != null && <blockquote>{quote}</blockquote>}</div>
