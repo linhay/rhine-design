@@ -10,13 +10,14 @@
 .rhine-chat-status--offline { background:var(--rhine-muted); }
 .rhine-chat-message { display:flex; align-items:flex-start; min-width:0; max-width:740px; margin:0 auto var(--rhine-space-5); }
 .rhine-chat-message--person { justify-content:flex-end; }
+.rhine-chat-message--person { flex-direction:row-reverse; }
 .rhine-chat-message-copy { display:flex; min-width:0; max-width:calc(100% - 44px); flex-direction:column; align-items:flex-start; }
 .rhine-chat-message--person .rhine-chat-message-copy { align-items:flex-end; }
 .rhine-chat-meta { display:flex; align-items:baseline; gap:var(--rhine-space-2); margin-bottom:5px; font:var(--rhine-weight-regular) var(--rhine-text-caption)/var(--rhine-leading-caption) var(--rhine-font); }
 .rhine-chat-meta__author { color:var(--rhine-ink); font-weight:var(--rhine-weight-label); }
 .rhine-chat-meta time { color:var(--rhine-muted); }
 .rhine-chat-bubble { width:fit-content; max-width:100%; padding:10px 13px; border:1px solid var(--rhine-line); border-radius:4px 12px 12px 12px; background:var(--rhine-surface-muted); overflow-wrap:anywhere; font:var(--rhine-weight-regular) var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); }
-.rhine-chat-message--person .rhine-chat-bubble { border-color:color-mix(in srgb,var(--rhine-green) 24%,var(--rhine-line)); border-radius:12px 4px 12px 12px; background:color-mix(in srgb,var(--rhine-green) 10%,var(--rhine-paper)); }
+.rhine-chat-message--person .rhine-chat-bubble { border-color:color-mix(in srgb,var(--rhine-green) 46%,var(--rhine-line)); border-radius:12px 4px 12px 12px; background:color-mix(in srgb,var(--rhine-green) 26%,var(--rhine-paper)); }
 .rhine-chat-bubble blockquote { margin:var(--rhine-space-2) 0 0; padding-left:10px; border-left:3px solid var(--rhine-green); white-space:pre-line; color:var(--rhine-muted); }
 .rhine-chat-message-actions { display:flex; gap:2px; margin-top:var(--rhine-space-2); opacity:0; }
 .rhine-chat-message:hover .rhine-chat-message-actions,.rhine-chat-message:focus-within .rhine-chat-message-actions { opacity:1; }
