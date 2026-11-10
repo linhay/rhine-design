@@ -9,8 +9,7 @@
 .rhine-chat-status--working { background:var(--rhine-signal); }
 .rhine-chat-status--offline { background:var(--rhine-muted); }
 .rhine-chat-message { display:flex; align-items:flex-start; min-width:0; max-width:740px; margin:0 auto var(--rhine-space-5); }
-.rhine-chat-message--person { justify-content:flex-end; }
-.rhine-chat-message--person { flex-direction:row-reverse; }
+.rhine-chat-message--person { flex-direction:row-reverse; justify-content:flex-start; }
 .rhine-chat-message-copy { display:flex; min-width:0; max-width:calc(100% - 44px); flex-direction:column; align-items:flex-start; }
 .rhine-chat-message--person .rhine-chat-message-copy { align-items:flex-end; }
 .rhine-chat-meta { display:flex; align-items:baseline; gap:var(--rhine-space-2); margin-bottom:5px; font:var(--rhine-weight-regular) var(--rhine-text-caption)/var(--rhine-leading-caption) var(--rhine-font); }
