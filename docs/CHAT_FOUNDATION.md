@@ -47,6 +47,8 @@ ChatShell
 
 这些组件不请求数据、不写入消息、不推断 Agent 成功或权限结果；组件之间只通过 ReactNode、受控值和宿主回调组合。
 
+展台消息正文区均有可见主题底色：Agent 消息以 `--rhine-ink` 与 `--rhine-surface` 混合，个人消息使用 `--rhine-selected` 并靠右。紧凑 Agent 行采用名称与预览/状态两行结构，头像和状态点跨两行垂直居中。此行布局属于展台组合，不限制宿主传入的身份插槽。
+
 ## 状态与槽位契约
 
 `ChatSessionState`、`ChatSessionAction` 和 `chatSessionReducer` 是无副作用的宿主状态契约。它只保存会话阶段、当前 Agent、搜索词、草稿、详情面板和错误；消息投影、网络请求、线程创建、权限和投递结果仍由消费方的 controller/store 持有。组件可以直接消费 reducer 产出的受控值，也可以映射到自己的状态机。
