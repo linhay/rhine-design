@@ -33,3 +33,17 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 `showHeader={false}` 省略可见标题和关闭按钮整行，但必填title继续命名浮层；默认true兼容现有内容。保持图标切换、外点/Escape关闭和键盘归焦。账号与用量的组合、稳定反馈及宿主状态职责见[托盘用量](TRAY_USAGE.md)。
 
 快速键盘退出嵌套下拉时，Radix在异步卸载回调后恢复父FocusScope；这一间隙用临时focusin保护维持最近的Modal内焦点，父约束恢复即清理，组件卸载也清理。快速连续键可能保持当前内部焦点，但不能落到背景；正常Tab循环随后恢复。check-combobox-modal-focus.js先断言即时包含关系，再单独检查恢复后的循环，不用预先延时掩盖失败。
+
+## 第三方选择器的交互挂载点（#210）
+
+[反馈 #210](https://github.com/linhay/rhine-design/issues/210) 来自 Rhine Design 0.13.0 与 Ant Design 6.6.x 的消费组合：Ant Select/TreeSelect 位于 Ant Modal，或嵌套在 Rhine/Radix Dialog 中。反馈报告 `.ant-modal` 虽有 `role="dialog"`，但设置 `pointer-events:none`，其 `.ant-modal-container` 才恢复交互；把候选浮层直接挂到前者会出现“可见、键盘可选、鼠标点穿到表单”的差异。本节接纳该版本组合的排查与验收规则，不将其认定为 Rhine 组件缺陷，也不为库加入 Ant 依赖。
+
+宿主为第三方控件设置 `getPopupContainer` 时，按触发器实际所在的模态边界选择：
+
+1. 先找到触发器所属最近 Dialog 的 DOM 边界。在该边界内存在包含触发器的 Ant 可交互内容容器时，优先使用它；不能跨过更近的嵌套 Dialog，回退到外层 Ant Modal。
+2. 无此内容容器时，保留最近 Dialog 的指针与焦点边界，并核对所选节点及实际候选项的计算样式和命中结果。只有 `role="dialog"` 不能证明节点适合接收鼠标；边界不可交互时应修正宿主挂载点，不盲目返回 `body`。
+3. 全局配置与 Select/TreeSelect 的逐控件覆盖遵守同一规则。结合当前版本的 DOM、类名前缀和主题验证，不能把 `.ant-modal-container` 当成跨版本不变的公共 API。没有模态祖先的控件沿用宿主已有的有效挂载策略。
+
+增加 z-index 不会修复 `pointer-events:none`。DOM 挂载归属与 React 焦点事件归属也须分别检查：前者影响命中、裁剪及模态内交互，后者沿用[混合模态组合](INTERACTION_PATTERNS.md#会话危险操作与混合模态组合206)的子树要求；不能只修视觉叠放而让焦点逃出当前模态。
+
+采用方在真实浏览器中验证 Ant Modal 内及嵌套 Rhine Dialog 内的两种控件：打开列表，核对候选项中心的命中落在该项或其后代，执行真实鼠标选择并确认值改变；再检查键盘选择、Escape/关闭归焦和外层表单未被误激活。同时核对候选项的计算 `pointer-events`、裁剪/滚动和缩放后的可达性。JSDOM 和“键盘选择成功”不能替代鼠标命中验收。反馈的本地合成浏览器结果仅作消费来源，本次文档变更未新增跨库运行矩阵或生产验收。
