@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GalleryShell } from '../preview/GalleryShell';
+import { chatFoundationPages } from '../preview/chat-foundation-navigation';
 import { themes } from '@linhey/rhine-design/theme';
 
 function Demo() {
@@ -94,5 +95,27 @@ describe('gallery chapter navigation', () => {
     fireEvent.keyDown(link, {key:'Escape'});
     expect(trigger).toHaveAttribute('aria-expanded','false');
     expect(trigger).toHaveFocus();
+  });
+});
+
+
+describe('Chat Foundation component navigation', () => {
+  it.each(chatFoundationPages)('opens $label as a third-level deep link and restores its parent', ({ id, label }) => {
+    window.history.replaceState(null, '', `#${id}`);
+    render(<Demo />);
+    const directory = screen.getByRole('navigation', { name:'组件目录' });
+    const child = within(directory).getByRole('link', { name:label });
+    expect(child).toHaveAttribute('href', `#${id}`);
+    expect(child).toHaveAttribute('aria-current', 'page');
+    expect(child.closest('ul')).toHaveAttribute('aria-label', 'Chat 基石子导航');
+    expect(within(directory).getByRole('link', { name:'Chat 基石' })).not.toHaveAttribute('aria-current');
+    expect(directory.querySelectorAll('[aria-current=page]')).toHaveLength(1);
+    expect(screen.getByRole('heading')).toHaveTextContent(id);
+    expect(within(screen.getByRole('navigation', { name:'展台位置' })).getByRole('link', { name:'Chat 基石' })).toHaveAttribute('href', '#chat-foundation');
+    navigate('#chat-foundation');
+    expect(screen.getByRole('heading')).toHaveTextContent('chat-foundation');
+    navigate(`#${id}`);
+    expect(screen.getByRole('heading')).toHaveTextContent(id);
+    expect(screen.getByRole('main')).toHaveFocus();
   });
 });

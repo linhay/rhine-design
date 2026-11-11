@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Breadcrumbs, Button, Logo, SegmentedControl, Select, SideNav } from '../components';
 import { ThemeProvider, themes, useTheme, type ThemeName } from '../components/theme';
 import { componentCount, packageVersion } from './packageInfo';
+import { chatFoundationPages, isChatFoundationComponent, type ChatFoundationComponentId } from './chat-foundation-navigation';
 import './shell.css';
 import './theme-arknights.css';
 import './theme-neo-brutalism.css';
@@ -13,8 +14,8 @@ export const galleryGroups = [
   { label: '通用组件', items: [['button-actions', '动作语义与尺寸'], ['responsive-actions', '容器自适应动作'], ['actions', '按钮与输入'], ['selection', '选择与切换'], ['summary-tabs', '带摘要的页签'], ['feedback', '状态与加载'], ['disclosure', '展开与组合'], ['data', '数据与分页'], ['forms', '表单与选择'], ['utilities', '操作与布局'], ['overlays', '浮层与反馈'], ['overlay-bounds', '浮层缩放与边界'], ['tray-usage', '托盘用量组合'], ['settings-composition', '设置页组合'], ['settings-dialog', '设置导航弹窗'], ['template-settings', '模板驱动设置'], ['parameter-config', '参数与生成预览'], ['theme-picker', '主题预览与选择'], ['nav-actions', '导航行操作'], ['navigation', '导航与步骤'], ['form-workflow', '表单流程']] },
   { label: '交互与动效', items: [['patterns', '场景与交互指南'], ['object-reading', '工作空间对象阅读'], ['resident-tree', '常驻树与画布'], ['agent-chat', '聊天消息与记录'], ['compact-selection', '紧凑选择与保存'], ['compact-account', '紧凑账号与凭证'], ['metric-comparison', '指标比较与基准'], ['periodic-report', '周期报告与跨日来源'], ['personal-notifications', '个人事件通知'], ['automation-settings', '周期自动化设置'], ['object-lifecycle', '对象生命周期与观测'], ['async-snapshot-recipes', '异步快照与模块加载'], ['list-card-recipes', '列表分类与只读归属'], ['single-search', '单输入搜索'], ['list-filter-bar', '列表筛选栏'], ['date-range-filter', '日期筛选组合'], ['motion', '动效实验室'], ['startup', '启动动画'], ['orbit', '轨道星空'], ['neutron-star', '中子星']] },
 ] as const;
-export type GallerySection = typeof galleryGroups[number]['items'][number][0];
-const entries = galleryGroups.flatMap(group => [...group.items]);
+export type GallerySection = typeof galleryGroups[number]['items'][number][0] | ChatFoundationComponentId;
+const entries = [...galleryGroups.flatMap(group => [...group.items]), ...chatFoundationPages.map(page => [page.id, page.label] as const)];
 function currentSection(): GallerySection {
   const hash = window.location.hash.slice(1);
   return entries.find(([id]) => id === hash)?.[0] ?? 'top';
@@ -93,13 +94,13 @@ function GalleryContent({ motion, onMotionChange, children, section }: GallerySh
       <div className="ds-sidebar-brand"><a href="#top" aria-label="Rhine Design · 设计总览"><Logo size={32} /><span>莱茵设计<small>RHINE DESIGN</small></span></a>
         <Button className="ds-menu-toggle" variant="secondary" aria-expanded={menuOpen} aria-controls="gallery-navigation" onClick={() => setMenuOpen(value => !value)}>目录</Button>
       </div>
-      <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={section} groups={galleryGroups.map(group=>({label:group.label,items:group.items.map(([id,label])=>({id,label,href:`#${id}`}))}))} onNavigate={item=>{
+      <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={section} groups={galleryGroups.map(group=>({label:group.label,items:group.items.map(([id,label])=>({id,label,href:`#${id}`,children:id==='chat-foundation'?chatFoundationPages.map(page=>({id:page.id,label:page.label,href:`#${page.id}`})):undefined}))}))} onNavigate={item=>{
         setMenuOpen(false); if(section===item.id) main.current?.focus({preventScroll:true});
       }}/>
       <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>{componentCount} 个组件 · 源码包版本 {packageVersion}</span><span>发布范围见版本记录</span><span className="ak-readout">{readout}</span></div>
     </aside>
     <main className="ds-workspace" id="gallery-content" ref={main} tabIndex={-1} aria-label={label}>
-      <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" disabled={section === 'editorial-layout'} title={section === 'editorial-layout' ? '此配方固定以中性主题为基础；可在内容区选择局部配色' : undefined} value={theme} onChange={event => {
+      <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},...(isChatFoundationComponent(section)?[{label:"Chat 基石",href:"#chat-foundation"}]:[]),{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" disabled={section === 'editorial-layout'} title={section === 'editorial-layout' ? '此配方固定以中性主题为基础；可在内容区选择局部配色' : undefined} value={theme} onChange={event => {
         const next = themes.find(item => item.name === event.target.value);
         if (next) setTheme(next.name);
       }}>{themes.map(item => <option key={item.name} value={item.name}>{item.label}</option>)}</Select></div></header>

@@ -51,8 +51,9 @@ export { ThemePicker, ThemePreview, type ThemePickerProps, type ThemePickerOptio
 
 export { ChatThread, ChatCard } from './Chat';
 export type { ChatThreadProps, ChatMemberLink, ChatMemberAppearance, ChatCardProps, ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatStatus } from './Chat';
-export { AgentRow, MessageBubble, Composer, WorkspaceRail, AgentList, ChatHeader, MessageList, AgentInspector, ChatShell } from './ChatFoundation';
-export type { AgentRowProps, AgentRowStatus, MessageBubbleProps, ComposerProps, WorkspaceRailItem, WorkspaceRailProps, AgentListItem, AgentListProps, ChatHeaderProps, MessageListItem, MessageListProps, AgentInspectorFact, AgentInspectorProps, ChatShellProps } from './ChatFoundation';
+export { AgentRow, MessageBubble, Composer, WorkspaceRail, AgentList, ChatHeader, MessageList, AgentInspector, ChatShell, MessageMeta, MessageContent, MessageActions, DayDivider, MessageStatus, MessageRenderer, ChatPane } from './ChatFoundation';
+export { chatSessionReducer, initialChatSessionState } from './ChatFoundation';
+export type { AgentRowProps, AgentRowStatus, MessageBubbleProps, ComposerProps, WorkspaceRailItem, WorkspaceRailProps, AgentListItem, AgentListProps, ChatHeaderProps, MessageListItem, MessageListProps, AgentInspectorFact, AgentInspectorProps, ChatShellProps, ChatShellSlots, ChatShellSlotName, ChatSessionPhase, ChatSessionState, ChatSessionAction, MessageMetaProps, MessageContentProps, MessageActionsProps, DayDividerProps, MessageStatusProps, MessageRendererProps, ChatPaneProps, MessageStatusState, MessageRenderers } from './ChatFoundation';
 
 export type { TextFieldProps } from './components';
 

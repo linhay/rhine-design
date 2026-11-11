@@ -1,6 +1,13 @@
+import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { AgentInspector, AgentList, AgentRow, ChatHeader, ChatShell, Composer, MessageBubble, MessageList, WorkspaceRail } from '../components';
+import { AgentInspector, AgentList, AgentRow, ChatHeader, ChatShell, Composer, MessageBubble, MessageList, WorkspaceRail, MessageMeta, MessageContent, MessageActions, chatSessionReducer, initialChatSessionState } from '../components';
+
+function StatefulAgentMessage({ id, author, children }: import('../components').MessageListItem) {
+  const [expanded, setExpanded] = useState(false);
+  return <article aria-label={id}><MessageMeta author={author} /><MessageContent>{children}</MessageContent><MessageActions><button onClick={() => setExpanded(value => !value)}>{expanded ? '收起详情' : '展开详情'}</button></MessageActions>{expanded && <p>保留局部状态</p>}</article>;
+}
+const statefulRenderers = { agent: StatefulAgentMessage };
 
 describe('Chat Foundation primitives', () => {
   it('renders Agent status as text and exposes selected state', () => {
@@ -61,5 +68,63 @@ describe('Chat Foundation primitives', () => {
     expect(screen.getByRole('status')).toHaveTextContent('读取中');
     expect(screen.getByRole('alert')).toHaveTextContent('读取失败');
     expect(screen.getByText('结果未知')).toBeVisible();
+  });
+
+  it('preserves session state for unrelated runtime store actions', () => {
+    const state = { ...initialChatSessionState, phase: 'ready' as const, draft: '保留草稿', error: '读取失败' };
+    const unknown = { type: '@@host/INIT' } as unknown as Parameters<typeof chatSessionReducer>[1];
+    expect(chatSessionReducer(state, unknown)).toBe(state);
+  });
+
+  it('keeps session transitions in a pure host-owned reducer', () => {
+    const next = chatSessionReducer(initialChatSessionState, { type: 'agent/select', agentId: 'research' });
+    const ready = chatSessionReducer(next, { type: 'phase/set', phase: 'ready' });
+    const drafted = chatSessionReducer(ready, { type: 'draft/set', draft: '继续核对' });
+    expect(drafted).toEqual({
+      phase: 'ready',
+      selectedAgentId: 'research',
+      query: '',
+      draft: '继续核对',
+      inspectorOpen: false,
+      error: null,
+    });
+    expect(chatSessionReducer(drafted, { type: 'error/set', error: '结果未知' })).toMatchObject({ error: '结果未知' });
+  });
+});
+
+
+describe('message rendering boundary', () => {
+  it('preserves the last known day across messages without a day', () => {
+    const messages = [
+      { id: 'a', author: 'Research', children: '第一条', day: '今天' },
+      { id: 'b', author: 'Research', children: '未提供日期' },
+      { id: 'c', author: 'Research', children: '同一天', day: '今天' },
+      { id: 'd', author: 'Research', children: '下一天', day: '明天' },
+    ];
+    const { rerender } = render(<MessageList messages={messages} />);
+    expect(screen.getAllByText('今天')).toHaveLength(1);
+    expect(screen.getAllByText('明天')).toHaveLength(1);
+    rerender(<MessageList messages={messages} daySeparators={false} />);
+    expect(screen.queryByText('今天')).not.toBeInTheDocument();
+  });
+
+  it('preserves keyed renderer state on message updates and reordering, with default person fallback', () => {
+    const a = { id:'a', author:'Research', kind:'agent' as const, children:'第一版', day:'今天' };
+    const b = { id:'b', author:'你', kind:'person' as const, children:'继续核对', quote:'已知范围', day:'今天' };
+    const { rerender } = render(<MessageList messages={[a, b]} renderers={statefulRenderers} />);
+    fireEvent.click(screen.getByRole('button', { name:'展开详情' }));
+    expect(screen.getByText('继续核对').closest('article')).toHaveClass('rhine-chat-message--person');
+    expect(screen.getByText('已知范围').tagName).toBe('BLOCKQUOTE');
+    rerender(<MessageList messages={[b, { ...a, children:'更新版' }]} renderers={{ ...statefulRenderers }} />);
+    expect(screen.getByText('保留局部状态')).toBeVisible();
+    expect(screen.getByRole('article', { name:'a' })).toHaveTextContent('更新版');
+    expect(screen.getByRole('group', { name:'消息操作' })).toBeVisible();
+    expect(screen.getAllByText('今天')).toHaveLength(1);
+  });
+
+  it('falls back to the default agent renderer for messages without a kind', () => {
+    render(<MessageList messages={[{ id:'a', author:'Research', children:'未注册类型的默认正文', actions:<button>复制</button> }]} />);
+    expect(screen.getByText('未注册类型的默认正文').closest('article')).toHaveClass('rhine-chat-message--agent');
+    expect(screen.getByRole('group', { name:'消息操作' })).toHaveTextContent('复制');
   });
 });
