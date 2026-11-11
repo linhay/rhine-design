@@ -272,3 +272,11 @@ Combobox / RemoteMultiSelect 可传 `labelAction`，保留 string label 与已�
 RemoteMultiSelect 的 `tagDensity="compact"` 与 `maxVisibleTags` 独立；28px细指针/44px粗或混合输入、完整值换行和原交互契约见[紧凑标签](COMPACT_TEMPLATE.md)。此为未发布增量。
 
 Combobox / RemoteMultiSelect 可选 `validationError`（字段校验、不禁用候选）与 `statusDisplay="compact"`（常规状态仅保留读屏通知、读取失败持续可见），默认兼容；原 `error` 保持候选读取失败语义。见[状态与字段校验](COMBOBOX_FEEDBACK.md)（#115，未发布）。
+
+## 管理工作区的正文宽度审计（#208）
+
+[反馈 #208](https://github.com/linhay/rhine-design/issues/208) 明确桌面管理工作区的局部偏好：配置面板、排序列表和保存操作区使用所属内容列的可用宽度。先逐层核查外壳、面板、内层表单、列表与操作区的 `width` / `max-width` / 网格轨道；例如只移除外层 780px 上限、保留内层 720px 上限，仍会使宽桌面的表单止于中途。复用现有 AppShell 和布局组件，由宿主移除无任务依据的页面级上限，无需新增组件 API。
+
+保持阅读段落的合理行长、登录表单、单字段编辑宽度和浮层视口边界。表单区域占满内容列不要求每个输入框无限拉长，也不要求把说明段落排成整屏长行。人员或对象详情按自己的实际内容容器判断，不直接照搬主工作区的视口断点。
+
+采用方应在宽桌面核对同级正文、列表和保存区的实际左右矩形；在桌面窄容器和 200% 缩放下，验证字段可缩、说明换行、保存按钮及焦点轮廓可达。同时量元素与裁剪/滚动祖先，检查末项及操作区，不能仅凭 `document.scrollWidth` 判定通过。保持权限、异步保存和草稿状态；本节只接纳布局规则，消费侧修复、生产部署和制品升级各自验收。
