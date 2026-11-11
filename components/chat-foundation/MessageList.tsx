@@ -24,7 +24,7 @@ export function MessageList({ messages, renderers, daySeparators = true, working
   return <div {...props} className={`rhine-chat-message-list ${className}`} role="log" aria-label={label}>
     {messages.map(message => {
       const showDay = daySeparators && message.day != null && message.day !== previousDay;
-      previousDay = message.day;
+      if (message.day != null) previousDay = message.day;
       return <div key={message.id} className="rhine-chat-message-list__item">
         {showDay && <DayDivider>{message.day}</DayDivider>}
         <MessageRenderer message={message} renderers={renderers} />

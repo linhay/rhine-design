@@ -70,6 +70,12 @@ describe('Chat Foundation primitives', () => {
     expect(screen.getByText('结果未知')).toBeVisible();
   });
 
+  it('preserves session state for unrelated runtime store actions', () => {
+    const state = { ...initialChatSessionState, phase: 'ready' as const, draft: '保留草稿', error: '读取失败' };
+    const unknown = { type: '@@host/INIT' } as unknown as Parameters<typeof chatSessionReducer>[1];
+    expect(chatSessionReducer(state, unknown)).toBe(state);
+  });
+
   it('keeps session transitions in a pure host-owned reducer', () => {
     const next = chatSessionReducer(initialChatSessionState, { type: 'agent/select', agentId: 'research' });
     const ready = chatSessionReducer(next, { type: 'phase/set', phase: 'ready' });
@@ -88,6 +94,20 @@ describe('Chat Foundation primitives', () => {
 
 
 describe('message rendering boundary', () => {
+  it('preserves the last known day across messages without a day', () => {
+    const messages = [
+      { id: 'a', author: 'Research', children: '第一条', day: '今天' },
+      { id: 'b', author: 'Research', children: '未提供日期' },
+      { id: 'c', author: 'Research', children: '同一天', day: '今天' },
+      { id: 'd', author: 'Research', children: '下一天', day: '明天' },
+    ];
+    const { rerender } = render(<MessageList messages={messages} />);
+    expect(screen.getAllByText('今天')).toHaveLength(1);
+    expect(screen.getAllByText('明天')).toHaveLength(1);
+    rerender(<MessageList messages={messages} daySeparators={false} />);
+    expect(screen.queryByText('今天')).not.toBeInTheDocument();
+  });
+
   it('preserves keyed renderer state on message updates and reordering, with default person fallback', () => {
     const a = { id:'a', author:'Research', kind:'agent' as const, children:'第一版', day:'今天' };
     const b = { id:'b', author:'你', kind:'person' as const, children:'继续核对', quote:'已知范围', day:'今天' };

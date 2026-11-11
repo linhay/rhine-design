@@ -45,7 +45,8 @@ export function chatSessionReducer(state: ChatSessionState, action: ChatSessionA
       return { ...state, error: action.error };
     default: {
       const exhaustive: never = action;
-      return exhaustive;
+      void exhaustive;
+      return state;
     }
   }
 }

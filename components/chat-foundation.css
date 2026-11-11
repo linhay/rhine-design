@@ -32,7 +32,7 @@
 .rhine-theme .rhine-chat-message-actions[role=group] .rhine-button.rhine-button--quiet:active:not(:disabled):not([aria-disabled=true]) { transform:none; }
 .rhine-theme .rhine-chat-message-actions[role=group] .rhine-button.rhine-button--quiet:focus-visible { outline:2px solid var(--rhine-green); outline-offset:2px; }
 .rhine-theme .rhine-chat-message-actions[role=group] .rhine-button.rhine-button--quiet:is(:disabled,[aria-disabled=true],[data-disabled=true]) { background:transparent; border:0; box-shadow:none; }
-@media (hover:none),(pointer:coarse) {
+@media (hover:none),(any-pointer:coarse) {
   .rhine-theme .rhine-chat-message-actions[role=group] .rhine-button.rhine-button--quiet { min-height:44px; min-width:44px; }
 }
 .rhine-chat-composer { display:grid; gap:var(--rhine-space-2); padding:var(--rhine-space-2) var(--rhine-space-3); border:1px solid var(--rhine-line); border-radius:var(--rhine-radius-card); background:var(--rhine-surface); }
