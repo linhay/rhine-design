@@ -22,7 +22,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 | Tabs with identity summaries and per-object status | `docs/SUMMARY_TABS.md` (local candidate; verify installed API) | `Tabs.description/status`, `preview/SummaryTabsGallery.tsx`; `/#summary-tabs`; 12/8/4/16/24 spacing, stable labels and accessible descriptions |
 | Task-centered content reduction, borderless account summaries, credential actions, compact legends | `docs/COMPACT_ACCOUNT_PATTERNS.md` (source candidates; not npm 0.6.0) | `preview/CompactAccountGallery.tsx`; `/#compact-account`; ButtonLink + StatusTimelineList + TimelineLegend |
 | Forms, selection, combobox, data tables | `components/COMMON_COMPONENTS.md` | Use API_MAP for the source file |
-| Modal, menu, popover, tooltip, feedback | `components/COMMON_COMPONENTS.md` | `components/Overlays.tsx`, `components/Toast.tsx` |
+| Modal, menu, popover, tooltip, feedback; third-party popup mouse hit testing | `components/COMMON_COMPONENTS.md`; `docs/FLOATING_OVERLAYS.md` (mixed-library popup hosts) | `components/Overlays.tsx`, `components/Toast.tsx`; host owns third-party popup containers |
 | Transition, replay, cancellation, reduced motion | `components/MOTION.md` | `preview/`, `components/styles.css` |
 | Startup sequence, logo assembly, ready handoff | `components/STARTUP.md` | Search `startup` in `preview/`; not a public Startup component |
 | Orbit artwork, decorative Canvas, pause / resume, reduced motion | `docs/ORBIT_BACKDROP.md` (base 0.6.0, themed objects 0.8.0) | `components/OrbitBackdrop.tsx`, internal `components/orbitRenderer.ts`; `/#orbit` |
@@ -37,3 +37,5 @@ For host pages, keep product-specific drafts in the host project. The library's 
 For 0.8.0 theme-comparison cards, settings navigation, or floating CSS zoom boundaries, read `docs/THEME_PICKER.md`, `docs/SETTINGS_DIALOG.md`, and `docs/FLOATING_OVERLAYS.md` respectively. Preview routes: `#theme-picker`, `#settings-dialog`, `#overlay-bounds`. Do not infer package availability from the main gallery.
 
 常驻层级浏览树与外部几何画布：核对安装包是否包含 `docs/RESIDENT_TREE.md`、`preview/ResidentTreeRecipe.tsx` 与 `preview/resident-tree.css`；这是示例组合，不是新的 Tree 公共导出，npm 0.11.3 尚不包含。焦点、选择与展开分离，固定/跟随目标及数据请求由宿主维护。
+
+创建/部分创建后的成员目录与部门计数刷新：见 `docs/ASYNC_SNAPSHOT_RECIPES.md` 的“创建结果与目录刷新分开”。写入事实、未完成步骤与附属刷新错误分别维护，不能仅更新全局人员缓存或因刷新失败重复创建。此为宿主配方，不增加数据层 API。
