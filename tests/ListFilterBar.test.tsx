@@ -196,3 +196,33 @@ describe('ListFilterBar', () => {
     expect(screen.getByRole('button', { name: '审查设置' })).toBeEnabled();
   });
 });
+
+it('composes centered more content without extra fields and keeps modal feedback visible', async () => {
+  const {rerender} = render(theme(<ListFilterBar label={label} variant="inline" filterOverlay="dialog" search={{label:'搜索',labelVisibility:'hidden'}}
+    moreContent={<TextField label="低频字段" defaultValue="保留" />} pending result="旧结果" error="读取失败" />));
+  expect(screen.getByRole('searchbox', {name:'搜索'})).toBeInTheDocument();
+  const {dialog,trigger} = await openFilters();
+  expect(dialog).not.toHaveClass('rhine-drawer');
+  expect(within(dialog).getByRole('alert')).toHaveTextContent('读取失败');
+  expect(within(dialog).getByRole('status')).toHaveTextContent('正在更新结果…旧结果');
+  expect(within(dialog).getByLabelText('低频字段')).toHaveValue('保留');
+  fireEvent.keyDown(document.activeElement!, {key:'Escape'});
+  await waitFor(()=>expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  await waitFor(()=>expect(trigger).toHaveFocus());
+  rerender(theme(<ListFilterBar label={label} filters={[selection('x','默认条件')]} />));
+  const reopened = await openFilters();
+  expect(reopened.dialog).toHaveClass('rhine-drawer');
+});
+
+it('retains clear focus when an active summary uses the bordered variant', () => {
+  function Example() {
+    const [active,setActive] = useState(true);
+    return <ListFilterBar label={label} activeVariant="secondary" primary={[{...selection('scope','范围'),activeLabel:active?'完整范围':undefined,onClear:()=>setActive(false)}]} />;
+  }
+  render(<Example />);
+  const clear = screen.getByRole('button', {name:'清除范围：完整范围'});
+  expect(clear).toHaveClass('rhine-button--secondary');
+  fireEvent.click(clear);
+  expect(screen.getByRole('combobox', {name:'范围'})).toHaveFocus();
+  expect(screen.queryByRole('button', {name:'清除范围：完整范围'})).not.toBeInTheDocument();
+});

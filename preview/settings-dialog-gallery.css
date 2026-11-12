@@ -3,3 +3,17 @@
  .rhine-settings-action-full { display:none; }
  .rhine-settings-action-short { display:inline; }
 }
+
+@container rhine-settings (max-width:559px) {
+  .rhine-embedded-navigation { flex-direction:row; flex-wrap:nowrap; width:max-content; }
+}
+
+.rhine-embedded-footer { display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-width:0; }
+@container rhine-settings (max-width:300px) {
+  .rhine-embedded-footer { flex-wrap:nowrap; overflow-x:auto; padding:4px; scroll-padding:4px; }
+  .rhine-embedded-footer > * { flex:none; }
+  .rhine-embedded-footer .rhine-pagination { overflow:visible; max-width:none; }
+}
+@container rhine-settings (max-width:559px) {
+  .rhine-dialog__navigation:has(> .rhine-embedded-navigation) { min-height:44px; }
+}

@@ -78,3 +78,19 @@
   .rhine-dialog--settings:not(.rhine-dialog--split) .rhine-dialog__settings-grid { gap:4px; }
  }
 }
+
+/* Public header slots remain siblings of the title and close control. */
+.rhine-dialog__head--custom { flex-wrap:wrap; }
+.rhine-dialog__head--custom > .rhine-icon-button { position:static; flex:none; }
+.rhine-dialog__head--custom > :is(.rhine-text,.rhine-dialog__header-content) { flex:1 1 10rem; min-width:0; }
+.rhine-dialog__head--custom > .rhine-sr-only { flex:none; }
+.rhine-dialog__header-content { max-width:100%; }
+.rhine-dialog__header-actions { display:flex; align-items:center; flex-wrap:wrap; gap:var(--rhine-space-2); min-width:0; margin-inline-start:auto; }
+.rhine-dialog__head--custom > .rhine-dialog__header-content { flex-basis:0; }
+.rhine-dialog__header-content:focus-within { scroll-margin:4px; }
+
+@container (max-width:300px) {
+  .rhine-dialog__head--custom > .rhine-dialog__header-content { flex-basis:100%; }
+}
+/* Long slot feedback must not consume the bounded workspace's entire body. */
+.rhine-dialog--bounded:not(.rhine-dialog--split) .rhine-dialog__head--custom { flex:0 1 auto; max-height:40%; overflow:auto; overscroll-behavior:contain; scroll-padding:4px; }

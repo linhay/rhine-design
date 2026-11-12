@@ -91,9 +91,9 @@ export function Tabs({ label, items, value, onValueChange, layout = 'content', f
       hidden={value !== item.value} tabIndex={0} className="rhine-tabs__panel">{item.content}</div>)}
   </div>;
 }
-export function SegmentedControl({ label, items, value, onValueChange, fullWidth = false, size = 'default' }: { label: string; items: Choice[]; value: string; onValueChange: (value: string) => void; fullWidth?: boolean; size?: 'default' | 'compact' }) {
+export function SegmentedControl({ label, items, value, onValueChange, fullWidth = false, size = 'default' }: { label: string; items: Choice[]; value: string; onValueChange: (value: string) => void; fullWidth?: boolean; size?: 'default' | 'compact' | 'control' }) {
   const name = useId();
-  return <fieldset className={classes('rhine-segmented', fullWidth && 'rhine-segmented--full-width', size === 'compact' && 'rhine-segmented--compact')}><legend className="rhine-sr-only">{label}</legend>
+  return <fieldset className={classes('rhine-segmented', fullWidth && 'rhine-segmented--full-width', size !== 'default' && 'rhine-segmented--compact', size === 'control' && 'rhine-segmented--control')}><legend className="rhine-sr-only">{label}</legend>
     {items.map(item => <label key={item.value} className="rhine-segmented__option">
       <input type="radio" name={name} value={item.value} checked={value === item.value} disabled={item.disabled} onChange={() => onValueChange(item.value)} />
       <span>{item.label}</span>

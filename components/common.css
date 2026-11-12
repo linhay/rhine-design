@@ -95,3 +95,6 @@
 .rhine-combobox__heading>label { flex:1 1 160px; min-width:0; overflow-wrap:anywhere; font-weight:500; }
 .rhine-combobox__label-action { min-width:0; max-width:100%; margin-inline-start:auto; }
 .rhine-combobox__label-action .rhine-button { white-space:normal; text-align:start; }
+
+.rhine-pagination--inline { flex-wrap:nowrap; justify-content:flex-start; max-width:100%; overflow-x:auto; padding:4px; scroll-padding:4px; }
+.rhine-pagination--inline > * { flex:none; }
