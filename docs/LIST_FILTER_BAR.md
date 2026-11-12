@@ -98,7 +98,6 @@ const clearFromEmpty = () => {
 
 Drawer 中的原生日期还须检查实际文本编辑区：完整值、最后日期片段与日历图标均可见并可操作；input/document 的 scrollWidth 不溢出不代表原生编辑区没有裁字。重复分组内距的共享修复由 [#25](https://github.com/linhay/rhine-design/issues/25) 跟踪；不在业务页复制日期内部 CSS。
 
-
 ## 单条件嵌入目录的最小组合
 
 [#19 的后续反馈](https://github.com/linhay/rhine-design/issues/19#issuecomment-6556990508)限定于桌面嵌入文件目录：只有一个日期条件、没有搜索或额外筛选时，可使用现有 `DateField + Inline`，不强制套用完整 `ListFilterBar` 卡片。移除多余的外层 Surface、刷新/重置按钮和数量摘要；日期 label 持续可见，表格结果区仍承担加载、空态、错误及重试，不能以精简控件隐藏失败。
@@ -129,6 +128,21 @@ Drawer 中的原生日期还须检查实际文本编辑区：完整值、最后�
 - `filterOverlay="dialog"` 将同一更多入口改为居中、有遮罩的 Dialog；默认 drawer 保持不变。溢出的 primary、filters、结果/加载/错误/重置仍在同一浮层。历史参数 `drawerDescription` / `drawerResult` 对两种浮层都生效；关闭仍不隐式应用或撤销条件。
 - `moreContent?: ReactNode` 在更多字段后放置低频搜索、说明或次要操作；即使没有 filters 也生成更多入口。宿主管理其中字段的值、请求和完整摘要，不能凭插槽自动推导筛选或替代权限。`activeVariant="secondary"` 让可清除摘要保留边框，默认 quiet 不变；完整名称和单项清除焦点继续保留。
 
-统计列表可只常显组织范围与时间，把低频搜索、平台、排行、内容结构、导出和口径放进同一个更多 Dialog。隐藏搜索不等于清空其条件；用 filters 的 activeLabel/onClear 表达更多内容中字段的真实活跃状态，独立清除与整体重置仍归宿主。错误和 pending 不能只留在遮罩后。
+统计列表可只常显组织范围与时间，把低频搜索、平台、排行、内容结构、导出和口径放进同一个更多 Dialog。隐藏搜索不等于清空其条件；用 filters 的 activeLabel/onClear 表达更多内容中字段的真实活跃状态，独立清除与整体重置仍归宿主。错误和 pending 不能只留在遮罩后。组织范围的后续决定见下节：逐项名称标签直接可见，取代该场景早先把全部摘要收入更多的方案。
 
 `#list-filter-bar` 新增居中统计更多例子；标题内嵌见[设置组合](SETTINGS_DIALOG.md#内嵌标题工具栏与等权列表18--3源码新增未发布)。验证同一范围状态、草稿/已接受结果、更多内失败、低频搜索/导出可达、清除后焦点、Escape归焦及实际窄容器滚动；主行无页面横溢出不能替代操作可达证据。新增 API 未进入已发布0.13.0，需固定后续源码/制品，原消费适配删除与升级另行验收。
+
+## 逐项范围标签与搜索设置共用更多（#19，局部配方）
+
+[统计场景的后续纠正](https://github.com/linhay/rhine-design/issues/19#issuecomment-6817223679)要求多选组织后逐项展示带边框、可移除的完整名称，不能只写“已选3项”。标签直接来自宿主同一份 `selectedOptions` / `value`，不拆摘要字符串，也不维护第二份选择状态。此场景主筛选保持一行，标签弹性区域可局部横滚；移除前同步归焦仍存在的组织选择器，44px目标、完整名称和最后一项可达分别核对。使用公开 Button、布局与控件组合，不依赖 ListFilterBar 私有结构。
+
+该统计场景的更多和刷新使用 `IconButton` 的 `moreVertical` / `refresh`，均提供准确 `label` 及悬停 `title`；图标本身不能替代可访问名称。更多继续打开居中 Dialog，低频搜索、导出与口径仍在其中。现有 `ListFilterBar.refresh` 固定为文字按钮、触发器固定为“更多筛选”，本轮不新增图标模式、触发器替换或标签数组 API；需要此特定动作排布时组合已有公共组件，不覆写内部 CSS。
+
+[另一录制列表的偏好](https://github.com/linhay/rhine-design/issues/19#issuecomment-6817692919)则是人员、组织范围和刷新常显，低频搜索与自动检查设置共用名为“更多”的 Drawer，不另设设置菜单。两种场景的浮层形式各自保留，不把统计场景的居中偏好推广为所有列表默认。
+
+- 已发布0.13.0的 `ListFilterBar.search` / `action` 在主栏，更多触发文案固定；其类型未提供 `moreContent`。main 在 PR212 新增的 `moreContent` 可以承载低频字段与操作，但尚未 npm 发布，不能据此要求旧消费者直接使用新参数。
+- 固定0.13.0的产品可用公开 Surface / Inline / Stack / TextField / Drawer / Button 组合所需工具栏。若既有 ListFilterBar 的固定入口符合场景，main 的插槽已能表达低频内容，无需增加另一个泛化操作调度 API；自定义“更多”文案或图标入口仍由组合表达。
+- 收起搜索仅改变位置，不清空 URL 恢复的搜索值；非空条件仍有带边框可清除摘要。IME、防抖、取消、迟到响应、页码及权限由宿主保持，Drawer内持续可读标签、pending、error与结果数。重置同时处理隐藏搜索，不能把旧结果当成新条件已接受。
+- 设置是独立任务弹窗：先关闭更多再交接原设置 Modal，避免同时叠放两个任务浮层。宿主以实际关闭生命周期交接焦点，关闭设置或取消后回到仍存在的更多入口；必要时只在交接路径阻止原浮层默认归焦，再显式交给下一目标。库 Dialog/Drawer 的 `onCloseAutoFocus` 可控制关闭归焦，第三方 Modal 的 `afterClose` 属于宿主集成，不能当作 Rhine API。不用固定 timer 猜测过渡结束，也不让普通 Escape 关闭失去默认归焦。
+
+[后继消费验证](https://github.com/linhay/rhine-design/issues/19#issuecomment-6817800268)自报70项回归、双构建及更多Escape/设置关闭回焦通过；首次焦点落body的失败保留。本库本轮仅接纳配方，未独立重跑该消费页面、生产API或完整主题/缩放矩阵。采用方在实际容器验证三项选择与逐项移除、局部横滚末项、默认不显示搜索/设置、更多内两者可达、URL恢复/清除/重置、加载/错误、只读权限及两条关闭归焦路径。

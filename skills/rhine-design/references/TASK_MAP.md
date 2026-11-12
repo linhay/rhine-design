@@ -41,3 +41,5 @@ For 0.8.0 theme-comparison cards, settings navigation, or floating CSS zoom boun
 创建/部分创建后的成员目录与部门计数刷新：见 `docs/ASYNC_SNAPSHOT_RECIPES.md` 的“创建结果与目录刷新分开”。写入事实、未完成步骤与附属刷新错误分别维护，不能仅更新全局人员缓存或因刷新失败重复创建。此为宿主配方，不增加数据层 API。
 
 标题栏筛选、隐藏重复标题/标签、等权双框与固定分页：见 `docs/SETTINGS_DIALOG.md`、`docs/LIST_FILTER_BAR.md`（源码新增，未发布；核对实际props）。循环工具当前调用/完整时间线见 `docs/AGENT_CHAT.md`；精简配置、全局/局部后果与按需只读详情见 `docs/PLUGIN_CARD_COMPOSITION.md`，这些宿主配方不新增业务执行器。
+
+逐项组织范围标签、图标动作及低频搜索/设置共用更多：见 `docs/LIST_FILTER_BAR.md` 后续局部配方；0.13.0不含main新增moreContent，定制触发器用现有组件组合。真实执行路线、观察顺序与本地停止/后端未确认见 `docs/AGENT_CHAT.md`。目标组织层级与祖先继承见 `docs/COMPACT_ACCOUNT_PATTERNS.md`；窄评审画布的重复产品导航见 `docs/REVIEW_TOOL.md`，均不改变公共组件默认行为。
