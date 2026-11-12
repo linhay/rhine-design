@@ -1,6 +1,6 @@
 import { useRef, useState, type InputHTMLAttributes, type ReactElement, type ReactNode } from 'react';
 import { Button, Notice, Surface, TextField } from './components';
-import { Drawer } from './Overlays';
+import { Dialog, Drawer } from './Overlays';
 import './list-filter-bar.css';
 
 export interface ListFilterField {
@@ -13,7 +13,11 @@ export interface ListFilterField {
 
 export interface ListFilterBarProps {
   label: string;
-  search?: InputHTMLAttributes<HTMLInputElement> & { label: string };
+  search?: InputHTMLAttributes<HTMLInputElement> & { label: string; labelVisibility?: 'visible' | 'hidden' };
+  variant?: 'default' | 'inline';
+  filterOverlay?: 'drawer' | 'dialog';
+  moreContent?: ReactNode;
+  activeVariant?: 'quiet' | 'secondary';
   primary?: readonly ListFilterField[];
   filters?: readonly ListFilterField[];
   onReset?: () => void;
@@ -39,7 +43,9 @@ function Feedback({ result, pending, error, announce = true }: Pick<ListFilterBa
 
 const focusable = 'input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), button:not(:disabled), a[href]';
 
-export function ListFilterBar({ label, search, primary = [], filters = [], onReset, refresh, action, result, drawerDescription = '更改后立即更新结果。', drawerResult, pending = false, error, className = '' }: ListFilterBarProps) {
+export function ListFilterBar({ label, search, primary = [], filters = [], onReset, refresh, action, result, drawerDescription = '更改后立即更新结果。', drawerResult, pending = false, error, className = '', variant = 'default', filterOverlay = 'drawer', moreContent, activeVariant = 'quiet' }: ListFilterBarProps) {
+  const FilterOverlay = filterOverlay === 'dialog' ? Dialog : Drawer;
+  const hasMore = moreContent != null && moreContent !== false;
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const drawerBody = useRef<HTMLDivElement>(null);
@@ -69,15 +75,15 @@ export function ListFilterBar({ label, search, primary = [], filters = [], onRes
     field.onClear?.();
   }
 
-  return <div ref={root} tabIndex={-1} className={`rhine-list-filter-bar ${className}`}>
+  return <div ref={root} tabIndex={-1} className={`rhine-list-filter-bar${variant === 'inline' ? ' rhine-list-filter-bar--inline' : ''} ${className}`}>
     <Surface role="group" aria-label={label} className="rhine-list-filter-bar__surface">
       <div className="rhine-list-filter-bar__main">
         {search && <div className="rhine-list-filter-bar__search"><TextField type="search" {...search} /></div>}
         {visibleFields.length > 0 && <div className="rhine-list-filter-bar__primary">
           {visibleFields.map(field => <div key={field.id} data-filter-id={field.id} className="rhine-list-filter-bar__field" role="group" aria-label={field.label}>{field.control}</div>)}
         </div>}
-        {(drawerFields.length > 0 || refresh || action) && <div className="rhine-list-filter-bar__actions">
-          {drawerFields.length > 0 && <Drawer
+        {(drawerFields.length > 0 || hasMore || refresh || action) && <div className="rhine-list-filter-bar__actions">
+          {(drawerFields.length > 0 || hasMore) && <FilterOverlay
             title={label}
             description={drawerDescription}
             open={open}
@@ -87,16 +93,17 @@ export function ListFilterBar({ label, search, primary = [], filters = [], onRes
             <div ref={drawerBody} className="rhine-list-filter-bar__drawer">
               <Feedback result={drawerResult === undefined ? result : drawerResult} pending={pending} error={error} />
               {drawerFields.map(field => <div key={field.id} data-filter-id={field.id} className="rhine-list-filter-bar__field" role="group" aria-label={field.label}>{field.control}</div>)}
+              {moreContent}
               {canReset && <div className="rhine-list-filter-bar__drawer-actions"><Button variant="quiet" onClick={reset}>重置筛选</Button></div>}
             </div>
-          </Drawer>}
+          </FilterOverlay>}
           {refresh && <Button variant="secondary" onClick={refresh.onClick} busy={refresh.busy} disabled={refresh.disabled} busyLabel="正在刷新">刷新</Button>}
           {action && <div className="rhine-list-filter-bar__action">{action}</div>}
         </div>}
       </div>
       {(activeFields.length > 0 || canReset) && <div className="rhine-list-filter-bar__active" role="group" aria-label="已选条件">
         {activeFields.map(field => field.onClear
-          ? <Button key={field.id} variant="quiet" className="rhine-list-filter-bar__chip" onClick={() => clear(field)} aria-label={`清除${field.label}：${field.activeLabel}`}><span>{field.label}：{field.activeLabel}</span><span aria-hidden="true">×</span></Button>
+          ? <Button key={field.id} variant={activeVariant} className="rhine-list-filter-bar__chip" onClick={() => clear(field)} aria-label={`清除${field.label}：${field.activeLabel}`}><span>{field.label}：{field.activeLabel}</span><span aria-hidden="true">×</span></Button>
           : <span key={field.id} className="rhine-list-filter-bar__summary">{field.label}：{field.activeLabel}</span>)}
         {canReset && <Button variant="quiet" onClick={reset}>重置筛选</Button>}
       </div>}

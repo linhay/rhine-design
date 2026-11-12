@@ -102,3 +102,28 @@
 真实合成示例已扩展 `#settings-dialog`，隔离入口 `?fixture=settings-dialog&object=1`：分配子表单、模型/调度草稿、独立保存、失败保留、退出确认、外部动作短时锁定、只读/批量过滤和嵌套候选。合成设置 100ms、通知 2000ms、保存 350ms 仅用于可交互状态窗口，不是性能目标或真实服务测量。紧凑卡片及读取边界见[紧凑配方](COMPACT_ACCOUNT_PATTERNS.md#紧凑元信息与额度槽位116)与[设置读取配方](ASYNC_SNAPSHOT_RECIPES.md#对象设置与人员目录读取)。
 
 验收入口：[交互/布局矩阵](../scripts/check-object-settings.js)、[失败重试与动态偏好](../scripts/check-object-settings-states.js)、`tests/ObjectSettingsGallery.test.tsx`。布局矩阵为原三主题 400/520/880 × 100/200% CSS zoom，另含 neutral 的 400×648 / CSS zoom 2 定向交互；不将此定向项描述成第四主题的完整矩阵。合成设置截图：[宽屏](assets/object-settings-wide.png)、[窄屏放大](assets/object-settings-narrow.png)。
+
+## 内嵌标题工具栏与等权列表（#18 / #3，源码新增，未发布）
+
+`Dialog.width?: CSSProperties['width']` 指定实例宽度，数字按 CSS px；同时受可用宽度减32px约束，不再借用 `navigation` 或 `sidePanel` 改变等权列表结构。默认宽度与既有布局不变。
+
+`headerContent?: ReactNode` 是标题旁的可伸缩内容，`headerActions?: ReactNode` 位于关闭按钮之前。二者与标题/关闭是兄弟节点；普通及有界 Dialog 均可用，Drawer 不提供这组新增参数。`titleVisibility?: 'visible' | 'hidden'` 默认 visible，hidden 仅隐藏视觉标题，必填非空 title 和 Radix 命名关联仍保留。已有导航明确给出上下文、重复标题妨碍操作时才采用该局部组合，不让所有弹窗默认无标题。较长标题/操作可换行，不能保证任意内容始终一行。
+
+```tsx
+<Dialog title="记录设置" titleVisibility="hidden" width={960} height={640}
+  trigger={<Button>设置</Button>}
+  headerContent={<ListFilterBar label="记录筛选" variant="inline"
+    search={{ label: '搜索记录', labelVisibility: 'hidden', value: query, onChange: changeQuery }} />}
+  headerActions={<Dialog title="只读说明" trigger={<IconButton label="查看说明" icon="info" />}><Text>完整说明</Text></Dialog>}
+  footer={<><Pagination {...pagination} layout="inline" pageSizeLabelVisibility="hidden" /><Button onClick={save}>保存</Button></>}>
+  <Grid minWidth={240}>{candidateList}{selectionDraft}</Grid>
+</Dialog>
+```
+
+示例中的查询、分页、保存和列表节点由宿主持有。`headerContent` 中的筛选仍保留结果、已选条件、错误与重置；有界模式的自定义头部最多使用main区域40%高度，长反馈在头部内部滚动，避免挤掉正文；关闭/详情和筛选仍须实测滚动后到达。标题栏搜索须沿全部 flex 祖先允许收缩，固定动作保持44px，窄时局部滚动到达，不用更小字号腾位置。`Pagination.pageSizeLabelVisibility` 默认 visible，hidden 保留“每页条数”的关联标签；不会移除页大小选择或改变服务端请求归属。`Pagination.layout="inline"` 可将这一组完整分页保持单行局部滚动，默认wrap不变，适合短屏固定footer。更改单个 `Select` 同样可用 `labelVisibility="hidden"`。低频字段/更多筛选中的标签继续可见。
+
+持续可见的菜单开关用公开 Button 与 Switch 并列；不要把 Switch 嵌入导航按钮/链接。轻量策略与独立草稿属于工作区，不能让未访问正文的懒挂载决定开关是否出现。切栏目不触发另一栏写入；保存期间由宿主锁导航/开关。固定 footer 不依赖当前正文挂载，当前类别只渲染一份分页。等权双框可使用 Grid 与两个具名滚动列表；拖放须保留明确的键盘移入/移出动作，批量选择按服务端完整范围与数量上限执行，空选择不得暗变全部。
+
+短屏动作较多时，可为本实例组合一个有名称/明确归属的单行滚动操作轨道，分页与保存均通过同一轨道到达；其包装必须允许收缩、保留焦点环并实测末项，不能使用不滚动的整宽包装。
+
+真实合成展台 `#settings-dialog` 的“打开内嵌设置”组合覆盖隐藏标题、标题筛选、嵌套只读详情、初始双开关、两列表、分页和草稿；它不实现业务 Transfer、真实查询或发布。采用方独立核对其两框选择规则。验收包含首次打开、切栏目、嵌套 Escape/归焦、正文滚动时头尾不动、默认参数兼容、400/520/880及200% CSS zoom下实际点击与末项；CSS zoom 不替代原生浏览器缩放。

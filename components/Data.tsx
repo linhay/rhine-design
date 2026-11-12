@@ -119,9 +119,9 @@ export function DataTable<T>({ caption, captionVisibility = 'visible', columns, 
 }
 export interface PaginationProps {
   page: number; pageSize: number; total?: number; hasNext?: boolean; loading?: boolean; disabled?: boolean; onPageChange: (page: number) => void;
-  pageSizeOptions?: number[]; onPageSizeChange?: (size: number) => void; showFirstButton?: boolean; showLastButton?: boolean; label?: string;
+  layout?: 'wrap' | 'inline'; pageSizeLabelVisibility?: 'visible' | 'hidden'; pageSizeOptions?: number[]; onPageSizeChange?: (size: number) => void; showFirstButton?: boolean; showLastButton?: boolean; label?: string;
 }
-export function Pagination({ page, pageSize, total, hasNext = false, loading = false, disabled = false, onPageChange, pageSizeOptions = [10, 25, 50], onPageSizeChange, showFirstButton = false, showLastButton = false, label = '分页' }: PaginationProps) {
+export function Pagination({ page, pageSize, total, hasNext = false, loading = false, disabled = false, onPageChange, layout = 'wrap', pageSizeLabelVisibility = 'visible', pageSizeOptions = [10, 25, 50], onPageSizeChange, showFirstButton = false, showLastButton = false, label = '分页' }: PaginationProps) {
   const root = useRef<HTMLElement>(null), focusedAction = useRef<HTMLButtonElement | null>(null);
   const size = Number.isFinite(pageSize) ? Math.max(1, Math.floor(pageSize)) : 1;
   const count = total === undefined || !Number.isFinite(total) || total < 0 ? undefined : Math.floor(total);
@@ -138,9 +138,9 @@ export function Pagination({ page, pageSize, total, hasNext = false, loading = f
     const fallback = actions.slice(index + 1).find(action => !action.disabled) ?? actions.slice(0, index).reverse().find(action => !action.disabled);
     fallback?.focus();
   }, [current, pages, next, unavailable, showFirstButton, showLastButton]);
-  return <nav ref={root} className="rhine-pagination" aria-label={label} aria-busy={loading} onFocusCapture={event => { focusedAction.current = event.target instanceof HTMLButtonElement && event.target.hasAttribute('data-pagination-action') ? event.target : null; }} onBlurCapture={event => { if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) focusedAction.current = null; }}>
+  return <nav ref={root} className={`rhine-pagination${layout === 'inline' ? ' rhine-pagination--inline' : ''}`} aria-label={label} aria-busy={loading} onFocusCapture={event => { focusedAction.current = event.target instanceof HTMLButtonElement && event.target.hasAttribute('data-pagination-action') ? event.target : null; }} onBlurCapture={event => { if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) focusedAction.current = null; }}>
     <span className="rhine-text rhine-text--caption rhine-text--numeric" role="status">{count === undefined ? `第 ${current} 页` : current > pages! ? `第 ${current} 页（已超出 ${pages} 页） · 共 ${count} 条` : `第 ${current} / ${pages} 页 · 共 ${count} 条`}</span>
-    {onPageSizeChange && <Select label="每页条数" value={size} disabled={unavailable} onChange={event => onPageSizeChange(Number(event.target.value))}>{[...new Set([size, ...pageSizeOptions.filter(value => Number.isInteger(value) && value > 0)])].sort((a, b) => a - b).map(value => <option value={value} key={value}>{value} 条</option>)}</Select>}
+    {onPageSizeChange && <Select label="每页条数" labelVisibility={pageSizeLabelVisibility} value={size} disabled={unavailable} onChange={event => onPageSizeChange(Number(event.target.value))}>{[...new Set([size, ...pageSizeOptions.filter(value => Number.isInteger(value) && value > 0)])].sort((a, b) => a - b).map(value => <option value={value} key={value}>{value} 条</option>)}</Select>}
     {showFirstButton && <Button variant="secondary" data-pagination-action="first" disabled={unavailable || current <= 1} onClick={() => onPageChange(1)}>首页</Button>}
     <Button variant="secondary" data-pagination-action="previous" disabled={unavailable || current <= 1} onClick={() => onPageChange(Math.min(current - 1, pages ?? current - 1))}>上一页</Button>
     <Button variant="secondary" data-pagination-action="next" disabled={unavailable || !next} onClick={() => onPageChange(current + 1)}>下一页</Button>

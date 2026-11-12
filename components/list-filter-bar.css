@@ -31,3 +31,11 @@
 @container (max-width:360px) {
   .rhine-list-filter-bar__primary>.rhine-list-filter-bar__field { flex-basis:100%; }
 }
+
+/* Header/list embedding is opt-in; feedback and summaries retain separate rows. */
+.rhine-list-filter-bar--inline > .rhine-list-filter-bar__surface { border:0; box-shadow:none; background:transparent; padding:0; gap:var(--rhine-space-2); }
+.rhine-list-filter-bar--inline .rhine-list-filter-bar__main { flex-wrap:nowrap; align-items:center; overflow-x:auto; padding:4px; scroll-padding-inline:4px; }
+.rhine-list-filter-bar--inline .rhine-list-filter-bar__search { flex:1 1 10rem; min-width:6rem; }
+.rhine-list-filter-bar--inline .rhine-list-filter-bar__primary { flex:0 0 auto; flex-wrap:nowrap; }
+.rhine-list-filter-bar--inline .rhine-list-filter-bar__primary > .rhine-list-filter-bar__field { flex:0 0 auto; }
+.rhine-list-filter-bar--inline .rhine-list-filter-bar__actions { flex:0 0 auto; flex-wrap:nowrap; width:auto; margin-inline-start:auto; }

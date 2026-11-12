@@ -151,3 +151,9 @@
 .rhine-tabs__list--fill>button { flex:1 1 0; min-width:0; overflow-wrap:anywhere; }
 
 .rhine-button--large { font-size:var(--rhine-text-heading); line-height:var(--rhine-leading-heading); min-height:52px; padding:12px 24px; max-width:100%; }
+
+/* Opt-in visible 44px segments aligned with standard controls. */
+.rhine-segmented--control .rhine-segmented__option { padding-block:0; }
+.rhine-segmented--control .rhine-segmented__option span { min-height:44px; }
+.rhine-segmented--control .rhine-segmented__option span { font-size:var(--rhine-text-body); line-height:var(--rhine-leading-body); min-height:max(44px,calc(var(--rhine-leading-body) + 22px)); }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-segmented--control .rhine-segmented__option span { min-height:max(44px,calc(var(--rhine-leading-body) + 24px)); }

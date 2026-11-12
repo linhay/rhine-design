@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import {
   Badge, Button, Checkbox, DateRangePicker, EmptyState, Inline, ListFilterBar,
-  Select, Skeleton, Stack, Surface, Text, type DateRange,
+  Select, Skeleton, Stack, Surface, Text, TextField, type DateRange,
 } from '../components';
 
 type PreviewState = 'normal' | 'delayed' | 'loading' | 'empty' | 'error' | 'disabled';
@@ -155,6 +155,17 @@ function StatisticsExample({ mode }: { mode: PreviewState }) {
   </Stack>;
 }
 
+function ModalStatisticsExample({ mode }: { mode: PreviewState }) {
+  const [scope, setScope] = useState('all'), [period, setPeriod] = useState('week'), [query, setQuery] = useState('');
+  return <ListFilterBar label="统计更多条件" filterOverlay="dialog" activeVariant="secondary"
+    primary={[{id:'scope',label:'组织范围',activeLabel:scope==='all'?undefined:'示例组织',onClear:()=>setScope('all'),control:<Select label="组织范围" value={scope} onChange={e=>setScope(e.target.value)}><option value="all">全部组织</option><option value="sample">示例组织</option></Select>},
+      {id:'period',label:'时间',activeLabel:period==='week'?undefined:'本月',onClear:()=>setPeriod('week'),control:<Select label="时间" value={period} onChange={e=>setPeriod(e.target.value)}><option value="week">本周</option><option value="month">本月</option></Select>}]}
+    moreContent={<Stack><TextField label="低频统计搜索" value={query} onChange={e=>setQuery(e.target.value)} /><Text>统计口径为合成说明；不把已选条件当成结果已接受。</Text><Button variant="secondary">导出统计示例</Button></Stack>}
+    filters={[{id:'query',label:'搜索',activeLabel:query||undefined,onClear:()=>setQuery(''),control:<Text>搜索值：{query||'未设置'}</Text>}]}
+    onReset={()=>{setScope('all');setPeriod('week');setQuery('');}}
+    pending={mode==='loading'} error={mode==='error'?'统计读取失败，保留旧结果。':undefined} result="上次统计 12 条" />;
+}
+
 export function ListFilterBarGallery() {
   const [mode, setMode] = useState<PreviewState>('normal');
   return <section id="list-filter-bar">
@@ -178,6 +189,7 @@ export function ListFilterBarGallery() {
         <Text as="h3" variant="heading">统计范围 · 无搜索框</Text>
         <StatisticsExample mode={mode} />
       </Stack>
+      <ModalStatisticsExample mode={mode} />
       <Text variant="caption" tone="muted">筛选即时改变宿主状态，关闭抽屉不撤销条件。加载、错误和结果在抽屉内同样可见；用 Escape 关闭并返回入口。</Text>
     </Stack>
   </section>;

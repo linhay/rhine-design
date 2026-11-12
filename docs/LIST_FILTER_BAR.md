@@ -120,3 +120,15 @@ Drawer 中的原生日期还须检查实际文本编辑区：完整值、最后�
 - 区域已有可见标题时，[后续纠正](https://github.com/linhay/rhine-design/issues/19#issuecomment-6516734959)允许 `DataTable captionVisibility="hidden"` 消除重复 caption；必填 caption 仍描述表格，保留原生语义及可聚焦横滚区域名称。此可选参数为未发布源码能力，0.11.3 与旧固定候选不含，消费升级需另行核对，不能直接改 node_modules。
 
 验收从完整实际容器出发：核对层级与旧结构移除、常显条件和默认摘要、IME/重置/服务返回页、抽屉 pending/error 与 Escape 归焦、旧结果语义、长值/数字对齐、局部横滚末列、窄屏/CSS zoom 及减少动态可操作。各消费方保留自己的业务/API 验收；本轮配方补充不冒充原产品或正式后端已完成。DataTable 默认/隐藏标题的真实组件展台在 `/#data`，隔离生产入口为 `/?fixture=data-caption`；参数契约见[应用组件](APPLICATION_COMPONENTS.md#datatable-与-pagination)。
+
+## 标题内嵌与居中更多（#19，源码新增，未发布）
+
+本节是已明确的桌面局部偏好，补充前文默认层级：`variant="inline"` 移除本实例 Surface 的边界、背景与内距，让主行保持单行，搜索随剩余空间伸缩；窄容器由主行局部横向滚动到动作。焦点环仍预留4px，不能将滚动包装高度误认为44px控件的可见高度。标题/数量可与筛选在宿主同一行；无需再套一层卡片。默认 variant 继续按容器换行。
+
+- `search.labelVisibility` 默认 visible；hidden 保留关联名称，只在已有清晰上下文的标题栏去除重复可见标签。`Select.labelVisibility` 是独立公开参数；不能删 label 或仅靠 placeholder 命名。原有默认可见标签规则继续适用普通列表。
+- `filterOverlay="dialog"` 将同一更多入口改为居中、有遮罩的 Dialog；默认 drawer 保持不变。溢出的 primary、filters、结果/加载/错误/重置仍在同一浮层。历史参数 `drawerDescription` / `drawerResult` 对两种浮层都生效；关闭仍不隐式应用或撤销条件。
+- `moreContent?: ReactNode` 在更多字段后放置低频搜索、说明或次要操作；即使没有 filters 也生成更多入口。宿主管理其中字段的值、请求和完整摘要，不能凭插槽自动推导筛选或替代权限。`activeVariant="secondary"` 让可清除摘要保留边框，默认 quiet 不变；完整名称和单项清除焦点继续保留。
+
+统计列表可只常显组织范围与时间，把低频搜索、平台、排行、内容结构、导出和口径放进同一个更多 Dialog。隐藏搜索不等于清空其条件；用 filters 的 activeLabel/onClear 表达更多内容中字段的真实活跃状态，独立清除与整体重置仍归宿主。错误和 pending 不能只留在遮罩后。
+
+`#list-filter-bar` 新增居中统计更多例子；标题内嵌见[设置组合](SETTINGS_DIALOG.md#内嵌标题工具栏与等权列表18--3源码新增未发布)。验证同一范围状态、草稿/已接受结果、更多内失败、低频搜索/导出可达、清除后焦点、Escape归焦及实际窄容器滚动；主行无页面横溢出不能替代操作可达证据。新增 API 未进入已发布0.13.0，需固定后续源码/制品，原消费适配删除与升级另行验收。

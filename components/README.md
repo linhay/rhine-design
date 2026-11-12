@@ -222,3 +222,11 @@ Button.size="standard" | "large"（0.11.2），标准14/22、44px最小高度，
 ### Tabs 栏内操作（#134，未发布）
 
 `actions?: ReactNode` 放在组件 header 内、tablist 外，与页签共享整行分隔线；`className` 用于宿主布局。无 actions 保留原 tablist / panel DOM。方向键只控制页签，Tab 进入动作。正文传 `items[].content`，参见[栏内操作契约](../docs/SUMMARY_TABS.md#栏内操作候选134未发布)和 `/#summary-tabs` 真实展台。
+
+### 内嵌工作区新增参数（源码，未发布）
+
+- Select：`labelVisibility?: 'visible' | 'hidden'`，默认visible，保留必填关联label、hint/error与原生交互。
+- Pagination：`layout?: 'wrap' | 'inline'`默认wrap，inline局部单行滚动；`pageSizeLabelVisibility?: 'visible' | 'hidden'`透传页大小Select，默认visible。
+- Dialog：`width?: CSSProperties['width']`、`titleVisibility?: 'visible' | 'hidden'`、`headerContent?: ReactNode`、`headerActions?: ReactNode`，见[设置契约](../docs/SETTINGS_DIALOG.md)。Drawer不增加这些参数。
+- ListFilterBar：`variant?: 'default' | 'inline'`、`search.labelVisibility`、`filterOverlay?: 'drawer' | 'dialog'`、`moreContent?: ReactNode`、`activeVariant?: 'quiet' | 'secondary'`，默认行为不变，见[筛选契约](../docs/LIST_FILTER_BAR.md)。
+- SegmentedControl：`size="control"`的至少44px可见面（随标准按钮主题边框增长），compact既有视觉保持，见[紧凑组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)。

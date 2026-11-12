@@ -259,3 +259,12 @@ describe('Pagination framework parity', () => {
     expect(screen.getByRole('button', { name: '别的操作' })).toHaveFocus();
   });
 });
+
+it('keeps the page-size Select named and functional with a visually hidden label', () => {
+  const change = vi.fn();
+  render(<Pagination page={1} pageSize={10} total={50} pageSizeLabelVisibility="hidden" onPageChange={()=>{}} onPageSizeChange={change} />);
+  const select = screen.getByRole('combobox', {name:'每页条数'});
+  expect(document.querySelector(`label[for="${select.id}"]`)).toHaveClass('rhine-sr-only');
+  fireEvent.change(select, {target:{value:'25'}});
+  expect(change).toHaveBeenCalledWith(25);
+});

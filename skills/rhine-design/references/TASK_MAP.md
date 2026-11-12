@@ -39,3 +39,5 @@ For 0.8.0 theme-comparison cards, settings navigation, or floating CSS zoom boun
 常驻层级浏览树与外部几何画布：核对安装包是否包含 `docs/RESIDENT_TREE.md`、`preview/ResidentTreeRecipe.tsx` 与 `preview/resident-tree.css`；这是示例组合，不是新的 Tree 公共导出，npm 0.11.3 尚不包含。焦点、选择与展开分离，固定/跟随目标及数据请求由宿主维护。
 
 创建/部分创建后的成员目录与部门计数刷新：见 `docs/ASYNC_SNAPSHOT_RECIPES.md` 的“创建结果与目录刷新分开”。写入事实、未完成步骤与附属刷新错误分别维护，不能仅更新全局人员缓存或因刷新失败重复创建。此为宿主配方，不增加数据层 API。
+
+标题栏筛选、隐藏重复标题/标签、等权双框与固定分页：见 `docs/SETTINGS_DIALOG.md`、`docs/LIST_FILTER_BAR.md`（源码新增，未发布；核对实际props）。循环工具当前调用/完整时间线见 `docs/AGENT_CHAT.md`；精简配置、全局/局部后果与按需只读详情见 `docs/PLUGIN_CARD_COMPOSITION.md`，这些宿主配方不新增业务执行器。

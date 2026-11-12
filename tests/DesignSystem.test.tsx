@@ -141,3 +141,16 @@ describe('reusable design components', () => {
     }
   });
 });
+
+it('hides only the Select label visually and retains descriptions and native behavior', () => {
+  const change = vi.fn();
+  const { rerender } = render(<Select label="平台" labelVisibility="hidden" hint="范围" error="读取失败" onChange={change}><option value="a">甲</option><option value="b">乙</option></Select>);
+  const select = screen.getByRole('combobox', {name:'平台'});
+  expect(document.querySelector(`label[for="${select.id}"]`)).toHaveClass('rhine-sr-only');
+  expect(select).toHaveAccessibleDescription('范围 读取失败');
+  expect(select).not.toHaveAttribute('labelVisibility');
+  fireEvent.change(select, {target:{value:'b'}});
+  expect(change).toHaveBeenCalledTimes(1);
+  rerender(<Select label="平台"><option>甲</option></Select>);
+  expect(document.querySelector(`label[for="${select.id}"]`)).not.toHaveClass('rhine-sr-only');
+});

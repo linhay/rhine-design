@@ -174,3 +174,22 @@ it('closes a newly focused nested confirmation before its drawer on immediate Es
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   await waitFor(() => expect(screen.getByRole('button', { name: 'Open tools' })).toHaveFocus());
 });
+
+it('preserves Dialog identity with public header slots and explicit width', async () => {
+  render(<Dialog title="有名称的工作区" titleVisibility="hidden" width={960} height={640} trigger={<Button>开启工作区</Button>}
+    headerContent={<input aria-label="标题搜索" defaultValue="草稿" />}
+    headerActions={<Dialog title="只读详情" trigger={<Button>详情入口</Button>}><p>详情内容</p></Dialog>}
+    footer={<Button>提交草稿</Button>}><p>正文</p></Dialog>);
+  fireEvent.click(screen.getByText('开启工作区'));
+  const outer = screen.getByRole('dialog', {name:'有名称的工作区'});
+  expect(outer).toHaveStyle({width:'960px',maxWidth:'calc(100% - 32px)'});
+  expect(document.getElementById(outer.getAttribute('aria-labelledby')!)).toHaveClass('rhine-sr-only');
+  expect(screen.getByLabelText('标题搜索').closest('.rhine-dialog__body')).toBeNull();
+  fireEvent.click(screen.getByText('详情入口'));
+  const inner = screen.getByRole('dialog', {name:'只读详情'});
+  fireEvent.keyDown(inner, {key:'Escape'});
+  await waitFor(()=>expect(screen.queryByRole('dialog', {name:'只读详情'})).not.toBeInTheDocument());
+  expect(screen.getByRole('dialog', {name:'有名称的工作区'})).toBeVisible();
+  expect(screen.getByLabelText('标题搜索')).toHaveValue('草稿');
+  await waitFor(()=>expect(screen.getByRole('button', {name:'详情入口'})).toHaveFocus());
+});
