@@ -18,10 +18,10 @@
   <a href="CHANGELOG.md">版本记录</a>
 </p>
 
-Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。当前源码将设计规范、88 个组件和动效示例放在一起，帮助团队建立一致、可复用的界面语言。
+Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、管理界面和数据密集型应用。组件按原语、组件、模式和独立模块查找；参数以安装版本的导出为准，不用一个总数代表能力。
 
 - **一致的视觉语言**：色彩、字体、文字层级、间距、几何与焦点规则。
-- **88 个可组合组件**：覆盖布局、表单、数据、导航、浮层、反馈和 Chat Foundation 工作区组合。
+- **可组合的界面**：先查[组件目录](components/CATALOG.md)，再读对应契约。聊天、装饰艺术和评审工具是独立入口。
 - **可验证的动效**：12 组播放 / 重播 / 复位演示，以及三角构架启动编排。
 - **面向开发协作**：组件契约、交互展台和 AI skill 帮助设计与实现保持一致。
 
@@ -111,23 +111,16 @@ export default function App() {
 
 ## 组件
 
-| 类别 | 组件 |
+按层查找，不在这里维护第二份名单。[组件目录](components/CATALOG.md)给每个公开导出一行：何时用、何时不用，以及原契约链接。
+
+| 层 | 用来做什么 |
 | --- | --- |
-| 品牌与文字 | Logo · Text |
-| 操作 | Button · ButtonLink⁴ · Icon · IconButton · Link · CopyButton · ResponsiveActions（0.12.0） |
-| 布局与背景 | Surface · Toolbar · Divider · Stack · Inline · Grid · Background² · AppShell² · AppShellToggle⁴ · OrbitBackdrop³ · NeutronStarBackdrop⁴ |
-| 表单与选择 | TextField · Fieldset¹ · ErrorSummary¹ · Textarea · Select · Checkbox · RadioGroup · Switch · SearchField · Combobox · SelectionCard · DateField² · DateRangePicker² · NumberField² · TreeSelect² · RemoteMultiSelect² · MappingEditor（0.12.0） · ThemePicker⁴ · ThemePreview⁴ |
-| 导航与展开 | SettingsNavigation（0.12.0） · SideNav¹ · Breadcrumbs¹ · Steps¹ · Tabs · SegmentedControl · Disclosure |
-| 聊天组合（自 0.11.2） | ChatThread · ChatCard |
-| Chat Foundation 工作区（main，尚未发布） | ChatShell · WorkspaceRail · AgentList · AgentRow · ChatHeader · MessageList · MessageBubble · Composer · AgentInspector |
-| 搜索与筛选组合 | ListFilterBar⁵ |
-| 数据与媒体 | Metric · KeyValue · DataTable · Pagination · StatusTimeline¹ · StatusTimelineList⁴ · TimelineLegend¹ · TrendChart² · StackedBar² · MediaCard² · MediaViewer² |
-| 浮层 | Drawer¹ · Dialog · ConfirmDialog · Popover · Menu · Tooltip |
-| 状态与反馈 | Badge · Notice · Toast · Progress · Skeleton · EmptyState |
+| 原语 | 排版、文字和单个动作 |
+| 组件 | 自己管理输入、选择、浮层、反馈或展示状态 |
+| 模式组件 | 已经公开的任务组合，例如筛选栏和设置导航 |
+| 模块 | 聊天、轨道和中子星；评审工具走独立包入口 |
 
-¹ 自 0.4.0 提供。² 自 0.5.0 提供。³ 自 0.6.0 提供。⁴ 自 0.8.0 提供。⁵ 自 0.9.0 提供。
-
-参数、状态和组合示例见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
+能用现有组件拼成的页面写成配方，不新增同名导出。参数仍见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 
 ## 主题与背景
 
@@ -170,6 +163,7 @@ export function App() {
 
 | 主题 | 文档 | 在线预览 |
 | --- | --- | --- |
+| 按层查找组件 | [组件目录](components/CATALOG.md)、[体系导航](docs/README.md) | 展台按场景浏览，不代替目录 |
 | 聊天消息、卡片与历史 | [Agent Chat](docs/AGENT_CHAT.md) | [聊天消息与记录](https://linhay.github.io/rhine-design/#agent-chat) |
 | 编辑布局与局部配色 | [编辑布局配方](docs/EDITORIAL_LAYOUT.md) | [报告、发布说明与概览](https://linhay.github.io/rhine-design/#editorial-layout) |
 | 视觉基础与组合原则 | [设计规范](docs/DESIGN_SYSTEM.md) | [视觉基础](https://linhay.github.io/rhine-design/#foundation) |

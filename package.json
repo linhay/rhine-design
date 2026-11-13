@@ -65,7 +65,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "npm run typecheck && vite build && node scripts/check-build.mjs",
-    "check": "npm run test && npm run build && npm run review:build && node scripts/check-review-package.mjs",
+    "check": "node scripts/check-component-catalog.mjs && npm run test && npm run build && npm run review:build && node scripts/check-review-package.mjs",
     "prepublishOnly": "npm run check",
     "review:http": "vite --config examples/review/http/vite.config.ts --host 127.0.0.1 --port 18340 --strictPort",
     "review:platform": "vite --config examples/review/platform/vite.config.ts --host 127.0.0.1 --port 18341 --strictPort",

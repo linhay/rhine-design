@@ -4,6 +4,7 @@ Resolve the matching package root as described in SKILL.md. Open the first relev
 
 | Task | First reference (relative to package root) | Implementation / example |
 | --- | --- | --- |
+| Choose a component, decide whether to add one, or separate primitives, components, patterns and modules | `components/CATALOG.md` | `components/index.ts`; one row per value export; recipes are not new exports |
 | Agent chat, member grouping, inline cards, observation and history scrolling | `docs/AGENT_CHAT.md` (source candidate after 0.11.0) | `components/Chat.tsx`, `preview/ChatGallery.tsx`; `/#agent-chat`; host owns transitions, requests and permissions |
 | Application shell, backgrounds, media, advanced inputs, controlled tables | `docs/APPLICATION_COMPONENTS.md` (0.5.0) | `preview/ExtensionsGallery.tsx`; `/#app-shell`, `/#advanced-forms`, `/#advanced-data`, `/#media` |
 | Workspace header, duplicate page titles, optional breadcrumbs | `docs/APPLICATION_COMPONENTS.md` → 平级工作区顶部操作区 (source guideline) | `preview/ExtensionsGallery.tsx`; `/#app-shell`; keep status/actions, navigation restore and accessible page identity |

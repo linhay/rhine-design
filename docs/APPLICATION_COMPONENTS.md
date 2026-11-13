@@ -1,6 +1,6 @@
 # 应用组件与状态契约
 
-本页对应 GitHub issues [#1](https://github.com/linhay/rhine-design/issues/1)、[#2](https://github.com/linhay/rhine-design/issues/2)、[#3](https://github.com/linhay/rhine-design/issues/3)、[#4](https://github.com/linhay/rhine-design/issues/4)、[#5](https://github.com/linhay/rhine-design/issues/5)、[#6](https://github.com/linhay/rhine-design/issues/6)。新增 11 个组件，公共组件总数为 59。
+本页对应 GitHub issues [#1](https://github.com/linhay/rhine-design/issues/1)、[#2](https://github.com/linhay/rhine-design/issues/2)、[#3](https://github.com/linhay/rhine-design/issues/3)、[#4](https://github.com/linhay/rhine-design/issues/4)、[#5](https://github.com/linhay/rhine-design/issues/5)、[#6](https://github.com/linhay/rhine-design/issues/6)。0.5.0 当时新增 11 个组件，公共导出为 59 个。这是该版本的历史数量，不是当前清单；当前查找见[组件目录](../components/CATALOG.md)。
 
 **版本边界：以下 API 自 0.5.0 提供，npm 0.4.0 不含这些能力。** 本次不改变现有组件必填参数；DataTable/Pagination 的参数均为新增可选项。使用 `npm install --save-exact @linhey/rhine-design@0.5.0` 并提交 lockfile。组件库升级不代表消费应用已经迁移。
 

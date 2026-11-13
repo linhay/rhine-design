@@ -38,7 +38,7 @@ import { MotionGallery } from './MotionGallery';
 import { StartupGallery } from './StartupGallery';
 import { PatternGallery } from './PatternGallery';
 import { GalleryShell } from './GalleryShell';
-import { componentCount } from './packageInfo';
+
 import { SpacingGallery } from './SpacingGallery';
 import { LineHeightGallery } from './LineHeightGallery';
 import { SubscriptionGallery } from './SubscriptionGallery';
@@ -125,7 +125,7 @@ function Gallery() {
     {section === 'media' && <MediaGallery />}
     {section === 'subscriptions' && <SubscriptionGallery />}
     {section === 'top' && <>
-      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>{componentCount} 个通用组件，共用一套视觉变量和动效规则。<br />展台运行当前源码，可能包含未发布能力；接入前请核对安装版本与<Link href="https://github.com/linhay/rhine-design/blob/main/CHANGELOG.md">版本记录</Link>。</p></div></div>
+      <div className="ds-hero"><div><p className="ds-kicker">FOUNDATIONS / COMPONENTS / MOTION</p><h1>精密，有序。<br /><span>每一次交互都有回应。</span></h1><p>原语、组件、模式和独立模块共用一套视觉变量。<br />展台运行当前源码，可能包含未发布能力；接入前请核对安装版本与<Link href="https://github.com/linhay/rhine-design/blob/main/CHANGELOG.md">版本记录</Link>。</p></div></div>
       <div className="ds-overview-links">{[
         ['foundation','视觉基础','从色彩、间距与材质开始。'],
         ['typography','字体与文字','清晰的层级，稳定的阅读节奏。'],

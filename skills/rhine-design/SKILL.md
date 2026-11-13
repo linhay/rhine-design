@@ -21,6 +21,7 @@ Relative Markdown links stay inside this portable skill folder. Package-root pat
 
 ## Route the task
 
+- Choosing, adding, or classifying a component: start with `components/CATALOG.md` at the package root. It is the layer lookup. Do not add an export when an existing component or recipe can express the task.
 - Screen design, interaction, typography, motion: start with [TASK_MAP.md](references/TASK_MAP.md), then read only the relevant contract.
 - A named component or prop: use [API_MAP.md](references/API_MAP.md), then inspect its exported type and implementation.
 - First integration, linking, theme or missing styles: read [integration.md](references/integration.md).
