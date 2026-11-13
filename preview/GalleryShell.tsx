@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Breadcrumbs, Button, Logo, SegmentedControl, Select, SideNav } from '../components';
 import { ThemeProvider, themes, useTheme, type ThemeName } from '../components/theme';
-import { componentCount, packageVersion } from './packageInfo';
+import { packageVersion } from './packageInfo';
 import { chatFoundationPages, isChatFoundationComponent, type ChatFoundationComponentId } from './chat-foundation-navigation';
 import './shell.css';
 import './theme-arknights.css';
@@ -97,7 +97,7 @@ function GalleryContent({ motion, onMotionChange, children, section }: GallerySh
       <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={section} groups={galleryGroups.map(group=>({label:group.label,items:group.items.map(([id,label])=>({id,label,href:`#${id}`,children:id==='chat-foundation'?chatFoundationPages.map(page=>({id:page.id,label:page.label,href:`#${page.id}`})):undefined}))}))} onNavigate={item=>{
         setMenuOpen(false); if(section===item.id) main.current?.focus({preventScroll:true});
       }}/>
-      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>{componentCount} 个组件 · 源码包版本 {packageVersion}</span><span>发布范围见版本记录</span><span className="ak-readout">{readout}</span></div>
+      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>分层目录见组件契约 · 源码包版本 {packageVersion}</span><span>发布范围见版本记录</span><span className="ak-readout">{readout}</span></div>
     </aside>
     <main className="ds-workspace" id="gallery-content" ref={main} tabIndex={-1} aria-label={label}>
       <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},...(isChatFoundationComponent(section)?[{label:"Chat 基石",href:"#chat-foundation"}]:[]),{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" disabled={section === 'editorial-layout'} title={section === 'editorial-layout' ? '此配方固定以中性主题为基础；可在内容区选择局部配色' : undefined} value={theme} onChange={event => {

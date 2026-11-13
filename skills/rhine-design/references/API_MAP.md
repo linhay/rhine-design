@@ -1,6 +1,6 @@
 # API map
 
-All paths are relative to the matching package root. `package.json` exports, `components/index.ts` and the separate `components/theme.tsx` entry are the public export authority. This index locates APIs; exact props come from the installed source, not from remembered examples.
+All paths are relative to the matching package root. `package.json` exports, `components/index.ts` and the separate `components/theme.tsx` entry are the public export authority. Use `components/CATALOG.md` to decide the layer and whether to use an existing export; this index only locates source. Exact props come from the installed source, not from remembered examples.
 
 | Exports | Source |
 | --- | --- |
