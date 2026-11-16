@@ -70,7 +70,7 @@ export function TrendChart({ points, kind = 'bar', activePointId, defaultActiveP
           <circle key={point.id} className="rhine-chart__point" cx={x(index)} cy={y(point.value)} r={3}><title>{point.label}：{point.value} {context.unit}</title></circle>)}
       </svg>
       <div className="rhine-chart__range"><span>{points[0]?.label}</span><span>{points.at(-1)?.label}</span></div>
-      <p className="rhine-chart__legend"><span aria-hidden="true" />{context.label} · × 表示缺失；折线在缺失处断开。</p>
+      <p className="rhine-chart__legend"><span aria-hidden="true" />{context.label} · × 表示缺失{kind === 'line' ? '；折线在缺失处断开。' : '；缺失时段不绘制柱形。'}</p>
       <p id={`${id}-inspection`} className="rhine-chart__inspection" aria-live="polite" aria-atomic="true">{activePoint ? `${activePoint.label}：${format(activePoint.value)}${known(activePoint.value) ? ` ${context.unit}` : ''}` : '聚焦图形后用左右键、Home / End 查看采样；也可悬停或轻触。'}</p>
     </>}
     <details className="rhine-chart__data"><summary>查看{context.label}数据表</summary><DataTable caption={`${context.label}原始采样`} rows={points} rowKey={point => point.id} columns={[

@@ -1,0 +1,45 @@
+import { useCallback, useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import * as UI from '@linhey/rhine-design';
+import { AutoComplete, Button, Cascader, Checkbox, ColorPicker, ErrorSummary, Form, Image, Inline, Logo, Masonry, Mentions, Rate, Select, Slider, Stack, Surface, Text, TimePicker, Tour, Transfer, Tree, Upload } from '@linhey/rhine-design';
+import type { AutoCompleteProps, CascaderProps, ColorPickerProps, FormProps, ImageProps, MentionsProps, ProvidedFieldProps, RateProps, SliderProps, TimePickerProps, TourProps, TransferProps, UploadProps, VirtualListProps } from '@linhey/rhine-design';
+import { ThemeProvider, themes, type ThemeName } from '@linhey/rhine-design/theme';
+import * as Review from '@linhey/rhine-design/review';
+import '@linhey/rhine-design/tokens.css';
+import '@linhey/rhine-design/styles.css';
+import '@linhey/rhine-design/theme-arknights.css';
+import '@linhey/rhine-design/theme-neo-brutalism.css';
+import '@linhey/rhine-design/theme-neutral.css';
+import '@linhey/rhine-design/theme-graphite.css';
+import logoUrl from '@linhey/rhine-design/logo.svg';
+import './style.css';
+
+export type PublicContracts=[AutoCompleteProps,CascaderProps,ColorPickerProps,FormProps,ImageProps,MentionsProps,ProvidedFieldProps,RateProps,SliderProps,TimePickerProps,TourProps,TransferProps,UploadProps,VirtualListProps<{id:string}>];
+const scenes=['form','image','tour','data','semantics'] as const;
+type Scene=typeof scenes[number];
+const currentScene=()=>scenes.includes(location.hash.slice(1) as Scene)?location.hash.slice(1) as Scene:'form';
+const people=[{id:'a',label:'甲组'},{id:'b',label:'乙组'}];
+const run=new URLSearchParams(location.search).get('run')??'default';
+const fixture=(name:string)=>`/fixtures/${name}.svg?run=${encodeURIComponent(run)}`;
+function App(){
+  const [scene,setScene]=useState(currentScene),[theme,setTheme]=useState<ThemeName>('rhine');
+  const [workspace,setWorkspace]=useState(''),[rating,setRating]=useState(2),[volume,setVolume]=useState(30),[time,setTime]=useState('09:30:05'),[color,setColor]=useState('#123456'),[notes,setNotes]=useState('请 @'),[files,setFiles]=useState<File[]>([]),[path,setPath]=useState<string[]>(['r','leaf']),[members,setMembers]=useState<string[]>(['a']),[readonly,setReadonly]=useState(false),[disabled,setDisabled]=useState(false),[failed,setFailed]=useState(false),[snapshot,setSnapshot]=useState(''),[focusKey,setFocusKey]=useState(0);
+  const [source,setSource]=useState(fixture('good')),[guide,setGuide]=useState(false),[showTarget,setShowTarget]=useState(true),[targetValue,setTargetValue]=useState('目标原文'),[guideMessage,setGuideMessage]=useState('尚未开始');
+  const [dataState,setDataState]=useState('ready'),[dataPath,setDataPath]=useState<string[]>([]),[dataMembers,setDataMembers]=useState<string[]>([]),[expandPath,setExpandPath]=useState(''),[selected,setSelected]=useState('root');
+  const target=useCallback(()=>document.getElementById('package-target'),[]);
+  useEffect(()=>{const update=()=>setScene(currentScene());window.addEventListener('hashchange',update);return()=>window.removeEventListener('hashchange',update);},[]);
+  const shared={disabled,readOnly:readonly};
+  return <ThemeProvider theme={theme}><main className="consumer"><header><Logo size={32}/><h1>固定制品隔离消费</h1><img src={logoUrl} alt="公共SVG入口" width={24}/></header><Inline gap={3}>{scenes.map(item=><a key={item} href={`#${item}`}>{item}</a>)}</Inline><Select label="消费主题" value={theme} onChange={event=>setTheme(event.target.value as ThemeName)}>{themes.map(item=><option key={item.name} value={item.name}>{item.label}</option>)}</Select><Text>公开值导出：{Object.keys(UI).length}；评审入口：{Object.keys(Review).sort().join(', ')}</Text>
+    {scene==='form'&&<section data-scene="form"><h2>原生表单接入</h2><Stack gap={4}><Inline gap={3}><Checkbox label="只读字段" checked={readonly} onChange={event=>{setReadonly(event.target.checked);setFailed(false);}}/><Checkbox label="禁用字段" checked={disabled} onChange={event=>{setDisabled(event.target.checked);setFailed(false);}}/></Inline><Form id="consumer-form" label="制品表单" noValidate onSubmit={event=>{setFocusKey(value=>value+1);if(!disabled&&!readonly&&!workspace.trim()){setFailed(true);setSnapshot('');return;}setFailed(false);const values:Record<string,unknown>=Object.create(null);new FormData(event.currentTarget).forEach((value,key)=>{const saved=value instanceof File?{name:value.name,size:value.size,type:value.type}:value;const previous=values[key];values[key]=previous===undefined?saved:Array.isArray(previous)?[...previous,saved]:[previous,saved];});setSnapshot(JSON.stringify(values));}}><Stack gap={4}>
+      <ErrorSummary errors={failed?[{fieldId:'workspace',message:'请输入工作区'}]:[]} focusKey={focusKey}/>
+      <AutoComplete id="workspace" name="workspace" label="工作区" value={workspace} options={['研究','协作']} onChange={value=>{setWorkspace(value);setFailed(false);}} required hint="允许自由文本" error={failed?'请输入工作区':undefined} {...shared}/>
+      <Rate id="score" name="score" label="评分" value={rating} onChange={setRating} required {...shared}/><Slider id="volume" name="volume" label="数值" value={volume} onChange={setVolume} {...shared}/><TimePicker id="time" name="time" label="秒级时间" value={time} min="08:00" max="18:00" step={1} required onChange={setTime} {...shared}/><ColorPicker id="color" name="color" label="颜色" value={color} required onChange={setColor} {...shared}/><Mentions id="notes" name="notes" label="正文" value={notes} options={['甲组','乙组']} onChange={setNotes} {...shared}/>
+      <Cascader id="path" name="path" label="路径" options={[{value:'r',label:'根',children:[{value:'leaf',label:'叶子'}]}]} value={path} onChange={setPath} {...shared}/><Transfer id="members" name="members" label="成员" source={people} target={members} onChange={setMembers} {...shared}/><Upload id="attachment-file" name="attachments" label="附件" files={files} accept=".txt" required onChange={setFiles} {...shared}/><Button type="submit">提交快照</Button>
+      </Stack></Form><TimePicker id="external-time" form="consumer-form" name="externalTime" label="外部关联只读时间" value="10:00" onChange={()=>undefined} readOnly disabled={disabled}/>{snapshot&&<pre className="consumer-snapshot" data-snapshot>{snapshot}</pre>}</Stack></section>}
+    {scene==='image'&&<section data-scene="image"><h2>图片资源</h2><Inline gap={2}><Button onClick={()=>setSource(fixture('good'))}>有效图片</Button><Button onClick={()=>setSource(fixture('slow'))}>慢速图片</Button><Button onClick={()=>setSource(fixture('bad'))}>损坏图片</Button><Button onClick={()=>setSource(fixture('retry'))}>可恢复图片</Button><Button onClick={()=>setSource('')}>无图片</Button></Inline><Image alt="制品图" src={source||undefined} caption="资源由本地测试服务器提供，不是业务接口。"/></section>}
+    {scene==='tour'&&<section data-scene="tour"><h2>目标引导</h2><Stack gap={4}><Button onClick={()=>{setGuide(true);setGuideMessage('已开始');}}>开启目标引导</Button><Checkbox label="移除消费目标" checked={!showTarget} onChange={event=>setShowTarget(!event.target.checked)}/><span id="package-target-help">输入由消费方持有</span>{showTarget&&<input id="package-target" aria-label="消费目标" aria-describedby="package-target-help" value={targetValue} onChange={event=>setTargetValue(event.target.value)}/>}<Text role="status">{guideMessage}</Text>{guide&&<Tour title="制品目标说明" description="转到目标可以输入；目标消失不自动完成。" step={0} total={1} target={target} onPrevious={()=>undefined} onNext={()=>undefined} onClose={()=>{setGuide(false);setGuideMessage('已关闭');}} onTargetMissing={()=>setGuideMessage('目标缺失')} onTargetRetry={()=>setShowTarget(true)}/>}</Stack></section>}
+    {scene==='data'&&<section data-scene="data"><h2>宿主读取反馈</h2><Stack gap={4}><Select label="读取模式" value={dataState} onChange={event=>setDataState(event.target.value)}><option value="ready">完成</option><option value="loading">加载</option><option value="error">失败</option><option value="empty">空数据</option><option value="lazy">未读取分支</option></Select><Cascader id="data-path" name="path" label="异步路径" options={dataState==='empty'?[]:[{value:'r',label:'根',isLeaf:false,children:dataState==='ready'?[{value:'leaf',label:'叶子'}]:undefined,loading:dataState==='loading',loadError:dataState==='error'?'分支失败':undefined}]} value={dataPath} onChange={setDataPath} onExpand={value=>{setExpandPath(value.join('/'));if(dataState==='lazy')setDataState('loading');}} onRetry={()=>setDataState('loading')}/><Text data-expansion>展开意图：{expandPath}</Text><Transfer id="data-members" name="members" label="数据成员" source={dataState==='empty'||dataState==='loading'?[]:people} target={dataMembers} onChange={setDataMembers} loading={dataState==='loading'} loadError={dataState==='error'?'候选失败':undefined} onRetry={()=>setDataState('loading')}/></Stack></section>}
+    {scene==='semantics'&&<section data-scene="semantics"><h2>结构与受控选择</h2><Masonry label="制品卡片" columns={2}><Surface>甲</Surface><Surface>乙</Surface><Surface>丙</Surface></Masonry><Tree label="制品树" nodes={[{id:'root',label:'研究',children:[{id:'leaf',label:'资料'}]}]} selected={selected} onSelect={setSelected}/><Text data-selected>选中：{selected}</Text></section>}
+  </main></ThemeProvider>;
+}
+createRoot(document.getElementById('root')!).render(<App/>);

@@ -105,20 +105,24 @@ export default function App() {
 - 本页安装与代码示例以正式 **0.12.0** 为基线，包含 72 个组件和五套主题。发布制品、范围与验收边界见 [0.12.0 发布记录](docs/releases/0.12.0.md)。
 - 从旧版本升级时，若穷举 `ThemeName`，需补齐 `neutral` 与 `graphite` 分支。其他变化见 [CHANGELOG](CHANGELOG.md)，升级时同步精确依赖与 lockfile。
 - 包内 `docs/`、`components/` 和 `skills/` 可从 `node_modules/@linhey/rhine-design/` 查阅。Skill 自身的版本说明可能早于 npm 包，使用 API 时核对实际导出、类型与实现。
+- #215未发布接入补全的字段、资源/目标状态和固定制品验证见[源码候选契约](components/PROVIDED_COMPONENTS.md)。其中Chromium/WebKit的有限证据不代表所有浏览器；本地tarball不是npm发行。
 - GitHub 主线文档和在线展台随 `main` 更新；安装包的能力以精确版本为准。后续主线文档不自动进入已发布制品。需要源码试用时固定提交，不用浮动 `main` 作为正式依赖。
 
 <a id="components"></a>
 
 ## 组件
 
-按层查找，不在这里维护第二份名单。[组件目录](components/CATALOG.md)给每个公开导出一行：何时用、何时不用，以及原契约链接。
+按 Ant Design 组件总览的分类查找，不在这里维护第二份名单。[组件目录](components/CATALOG.md)给每个公开导出一行：何时用、何时不用，以及原契约链接。分类对标不是兼容实现。
 
-| 层 | 用来做什么 |
+| 分类 | 用来做什么 |
 | --- | --- |
-| 原语 | 排版、文字和单个动作 |
-| 组件 | 自己管理输入、选择、浮层、反馈或展示状态 |
-| 模式组件 | 已经公开的任务组合，例如筛选栏和设置导航 |
-| 模块 | 聊天、轨道和中子星；评审工具走独立包入口 |
+| 通用 | 按钮、图标和排版 |
+| 布局 | 分隔、间距、分列和外壳 |
+| 导航 | 面包屑、菜单、步骤、页签和分页 |
+| 数据录入 | 输入、选择、日期和筛选 |
+| 数据展示 | 表格、指标、时间轴和媒体 |
+| 反馈 | 对话框、抽屉、提示、进度和骨架 |
+| 其他 | 局部配置、工具、固钉与应用边界；评审工具走独立包入口 |
 
 能用现有组件拼成的页面写成配方，不新增同名导出。参数仍见[组件 API](components/README.md)与[常用组件契约](components/COMMON_COMPONENTS.md)。
 
@@ -163,7 +167,7 @@ export function App() {
 
 | 主题 | 文档 | 在线预览 |
 | --- | --- | --- |
-| 按层查找组件 | [组件目录](components/CATALOG.md)、[体系导航](docs/README.md) | 展台按场景浏览，不代替目录 |
+| 按总览分类查找组件 | [组件目录](components/CATALOG.md)、[体系导航](docs/README.md) | 展台组件总览列出缺口，不代替目录 |
 | 聊天消息、卡片与历史 | [Agent Chat](docs/AGENT_CHAT.md) | [聊天消息与记录](https://linhay.github.io/rhine-design/#agent-chat) |
 | 编辑布局与局部配色 | [编辑布局配方](docs/EDITORIAL_LAYOUT.md) | [报告、发布说明与概览](https://linhay.github.io/rhine-design/#editorial-layout) |
 | 视觉基础与组合原则 | [设计规范](docs/DESIGN_SYSTEM.md) | [视觉基础](https://linhay.github.io/rhine-design/#foundation) |

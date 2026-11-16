@@ -16,7 +16,7 @@
 .rhine-text--warning { color:var(--rhine-warning); }
 .rhine-text--error { color:var(--rhine-error); }
 .rhine-select { position:relative; min-width:0; color:var(--rhine-ink); }
-.rhine-select select { appearance:none; -webkit-appearance:none; display:block; width:100%; min-width:0; min-height:44px; padding:10px 40px 10px 12px; border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-control); background:var(--rhine-surface); color:var(--rhine-ink); font:var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); cursor:pointer; transition:border-color var(--rhine-duration-hover) var(--rhine-ease-standard),background-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
+.rhine-select select { appearance:none; -webkit-appearance:none; display:block; width:100%; min-width:0; min-height:44px; padding:10px 40px 10px var(--rhine-input-padding-inline,12px); border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-control); background:var(--rhine-surface); color:var(--rhine-ink); font:var(--rhine-text-body)/var(--rhine-leading-body) var(--rhine-font); cursor:pointer; transition:border-color var(--rhine-duration-hover) var(--rhine-ease-standard),background-color var(--rhine-duration-hover) var(--rhine-ease-standard); }
 .rhine-select select:hover:not(:disabled) { border-color:var(--rhine-green); }
 .rhine-select select[aria-invalid=true] { border-color:var(--rhine-error); }
 .rhine-select select:disabled { color:var(--rhine-muted); background:var(--rhine-selected); cursor:default; }

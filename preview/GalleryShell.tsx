@@ -1,24 +1,38 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Breadcrumbs, Button, Logo, SegmentedControl, Select, SideNav } from '../components';
+import { Breadcrumbs, Button, Logo, SegmentedControl, Select, SideNav, type NavGroup } from '../components';
 import { ThemeProvider, themes, useTheme, type ThemeName } from '../components/theme';
 import { packageVersion } from './packageInfo';
+import { galleryGroups, isKnownGallerySection, legacySections, menuCurrentId, sectionLabel } from './antd-overview';
 import { chatFoundationPages, isChatFoundationComponent, type ChatFoundationComponentId } from './chat-foundation-navigation';
 import './shell.css';
 import './theme-arknights.css';
 import './theme-neo-brutalism.css';
 
-export const galleryGroups = [
-  { label: '开始', items: [['top', '设计总览'], ['subscriptions', '订阅管理示例'], ['compact-filters', '紧凑与大量筛选'], ['checkbox-rows', '侧栏双行多选'], ['component-typography', '组件文字配对']] },
-  { label: '应用能力', items: [['chat-foundation', 'Chat 基石'], ['app-shell', '背景与多侧栏'], ['advanced-forms', '复杂表单'], ['advanced-data', '受控数据表'], ['media', '媒体卡片与查看器'], ['monitoring', '健康详情与图表']] },
-  { label: '设计语言', items: [['editorial-layout', '编辑布局'], ['graphite', '石墨夜间主题'], ['neutral', '中性轻量主题'], ['foundation', '视觉基础'], ['backgrounds', '场景背景'], ['spacing', '间距与组合'], ['typography', '字体与文字'], ['brand', '品牌标志']] },
-  { label: '通用组件', items: [['button-actions', '动作语义与尺寸'], ['responsive-actions', '容器自适应动作'], ['actions', '按钮与输入'], ['selection', '选择与切换'], ['summary-tabs', '带摘要的页签'], ['feedback', '状态与加载'], ['disclosure', '展开与组合'], ['data', '数据与分页'], ['forms', '表单与选择'], ['utilities', '操作与布局'], ['overlays', '浮层与反馈'], ['overlay-bounds', '浮层缩放与边界'], ['tray-usage', '托盘用量组合'], ['settings-composition', '设置页组合'], ['settings-dialog', '设置导航弹窗'], ['template-settings', '模板驱动设置'], ['parameter-config', '参数与生成预览'], ['theme-picker', '主题预览与选择'], ['nav-actions', '导航行操作'], ['navigation', '导航与步骤'], ['form-workflow', '表单流程']] },
-  { label: '交互与动效', items: [['patterns', '场景与交互指南'], ['object-reading', '工作空间对象阅读'], ['resident-tree', '常驻树与画布'], ['agent-chat', '聊天消息与记录'], ['compact-selection', '紧凑选择与保存'], ['compact-account', '紧凑账号与凭证'], ['metric-comparison', '指标比较与基准'], ['periodic-report', '周期报告与跨日来源'], ['personal-notifications', '个人事件通知'], ['automation-settings', '周期自动化设置'], ['object-lifecycle', '对象生命周期与观测'], ['async-snapshot-recipes', '异步快照与模块加载'], ['list-card-recipes', '列表分类与只读归属'], ['single-search', '单输入搜索'], ['list-filter-bar', '列表筛选栏'], ['date-range-filter', '日期筛选组合'], ['motion', '动效实验室'], ['startup', '启动动画'], ['orbit', '轨道星空'], ['neutron-star', '中子星']] },
-] as const;
-export type GallerySection = typeof galleryGroups[number]['items'][number][0] | ChatFoundationComponentId;
-const entries = [...galleryGroups.flatMap(group => [...group.items]), ...chatFoundationPages.map(page => [page.id, page.label] as const)];
-function currentSection(): GallerySection {
+export { galleryGroups };
+export type GallerySection = typeof galleryGroups[number]['items'][number][0] | keyof typeof legacySections | ChatFoundationComponentId;
+interface GalleryLocation { section: GallerySection; anchorId?: string }
+function currentLocation(): GalleryLocation {
   const hash = window.location.hash.slice(1);
-  return entries.find(([id]) => id === hash)?.[0] ?? 'top';
+  // Accept old exhibit links while keeping new chapter/target fragments distinct.
+  if (hash === 'anchor-a' || hash === 'anchor-b') return { section:'anchor', anchorId:hash };
+  const separator = hash.indexOf('::'), chapter = separator < 0 ? hash : hash.slice(0, separator);
+  const known = isKnownGallerySection(chapter) || chatFoundationPages.some(page => page.id === chapter);
+  let anchorId: string | undefined;
+  if (known && separator >= 0) {
+    try { anchorId = decodeURIComponent(hash.slice(separator + 2)) || undefined; } catch { /* Invalid target encoding cannot break the chapter. */ }
+  }
+  return { section:(known ? chapter : 'top') as GallerySection, anchorId };
+}
+
+export function filterGalleryNavigation(query: string): NavGroup[] {
+  const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  const matches = (text: string) => terms.every(term => text.toLocaleLowerCase().includes(term));
+  return galleryGroups.map(group => ({ label: group.label, items: group.items.flatMap(([id, label]) => {
+    const children = id === 'chat-foundation' ? chatFoundationPages.map(page => ({ id: page.id, label: page.label, href: `#${page.id}` })) : undefined;
+    const ownMatch = matches(`${group.label} ${id} ${label}`);
+    const matchingChildren = children?.filter(child => matches(`${group.label} ${id} ${child.label}`));
+    return ownMatch || matchingChildren?.length ? [{ id, label, href: `#${id}`, children: ownMatch ? children : matchingChildren }] : [];
+  }) })).filter(group => group.items.length);
 }
 
 interface GalleryShellProps {
@@ -36,8 +50,9 @@ function initialTheme(): ThemeName {
 
 export function GalleryShell(props: GalleryShellProps) {
   const [theme, setTheme] = useState(initialTheme);
-  const [section, setSection] = useState(currentSection);
-  useEffect(() => { const navigate = () => setSection(currentSection()); window.addEventListener('hashchange', navigate); return () => window.removeEventListener('hashchange', navigate); }, []);
+  const [location, setLocation] = useState(currentLocation);
+  const { section, anchorId } = location;
+  useEffect(() => { const navigate = () => setLocation(currentLocation()); window.addEventListener('hashchange', navigate); return () => window.removeEventListener('hashchange', navigate); }, []);
   useEffect(() => {
     try { window.localStorage.setItem('rhine-preview-theme', theme); } catch { /* Keep switching available without storage. */ }
   }, [theme]);
@@ -47,16 +62,20 @@ export function GalleryShell(props: GalleryShellProps) {
     url.searchParams.delete('theme');
     window.history.replaceState(null, '', url);
   }} className="ds-shell" data-rhine-motion={props.motion}>
-    <GalleryContent {...props} section={section} />
+    <GalleryContent {...props} section={section} anchorId={anchorId} />
   </ThemeProvider>;
 }
 
-function GalleryContent({ motion, onMotionChange, children, section }: GalleryShellProps & { section: GallerySection }) {
+function GalleryContent({ motion, onMotionChange, children, section, anchorId }: GalleryShellProps & { section: GallerySection; anchorId?: string }) {
   const { theme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const search = useRef<HTMLInputElement>(null);
+  const filtered = filterGalleryNavigation(query);
+  const resultCount = filtered.reduce((count, group) => count + group.items.reduce((sum, item) => sum + 1 + (item.children?.length ?? 0), 0), 0);
   const main = useRef<HTMLElement>(null);
   const first = useRef(true);
-  const label = entries.find(([id]) => id === section)![1];
+  const label = sectionLabel(section);
   useEffect(() => {
     const navigate = () => { setMenuOpen(false); };
     window.addEventListener('hashchange', navigate);
@@ -68,6 +87,13 @@ function GalleryContent({ motion, onMotionChange, children, section }: GallerySh
     if (!first.current) main.current?.focus({ preventScroll: true });
     first.current = false;
   }, [section, label]);
+  useEffect(() => {
+    if (!anchorId) return;
+    const target = document.getElementById(anchorId);
+    if (!target || !main.current?.contains(target)) return;
+    target.scrollIntoView?.({ block:'start', behavior:'auto' });
+    target.focus({ preventScroll:true });
+  }, [section, anchorId]);
   useEffect(() => {
     const nav = document.getElementById('gallery-navigation');
     const current = nav?.querySelector<HTMLElement>('[aria-current=page]');
@@ -92,12 +118,19 @@ function GalleryContent({ motion, onMotionChange, children, section }: GallerySh
       if (event.key === 'Escape' && menuOpen) { setMenuOpen(false); event.currentTarget.querySelector<HTMLButtonElement>('.ds-menu-toggle')?.focus(); }
     }}>
       <div className="ds-sidebar-brand"><a href="#top" aria-label="Rhine Design · 设计总览"><Logo size={32} /><span>莱茵设计<small>RHINE DESIGN</small></span></a>
-        <Button className="ds-menu-toggle" variant="secondary" aria-expanded={menuOpen} aria-controls="gallery-navigation" onClick={() => setMenuOpen(value => !value)}>目录</Button>
+        <Button className="ds-menu-toggle" variant="secondary" aria-expanded={menuOpen} aria-controls="gallery-directory" onClick={() => setMenuOpen(value => !value)}>目录</Button>
       </div>
-      <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={section} groups={galleryGroups.map(group=>({label:group.label,items:group.items.map(([id,label])=>({id,label,href:`#${id}`,children:id==='chat-foundation'?chatFoundationPages.map(page=>({id:page.id,label:page.label,href:`#${page.id}`})):undefined}))}))} onNavigate={item=>{
-        setMenuOpen(false); if(section===item.id) main.current?.focus({preventScroll:true});
-      }}/>
-      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>分层目录见组件契约 · 源码包版本 {packageVersion}</span><span>发布范围见版本记录</span><span className="ak-readout">{readout}</span></div>
+      <div id="gallery-directory" className="ds-sidebar-directory">
+        <div className="ds-directory-search rhine-field" role="search" aria-label="目录筛选"><label htmlFor="gallery-search">搜索组件</label><div className="ds-directory-search__input"><input ref={search} id="gallery-search" type="search" placeholder="中文 / English" value={query} aria-controls="gallery-navigation" onChange={event => setQuery(event.target.value)} onKeyDown={event => {
+          if (event.nativeEvent.isComposing || event.keyCode === 229) return;
+          if (event.key === 'Escape' && query) { event.preventDefault(); event.stopPropagation(); setQuery(''); }
+          if (event.key === 'Enter') { event.preventDefault(); document.getElementById('gallery-navigation')?.querySelector<HTMLAnchorElement>('a[href]')?.click(); }
+        }} />{query && <Button variant="quiet" aria-label="清空目录搜索" onClick={() => { setQuery(''); search.current?.focus(); }}>清空</Button>}</div>{query && <span role="status">{resultCount ? `${resultCount} 个目录项` : '没有匹配的组件'}</span>}</div>
+        <SideNav id="gallery-navigation" className="ds-sidebar-nav" aria-label="组件目录" currentId={menuCurrentId(section)} groups={filtered} onNavigate={item => {
+          setMenuOpen(false); if (section === item.id) main.current?.focus({ preventScroll: true });
+        }} />
+      </div>
+      <div className="ds-sidebar-foot"><span>COMPONENT LIBRARY</span><span>分类对标组件总览 · 源码包版本 {packageVersion}</span><span>发布范围见版本记录</span><span className="ak-readout">{readout}</span></div>
     </aside>
     <main className="ds-workspace" id="gallery-content" ref={main} tabIndex={-1} aria-label={label}>
       <header className="ds-workspace-head"><Breadcrumbs label="展台位置" items={[{label:"组件展台",href:"#top"},...(isChatFoundationComponent(section)?[{label:"Chat 基石",href:"#chat-foundation"}]:[]),{label}]} /><div className="ds-head-controls"><SegmentedControl label="动效偏好" items={[{value:'system',label:'跟随系统'},{value:'reduced',label:'减少动态'}]} value={motion} onValueChange={onMotionChange} /><Select label="界面主题" disabled={section === 'editorial-layout'} title={section === 'editorial-layout' ? '此配方固定以中性主题为基础；可在内容区选择局部配色' : undefined} value={theme} onChange={event => {

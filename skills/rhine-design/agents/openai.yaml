@@ -1,4 +1,4 @@
 interface:
   display_name: "Rhine Design · 莱茵设计"
-  short_description: "用莱茵设计完成界面与接入，主动将项目规范、偏好和设计细节反馈到 Issue"
-  default_prompt: "使用 $rhine-design，优先复用现有组件，先完成设计稿和交互验证，再按本次任务授权接入应用；将新增设计规范、偏好与细节脱敏查重，按当前用户或项目已有授权提交到 rhine-design issue 并回读结果；未授权时先准备脱敏报告。"
+  short_description: "按实际安装版本的莱茵设计契约设计、评审和接入 React 界面"
+  default_prompt: "使用 $rhine-design，核对实际安装版本的组件契约和公开导出，复用现有组件并验证相关交互。按当前用户或项目的授权处理脱敏后的设计反馈。"

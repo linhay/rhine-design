@@ -65,7 +65,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "npm run typecheck && vite build && node scripts/check-build.mjs",
-    "check": "node scripts/check-component-catalog.mjs && npm run test && npm run build && npm run review:build && node scripts/check-review-package.mjs",
+    "check": "node scripts/check-component-catalog.mjs && node scripts/check-component-quality.mjs && npm run test && npm run build && npm run review:build && node scripts/check-review-package.mjs",
     "prepublishOnly": "npm run check",
     "review:http": "vite --config examples/review/http/vite.config.ts --host 127.0.0.1 --port 18340 --strictPort",
     "review:platform": "vite --config examples/review/platform/vite.config.ts --host 127.0.0.1 --port 18341 --strictPort",
@@ -92,10 +92,11 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "jsdom": "29.1.1",
+    "jsqr": "1.4.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "typescript": "5.9.3",
     "vite": "8.3.4",
-    "vitest": "5.0.5",
-    "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "vitest": "5.0.5"
   }
 }

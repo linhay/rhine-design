@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Checkbox, Dialog, Stack, Text, TextField } from '../components';
-import { ThemePicker } from '../components/ThemePicker';
+import { ThemePicker } from '../components';
 import { ThemeProvider, themes, useTheme, type ThemeName } from '../components/theme';
 
 export function ThemePickerGallery() {

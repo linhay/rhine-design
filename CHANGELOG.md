@@ -1,5 +1,19 @@
 # 版本记录
 
+## main 未发布接入补全（2026-11-16）
+
+- #215：第一阶段补充新增录入控件的消费方id/name/form、适用只读/提示/校验及原生约束；AutoComplete复用底层读取状态并区分字段错误与optionsError。Cascader/Transfer支持宿主控制的加载/失败/重试与动态值反馈；Masonry列表项语义和Tree受控样例已补。新增表单接入展台，保持既有默认接口及业务状态归属，不发送业务/上传请求。Image资源状态和目标Tour已接入（含旧模式兼容），固定tarball仓外安装、公开类型/样式/依赖核验与Chromium156/WebKit端口生产验证已完成；Firefox本轮不纳入支持范围（N/A），未运行Firefox兼容矩阵，未从Chromium/WebKit结果外推；未发布。
+
+## main 未发布增量（2026-11-15）
+
+- #215：修复Avatar地址恢复、Carousel空索引/编辑键盘隔离、VirtualList条目身份/持焦重排、Upload完整禁用、Rate同名分组、Collapse动态模式、Transfer受控拒绝/过期归焦、Mentions首个上方向键、Anchor展台片段路由和ColorPicker错误/尺寸。VirtualList新增可选getItemKey与类型，Anchor新增可选getHref；原默认调用保持兼容。12个审查反例转为正式回归，补真实展台、契约及相关生命周期检查；未发布。
+
+## main 未发布增量（2026-11-14）
+
+- 深度补强：浮层统一层栈、焦点归还与主动交焦保护；二维码改为UTF-8/M级纠错/4模块静区，独立解码器覆盖0–78字节；ConfigProvider密度接入现有控件和Portal；Splitter指针拖拽、Transfer键盘/移动归焦、Calendar七列日历；目录搜索覆盖中文/英文/Chat子项。新增NavigationMenu、Util和TreeSelect可选dropdown，保留原Menu/SideNav/TreeSelect默认接口。契约见[总览对应能力](components/PROVIDED_COMPONENTS.md)，不是Ant Design API兼容，不含所有相机、读屏语音或原生缩放宣称。
+
+- 展台菜单和组件目录改为对标 Ant Design 组件总览的分类：通用、布局、导航、数据录入、数据展示、反馈、其他。侧栏逐项使用官方组件名，原有章节归入对应分类。原先未提供的 25 项已有对应导出和展台：悬浮按钮、瀑布流、分隔面板、锚点、级联、颜色、提及、评分、滑动条、时间、穿梭、本地文件选择、头像、日历、轮播、虚拟列表、短文本码、标签、引导、结果、加载指示、水印、粘住、应用边界和装饰边框。它们不是上游 API 兼容实现；文件选择不上传，应用边界不建立全局提示队列，二维码未做手机扫码验收。随后补上弹性布局、24 栏、下拉菜单、自动完成、表单容器、计数徽标、卡片、折叠组、描述列表、图片预览、列表、事件轴、树、局部提示、通知、气泡确认和局部配置。原有 Grid、Badge、KeyValue、Disclosure、StatusTimeline、TreeSelect、SideNav 和 ThemeProvider 保持原契约。尚未 npm 发布。
+
 ## main 未发布增量（2026-11-12）
 
 - #3 / #18 / #19：Dialog 增加实例宽度、可伸缩标题内容、标题操作与视觉标题显隐；Select/Pagination 标签可按需视觉隐藏；Pagination 支持单行滚动，ListFilterBar 支持无卡片内嵌、居中更多及低频内容。默认行为保持兼容，草稿、请求和结果仍归宿主。

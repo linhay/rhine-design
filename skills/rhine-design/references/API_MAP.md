@@ -1,88 +1,52 @@
 # API map
 
-All paths are relative to the matching package root. `package.json` exports, `components/index.ts` and the separate `components/theme.tsx` entry are the public export authority. Use `components/CATALOG.md` to decide the layer and whether to use an existing export; this index only locates source. Exact props come from the installed source, not from remembered examples.
+All code paths are relative to the package root. Use `components/CATALOG.md` for the complete main-entry inventory and component selection. Use this map for related types, contracts and source locations. The exact signatures come from the resolved package's public entries and source. This map was checked against the `0.13.0` working tree. The unreleased sections of `CHANGELOG.md` distinguish source additions from the versioned release. Match installed exports and contracts before using them in a consumer.
+
+## Public entries
+
+| Import | Authority and contract |
+| --- | --- |
+| `@linhey/rhine-design` | `components/index.ts` exports component values and public types and imports the base CSS. |
+| `@linhey/rhine-design/theme` | `components/theme.tsx` exports `ThemeProvider`, `useTheme`, `themes`, `ThemeName`, and `ThemeProviderProps`. The default is `rhine`. Use `themes` to build the options and `docs/THEMING.md` for theme roots and Portal behavior. |
+| `@linhey/rhine-design/styles.css`, `@linhey/rhine-design/tokens.css`, `@linhey/rhine-design/logo.svg` | `package.json` maps the base CSS, standalone tokens and the logo asset. The `theme-arknights.css`, `theme-neo-brutalism.css`, `theme-neutral.css` and `theme-graphite.css` subpaths are available for stylesheet-only integration. The `/theme` entry imports base and theme styles. |
+| `@linhey/rhine-design/review` | `review/index.ts` exports `defineReview`, `parseReviewState`, `serializeReviewState` and scene/session types. See `docs/REVIEW_TOOL.md`. |
+| `@linhey/rhine-design/review/vite` | `review/vite.mjs` and `review/vite.d.mts` expose `reviewPlugin`, `reviewProductionGuard`, and `ReviewViteOptions` for the Node Vite config. Keep this entry out of production application code. |
+
+## Components and contracts
 
 | Exports | Source |
 | --- | --- |
-| ChatThread, ChatCard; ChatEntry, ChatMessage, ChatEvent, ChatMember, ChatMemberLink, ChatStatus, ChatThreadProps, ChatCardProps (source candidate after 0.11.0) | `components/Chat.tsx`；未发布 #110 的 memberLink 原生作者链接与 #99 的 fill/bubble/memberAppearance/compact 见 `docs/AGENT_CHAT.md`（npm 0.11.3 不含）, `docs/AGENT_CHAT.md`; stable IDs, history anchor, explicit resume, readOnly action slots |
-| ChatShell, WorkspaceRail, AgentList, AgentRow, ChatHeader, MessageList, MessageBubble, Composer, AgentInspector 及对应 Props（Chat Foundation，未发布） | `components/ChatFoundation.tsx`、`docs/CHAT_FOUNDATION.md`；宿主受控布局/身份/状态/消息内容/提交回调，组件不请求数据、不解析业务协议、不代表投递成功 |
-| Checkbox `layout="row"`, CheckboxProps（自 0.10.0） | `components/Forms.tsx`、`docs/CHECKBOX_ROWS.md`；整行双行多选，默认 form 保持兼容；npm 0.9.1 不含此选项 |
-| TrendChart, StackedBar；StatusTimeline.detail（0.5.0） | `components/Charts.tsx`、`components/StatusTimeline.tsx`；`docs/APPLICATION_COMPONENTS.md`，未知不补零；键盘逐点查看、按ID受控高亮/详情、valueFormatter |
-| Background, AppShell（0.5.0）；AppShellToggle（0.8.0） | `components/Background.tsx`、`components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；桌面open与临时drawerOpen独立，断点为容器CSS布局宽度 |
-| AppShell.contentHeader（0.8.0） | `components/AppShell.tsx`；`docs/APPLICATION_COMPONENTS.md`；正文列常驻导航插槽，与正文滚动区分离，组合 AppShellToggle / Inline / 标题与上下文操作 |
-| MediaCard, MediaViewer（0.5.0） | `components/Media.tsx`；中性画布，不嵌套主题 |
-| Media 主题重设计（0.8.0） | `components/media-parity.css`；`docs/APPLICATION_COMPONENTS.md`；卡片、标签与查看器操作/信息栏随宿主主题，仅媒体画布中性；选择与重试独立 |
-| DateField, DateRangePicker, NumberField, TreeSelect, RemoteMultiSelect（0.5.0） | `components/AdvancedForms.tsx`；请求、时区和查询由宿主负责；只读/校验/多选键盘及AntD/MUI保留差异见 `docs/ANTD_MUI_AUDIT.md` |
-| 紧凑筛选（自 0.10.0，npm 0.9.1 不含） | `docs/COMPACT_FILTER_CONTROLS.md`；SegmentedControl `fullWidth`、DateRangePicker `compact`、RemoteMultiSelect `maxVisibleTags`、ListFilterBar `drawerDescription` / `drawerResult`；保持默认兼容、完整选择值及加载/错误反馈 |
-| Date presets + confirmed custom range（组合，无新增导出） | `docs/DATE_RANGE_FILTER.md`、`preview/DateRangeFilterGallery.tsx`；复用 SegmentedControl + Button + Popover + DateRangePicker，宿主负责时区、预设和查询 |
-| ThemeProvider, useTheme, themes, ThemeName, ThemeProviderProps (0.4.0；`@linhey/rhine-design/theme`) | `components/theme.tsx`；契约 `docs/THEMING.md`；未发布 `neutral` 主题见 `docs/THEME_NEUTRAL.md`（npm 0.11.3 不含） |
-| OrbitBackdrop, OrbitBackdropProps (0.6.0) | `components/OrbitBackdrop.tsx`；契约 `docs/ORBIT_BACKDROP.md`；`components/orbitRenderer.ts` 为内部绘制实现 |
-| NeutronStarBackdrop, NeutronStarBackdropProps (0.8.0) | `components/NeutronStarBackdrop.tsx`；契约 `docs/NEUTRON_STAR_BACKDROP.md`；Three.js drawing modules are internal |
-| Logo | `components/Logo.tsx` |
-| Text | `components/Typography.tsx` |
-| MappingEditor（#78，未发布） | `components/MappingEditor.tsx`；紧凑/分组只读见 `docs/TEMPLATE_SETTINGS.md`（未发布）；受控稳定行id/两侧选项/错误/只读/增删焦点；模板保存与应用分离见 `docs/TEMPLATE_SETTINGS.md`，不提供业务持久化 |
-| Select | `components/Select.tsx` |
-| Toolbar | `components/Toolbar.tsx` |
-| Icon, IconButton, Link, CopyButton | `components/Actions.tsx` |
-| ButtonLink（0.8.0） | `components/Actions.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；原生 anchor/下载语义，同 Button 视觉，busy 保焦点并移除 href |
-| Divider, Stack, Inline, Grid | `components/Layout.tsx` |
-| Metric, KeyValue, DataTable, Pagination | `components/Data.tsx` |
-| Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox | `components/Forms.tsx`；Switch 标签显隐见 `docs/TEMPLATE_SETTINGS.md`（未发布） |
-| Dialog, Drawer (0.4.0), ConfirmDialog, Popover, Menu, Tooltip | `components/Overlays.tsx` |
-| StatusTimeline, TimelineLegend (0.4.0) | `components/StatusTimeline.tsx`；历史证据，不计算健康评分 |
-| TimelineLegend compact/items（0.8.0） | `components/StatusTimeline.tsx`；`docs/COMPACT_ACCOUNT_PATTERNS.md`；宿主短标签/完整规则，一行局部滚动，hover/focus/touch 详情 |
-| StatusTimelineList（0.8.0） | `components/StatusTimelineList.tsx`、`docs/APPLICATION_COMPONENTS.md`；稳定行 ID、标题/摘要/紧凑时间条组合、单一详情，宿主保留请求与分页；展台 `/#monitoring` |
-| SideNav, Breadcrumbs, Steps (0.4.0) | `components/Navigation.tsx` |
-| Fieldset, ErrorSummary (0.4.0) | `components/FormWorkflow.tsx` |
-| Toast | `components/Toast.tsx` |
-| Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState | `components/components.tsx`；Surface 的 `padding="none"` 仅取消表格容器外围内距，默认不变；此选项自 0.9.1 提供，见 `CHANGELOG.md` |
+| `ChatThread`, `ChatCard` and chat entry/member/message types | `components/Chat.tsx` and `docs/AGENT_CHAT.md` cover stable identity, history anchors, explicit resume, read-only actions and the optional native author link (`ChatMemberLink`). For fill layout, bubble appearance and per-member styling, read the same contract. |
+| `ChatShell`, `WorkspaceRail`, `ChatPane`, `AgentList`, `AgentRow`, `ChatHeader`, `MessageList`, `MessageBubble`, `MessageMeta`, `MessageContent`, `MessageActions`, `MessageStatus`, `MessageRenderer`, `DayDivider`, `Composer`, `AgentInspector` | `components/ChatFoundation.tsx` and `docs/CHAT_FOUNDATION.md`. The host owns layout inputs, identity, content and delivery state. The host may use `chatSessionReducer` and `initialChatSessionState` for pure state transitions. Find the component demos under 布局 → Chat 基石. |
+| `TrendChart`, `StackedBar`, `StatusTimeline`, `TimelineLegend`, `StatusTimelineList` | `components/Charts.tsx`, `components/StatusTimeline.tsx`, and `components/StatusTimelineList.tsx`. See `docs/APPLICATION_COMPONENTS.md` and `docs/TIMELINE_COMPOSITION.md` for keyboard detail, the compact legend, and shared `statusLabels`. Use `statusLabels` in status mode. Composition mode uses four mutually exclusive outcome counts and coverage. Missing, incomplete, invalid, and no-request buckets display unknown proportions. |
+| `Background`, `AppShell`, `AppShellToggle`, `OrbitBackdrop`, `NeutronStarBackdrop` | `docs/APPLICATION_COMPONENTS.md` covers `components/Background.tsx` and `components/AppShell.tsx`, independent desktop and drawer state, and `contentHeader` outside the content scroller. Responsive shell changes follow container width. See `docs/ORBIT_BACKDROP.md` and `docs/NEUTRON_STAR_BACKDROP.md` for separate artwork, visibility, reduced motion and failure fallbacks. |
+| `Logo`, `Text`, `Divider`, `Stack`, `Inline`, `Grid`, `Toolbar`, `Surface` | `components/README.md` and `components/SPACING.md`. Use `Text.as` for semantics and `variant` for typography. `Logo` accepts `wordmark` and `label`. Its `theme` affects the artwork. `Surface padding="none"` removes outer padding in table-only surfaces. |
+| `Button`, `Icon`, `IconButton`, `Link`, `ButtonLink`, `CopyButton`, `ResponsiveActions` | `components/components.tsx`, `components/Actions.tsx`, and `components/ResponsiveActions.tsx`. See `docs/BUTTON_ACTIONS.md` for `Button.size` and busy behavior, `docs/COMPACT_ACCOUNT_PATTERNS.md` for `contentAlign` and native links, and `docs/RESPONSIVE_ACTIONS.md` for container measurement and focus continuity. The vertical overflow glyph is `IconName` value `moreVertical`. |
+| `Tabs`, `SegmentedControl`, `SelectionCard`, `Badge`, `Notice`, `Progress`, `Skeleton`, `Disclosure`, `EmptyState` | `components/components.tsx` and `components/COMMON_COMPONENTS.md`. See `docs/SUMMARY_TABS.md` for `TabItem.description` and `status`, `Tabs.layout` and `fullWidth`, and header `actions` outside the tablist. See `components/README.md` for the `SegmentedControl` sizes `default`, `compact`, and `control`. `SelectionCard` keeps checkbox semantics when `showIndicator` is false and the host owns selection policy. |
+| `TextField`, `Select`, `Checkbox`, `RadioGroup`, `Switch`, `Textarea`, `SearchField`, `Combobox`, `Fieldset`, `ErrorSummary` | `components/components.tsx`, `components/Select.tsx`, `components/Forms.tsx`, and `components/FormWorkflow.tsx`. Check `docs/SINGLE_SEARCH.md` for visually hidden labels and `docs/CHECKBOX_ROWS.md` for `Checkbox layout="row"`. A native `Select` is single-select. Use `Combobox` for searchable candidates. |
+| `DateField`, `DateRangePicker`, `NumberField`, `TreeSelect`, `RemoteMultiSelect`, `ListFilterBar`, `MappingEditor` | `components/AdvancedForms.tsx`, `components/ListFilterBar.tsx`, and `components/MappingEditor.tsx`. See `docs/APPLICATION_COMPONENTS.md` and `docs/COMPACT_FILTER_CONTROLS.md`. For date presets and confirmed custom ranges, use the composition in `docs/DATE_RANGE_FILTER.md`. See `docs/TEMPLATE_SETTINGS.md` and `docs/COMPACT_TEMPLATE.md` for stable mapping rows, compact tags and grouped read-only sources. The host owns query, time zone, options and persistence. |
+| `Metric`, `KeyValue`, `DataTable`, `Pagination` | `components/Data.tsx` and `docs/APPLICATION_COMPONENTS.md`. `DataTable.captionVisibility="hidden"` retains native caption and scroller names. The host owns sort, query and pagination. See `docs/METRIC_COMPARISON.md` for comparison semantics. |
+| `Dialog`, `Drawer`, `ConfirmDialog`, `Popover`, `Menu`, `Tooltip`, `SettingsNavigation` | `components/Overlays.tsx` and `components/SettingsNavigation.tsx`. See `docs/FLOATING_OVERLAYS.md` and `docs/SETTINGS_DIALOG.md` for layer/focus, optional description, width, height, header slots, bounded footer, and adaptive setting navigation. `Dialog.navigation` and `sidePanel` are mutually exclusive. |
+| `SideNav`, `Breadcrumbs`, `Steps`, `Toast` | `components/Navigation.tsx` and `components/Toast.tsx`. See `docs/SIDE_NAV_ACTIONS.md` for `NavItem.actions` / `NavAction`. Nested `NavItem.children` inherit ancestor disabled state and current-page indication uses the exact match. `docs/INTERACTION_PATTERNS.md` covers Steps back-navigation focus and host-initiated focus handoff. `Toast.eventId` changes visible lifetime with stable content and close-button identity. Repeated speech or a global queue is outside the contract. |
+| `MediaCard`, `MediaViewer`, `ThemePicker`, `ThemePreview` | `components/Media.tsx` and `components/ThemePicker.tsx`. Only the media canvas uses a neutral surface. See `docs/APPLICATION_COMPONENTS.md` and `docs/THEME_PICKER.md`. |
 
-Additions in 0.11.0: `Tabs` / `TabItem` `description` and `status`, `Toast placement="floating"`, and `SegmentedControl size="compact"`. They are absent from npm 0.10.0. Pin 0.11.0 and read `CHANGELOG.md` before upgrading.
+## Overview additions in the working tree
 
-Primary contracts: `components/README.md` and `components/COMMON_COMPONENTS.md`. Find behavioral evidence in `tests/` and composition examples in `preview/`.
+Use `components/PROVIDED_COMPONENTS.md` for interaction, defaults, form serialization and evidence boundaries. The overview's Ant Design labels help find Rhine components. Use the Rhine signatures and contracts when implementing them.
 
-```sh
-# From the resolved package root:
-rg -n 'ConfirmDialog|DataTable|Combobox' components/index.ts components/*.tsx
-rg -n 'ConfirmDialog|DataTable|Combobox' tests preview
-```
+| Exports | Source and decisions |
+| --- | --- |
+| `FloatButton`, `Masonry`, `Anchor`, `Avatar`, `Carousel`, `QRCode`, `Tag`, `Result`, `Spin`, `Watermark`, `Affix`, `App`, `BorderBeam` | `components/provided.tsx`. `Anchor.getHref` lets the host map heading IDs to fragments. `QRCode` accepts at most 78 UTF-8 bytes. `App` names a region. |
+| `Rate`, `Slider`, `TimePicker`, `ColorPicker`, `Upload` | `components/provided.tsx` defines `RateProps`, `SliderProps`, `TimePickerProps`, `ColorPickerProps`, and `UploadProps`. The shared `ProvidedFieldProps` is in `components/field-support.tsx`. Check each field's supported native attributes. `Slider` omits `required`. Named `Upload` serializes accepted `File` objects through its owner's `formdata` event. Upload requests belong to the host. |
+| `Splitter`, `Transfer`, `Calendar`, `Cascader`, `Mentions` | `components/provided-controls.tsx` and `components/provided-overlays.tsx` re-exported through `components/provided.tsx`. `TransferProps`, `CascaderProps`, `CascadeOption`, and `MentionsProps` are importable from the main entry. `Cascader` and `Transfer` distinguish field `error` from `loadError` and report retry or expansion intent to the host. |
+| `Flex`, `Columns`, `Column`, `Dropdown`, `AutoComplete`, `Form`, `Card`, `Collapse`, `Descriptions`, `List`, `EventTimeline`, `Tree`, `Message`, `Notification`, `Popconfirm`, `CountBadge` | `components/parity.tsx`. `AutoCompleteProps` separates field `error` and candidate `optionsError`, and `FormProps` forwards the submit event to the host. Use `preview/FormIntegrationGallery.tsx` for the form composition. |
+| `VirtualList`, `VirtualListProps` | `components/VirtualList.tsx` re-exported through `components/provided.tsx`. Use `getItemKey` with a stable, unique key for editable or reorderable data. The host owns the drafts of rows that unmount. See `tests/ProvidedBoundaries.test.tsx`. |
+| `Image`, `ImageProps`, `Tour`, `TourProps` | `components/Image.tsx` and `components/Tour.tsx`. `Image` tracks current browser resource state and supports manual retry. `Tour` retains its plain step mode when `target` is omitted. Supply a same-document element or getter for target mode. An explicit `null` means the target is unavailable. Use `preview/MediaGuideGallery.tsx` and `components/PROVIDED_COMPONENTS.md` for separate source and fixed-artifact evidence. |
+| `NavigationMenu`, `NavigationMenuProps`, `NavigationMenuItem`, `ConfigProvider`, `useConfig`, `Density`, `Util` | `components/NavigationMenu.tsx`, `components/config.tsx`, and `components/utilities.ts`. `NavigationMenu` renders native links. Use `Menu` for commands. The config provider supplies local density distinct from theme. `Util` provides pure `classNames` and `clamp`. |
 
-API decisions that commonly matter:
+## Inputs and host state
 
-- `Select` uses a native single-select; searchable candidates use `Combobox`.
-- `SelectionCard.showIndicator=false` visually hides the native input while preserving keyboard focus, accessible state and card selection styling (0.8.0).
-- `SelectionCard` uses checkbox semantics; the host determines single-selection policy. Do not nest other interactive controls in it.
-- `Text`'s `as` chooses semantics; `variant` chooses visual hierarchy.
-- `Logo` accepts `wordmark` and `label`; its `theme` affects the logo, not the full component library.
-- `OrbitBackdrop` is decorative artwork with built-in pause / resume. Its `reducedMotion` prop can strengthen but never override system reduction; see `docs/ORBIT_BACKDROP.md` for visibility, narrow-window and fallback behavior. In 0.8.0, theme artwork uses an origami paper bird, originium crystals or a strawberry donut; `appearance="original"` preserves the initial orbit. It does not express loading or business progress.
-- `NeutronStarBackdrop` preserves the separate neutron-star artwork. `appearance="theme"` follows existing theme tokens; `original` restores its deep-space palette without replacing the host control theme. It lazy-loads WebGL, freezes under reduction or visibility constraints, and retains static art on failure. It requires 0.8.0 or later; see `docs/NEUTRON_STAR_BACKDROP.md`.
-- `DataTable.captionVisibility` optionally hides a duplicate native caption visually while retaining table/scroll-region names; default visible. Unreleased source capability: check installed `components/Data.tsx` and `docs/APPLICATION_COMPONENTS.md` before use.
-- `Toast eventId` (unreleased; see COMMON_COMPONENTS.md) identifies notification lifetime while the page is visible, without remounting content or its close button; it does not request or guarantee repeated screen-reader output. `Toast` presents one notification, not a global queue. `DataTable` is not a query or table-state engine.
-- Components in `preview/` are demonstrations. Public API must resolve through a `package.json` export; theme APIs use the separate `/theme` entry.
-
-Available since 0.8.0 (check installed exports): `ThemePicker` / `ThemePreview` in `components/ThemePicker.tsx`, contract `docs/THEME_PICKER.md`; `Dialog.navigation` in `components/Overlays.tsx`, contract `docs/SETTINGS_DIALOG.md`; shared floating CSS zoom behavior in `docs/FLOATING_OVERLAYS.md`.
-
-Product review tooling (since 0.11.0): `/review` exports `defineReview`, URL helpers and scene/session types from `review/index.ts`; `/review/vite` exports Node-only `reviewPlugin` and `reviewProductionGuard` from `review/vite.mjs`, types in `review/vite.d.mts`. Never import the Vite entry into production UI. Read `docs/REVIEW_TOOL.md`; npm 0.10.0 does not contain these entries.
-
-SideNav 行尾命令：`NavItem.actions` / `NavAction`，见 `docs/SIDE_NAV_ACTIONS.md`，真实展台 `#nav-actions`；未发布。
-
-单输入即时搜索：TextField / TextFieldProps 的 `labelVisibility="hidden"` 保留非空名称；参见 `docs/SINGLE_SEARCH.md` 与 `#single-search`，未发布。搜索/异步与IME由宿主管理。
-
-#41未发布：Button.contentAlign、Tabs.layout/TabsProps、Dialog.height/footer；先读 `docs/COMPACT_ACCOUNT_PATTERNS.md`、`docs/SETTINGS_DIALOG.md`、`docs/SUMMARY_TABS.md`，展台 `#compact-selection`。
-
-#46未发布：Button.size="standard" | "large"；动作语义先读 `docs/BUTTON_ACTIONS.md`，展台 `#button-actions`。
-
-#18 未发布：Dialog `description?`、settings CSS次序独立、`height/footer/navigation` 固定头尾与正文/长导航独立滚动；短屏右对齐动作及真实消费验证见 `docs/SETTINGS_DIALOG.md`，展台 `#settings-dialog`。
-
-- Combobox / RemoteMultiSelect 标题动作（未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`；契约 `docs/FIELD_LABEL_ACTION.md`，真实组合 `preview/LabelActionGallery.tsx`。保持 string label，动作/异步状态由宿主控制。
-
-未发布 #97：`StatusTimeline` / `TimelineLegend` 共享 `statusLabels`；`mode="composition"` 使用四类互斥计数与 coverage，等高精确比例、缺失/不完整/无请求整桶未知；`StatusTimelineList` 透传。源码与契约为 `components/StatusTimeline.tsx`、`docs/TIMELINE_COMPOSITION.md`，展台 `/#monitoring`。npm 0.11.3 不含这些属性。
-紧凑已选标签 `RemoteMultiSelect.tagDensity` 与只读分组来源 `MappingEditor.groupedSourceLayout`：实现分别位于包内 `components/AdvancedForms.tsx`、`components/MappingEditor.tsx`；增量契约与固定底部保存示例位于 `docs/COMPACT_TEMPLATE.md`。源码候选，先核对安装包是否含对应 API。
-
-未发布 `ResponsiveActions` / `ResponsiveAction`：包内 `components/ResponsiveActions.tsx`，实际容器测量与焦点契约 `docs/RESPONSIVE_ACTIONS.md`；竖点 `IconName.moreVertical` 位于 `components/Actions.tsx`。先核对安装包是否包含对应导出。
-
-- Combobox / RemoteMultiSelect 紧凑状态与独立校验（#115，未发布）：`components/Forms.tsx`、`components/AdvancedForms.tsx`，契约 `docs/COMBOBOX_FEEDBACK.md`，真实状态 `preview/ComboboxStateGallery.tsx`。原 error 保持候选读取失败语义；validationError 允许从候选纠正，statusDisplay 默认兼容。宿主观测候选配方见 `docs/PARAMETER_CONFIG.md`。
-
-Steps 回退焦点（#174，未发布）：`docs/INTERACTION_PATTERNS.md`、`preview/StepsGallery.tsx`；接受同步回退后补焦当前步骤，宿主交焦优先，拒绝/外部更新不抢焦点，无新 API。
-
-SideNav 源码候选支持 `NavItem.children` 嵌套链接；父项禁用会同时禁用后代，当前页只标记精确匹配项。Chat Foundation 16 个组件展台入口见 `docs/CHAT_FOUNDATION.md`，左侧目录为“应用能力 → Chat 基石 → 组件”；未发布。
+- `Combobox` and `RemoteMultiSelect` keep their string labels with optional `labelAction`. For `statusDisplay="compact"`, the legacy `error` still means candidate-reading failure. Use `validationError` for a value the user can correct using the candidates. See `docs/FIELD_LABEL_ACTION.md`, `docs/COMBOBOX_FEEDBACK.md`, `docs/PARAMETER_CONFIG.md`, and `preview/ComboboxStateGallery.tsx`.
+- `Combobox.inputProps` is restricted to supported native query-input attributes. `AutoComplete` forwards the matching attributes to that input. `TreeSelect.presentation` defaults to `inline` and supports `dropdown`. The host owns values, data and pending operations.
+- Use `RemoteMultiSelect.tagDensity` and `MappingEditor.groupedSourceLayout` with the compact and read-only contracts in `docs/COMPACT_TEMPLATE.md`. Keep activation of a selected tag separate from removal.
+- `preview/` demonstrates composition. Import public values and types via the entries above. Use `tests/` to inspect behavior for the matching source. DOM associations and development smoke tests cover narrower scopes than assistive-technology output or fixed-package cross-browser checks.

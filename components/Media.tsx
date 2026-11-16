@@ -20,7 +20,7 @@ export function MediaCard({ title, date, kind, preview, state = preview != null 
       </span><span className="rhine-media-card__caption"><strong>{title}</strong><span>{date || '日期未知'}</span></span>
     </button>
     <span id={statusId} role="status" className="rhine-sr-only">{state === 'loading' ? `${title}：预览加载中` : state === 'error' ? `${title}：预览失败` : state === 'empty' ? `${title}：缺少预览` : ''}</span>
-    {(onSelectedChange || actions != null) && <div className="rhine-media-card__footer">{onSelectedChange && <Checkbox label={`选择${title}`} checked={selected} disabled={disabled} onChange={event => onSelectedChange(event.target.checked)} />}
+    {(onSelectedChange || actions != null) && <div className="rhine-media-card__footer">{onSelectedChange && <Checkbox label="选择" aria-label={`选择${title}`} checked={selected} disabled={disabled} onChange={event => onSelectedChange(event.target.checked)} />}
     {actions != null && <div className="rhine-media-card__actions">{actions}</div>}</div>}
   </article>;
 }

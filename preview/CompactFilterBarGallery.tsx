@@ -9,7 +9,7 @@ export function CompactFilterBarGallery() {
     <Inline gap={2}>
       {['normal', 'pending', 'error'].map(state => <Button key={state} variant="secondary" aria-pressed={feedback === state} onClick={() => setFeedback(state)}>{({ normal: '正常', pending: '加载', error: '失败' })[state]}</Button>)}
     </Inline>
-    <ListFilterBar label="紧凑筛选示例" result="120 条合成记录" drawerDescription={null} drawerResult={null}
+    <ListFilterBar label="紧凑筛选示例" result={feedback === 'error' ? '上次成功读取：120 条合成记录' : '120 条合成记录'} drawerDescription={null} drawerResult={null}
       pending={feedback === 'pending'} error={feedback === 'error' ? '暂时无法更新合成结果，请重试。' : undefined}
       primary={[{ id: 'platform', label: '平台', control: <Select label="平台" defaultValue="all"><option value="all">全部平台</option></Select> }]}
       filters={[{ id: 'range', label: '时间快捷', control: <SegmentedControl fullWidth label="时间快捷" value={range} onValueChange={setRange} items={[{ value: 'today', label: '今天' }, { value: 'yesterday', label: '昨天' }, { value: 'week', label: '本周' }]} /> }]}

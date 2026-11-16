@@ -53,20 +53,7 @@
   letter-spacing: 3px;
 }
 .rhine-theme[data-rhine-theme="arknights"] .ds-kicker::before { content: '// '; }
-.rhine-theme[data-rhine-theme="arknights"] .ds-hero h1 {
-  font-size: 56px;
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.2;
-}
-.rhine-theme[data-rhine-theme="arknights"] .ds-hero h1>span {
-  color: var(--ak-accent);
-  /* 黄色高光下划线块 */
-  background: linear-gradient(transparent 62%, rgba(255, 212, 0, .22) 62%);
-}
-@media(max-width:760px) {
-  .rhine-theme[data-rhine-theme="arknights"] .ds-hero h1 { font-size: 34px; }
-}
+
 
 /* 总览卡片：大号幽灵编号 + 斜切 */
 .rhine-theme[data-rhine-theme="arknights"] .ds-overview-links { counter-reset: ak-link; }

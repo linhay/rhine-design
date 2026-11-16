@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom';
 import { Button, TextField, type Choice } from './components';
 import { Combobox, type ComboboxProps } from './Forms';
 import './compact-forms.css';
+import { Popover } from './Overlays';
 
 export interface DateFieldProps {
   label: string; value: string; onValueChange: (value: string) => void;
@@ -238,8 +239,10 @@ export interface TreeSelectProps {
   expandedKeys: string[]; onExpandedChange: (keys: string[]) => void; multiple?: boolean;
   disabled?: boolean; loading?: boolean; error?: string;
   readOnly?: boolean; name?: string;
+  /** Existing inline presentation is the default; dropdown adds a dismissible popup. */
+  presentation?: 'inline' | 'dropdown';
 }
-export function TreeSelect({ label, nodes, value, onValueChange, expandedKeys, onExpandedChange, multiple = false, disabled = false, loading, error, readOnly = false, name }: TreeSelectProps) {
+function InlineTreeSelect({ label, nodes, value, onValueChange, expandedKeys, onExpandedChange, multiple = false, disabled = false, loading, error, readOnly = false, name, showLabel = true }: TreeSelectProps & { showLabel?: boolean }) {
   const root = useRef<HTMLDivElement>(null), id = useId();
   const [active, setActive] = useState<string>();
   const hadFocus = useRef(false), typeahead = useRef({ text: '', time: 0 });
@@ -294,12 +297,33 @@ export function TreeSelect({ label, nodes, value, onValueChange, expandedKeys, o
     return <div role="treeitem" key={node.id} id={itemId(node.id)} tabIndex={current === node.id ? 0 : -1} aria-label={node.label} aria-expanded={node.children?.length ? expanded : undefined} aria-selected={!multiple && node.selectable !== false ? value.includes(node.id) : undefined} aria-checked={multiple && node.selectable !== false ? value.includes(node.id) : undefined} aria-disabled={disabled || loading || !!error || node.disabled || undefined}
       onFocus={event => { if (event.target === event.currentTarget) setActive(node.id); }} onKeyDown={event => keyDown(event, node)}>
       <div className="rhine-tree__row" data-selected={value.includes(node.id)} onClick={() => { focus(node.id); choose(node); }}>
-        {node.children?.length ? <button type="button" tabIndex={-1} disabled={disabled} aria-label={`${expanded ? '收起' : '展开'}${node.label}`} onClick={event => { event.stopPropagation(); focus(node.id); expand(node, !expanded); }}>{expanded ? '−' : '+'}</button> : <span className="rhine-tree__spacer" />}
+        {node.children?.length ? <Button variant="quiet" tabIndex={-1} disabled={disabled} aria-label={`${expanded ? '收起' : '展开'}${node.label}`} onClick={event => { event.stopPropagation(); focus(node.id); expand(node, !expanded); }}>{expanded ? '−' : '+'}</Button> : <span className="rhine-tree__spacer" />}
         {node.selectable !== false && <span aria-hidden="true">{value.includes(node.id) ? '✓' : '○'}</span>}<span>{node.label}</span>{node.disabled && <small>不可选</small>}
       </div>{expanded && !!node.children?.length && <div role="group">{renderNodes(node.children)}</div>}
     </div>;
   });
   return <div className="rhine-tree" ref={root} onFocusCapture={() => { hadFocus.current = true; }} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) hadFocus.current = false; }}>
     {name && value.map(key => <input key={key} type="hidden" name={name} value={key} disabled={disabled} />)}
-    <div role="tree" aria-label={label} aria-multiselectable={multiple || undefined} aria-readonly={readOnly || undefined} aria-busy={loading} aria-disabled={disabled || undefined}>{renderNodes(nodes)}</div>{(loading || error || !nodes.length) && <p role={error ? 'alert' : 'status'}>{loading ? '正在读取…' : error || '暂无节点'}</p>}</div>;
+    {showLabel && <span id={`${id}-label`} className="rhine-text rhine-text--label">{label}</span>}
+    <div role="tree" aria-labelledby={showLabel ? `${id}-label` : undefined} aria-label={showLabel ? undefined : label} aria-multiselectable={multiple || undefined} aria-readonly={readOnly || undefined} aria-busy={loading} aria-disabled={disabled || undefined}>{renderNodes(nodes)}</div>{(loading || error || !nodes.length) && <p role={error ? 'alert' : 'status'}>{loading ? '正在读取…' : error || '暂无节点'}</p>}</div>;
+}
+
+
+export function TreeSelect(props: TreeSelectProps) {
+  return props.presentation === 'dropdown' ? <DropdownTreeSelect {...props} /> : <InlineTreeSelect {...props} />;
+}
+function DropdownTreeSelect(props: TreeSelectProps) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => { if (props.disabled) setOpen(false); }, [props.disabled]);
+  const names = new Map<string, string>();
+  const collect = (nodes: TreeNode[]) => nodes.forEach(node => { names.set(node.id, node.label); collect(node.children ?? []); });
+  collect(props.nodes);
+  const summary = props.value.map(key => names.get(key) ?? key).join('、') || '未选择';
+  return <div className="rhine-tree-select">
+    {props.name && props.value.map(key => <input key={key} type="hidden" name={props.name} value={key} disabled={props.disabled} />)}
+    <Popover title={props.label} showHeader={false} open={open && !props.disabled} onOpenChange={setOpen} trigger={<Button variant="secondary" disabled={props.disabled}>{props.label}：{summary}</Button>}>
+      <InlineTreeSelect {...props} showLabel={false} name={undefined} onValueChange={next => { props.onValueChange(next); if (!props.multiple) setOpen(false); }} />
+      {props.multiple && <Button variant="secondary" onClick={() => setOpen(false)}>完成选择</Button>}
+    </Popover>
+  </div>;
 }

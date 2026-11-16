@@ -2,7 +2,7 @@
 
 本目录提供[莱茵设计 · Rhine Design](../README.md)的 React 组件、设计变量和 API 契约。组件接收应用传入的数据与动作，不绑定特定后端或原生平台。包名为`@linhey/rhine-design`；样式变量和类名使用`rhine-`命名空间。
 
-公开导出的分层、使用边界和契约链接见[组件目录](CATALOG.md)。目录对应 `components/index.ts` 的值导出，不复制本文件的参数表，也不用一个总数代表能力。已发布版本的数量和能力以 [CHANGELOG](../CHANGELOG.md) 及实际安装包为准；源码导出不等于已发布。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[0.11.0 记录](../CHANGELOG.md#01102026-10-27)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
+公开导出的分类、使用边界和契约链接见[组件目录](CATALOG.md)。分类对标 Ant Design 组件总览，不是兼容实现。目录对应 `components/index.ts` 的值导出，不复制本文件的参数表，也不用一个总数代表能力。已发布版本的数量和能力以 [CHANGELOG](../CHANGELOG.md) 及实际安装包为准；源码导出不等于已发布。当前源码中的摘要 Tabs、浮动 Toast、紧凑 SegmentedControl 和相邻 Disclosure 分隔线调整不在 npm 0.10.0 中，见[0.11.0 记录](../CHANGELOG.md#01102026-10-27)。新增导航、表单流程及健康时间轴组件见[场景与交互规范](../docs/INTERACTION_PATTERNS.md)，原24个扩展组件见[常用组件契约](./COMMON_COMPONENTS.md)。[字体与文字规范](./TYPOGRAPHY.md)与[主流系统对照与缺口](../docs/DESIGN_SYSTEM_AUDIT.md)共同约束复用。静态页面样稿也使用同源Toolbar/Select CSS，不运行React。
 
 中子星艺术、主题物品和生命周期见[中子星契约](../docs/NEUTRON_STAR_BACKDROP.md)与[轨道背景契约](../docs/ORBIT_BACKDROP.md)。安装版本与源码导出分别核对。
 
@@ -230,3 +230,8 @@ Button.size="standard" | "large"（0.11.2），标准14/22、44px最小高度，
 - Dialog：`width?: CSSProperties['width']`、`titleVisibility?: 'visible' | 'hidden'`、`headerContent?: ReactNode`、`headerActions?: ReactNode`，见[设置契约](../docs/SETTINGS_DIALOG.md)。Drawer不增加这些参数。
 - ListFilterBar：`variant?: 'default' | 'inline'`、`search.labelVisibility`、`filterOverlay?: 'drawer' | 'dialog'`、`moreContent?: ReactNode`、`activeVariant?: 'quiet' | 'secondary'`，默认行为不变，见[筛选契约](../docs/LIST_FILTER_BAR.md)。
 - SegmentedControl：`size="control"`的至少44px可见面（随标准按钮主题边框增长），compact既有视觉保持，见[紧凑组合](../docs/COMPACT_ACCOUNT_PATTERNS.md)。
+
+
+## 总览对应能力与交互补强（源码候选，未发布）
+
+新增组件的完整范围、默认值、键盘/焦点、二维码容量、密度及验证边界见[总览对应能力契约](PROVIDED_COMPONENTS.md)。Dropdown/AutoComplete/Image/Popconfirm复用既有浮层；Menu仍为命令菜单，原生横向/纵向导航另用NavigationMenu。TreeSelect默认inline兼容，presentation=dropdown可选；ConfigProvider只改变本区及其Portal的明确间距，不改全局tokens或标准44px命中。

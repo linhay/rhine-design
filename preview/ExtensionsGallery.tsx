@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AppShell, AppShellToggle, IconButton, Inline, Background, Button, Checkbox, DataTable, DateField, DateRangePicker, Dialog, EmptyState, MediaCard, MediaViewer, Notice, NumberField, Pagination, RemoteMultiSelect, Select, SideNav, Skeleton, Stack, Surface, TextField, TreeSelect, type AppShellProps, type DateRange, type TreeNode, type TableSort } from '../components';
-import type { Choice } from '../components/components';
+import type { Choice } from '../components';
 import './extensions.css';
 import { NumberValidationGallery } from './NumberValidationGallery';
 import { TableStickyGallery } from './TableStickyGallery';

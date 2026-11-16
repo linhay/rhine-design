@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { GalleryShell } from '../preview/GalleryShell';
+import { GalleryShell, filterGalleryNavigation } from '../preview/GalleryShell';
 import { chatFoundationPages } from '../preview/chat-foundation-navigation';
 import { themes } from '@linhey/rhine-design/theme';
 
@@ -67,7 +67,7 @@ describe('gallery chapter navigation', () => {
     window.history.replaceState(null, '', '#typography');
     render(<Demo />);
     expect(screen.getByRole('heading')).toHaveTextContent('typography');
-    expect(screen.getByRole('link', {name:'字体与文字'})).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', {name:'Typography 排版'})).toHaveAttribute('aria-current', 'page');
     navigate('#motion');
     expect(screen.getAllByRole('heading')).toHaveLength(1);
     expect(screen.getByRole('heading')).toHaveTextContent('motion');
@@ -90,7 +90,7 @@ describe('gallery chapter navigation', () => {
     render(<Demo />);
     const trigger = screen.getByRole('button', {name:'目录'});
     fireEvent.click(trigger);
-    const link = screen.getByRole('link', {name:'字体与文字'});
+    const link = screen.getByRole('link', {name:'Typography 排版'});
     link.focus();
     fireEvent.keyDown(link, {key:'Escape'});
     expect(trigger).toHaveAttribute('aria-expanded','false');
@@ -117,5 +117,39 @@ describe('Chat Foundation component navigation', () => {
     navigate(`#${id}`);
     expect(screen.getByRole('heading')).toHaveTextContent(id);
     expect(screen.getByRole('main')).toHaveFocus();
+  });
+});
+
+
+describe('directory search', () => {
+  it('matches Chinese, English and categories without changing chapter or preferences', () => {
+    window.history.replaceState(null, '', '#forms'); render(<Demo />);
+    const search = screen.getByRole('searchbox', { name:'搜索组件' });
+    fireEvent.change(search, { target:{ value:'calendar' } });
+    const nav = screen.getByRole('navigation', { name:'组件目录' });
+    expect(within(nav).getAllByRole('link')).toHaveLength(1);
+    expect(within(nav).getByRole('link', { name:'Calendar 日历' })).toBeInTheDocument();
+    expect(screen.getByRole('heading')).toHaveTextContent('forms');
+    fireEvent.change(search, { target:{ value:'日历' } }); expect(within(nav).getAllByRole('link')).toHaveLength(1);
+    fireEvent.change(search, { target:{ value:'数据录入' } }); expect(within(nav).getByRole('link', { name:'Input 输入框' })).toBeInTheDocument();
+  });
+  it('retains the Chat parent when only one descendant matches', () => {
+    const groups = filterGalleryNavigation('MessageMeta');
+    expect(groups).toHaveLength(1); expect(groups[0].items).toHaveLength(1);
+    expect(groups[0].items[0].id).toBe('chat-foundation');
+    expect(groups[0].items[0].children?.map(item => item.label)).toEqual(['MessageMeta']);
+  });
+  it('clears no-results search before a second Escape closes the compact menu', () => {
+    render(<Demo />); const toggle = screen.getByRole('button', { name:'目录' }); fireEvent.click(toggle);
+    const search = screen.getByRole('searchbox', { name:'搜索组件' });
+    fireEvent.change(search, { target:{ value:'not-a-component-xyz' } }); expect(screen.getByRole('status')).toHaveTextContent('没有匹配的组件');
+    fireEvent.keyDown(search, { key:'Escape' }); expect(search).toHaveValue(''); expect(toggle).toHaveAttribute('aria-expanded','true');
+    fireEvent.keyDown(search, { key:'Escape' }); expect(toggle).toHaveAttribute('aria-expanded','false'); expect(toggle).toHaveFocus();
+  });
+  it('restores a complete directory and search focus through the clear button', () => {
+    render(<Demo />); const search = screen.getByRole('searchbox', { name:'搜索组件' });
+    fireEvent.change(search, { target:{ value:'日历' } }); fireEvent.click(screen.getByRole('button', { name:'清空目录搜索' }));
+    expect(search).toHaveValue(''); expect(search).toHaveFocus();
+    expect(within(screen.getByRole('navigation', { name:'组件目录' })).getAllByRole('link').length).toBeGreaterThan(73);
   });
 });

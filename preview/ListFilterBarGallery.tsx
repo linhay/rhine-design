@@ -123,7 +123,8 @@ function StatisticsExample({ mode }: { mode: PreviewState }) {
   const disabled = mode === 'disabled';
   const pending = mode === 'loading' || refreshing;
   const reset = () => { setScope('all'); setPlatform('all'); setMetric('cost'); setRange({ start: '2026-10-24', end: '2026-10-24' }); setDateResetKey(key => key + 1); };
-  const noUsage = mode === 'empty' || platform !== 'all';
+  const failed = mode === 'error';
+  const noUsage = !failed && (mode === 'empty' || platform !== 'all');
   const clearFromEmpty = () => {
     document.getElementById(platformId)?.focus();
     reset();
@@ -145,10 +146,10 @@ function StatisticsExample({ mode }: { mode: PreviewState }) {
           control: <DateRangePicker key={dateResetKey} label="统计日期" value={range} onValueChange={setRange} disabled={disabled} clearable={false} /> },
       ]}
       onReset={disabled ? undefined : reset} refresh={{ onClick: refresh, busy: pending, disabled }} pending={pending}
-      result={pending ? undefined : noUsage ? '当前范围无用量' : `${dateLabel(range)} · ${scope === 'all' ? '所有可见部门' : scope}`}
+      result={pending ? undefined : failed ? '当前范围结果未知' : noUsage ? '当前范围无用量' : `${dateLabel(range)} · ${scope === 'all' ? '所有可见部门' : scope}`}
       error={mode === 'error' ? '统计读取失败，暂不能确认当前范围结果。' : undefined}
     />
-    {pending ? <Skeleton label="正在读取用量" lines={2} /> : noUsage ? <EmptyState title="当前范围没有用量" description="可更改范围或日期后重试。" action={!disabled ? <Button variant="secondary" onClick={clearFromEmpty}>清除筛选</Button> : undefined} /> : <Surface><Stack gap={2}>
+    {pending ? <Skeleton label="正在读取用量" lines={2} /> : failed ? <Text role="status" tone="muted">当前范围结果未知，暂不计算用量。</Text> : noUsage ? <EmptyState title="当前范围没有用量" description="可更改范围或日期后重试。" action={!disabled ? <Button variant="secondary" onClick={clearFromEmpty}>清除筛选</Button> : undefined} /> : <Surface><Stack gap={2}>
       <Text as="h4" variant="label">示例统计结果</Text><Text variant="caption" tone="muted">统计范围、日期与排行方式由宿主控制；此处仅展示合成数据。</Text>
       <Text numeric>{metric === 'cost' ? '$ 8.42' : '1,400,000 Token'}</Text>
     </Stack></Surface>}

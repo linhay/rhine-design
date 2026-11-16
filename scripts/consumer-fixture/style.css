@@ -1,0 +1,7 @@
+body { margin:0; }
+.consumer { max-width:960px; min-height:100dvh; margin:auto; padding:24px; display:grid; gap:20px; min-width:0; }
+.consumer header { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.consumer header h1 { font-size:24px; overflow-wrap:anywhere; }
+.consumer section { min-width:0; padding:16px; border:1px solid var(--rhine-line); }
+.consumer-snapshot { white-space:pre-wrap; overflow-wrap:anywhere; max-width:100%; }
+#package-target { min-width:0; width:100%; max-width:100%; min-height:44px; padding:10px 12px; border:1px solid var(--rhine-control); border-radius:var(--rhine-radius-control); background:var(--rhine-surface); color:var(--rhine-ink); font:inherit; }

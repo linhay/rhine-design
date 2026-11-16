@@ -1,8 +1,30 @@
 # Integration and diagnosis
 
-## Supported baseline
+## Install and verify
 
-Rhine Design 0.10.0 ships TypeScript/TSX, CSS and SVG source for React 19 + Vite. Install `@linhey/rhine-design`; GitHub remains `linhay/rhine-design`. Check the installed package's engine and peer dependencies. Node 24 is the development baseline. Do not assume precompiled JavaScript, arbitrary SSR support or a complete dark theme.
+The checked-out package identifies itself as `@linhey/rhine-design` 0.13.0. Its npm scope differs from the `linhay/rhine-design` GitHub repository owner. Verify the installed manifest and lockfile before using its API. Use an exact version verified in the registry, or install a fixed local tarball and record its checksum when testing this checkout. A working tree can contain changes beyond a release with the same version number. The repository README's 0.12.0 release example is a separate baseline.
+
+The manifest declares React and React DOM `^19.0.0`, and Node `^22.12.0 || ^24.0.0 || >=26.0.0`. Node 24 is the development baseline. The package ships TS/TSX, CSS and assets for a bundler. Use Vite for the verified build path. SSR, other bundlers and direct Node execution of the component entry need their own verification.
+
+Copy the entire `skills/rhine-design/` directory from the actual installed package to the host's project Skill directory, `.agents/skills/rhine-design/` for Codex. Follow the same package's `README.md` installation procedure and preserve local customizations when updating an existing copy. Check the copied files and internal links, then run the host's relevant typecheck or production build with a minimal import. Confirm Skill discovery separately from copying.
+
+In the library checkout, `npm test -- tests/SkillInstallation.test.tsx` checks both portable and project-directory copies. Set `RHINE_SKILL_SOURCE` to the installed package's `skills/rhine-design` directory to apply the same checks to files from a real tarball install.
+
+## Public package entries
+
+Append these subpaths to `@linhey/rhine-design` as shown in its `package.json` exports. Read docs and contracts as files relative to the installed package root.
+
+| Entry | Use |
+| --- | --- |
+| Package root | Components and public types from `components/index.ts`. Imports base component CSS automatically. |
+| `/theme` | `ThemeProvider`, `useTheme`, `themes`, `ThemeName` and `ThemeProviderProps`. Loads base and built-in theme CSS. |
+| `/tokens.css`, `/styles.css` | Tokens or the whole base stylesheet for explicit CSS imports. The base stylesheet already includes tokens. |
+| `/theme-arknights.css`, `/theme-neo-brutalism.css`, `/theme-neutral.css`, `/theme-graphite.css` | Opt-in styles for a handwritten theme root. Load base CSS before the chosen theme stylesheet. |
+| `/logo.svg` | Shared SVG asset. The root `Logo` component uses the shared geometry. |
+| `/review` | Review catalog/state APIs such as `defineReview`. See `docs/REVIEW_TOOL.md`. |
+| `/review/vite` | Node ESM Vite entry with `reviewPlugin` and `reviewProductionGuard`, with types for configuration imports. Use a separate review build and keep its fixtures out of production. |
+
+For a page using the default theme, the component entry plus a `.rhine-theme` root is sufficient.
 
 ```tsx
 import { Button, Surface, Text } from '@linhey/rhine-design';
@@ -19,30 +41,32 @@ export function Example() {
 }
 ```
 
-## Integration invariants
+## Theme, density and backgrounds
 
-Version 0.4.0 also exports `ThemeProvider`, `useTheme`, `themes`, `ThemeName` and `ThemeProviderProps` from `@linhey/rhine-design/theme` (not in npm 0.3.0). Read `docs/THEMING.md` from the verified package root. For a standalone skill installation without the package, see [the theme contract snapshot](https://github.com/linhay/rhine-design/blob/cfcb400fa213d9905eae1cab5dcb8ab8f817e03f/docs/THEMING.md) at commit `cfcb400fa213d9905eae1cab5dcb8ab8f817e03f` (0.10.0 source baseline). This fixed snapshot does not track main or establish availability in another installed version; prefer that version's own contract and implementation. This entry loads base and built-in theme CSS and renders the `.rhine-theme` root. Use `defaultTheme` for local state, or `theme` with `onThemeChange` for host state; storage and URL preferences remain with the host. Sibling providers are supported; nested providers throw. Do not wrap it in another themed root or key the subtree by theme. Gallery decoration is excluded from the public theme CSS.
+- The `/theme` entry renders `div.rhine-theme` with `data-rhine-theme`. Built-in names are `rhine`, `arknights`, `neo-brutalism`, `neutral` and `graphite`. Use `themes` for stable names and display labels, and `ThemePicker` from the root entry for a controlled selection UI. For handwritten roots, use `.rhine-theme` and `data-rhine-theme` with the matching stylesheet. Gallery decoration is kept in the preview.
+- Use `defaultTheme` for provider state, or `theme` and `onThemeChange` for host state. `useTheme().setTheme()` requests a change in controlled mode, so the host must pass the new value back. The host owns storage and URL preferences. Use sibling providers for independent regions. Nesting providers throws, and keying a subtree by theme remounts it. Supported names are style presets. Logo color is an independent `Logo.theme` choice. See `docs/THEMING.md` and `docs/THEME_PICKER.md`.
+- `ConfigProvider` and `useConfig` from the root entry scope `regular` or `compact` density. The setting reaches supported portaled controls and does not choose a theme. See the density scope and affected controls in `components/PROVIDED_COMPONENTS.md`.
+- `Background` paints `canvas`, `content`, `sidebar`, `surface`, `overlay` or `media` without creating a theme root. With the default `decoration="auto"`, only canvas uses the theme texture. `appearance` applies local paint overrides. Use an overlay component for interaction, and theme-root scene tokens for shared paint including portaled surfaces. See `docs/THEMING.md` and `docs/APPLICATION_COMPONENTS.md`.
 
-Version 0.5.0 adds `Background` with canvas/content/sidebar/surface/overlay/media roles. `decoration="auto"` is the default: only canvas uses theme texture; content and AppShell default to plain backgrounds. Use `appearance` for local color/text/texture/size overrides and theme-root scene tokens for shared configuration. Background is paint only, not a new theme root or modal. Preview `#backgrounds` shows only the selected theme and follows the theme picker. Check installed exports before adopting this API; it is not in npm 0.4.0.
+## Diagnose a build or layout issue
 
-- The entry imports CSS automatically. Keep the package's entry and CSS `sideEffects` declarations so production tree shaking retains styles.
-- Put `.rhine-theme` at the page root. Do not transform, clip or apply containment to it: overlays portal to the nearest theme root and need its variables and reduced-motion settings.
-- For a locally linked checkout, use Vite `resolve.dedupe: ['react', 'react-dom']`. Duplicate React can break hooks; do not patch component state to mask this.
-- Preserve SVG `?no-inline` handling. Logo uses a shared geometric master; missing symbols in production warrant checking the emitted SVG asset before replacing the logo.
-- Reuse tokens for layout and state styling. The arknights preset uses a dark palette; a general light/dark/system color-mode API is not provided. Logo color remains independent of the component theme.
+- If styles disappear in production, check that the actual package entry and CSS files retain their `sideEffects` declarations. Verify the built CSS with a root-only import before adding consumer overrides.
+- If an overlay is clipped or uses the wrong theme, inspect where it portals. It uses the nearest `.rhine-theme` to inherit the tokens and reduced-motion setting. Keep the theme root free of transform, clipping and CSS containment.
+- If a linked checkout reports an invalid hook call, confirm React and React DOM resolve to the host's instances. In Vite, use `resolve.dedupe: ['react', 'react-dom']` for the linked packages.
+- If the logo is missing from a production build, keep SVG `?no-inline` handling and check the emitted asset and its symbol references. The `Logo` component uses the same SVG geometry across variants.
 
 ## Host responsibilities
 
-Pass controlled form values, data, sorting/pagination intentions and operation results through the documented APIs. The host owns network requests, debouncing, IME composition, cancellation and stale-response protection. Do not replace server filtering with an unrequested full-data download.
+Pass controlled form values, data, sorting/pagination intentions and operation results through the documented APIs. The host owns network requests, debouncing, cancellation and stale-response protection. Respect the control's input composition handling when synchronizing a query or submitting a form. Do not replace server filtering with an unrequested full-data download.
 
 Await actual copy/confirm outcomes. Errors remain actionable; busy state preserves meaningful focus. Inspect overlay focus return, Escape and keyboard navigation in the browser when changing those interactions. Progress with unknown duration is indeterminate; startup animation ends when the host is ready rather than imposing a decorative delay.
 
 ## Upgrade and feedback
 
-Check the installed version against this skill's metadata, then consult `CHANGELOG.md`. Refresh the copied skill together with the package; keep local customizations when comparing versions. If types and docs disagree, use source for the immediate API and repair the stale reference when in scope.
+Check the installed package's version and provenance against the copied Skill, then consult its `CHANGELOG.md`. Use the installed types and implementation to settle API discrepancies. Refresh the copied Skill with the package and repair stale references when in scope.
 
 Follow [continuous design feedback](../SKILL.md#continuous-design-feedback) for project specifications, preferences, details, successful practices and validation findings, even without a missing component. Sanitize search terms and all outbound metadata before checking open/closed issues. Under current user/project feedback authorization, submit new information directly to `linhay/rhine-design` without repeated confirmation, read back the result and retain the URL; copying this skill alone grants no posting authorization. Record scope, basis, actual version (or unknown/N/A) and safe evidence; keep private product artifacts local. For verified capability gaps also apply [gap-specific requirements](../SKILL.md#report-missing-components-and-styles). Later related tasks should check adoption and consumer validation separately from issue closure.
 
 ## 设置工作区选型
 
-短任务使用自然高度 Dialog。多栏目设置/编辑优先组合 `height`、`footer`、`navigation`，由宿主指定期望高度并持有跨栏目草稿。footer 直接传按钮或 Fragment；description 仅提供决策所需说明。空态、增删行、加载和错误应保持外框稳定；标题/关闭和操作区固定、正文与长导航分别滚动，不添加 wheel 转发。验收短屏正文的实际操作空间、44px目标和末项可达，不只看外框或正文非零。窄导航轨道修复为未发布源码能力，固定候选消费后才删除适配，见源码/安装包中的 `docs/SETTINGS_DIALOG.md`。
+短任务使用自然高度 Dialog。多栏目设置或编辑使用 `height`、`footer`、`navigation` 组合，由宿主持有跨栏目草稿。`navigation` 和 `sidePanel` 互斥。`footer` 直接传按钮或 Fragment。验收短屏的正文空间、44px 操作目标和末项可达，以及加载、空态或错误时的外框稳定性。标题与操作区保持可达，正文与长导航各自滚动。窄导航修复是否可用，以固定候选或实际安装的制品为准，接入时查 `docs/SETTINGS_DIALOG.md`。

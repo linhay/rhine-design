@@ -6,7 +6,7 @@ Rhine Design 已有布局、导航、文字、表单、浮层和反馈组件，�
 
 本提案把完整界面作为一个可交互展台提交，供 Rhine Design 逐步拆解组件。它只定义呈现结构、交互状态和公开契约，不绑定 Bot、成员、线程、权限、模型、事件或后端。
 
-预览入口：`#chat-foundation`。左侧三级目录为“应用能力 → Chat 基石 → 组件”；父入口保留完整工作区，16 个子项各有真实组件展台。原九个 hash 保持兼容，新增 `#chat-foundation-pane`、`#chat-foundation-message-meta`、`#chat-foundation-message-content`、`#chat-foundation-message-actions`、`#chat-foundation-day-divider`、`#chat-foundation-message-status`、`#chat-foundation-message-renderer`。支持直接访问、刷新与前进/后退；底部能力清单已移除。
+预览入口：`#chat-foundation`。左侧三级目录为“布局 → Chat 基石 → 组件”；父入口保留完整工作区，16 个子项各有真实组件展台。原九个 hash 保持兼容，新增 `#chat-foundation-pane`、`#chat-foundation-message-meta`、`#chat-foundation-message-content`、`#chat-foundation-message-actions`、`#chat-foundation-day-divider`、`#chat-foundation-message-status`、`#chat-foundation-message-renderer`。支持直接访问、刷新与前进/后退；底部能力清单已移除。
 
 ## 组合结构
 
