@@ -35,7 +35,7 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 需要 **React 19 / React DOM 19**。已验证的构建环境为 **Vite**，建议使用 **Node 24**。包提供 TS/TSX、CSS 和 SVG 源码，构建器需要支持 CSS 导入和 Vite 的 SVG `?no-inline` 引用；其他构建器及 SSR 尚未验证。
 
-在现有 React 项目目录中安装。以下示例固定使用本次发行目标 **0.14.0**；registry 回读前仍是发布候选，状态见[发行记录](docs/releases/0.14.0.md)：
+在现有 React 项目目录中安装。以下示例固定使用已发布并核验的 **0.14.0**；支持范围与制品身份见[发行记录](docs/releases/0.14.0.md)：
 
 ```sh
 npm install --save-exact @linhey/rhine-design@0.14.0
