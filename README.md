@@ -35,10 +35,10 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 需要 **React 19 / React DOM 19**。已验证的构建环境为 **Vite**，建议使用 **Node 24**。包提供 TS/TSX、CSS 和 SVG 源码，构建器需要支持 CSS 导入和 Vite 的 SVG `?no-inline` 引用；其他构建器及 SSR 尚未验证。
 
-在现有 React 项目目录中安装。以下示例固定使用已发布的 **0.12.0**：
+在现有 React 项目目录中安装。以下示例固定使用本次发行目标 **0.14.0**；registry 回读前仍是发布候选，状态见[发行记录](docs/releases/0.14.0.md)：
 
 ```sh
-npm install --save-exact @linhey/rhine-design@0.12.0
+npm install --save-exact @linhey/rhine-design@0.14.0
 ```
 
 将下面的组件放入你的页面：
@@ -79,8 +79,8 @@ export default function App() {
 
 1. 阅读项目规则、package.json 和 lockfile，确认应用目录、包管理器、React/React DOM、Node 和构建器版本。保留现有修改；monorepo 安装到实际使用组件的应用，不随意写入根包。
 
-2. 安装 npm 包 @linhey/rhine-design，本文接入基线为 0.12.0。使用 npm 的项目在应用目录执行：
-   npm install --save-exact @linhey/rhine-design@0.12.0
+2. 安装 npm 包 @linhey/rhine-design，本文接入目标为 0.14.0，先核对 registry 可读后安装。使用 npm 的项目在应用目录执行：
+   npm install --save-exact @linhey/rhine-design@0.14.0
    若已有 pnpm、yarn 或 bun，则使用现有包管理器的等价精确版本命令，保持原 lockfile 类型。若已安装更新版本，核对兼容性后保留，不自动降级。
    该基线需要 React 19 / React DOM 19；已验证 Vite，建议 Node 24。遇到不兼容，说明具体差异，不强行升级框架、不用 --force 或 --legacy-peer-deps 绕过检查。
 
@@ -102,10 +102,10 @@ export default function App() {
 
 ## 版本与兼容
 
-- 本页安装与代码示例以正式 **0.12.0** 为基线，包含 72 个组件和五套主题。发布制品、范围与验收边界见 [0.12.0 发布记录](docs/releases/0.12.0.md)。
+- 本页安装与代码示例对应 **0.14.0**；能力以该版本实际导出和契约为准，不用总数代替兼容承诺。发布状态与证据见 [0.14.0 发行记录](docs/releases/0.14.0.md)。
 - 从旧版本升级时，若穷举 `ThemeName`，需补齐 `neutral` 与 `graphite` 分支。其他变化见 [CHANGELOG](CHANGELOG.md)，升级时同步精确依赖与 lockfile。
 - 包内 `docs/`、`components/` 和 `skills/` 可从 `node_modules/@linhey/rhine-design/` 查阅。Skill 自身的版本说明可能早于 npm 包，使用 API 时核对实际导出、类型与实现。
-- #215未发布接入补全的字段、资源/目标状态和固定制品验证见[源码候选契约](components/PROVIDED_COMPONENTS.md)。其中Chromium/WebKit的有限证据不代表所有浏览器；本地tarball不是npm发行。
+- #215字段、资源/目标状态和固定制品验证见[对应能力契约](components/PROVIDED_COMPONENTS.md)。Chromium/WebKit自动化不代表所有浏览器或原生Safari；Firefox为N/A。本地tarball与registry正式发行分别确认。
 - GitHub 主线文档和在线展台随 `main` 更新；安装包的能力以精确版本为准。后续主线文档不自动进入已发布制品。需要源码试用时固定提交，不用浮动 `main` 作为正式依赖。
 
 <a id="components"></a>

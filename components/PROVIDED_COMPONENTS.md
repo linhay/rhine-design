@@ -1,4 +1,4 @@
-# 总览对应能力（源码候选，未发布）
+# 总览对应能力（0.14.0发行范围）
 
 本页约束 2026-11-14 总览对齐中新增的组件，以及本次交互补强。它们使用 Rhine 自身的命名、状态所有权与视觉，不是 Ant Design 的 API 兼容层。菜单“已有”表示存在以下范围内的实际能力，不代表上游每个模式都已复制。原有公开接口继续可用，安装版本以实际包为准。
 
@@ -102,12 +102,12 @@
 
 ## 固定制品与有限兼容验收（2026-11-16）
 
-当前仍为未提交、未发布的源码候选。相同package.version不代表相同制品；所有结论绑定具体tarball SHA-256、lockfile integrity、安装文件和生产构建摘要，不把registry同版本包或工作区依赖当作候选。
+本节保留候选阶段的验证范围；0.14.0发行状态以[发行记录](../docs/releases/0.14.0.md)和registry回读为准。相同package.version不代表相同制品；所有结论绑定具体tarball SHA-256、lockfile integrity、安装文件和生产构建摘要，不把旧版本或工作区依赖当作新发行的证明。
 
 | 维度 | 本增量已验证的范围 | 不外推的范围 |
 | --- | --- | --- |
 | 构建 | Node24.21.0、React/ReactDOM19.3.1、TypeScript5.9.3、Vite8.3.4及React插件6.1.2 | 其他构建器、SSR/服务端直接执行TSX |
-| Chromium | 156，独立安装制品的生产页 | 所有Chromium版本、系统WebView |
+| Chromium | HeadlessChrome/157，独立安装制品的生产页 | 所有Chromium版本、系统WebView |
 | WebKit | Playwright WebKit端口，UA Version26.4 / WebKit605.1.15 | 原生Safari App、iOS设备或VoiceOver |
 | Firefox | N/A：Firefox 未纳入本轮支持范围，未运行兼容矩阵 | 不从 Chromium/WebKit 结果推导 Firefox 兼容性；后续若纳入范围再单独验证 |
 | 尺寸 | 五主题×400/520/880宽度×CSS zoom1/2×五类消费者场景，每引擎150布局；880/100%与400/200%的10个实际交互场景 | 原生网页缩放、手机平台承诺或任意容器/内容 |

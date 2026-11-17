@@ -1,6 +1,6 @@
 # API map
 
-All code paths are relative to the package root. Use `components/CATALOG.md` for the complete main-entry inventory and component selection. Use this map for related types, contracts and source locations. The exact signatures come from the resolved package's public entries and source. This map was checked against the `0.13.0` working tree. The unreleased sections of `CHANGELOG.md` distinguish source additions from the versioned release. Match installed exports and contracts before using them in a consumer.
+All code paths are relative to the package root. Use `components/CATALOG.md` for the complete main-entry inventory and component selection. Use this map for related types, contracts and source locations. The exact signatures come from the resolved package's public entries and source. This map was checked against the `0.14.0` release candidate. `docs/releases/0.14.0.md` and registry readback distinguish a prepared candidate from an available release. Match installed exports and contracts before using them in a consumer.
 
 ## Public entries
 
