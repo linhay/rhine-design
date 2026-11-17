@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Button, DateField, DateRangePicker, Divider, Icon, Inline, Popover, SegmentedControl, Select, Stack, Surface, Text, type DateRange } from '../components';
+import { useEffect, useState } from 'react';
+import { Button, DateField, DateRangePicker, Dialog, Divider, Icon, Inline, ListFilterBar, Popover, SegmentedControl, Select, Stack, Surface, Text, TextField, type DateRange } from '../components';
 
 const quickRanges = [
   { value: 'today', label: '今天', range: { start: '2026-10-24', end: '2026-10-24' } },
@@ -77,6 +77,35 @@ export function DateRangeFilterExample({ label = '时间范围', initialValue = 
   </Stack>;
 }
 
+// Host-owned synthetic result: neither the picker nor the filter bar sends a request.
+export function NestedDateFilterExample() {
+  const [range, setRange] = useState<DateRange>({ start: '2026-10-20', end: '2026-10-24' });
+  const [note, setNote] = useState('待保存的设置草稿');
+  const [changes, setChanges] = useState(0);
+  const [pending, setPending] = useState(false);
+  useEffect(() => {
+    if (!changes) return;
+    setPending(true);
+    const timer = setTimeout(() => setPending(false), 300);
+    return () => clearTimeout(timer);
+  }, [changes]);
+  return <Stack gap={3}>
+    <Text as="h3" variant="heading">设置内的日期清空与逐层退出</Text>
+    <Text variant="caption" tone="muted">打开更多筛选，清空日期后可继续 Tab 编辑；一次 Escape 只退出筛选，设置草稿保留。结果是可取消的本地模拟，不连接业务服务。</Text>
+    <Dialog title="日期筛选设置" titleVisibility="hidden" height={560} trigger={<Button variant="secondary">打开日期筛选设置</Button>}
+      headerContent={<Stack gap={2}><Text as="h3" variant="heading">日期筛选设置</Text><ListFilterBar label="日期更多筛选" variant="inline"
+        filters={[{ id: 'dates', label: '日期', activeLabel: range.start || range.end ? rangeLabel(range) : undefined,
+          control: <DateRangePicker label="筛选日期" value={range} onValueChange={next => { setRange(next); setChanges(count => count + 1); }} /> }]}
+        pending={pending} result={pending ? '正在回读合成结果' : '合成结果已就绪'} /></Stack>}
+    >
+      <Stack gap={3}>
+        <TextField label="设置备注" value={note} onChange={event => setNote(event.target.value)} />
+        <Text role="status">范围：{range.start || '不限开始'} — {range.end || '不限结束'}；回传次数：{changes}</Text>
+      </Stack>
+    </Dialog>
+  </Stack>;
+}
+
 export function DateRangeFilterGallery() {
   const [narrowWidth, setNarrowWidth] = useState('150');
   const [narrowRange, setNarrowRange] = useState<DateRange>({ start: '2026-10-24', end: '2026-10-25' });
@@ -86,6 +115,7 @@ export function DateRangeFilterGallery() {
     <div className="ds-section-title"><span>RANGE</span><h2>日期筛选 · 快捷选择与自定义</h2></div>
     <p className="ds-caption">常用日期是一组互斥选项；具体日期持续可见。更多预设即选即用，自定义日期在确认后生效。</p>
     <Stack gap={4}>
+      <NestedDateFilterExample />
       <Surface>
         <Stack gap={4}>
           <Text as="h3" variant="heading">日常筛选</Text>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { flushSync } from 'react-dom';
 import { describe, expect, it, vi } from 'vitest';
 import { Button, DateField, DateRangePicker } from '../components';
 
@@ -132,6 +133,74 @@ describe('native date editing', () => {
     expect(screen.getByLabelText('开始日期')).not.toHaveAttribute('aria-invalid', 'true');
     expect(validation).toHaveBeenLastCalledWith(null);
     expect(clear).toBeDisabled();
+  });
+
+  it.each(['clear', 'start', 'end'])('hands off %s focus before clear can disable or replace its owner', source => {
+    let focusAtChange: Element | null = null;
+    const change = vi.fn();
+    function Example() {
+      const [value, setValue] = useState({ start: '2026-10-20', end: '2026-10-24' });
+      return <DateRangePicker label="范围" value={value} onValueChange={next => {
+        focusAtChange = document.activeElement; change(next); setValue(next);
+      }} />;
+    }
+    render(<Example />);
+    const group = screen.getByRole('group', { name: '范围' });
+    const clear = screen.getByRole('button', { name: '清空日期' });
+    const start = screen.getByLabelText('开始日期');
+    (source === 'clear' ? clear : screen.getByLabelText(source === 'start' ? '开始日期' : '结束日期')).focus();
+    fireEvent.click(clear);
+    expect(change).toHaveBeenCalledExactlyOnceWith({ start: '', end: '' });
+    expect(focusAtChange).toBe(group);
+    expect(group).toHaveFocus();
+    expect(group).toHaveAttribute('tabindex', '-1');
+    expect(clear).toBeDisabled();
+    expect(screen.getByLabelText('开始日期')).not.toBe(start);
+  });
+
+  it('hands off an incomplete empty draft before its input is replaced', () => {
+    render(<DateRangePicker label="范围" value={{ start: '', end: '' }} onValueChange={() => {}} />);
+    const start = screen.getByLabelText('开始日期');
+    nativeInput(start, '', true); start.focus();
+    fireEvent.click(screen.getByRole('button', { name: '清空日期' }));
+    expect(screen.getByRole('group', { name: '范围' })).toHaveFocus();
+    expect(screen.getByLabelText('开始日期')).not.toBe(start);
+    expect(screen.getByRole('button', { name: '清空日期' })).toBeDisabled();
+  });
+
+  it('does not refocus after a synchronous host handoff', async () => {
+    function Example() {
+      const [value, setValue] = useState({ start: '2026-10-20', end: '2026-10-24' });
+      return <><DateRangePicker label="范围" value={value} onValueChange={next => {
+        flushSync(() => setValue(next)); screen.getByRole('button', { name: '其他操作' }).focus();
+      }} /><Button>其他操作</Button></>;
+    }
+    render(<Example />);
+    const clear = screen.getByRole('button', { name: '清空日期' }); clear.focus(); fireEvent.click(clear);
+    await act(async () => {});
+    expect(screen.getByRole('button', { name: '其他操作' })).toHaveFocus();
+  });
+
+  it.each([false, true])('does not steal focus when a deferred controlled response is accepted=%s', async accepted => {
+    let resolve: (() => void) | undefined;
+    function Example() {
+      const [value, setValue] = useState({ start: '2026-10-20', end: '2026-10-24' });
+      return <><DateRangePicker label="范围" value={value} onValueChange={next => { resolve = () => { if (accepted) setValue(next); }; }} /><Button>后续操作</Button></>;
+    }
+    render(<Example />);
+    const clear = screen.getByRole('button', { name: '清空日期' }); clear.focus(); fireEvent.click(clear);
+    expect(screen.getByRole('group', { name: '范围' })).toHaveFocus();
+    screen.getByRole('button', { name: '后续操作' }).focus();
+    await act(async () => { resolve?.(); });
+    expect(screen.getByRole('button', { name: '后续操作' })).toHaveFocus();
+    expect(screen.getByLabelText('开始日期')).toHaveValue(accepted ? '' : '2026-10-20');
+  });
+
+  it('does not take focus from another control during programmatic activation', () => {
+    render(<><DateRangePicker label="范围" value={{ start: '2026-10-20', end: '2026-10-24' }} onValueChange={() => {}} /><Button>其他操作</Button></>);
+    const other = screen.getByRole('button', { name: '其他操作' }); other.focus();
+    fireEvent.click(screen.getByRole('button', { name: '清空日期' }));
+    expect(other).toHaveFocus();
   });
 
   it('replaces incomplete drafts with a preset even when its accepted dates have not changed', () => {
