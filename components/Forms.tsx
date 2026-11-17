@@ -6,6 +6,7 @@ import { useFloatingScale } from './useFloatingScale';
 import './checkbox-row.css';
 import { useConfig } from './config';
 import type { QueryInputProps } from './field-support';
+import type {SelectionChangeReason,SelectionOpenChange} from './selection-lifecycle';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: string;
@@ -68,14 +69,14 @@ export interface ComboboxProps {
   statusDisplay?: 'default' | 'compact';
   readOnly?: boolean; placeholder?: string; hint?: string; id?: string;
   selectedValues?: string[]; closeOnSelect?: boolean; onEmptyBackspace?: () => void; completionLabel?: string;
-  open?: boolean; onOpenChange?: (open: boolean) => void;
+  open?: boolean; onOpenChange?: (open: boolean,detail:SelectionOpenChange) => void; cancelLabel?:string; focusOnOpen?:boolean;
 }
 // Portaled nested dialogs remain owned by their trigger inside the parent dialog.
 function isOwnedNestedDialog(dialog: Element, target: Element | null) {
   const nested=target?.closest('[role=dialog],[role=alertdialog]');
   return Boolean(nested && nested!==dialog && [...dialog.querySelectorAll('[aria-haspopup=dialog][aria-controls]')].some(trigger=>trigger.getAttribute('aria-controls')===nested.id));
 }
-export function Combobox({ inputProps, label, labelAction, query, onQueryChange, value, onValueChange, options, loading = false, error, validationError, statusDisplay = 'default', disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace, completionLabel, hasMore = false, onLoadMore, loadingMore = false, loadMoreError, onRetry, open: controlledOpen, onOpenChange }: ComboboxProps) {
+export function Combobox({ inputProps, label, labelAction, query, onQueryChange, value, onValueChange, options, loading = false, error, validationError, statusDisplay = 'default', disabled = false, readOnly = false, placeholder, hint, id: suppliedId, selectedValues, closeOnSelect = true, onEmptyBackspace, completionLabel, cancelLabel, focusOnOpen=false, hasMore = false, onLoadMore, loadingMore = false, loadMoreError, onRetry, open: controlledOpen, onOpenChange }: ComboboxProps) {
   const generatedId = useId(), id = suppliedId || generatedId; const composing = useRef(false);
   const { density } = useConfig();
   const floatingRef = useFloatingScale(undefined, 'popover', 240);
@@ -88,19 +89,21 @@ export function Combobox({ inputProps, label, labelAction, query, onQueryChange,
   const [container, setContainer] = useState<HTMLElement>();
   useLayoutEffect(() => { setContainer((root.current?.closest('.rhine-theme') as HTMLElement) || document.body); }, []);
   const [internalOpen, setInternalOpen] = useState(false), [active, setActive] = useState<string | null>(null), [draft, setDraft] = useState<string | null>(null);
-  const open = controlledOpen ?? internalOpen;
-  const setOpen = (next: boolean) => { if (next) openRevision.current++; if (controlledOpen === undefined) setInternalOpen(next); onOpenChange?.(next); };
+  const open = controlledOpen ?? internalOpen,previousOpen=useRef(false);
+  const closeReason=useRef<SelectionChangeReason>('programmatic');
+  useLayoutEffect(()=>{if(open&&!previousOpen.current){openRevision.current++;closeReason.current='programmatic';}previousOpen.current=open;},[open]);
+  const setOpen = (next: boolean,reason?:SelectionChangeReason) => { if(next){openRevision.current++;closeReason.current='programmatic';}else if(reason&&!(reason==='blur'&&closeReason.current==='outside'))closeReason.current=reason; if(controlledOpen===undefined)setInternalOpen(next);if(next!==open)onOpenChange?.(next,{reason:next?'open':closeReason.current}); };
   const [nativeDisabled,setNativeDisabled] = useState(false);
   useLayoutEffect(()=>{
     const next=Boolean(document.getElementById(id)?.matches(':disabled'));
-    if(next!==nativeDisabled){setNativeDisabled(next);if(next){if(open)setOpen(false);setActive(null);setDraft(null);composing.current=false;}}
+    if(next!==nativeDisabled){setNativeDisabled(next);if(next){if(open)setOpen(false,'disabled');setActive(null);setDraft(null);composing.current=false;}}
   });
   useEffect(() => { if (readOnly) { if(open)setOpen(false); setActive(null); setDraft(null); composing.current = false; } }, [readOnly]);
   const available = loading || error || nativeDisabled ? [] : options.filter(option => !option.disabled);
   const activeIndex = options.findIndex(option => option.value === active && !option.disabled);
   const activeId = activeIndex >= 0 && !loading && !error ? `${id}-option-${activeIndex}` : undefined;
   useEffect(() => { if (!open || !activeId) return; document.getElementById(activeId)?.scrollIntoView?.({ block: 'nearest' }); }, [activeId, open]);
-  const choose = (option: Choice) => { if (readOnly || disabled || document.getElementById(id)?.matches(':disabled') || loading || error) return; onValueChange(option); if (closeOnSelect) setOpen(false); setActive(null); };
+  const choose = (option: Choice) => { if (readOnly || disabled || document.getElementById(id)?.matches(':disabled') || loading || error) return; onValueChange(option); if (closeOnSelect) setOpen(false,'selection'); setActive(null); };
   const visibleOpen = open && !disabled && !readOnly && !nativeDisabled;
   const actionFocused = useRef(false);
   const retryAction = Boolean((error || loadMoreError) && onRetry);
@@ -137,13 +140,13 @@ export function Combobox({ inputProps, label, labelAction, query, onQueryChange,
     doc.addEventListener('focusin', guard);
     releaseTabGuard.current = () => { doc.removeEventListener('focusin', guard); releaseTabGuard.current = undefined; };
   };
-  const complete = () => { document.getElementById(id)?.focus(); restoreInputOnClose.current = true; restoreRevision.current = openRevision.current; setOpen(false); setActive(null); };
-  return <div ref={root} className="rhine-combobox rhine-field" onBlur={event => { if (!containsInteractionTarget(event.relatedTarget) && !document.getElementById(`${id}-popup`)?.contains(event.relatedTarget)) setOpen(false); }}>
+  const complete = (reason:SelectionChangeReason='complete') => { document.getElementById(id)?.focus(); restoreInputOnClose.current = true; restoreRevision.current = openRevision.current; setOpen(false,reason); setActive(null); };
+  return <div ref={root} className="rhine-combobox rhine-field" onBlur={event=>{if(!event.relatedTarget||containsInteractionTarget(event.relatedTarget)||document.getElementById(`${id}-popup`)?.contains(event.relatedTarget))return;setOpen(false,exitingWithTab.current?'tab':'blur');}}>
     {labelAction ? <div className="rhine-combobox__heading">
       <label htmlFor={id}>{label}</label>
       <div className="rhine-combobox__label-action" onFocusCapture={() => { setOpen(false); setActive(null); }} onClickCapture={() => { setOpen(false); setActive(null); }}>{labelAction}</div>
     </div> : <label htmlFor={id}>{label}</label>}
-    <PopoverBase.Root open={visibleOpen} onOpenChange={setOpen}><PopoverBase.Anchor asChild><div className="rhine-combobox__input"><input {...inputProps} id={id} role="combobox" aria-autocomplete="list" aria-expanded={visibleOpen} aria-controls={visibleOpen ? `${id}-list` : undefined} aria-activedescendant={visibleOpen ? activeId : undefined} aria-invalid={!!(error || validationError) || undefined} aria-describedby={[inputProps?.['aria-describedby'], `${id}-status`, hint && `${id}-hint`, validationError && `${id}-validation`].filter(Boolean).join(' ')} value={draft ?? query} disabled={disabled} readOnly={readOnly} placeholder={placeholder}
+    <PopoverBase.Root open={visibleOpen} onOpenChange={next=>setOpen(next)}><PopoverBase.Anchor asChild><div className="rhine-combobox__input"><input {...inputProps} id={id} role="combobox" aria-autocomplete="list" aria-expanded={visibleOpen} aria-controls={visibleOpen ? `${id}-list` : undefined} aria-activedescendant={visibleOpen ? activeId : undefined} aria-invalid={!!(error || validationError) || undefined} aria-describedby={[inputProps?.['aria-describedby'], `${id}-status`, hint && `${id}-hint`, validationError && `${id}-validation`].filter(Boolean).join(' ')} value={draft ?? query} disabled={disabled} readOnly={readOnly} placeholder={placeholder}
       onClick={() => { if (!readOnly && !disabled && !document.getElementById(id)?.matches(':disabled')) setOpen(true); }} onFocus={() => { if (!readOnly && !disabled && !document.getElementById(id)?.matches(':disabled')) setOpen(true); }} onChange={event => { if (readOnly || disabled || event.currentTarget.matches(':disabled')) return; if (composing.current) setDraft(event.target.value); else onQueryChange(event.target.value); setActive(null); setOpen(true); }}
       onCompositionStart={() => { if (!readOnly && !disabled && !document.getElementById(id)?.matches(':disabled')) { composing.current = true; setDraft(query); } }} onCompositionEnd={event => { composing.current = false; setDraft(null); if (!readOnly && !disabled && !event.currentTarget.matches(':disabled')) onQueryChange(event.currentTarget.value); }}
       onKeyDown={event => {
@@ -156,12 +159,12 @@ export function Combobox({ inputProps, label, labelAction, query, onQueryChange,
           beginTabExit();
         }
         if (event.key === 'Backspace' && !event.currentTarget.value && onEmptyBackspace) { event.preventDefault(); onEmptyBackspace(); }
-        if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); setOpen(false); setActive(null); }
+        if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); setOpen(false,'escape'); setActive(null); }
         if (['ArrowDown', 'ArrowUp'].includes(event.key)) { event.preventDefault(); setOpen(true); const index = available.findIndex(option => option.value === active); const next = event.key === 'ArrowDown' ? (index + 1) % available.length : (index <= 0 ? available.length : index) - 1; setActive(available[next]?.value ?? null); }
         if (open && ['Home', 'End'].includes(event.key)) { event.preventDefault(); setActive((event.key === 'Home' ? available[0] : available.at(-1))?.value ?? null); }
         if (open && event.key === 'Enter') { event.preventDefault(); const option = available.find(item => item.value === active); if (option) choose(option); }
       }} /><span className="rhine-combobox__arrow"><Icon name="chevronDown" size={16} /></span></div></PopoverBase.Anchor>
-    <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onEscapeKeyDown={event => { event.preventDefault(); event.stopPropagation(); complete(); }} onOpenAutoFocus={event => event.preventDefault()} onCloseAutoFocus={event => {
+    <PopoverBase.Portal container={container}><PopoverBase.Content asChild updatePositionStrategy="always" sideOffset={4} collisionPadding={12} onEscapeKeyDown={event => { event.preventDefault(); event.stopPropagation(); if(!composing.current&&!event.isComposing&&event.keyCode!==229)complete('escape'); }} onOpenAutoFocus={event=>{event.preventDefault();if(focusOnOpen&&!containsInteractionTarget(document.activeElement))document.getElementById(id)?.focus({preventScroll:true});}} onCloseAutoFocus={event => {
       event.preventDefault();
       releaseTabGuard.current?.();
       // A parent Dialog can re-focus the disappearing popup before its scope unmounts.
@@ -196,8 +199,8 @@ export function Combobox({ inputProps, label, labelAction, query, onQueryChange,
         // This close callback is already consuming the focus restoration.
         restoreInputOnClose.current = false;
       }
-    }} onInteractOutside={event => { if (containsInteractionTarget(event.target)) event.preventDefault(); }}>
-      <div data-rhine-density={density} ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); complete(); } }}>
+    }} onInteractOutside={event => { if (containsInteractionTarget(event.target)) event.preventDefault();else closeReason.current=event.detail.originalEvent.type==='pointerdown'?'outside':exitingWithTab.current?'tab':'blur'; }}>
+      <div data-rhine-density={density} ref={floatingRef} className="rhine-combobox__list" id={`${id}-popup`} onKeyDown={event => { if (event.key === 'Escape'&&!event.nativeEvent.isComposing&&event.keyCode!==229) { event.preventDefault(); event.stopPropagation(); complete('escape'); } }}>
         <div role="listbox" id={`${id}-list`} aria-label={label} aria-multiselectable={selectedValues ? true : undefined} aria-busy={loading || loadingMore}>{!loading && !error && options.map((option, index) => <div role="option" id={`${id}-option-${index}`} key={option.value} aria-selected={selectedValues ? selectedValues.includes(option.value) : option.value === value} aria-disabled={option.disabled || undefined} data-active={option.value === active} onMouseDown={event => event.preventDefault()} onMouseMove={() => { if (!option.disabled) setActive(option.value); }} onClick={() => { if (!option.disabled) choose(option); }}>{selectedValues && <span className="rhine-combobox__check" aria-hidden="true">{selectedValues.includes(option.value) ? '✓' : ''}</span>}{option.label}</div>)}{(loading || error || !options.length) && <div className="rhine-combobox__empty" role="presentation">{loading ? '正在读取…' : error ? '暂不可用' : '暂无匹配结果'}</div>}</div>
         {loadMoreError && <p className="rhine-field__error" role="alert">{loadMoreError}</p>}
         {(completionLabel || pageAction) && <div className="rhine-combobox__completion">
@@ -207,14 +210,15 @@ export function Combobox({ inputProps, label, labelAction, query, onQueryChange,
             onKeyDown={event => { if (event.key !== 'Tab') return; event.stopPropagation();
               if (event.shiftKey) { event.preventDefault(); document.getElementById(id)?.focus(); }
               else if (completionLabel) { event.preventDefault(); document.getElementById(`${id}-complete`)?.focus(); }
-              else { beginTabExit(); complete(); }
+              else { beginTabExit(); complete('tab'); }
             }}>{retryAction ? '重试' : '加载更多'}</Button>}
-          {completionLabel && <Button id={`${id}-complete`} type="button" variant="quiet" onMouseDown={event => event.preventDefault()} onClick={complete} onKeyDown={event => {
+          {completionLabel && <Button id={`${id}-complete`} type="button" variant="quiet" onMouseDown={event => event.preventDefault()} onClick={()=>complete()} onKeyDown={event => {
             if (event.key !== 'Tab') return; event.stopPropagation();
             if (event.shiftKey) { event.preventDefault(); document.getElementById(pageAction && !loading && !loadingMore ? `${id}-page-action` : id)?.focus(); }
             // Restore the input as the origin of the browser's normal forward Tab.
-            else { beginTabExit(); complete(); }
+            else { beginTabExit(); complete('tab'); }
           }}>{completionLabel}</Button>}
+          {cancelLabel&&<Button variant="quiet" onMouseDown={event=>event.preventDefault()} onClick={()=>complete('cancel')}>{cancelLabel}</Button>}
         </div>}
       </div>
     </PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root>

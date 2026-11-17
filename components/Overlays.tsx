@@ -5,31 +5,35 @@ import * as PopoverBase from '@radix-ui/react-popover';
 import * as MenuBase from '@radix-ui/react-dropdown-menu';
 import * as TooltipBase from '@radix-ui/react-tooltip';
 import { Button, Notice } from './components';
-import { IconButton } from './Actions';
+import { Icon, IconButton, type IconName } from './Actions';
 import './drawer-placement.css';
 import './dialog-settings.css';
 import { useFloatingScale, useFloatingSide } from './useFloatingScale';
 
 import { dialogDismiss, respectFocusHandoff, useLayerScope as useScope } from './layer';
-export interface DialogProps { width?: CSSProperties['width']; titleVisibility?: 'visible' | 'hidden'; headerContent?: ReactNode; headerActions?: ReactNode; height?: CSSProperties['height']; footer?: ReactNode; trigger: ReactElement; title: string; description?: ReactNode; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; navigation?: ReactNode; sidePanel?: ReactNode | ((closeButton: ReactElement) => ReactNode); onCloseAutoFocus?: (event: Event) => void }
+import {useDialogReturnFocus,type DialogReturnFocus} from './dialog-focus';
+import type {SelectionChangeReason,SelectionOpenChange} from './selection-lifecycle';
+export type {DialogReturnFocus} from './dialog-focus';
+export interface DialogProps { width?: CSSProperties['width']; titleVisibility?: 'visible' | 'hidden'; headerContent?: ReactNode; headerActions?: ReactNode; height?: CSSProperties['height']; footer?: ReactNode; trigger?: ReactElement; closingDisabled?:boolean; closeDisabledReason?:string; returnFocus?:DialogReturnFocus; title: string; description?: ReactNode; children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void; navigation?: ReactNode; sidePanel?: ReactNode | ((closeButton: ReactElement) => ReactNode); onCloseAutoFocus?: (event: Event) => void }
 export function Dialog(props: DialogProps) {
   return <DialogFrame {...props}/>;
 }
 export function Drawer(props: Omit<DialogProps, 'sidePanel' | 'navigation' | 'height' | 'footer' | 'width' | 'titleVisibility' | 'headerContent' | 'headerActions'> & { side?: 'left' | 'right' }) { return <DialogFrame {...props} drawer />; }
-function DialogFrame({ trigger, title, description, children, open, onOpenChange, sidePanel, navigation, onCloseAutoFocus, height, footer, width, titleVisibility = 'visible', headerContent, headerActions, drawer = false, side = 'right' }: DialogProps & { drawer?: boolean; side?: 'left' | 'right' }) {
+function DialogFrame({ trigger, title, description, children, open, onOpenChange, sidePanel, navigation, onCloseAutoFocus, height, footer, width, titleVisibility = 'visible', headerContent, headerActions, closingDisabled = false, closeDisabledReason = '正在处理，暂时不能关闭。', returnFocus, drawer = false, side = 'right' }: DialogProps & { drawer?: boolean; side?: 'left' | 'right' }) {
   const { ref, container, density } = useScope();
   const [localOpen, setLocalOpen] = useState(false);
   const [content, setContent] = useState<HTMLDivElement | null>(null);
-  const changeOpen = (next: boolean) => { setLocalOpen(next); onOpenChange?.(next); };
+  const changeOpen = (next: boolean) => { if (!next && closingDisabled) return; setLocalOpen(next); onOpenChange?.(next); };
+  const closeAutoFocus = useDialogReturnFocus(open ?? localOpen,Boolean(trigger),ref,returnFocus,onCloseAutoFocus);
   useLayoutEffect(() => {
     if (!content) return;
-    dialogDismiss.set(content, () => { setLocalOpen(false); onOpenChange?.(false); });
+    dialogDismiss.set(content, () => { if (!closingDisabled) { setLocalOpen(false); onOpenChange?.(false); } });
     return () => { dialogDismiss.delete(content); };
-  }, [content, onOpenChange]);
+  }, [content, onOpenChange, closingDisabled]);
   const escape = (event: KeyboardEvent) => {
     if (event.defaultPrevented || !(event.target instanceof Element)) return;
     const owner = event.target.closest('[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"]');
-    if (!owner || owner === content) return;
+    if (!owner || owner === content) { if (closingDisabled) event.preventDefault(); return; }
     // Radix's top layer may lag a newly focused nested dialog until its passive
     // effect runs. Redirect only that stale callback; keep Tooltip/Menu priority.
     event.preventDefault();
@@ -39,7 +43,7 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
   const hasDescription = description != null && description !== false && description !== '';
   const settings = navigation != null && navigation !== false;
   if (settings && sidePanel) throw new Error('Dialog navigation and sidePanel are mutually exclusive.');
-  const closeButton = <DialogBase.Close asChild><IconButton label={drawer ? '关闭抽屉' : '关闭对话框'} icon="close" /></DialogBase.Close>;
+  const closeButton = <DialogBase.Close asChild><IconButton label={drawer ? '关闭抽屉' : '关闭对话框'} disabled={closingDisabled} icon="close" /></DialogBase.Close>;
   const hasFooter = footer != null && footer !== false && footer !== '';
   const bounded = height != null || hasFooter;
   // Percent max-height cannot constrain a footer in an auto-height parent.
@@ -64,9 +68,9 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
   }, [content, hasFooter, height]);
   const bodyScrollRegion = bounded && !settings && !sidePanel;
   const customHeader = headerContent != null || headerActions != null || titleVisibility === 'hidden';
-  const panes = <><div className="rhine-dialog__main"><div className={`rhine-dialog__head${customHeader ? ' rhine-dialog__head--custom' : ''}`}><DialogBase.Title className={`rhine-text rhine-text--section${titleVisibility === 'hidden' ? ' rhine-sr-only' : ''}`}>{title}</DialogBase.Title>{headerContent != null && <div className="rhine-dialog__header-content">{headerContent}</div>}{headerActions != null && <div className="rhine-dialog__header-actions">{headerActions}</div>}{!sideNavigation && closeButton}</div>{hasDescription && <DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description>}<div className="rhine-dialog__body" tabIndex={bodyScrollRegion ? 0 : undefined} role={bodyScrollRegion ? 'region' : undefined} aria-label={bodyScrollRegion ? `${title}内容` : undefined}>{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content" tabIndex={bounded ? 0 : undefined} role={bounded ? 'region' : undefined} aria-label={bounded ? `${title}内容` : undefined}>{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</>;
-  return <span className="rhine-overlay-anchor" ref={ref}><DialogBase.Root open={open ?? localOpen} onOpenChange={changeOpen}><DialogBase.Trigger asChild>{trigger}</DialogBase.Trigger><DialogBase.Portal container={container}>
-    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content data-rhine-density={density} ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={onCloseAutoFocus} {...(!hasDescription ? { 'aria-describedby': undefined } : {})} data-side={drawer ? side : undefined}
+  const panes = <><div className="rhine-dialog__main"><div className={`rhine-dialog__head${customHeader ? ' rhine-dialog__head--custom' : ''}`}><DialogBase.Title className={`rhine-text rhine-text--section${titleVisibility === 'hidden' ? ' rhine-sr-only' : ''}`}>{title}</DialogBase.Title>{headerContent != null && <div className="rhine-dialog__header-content">{headerContent}</div>}{headerActions != null && <div className="rhine-dialog__header-actions">{headerActions}</div>}{!sideNavigation && closeButton}</div>{hasDescription && <DialogBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</DialogBase.Description>}{closingDisabled && <p className="rhine-text rhine-text--caption" role="status">{closeDisabledReason}</p>}<div className="rhine-dialog__body" tabIndex={bodyScrollRegion ? 0 : undefined} role={bodyScrollRegion ? 'region' : undefined} aria-label={bodyScrollRegion ? `${title}内容` : undefined}>{settings ? <div className="rhine-dialog__settings-grid"><div className="rhine-dialog__navigation">{navigation}</div><div className="rhine-dialog__settings-content" tabIndex={bounded ? 0 : undefined} role={bounded ? 'region' : undefined} aria-label={bounded ? `${title}内容` : undefined}>{children}</div></div> : children}</div></div>{sidePanel && <div className="rhine-dialog__side">{typeof sidePanel === 'function' ? sidePanel(closeButton) : sidePanel}</div>}</>;
+  return <span className="rhine-overlay-anchor" ref={ref}><DialogBase.Root open={open ?? localOpen} onOpenChange={changeOpen}>{trigger && <DialogBase.Trigger asChild>{trigger}</DialogBase.Trigger>}<DialogBase.Portal container={container}>
+    <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content data-rhine-density={density} ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={closeAutoFocus} aria-busy={closingDisabled || undefined} aria-description={closingDisabled ? closeDisabledReason : undefined} onPointerDownOutside={event=>{if(closingDisabled)event.preventDefault();}} {...(!hasDescription ? { 'aria-describedby': undefined } : {})} data-side={drawer ? side : undefined}
       style={height == null && width == null ? undefined : { ...(height != null ? { '--rhine-dialog-height': typeof height === 'number' ? `${height}px` : height } : {}), ...(width != null ? { width: typeof width === 'number' ? `${width}px` : width, maxWidth: 'calc(100% - 32px)' } : {}) } as CSSProperties}
       className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${settings ? ' rhine-dialog--settings' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}${bounded ? ' rhine-dialog--bounded' : ''}`}>
       {bounded ? <div className="rhine-dialog__scroll">{panes}</div> : panes}
@@ -74,48 +78,48 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
     </DialogBase.Content>
   </DialogBase.Portal></DialogBase.Root></span>;
 }
-export function ConfirmDialog({ trigger, title, description, confirmLabel = '确认操作', danger = false, onConfirm }: { trigger: ReactElement; title: string; description: string; confirmLabel?: string; danger?: boolean; onConfirm: () => Promise<void> | void }) {
-  const { ref, container, density } = useScope(); const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState(false);
-  const pending = useRef(false), mounted = useRef(true);
-  const [content, setContent] = useState<HTMLDivElement | null>(null);
-  useLayoutEffect(() => {
-    if (!content) return;
-    // A newly focused alert can precede Radix's top-layer registration, just
-    // like a nested Dialog. Let the outer dialog delegate Escape to it.
-    dialogDismiss.set(content, () => { if (!pending.current) setOpen(false); });
-    return () => { dialogDismiss.delete(content); };
-  }, [content]);
-  useLayoutEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
-  const run = async () => {
-    if (pending.current) return;
-    pending.current = true; setBusy(true); setError(false);
-    try { await onConfirm(); if (mounted.current) setOpen(false); }
-    catch { if (mounted.current) setError(true); }
-    finally { pending.current = false; if (mounted.current) setBusy(false); }
-  };
-  return <span className="rhine-overlay-anchor" ref={ref}><AlertBase.Root open={open} onOpenChange={next => { if (!pending.current) { setOpen(next); setError(false); } }}><AlertBase.Trigger asChild>{trigger}</AlertBase.Trigger><AlertBase.Portal container={container}><AlertBase.Overlay className="rhine-overlay" /><AlertBase.Content data-rhine-density={density} ref={setContent} className="rhine-dialog" aria-busy={busy} onEscapeKeyDown={event => { if (busy) event.preventDefault(); }}>
-    <AlertBase.Title className="rhine-text rhine-text--section">{title}</AlertBase.Title><AlertBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</AlertBase.Description>{error && <Notice tone="error" title="操作未完成">请重试，或取消后检查。</Notice>}
-    <div className="rhine-dialog__actions"><AlertBase.Cancel asChild><Button variant="secondary" disabled={busy}>取消</Button></AlertBase.Cancel><Button variant={danger ? 'danger' : 'primary'} busy={busy} onClick={run}>{confirmLabel}</Button></div>
-  </AlertBase.Content></AlertBase.Portal></AlertBase.Root></span>;
+export type ConfirmResult = void | boolean | {status:'success'|'error'|'unknown';message?:string};
+export interface ConfirmDialogProps {trigger?:ReactElement;open?:boolean;onOpenChange?:(open:boolean)=>void;returnFocus?:DialogReturnFocus;title:string;description:string;confirmLabel?:string;danger?:boolean;closingDisabled?:boolean;closeDisabledReason?:string;resultMode?:'legacy'|'explicit';onConfirm:()=>ConfirmResult|Promise<ConfirmResult>}
+export function ConfirmDialog({trigger,title,description,confirmLabel='确认操作',danger=false,onConfirm,open:controlledOpen,onOpenChange,returnFocus,closingDisabled=false,closeDisabledReason='正在处理，暂时不能关闭。',resultMode='legacy'}:ConfirmDialogProps){
+ const{ref,container,density}=useScope();const[localOpen,setLocalOpen]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ const open=controlledOpen??localOpen,pending=useRef(false),mounted=useRef(true),revision=useRef(0);const[content,setContent]=useState<HTMLDivElement|null>(null);
+ const changeOpen=(next:boolean)=>{if(!next&&(pending.current||closingDisabled))return;if(controlledOpen===undefined)setLocalOpen(next);onOpenChange?.(next);if(next)setMessage('');};
+ const closeFocus=useDialogReturnFocus(open,Boolean(trigger),ref,returnFocus,undefined);
+ useLayoutEffect(()=>{if(!open){revision.current++;pending.current=false;setBusy(false);}},[open]);
+ useLayoutEffect(()=>{mounted.current=true;return()=>{mounted.current=false;revision.current++;};},[]);
+ useLayoutEffect(()=>{if(!content)return;dialogDismiss.set(content,()=>changeOpen(false));return()=>{dialogDismiss.delete(content);};},[content,closingDisabled,onOpenChange]);
+ const run=async()=>{if(pending.current||closingDisabled)return;const token=++revision.current;pending.current=true;setBusy(true);setMessage('');try{const result=await onConfirm();if(!mounted.current||token!==revision.current)return;const success=result===true||(typeof result==='object'&&result?.status==='success')||(result===undefined&&resultMode==='legacy');if(success){if(controlledOpen===undefined)setLocalOpen(false);onOpenChange?.(false);}else setMessage(typeof result==='object'&&result?.message?result.message:result===false||(typeof result==='object'&&result?.status==='error')?'操作未完成，请重试或取消。':'结果未知，尚未关闭。');}catch{if(mounted.current&&token===revision.current)setMessage('操作未完成，请重试或取消。');}finally{if(mounted.current&&token===revision.current){pending.current=false;setBusy(false);}}};
+ const blocked=busy||closingDisabled;
+ return <span className="rhine-overlay-anchor" ref={ref}><AlertBase.Root open={open} onOpenChange={changeOpen}>{trigger&&<AlertBase.Trigger asChild>{trigger}</AlertBase.Trigger>}<AlertBase.Portal container={container}><AlertBase.Overlay className="rhine-overlay"/><AlertBase.Content data-rhine-density={density} ref={setContent} className="rhine-dialog" aria-busy={blocked} onCloseAutoFocus={closeFocus} onEscapeKeyDown={event=>{if(blocked)event.preventDefault();}}>
+ <AlertBase.Title className="rhine-text rhine-text--section">{title}</AlertBase.Title><AlertBase.Description className="rhine-text rhine-text--body rhine-text--muted">{description}</AlertBase.Description>{blocked&&<p role="status">{closeDisabledReason}</p>}{message&&<Notice tone="error" title="操作未完成">{message}</Notice>}
+ <div className="rhine-dialog__actions"><AlertBase.Cancel asChild><Button variant="secondary" disabled={blocked}>取消</Button></AlertBase.Cancel><Button variant={danger?'danger':'primary'} disabled={closingDisabled} busy={busy} onClick={run}>{confirmLabel}</Button></div>
+ </AlertBase.Content></AlertBase.Portal></AlertBase.Root></span>;
 }
+
 interface OverlayControl { open?: boolean; onOpenChange?: (open: boolean) => void; side?: 'top' | 'right' | 'bottom' | 'left' }
-export interface PopoverProps extends OverlayControl { trigger: ReactElement; title: string; children: ReactNode; showHeader?: boolean }
+export interface PopoverProps extends Omit<OverlayControl,'onOpenChange'> { onOpenChange?:(open:boolean,detail:SelectionOpenChange)=>void; trigger: ReactElement; title: string; children: ReactNode; showHeader?: boolean }
 export function Popover({ trigger, title, children, open, onOpenChange, side, showHeader = true }: PopoverProps) {
   const { ref, container, density } = useScope();
+  const cause=useRef<SelectionChangeReason>('programmatic'),tabExit=useRef(false);
   const floatingRef = useFloatingScale(undefined, 'popover');
   const floatingSide = useFloatingSide(ref, side, 300);
-  return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={onOpenChange}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content onCloseAutoFocus={event => respectFocusHandoff(event, ref)} data-rhine-density={density} ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
+  return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={next=>{onOpenChange?.(next,{reason:next?'open':cause.current});if(next)cause.current='programmatic';}}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content onKeyDownCapture={event=>{if(event.key==='Tab'){tabExit.current=true;queueMicrotask(()=>{tabExit.current=false;});}}} onEscapeKeyDown={()=>{cause.current='escape';}} onInteractOutside={event=>{cause.current=event.detail.originalEvent.type==='pointerdown'?'outside':tabExit.current?'tab':'blur';}} onCloseAutoFocus={event => respectFocusHandoff(event, ref)} data-rhine-density={density} ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
 }
-export interface MenuItem { id: string; label: string; disabled?: boolean; danger?: boolean; onSelect: () => void }
+export interface MenuItem { id: string; label: string; icon?: IconName; disabled?: boolean; danger?: boolean; onSelect: () => void }
 export function Menu({ trigger, label, items, open, onOpenChange, onCloseAutoFocus, side }: OverlayControl & { trigger: ReactElement; label: string; items: MenuItem[]; onCloseAutoFocus?: (event: Event) => void }) {
   const { ref, container, density } = useScope();
   const floatingRef = useFloatingScale(undefined, 'dropdown-menu');
   const floatingSide = useFloatingSide(ref, side, 180);
-  return <span className="rhine-overlay-anchor" ref={ref}><MenuBase.Root open={open} onOpenChange={onOpenChange}><MenuBase.Trigger asChild>{trigger}</MenuBase.Trigger><MenuBase.Portal container={container}><MenuBase.Content data-rhine-density={density} onCloseAutoFocus={event => { onCloseAutoFocus?.(event); respectFocusHandoff(event, ref); }} ref={floatingRef} className="rhine-menu" aria-label={label} side={floatingSide} sideOffset={8} collisionPadding={12}>{items.map(item => <MenuBase.Item key={item.id} disabled={item.disabled} onSelect={item.onSelect} className="rhine-menu__item" data-danger={item.danger}>{item.label}</MenuBase.Item>)}</MenuBase.Content></MenuBase.Portal></MenuBase.Root></span>;
+  return <span className="rhine-overlay-anchor" ref={ref}><MenuBase.Root open={open} onOpenChange={onOpenChange}><MenuBase.Trigger asChild>{trigger}</MenuBase.Trigger><MenuBase.Portal container={container}><MenuBase.Content data-rhine-density={density} onCloseAutoFocus={event => { onCloseAutoFocus?.(event); respectFocusHandoff(event, ref); }} ref={floatingRef} className="rhine-menu" aria-label={label} side={floatingSide} sideOffset={8} collisionPadding={12}>{items.map(item => <MenuBase.Item key={item.id} disabled={item.disabled} onSelect={item.onSelect} className="rhine-menu__item" data-danger={item.danger}>{item.icon && <Icon name={item.icon} size={16} />}{item.label}</MenuBase.Item>)}</MenuBase.Content></MenuBase.Portal></MenuBase.Root></span>;
 }
-export function Tooltip({ children, content, open, onOpenChange, side }: OverlayControl & { children: ReactElement; content: string }) {
+export interface TooltipDetails { title?: string; rows: readonly {label:string;value:string}[]; description?: string }
+export interface TooltipProps extends OverlayControl { children:ReactElement; content:string|TooltipDetails; width?:number }
+export function Tooltip({ children, content, open, onOpenChange, side, width }: TooltipProps) {
+  if (width !== undefined && (!Number.isFinite(width) || width < 44 || width > 640)) throw new RangeError('Tooltip width must be between 44 and 640 CSS pixels.');
   const { ref, container, density } = useScope();
-  const floatingRef = useFloatingScale(undefined, 'tooltip');
-  const floatingSide = useFloatingSide(ref, side, 280);
-  return <span className="rhine-overlay-anchor" ref={ref}><TooltipBase.Provider delayDuration={300}><TooltipBase.Root open={open} onOpenChange={onOpenChange}><TooltipBase.Trigger asChild>{children}</TooltipBase.Trigger><TooltipBase.Portal container={container}><TooltipBase.Content data-rhine-density={density} ref={floatingRef} className="rhine-tooltip" side={floatingSide} sideOffset={8} collisionPadding={12}>{content}</TooltipBase.Content></TooltipBase.Portal></TooltipBase.Root></TooltipBase.Provider></span>;
+  const [localOpen,setLocalOpen]=useState(false),explicitClose=useRef(false);
+  const changeTooltip=(next:boolean)=>{if(!next&&!explicitClose.current&&ref.current?.contains(document.activeElement))return;explicitClose.current=false;setLocalOpen(next);onOpenChange?.(next);};
+  const floatingRef = useFloatingScale(undefined, 'tooltip',undefined,width);
+  const floatingSide = useFloatingSide(ref, side, width ?? 280);
+  return <span className="rhine-overlay-anchor" ref={ref}><TooltipBase.Provider delayDuration={300}><TooltipBase.Root open={open??localOpen} onOpenChange={changeTooltip}><TooltipBase.Trigger asChild onPointerDown={()=>{explicitClose.current=true;}} onClick={()=>{explicitClose.current=true;}}>{children}</TooltipBase.Trigger><TooltipBase.Portal container={container}><TooltipBase.Content onEscapeKeyDown={()=>{explicitClose.current=true;}} onPointerDownOutside={()=>{explicitClose.current=true;}} data-rhine-density={density} ref={floatingRef} className="rhine-tooltip" style={{width,maxWidth:width !== undefined ? Math.min(width,640) : undefined}} side={floatingSide} sideOffset={8} collisionPadding={12}>{typeof content === 'string' ? content : <div className="rhine-tooltip__details">{content.title && <strong>{content.title}</strong>}<dl>{content.rows.map((row,index)=><div key={index}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>{content.description && <p>{content.description}</p>}</div>}</TooltipBase.Content></TooltipBase.Portal></TooltipBase.Root></TooltipBase.Provider></span>;
 }

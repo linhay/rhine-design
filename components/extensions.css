@@ -36,7 +36,7 @@
 .rhine-tree { min-width:0; padding:8px; border:1px solid var(--rhine-line); background:var(--rhine-field-group-bg); }
 .rhine-tree [role=group] { padding-inline-start:var(--rhine-tree-indent); }
 .rhine-tree__row { display:flex; align-items:center; gap:8px; min-height:44px; padding:4px; overflow-wrap:anywhere; cursor:pointer; }
-.rhine-tree__row>span:last-of-type { min-width:0; flex:1; }
+.rhine-tree__row>.rhine-tree__label { min-width:0; flex:1; }
 .rhine-tree__row[data-selected=true] { background:var(--rhine-selected); }
 .rhine-tree [aria-disabled=true]>.rhine-tree__row { color:var(--rhine-muted); cursor:default; }
 .rhine-tree__row button { flex:0 0 44px; min-height:44px; min-width:44px; padding-inline:4px; border:1px solid var(--rhine-line); background:var(--rhine-surface); color:var(--rhine-ink); font:inherit; cursor:pointer; }

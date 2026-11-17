@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
+import {useState} from 'react';
 import { RemoteMultiSelect } from '../components';
 
 it('activates a selected tag independently from selection, removal and the dropdown', () => {
@@ -42,3 +43,5 @@ it('keeps locked activation disabled, exposes folded items and never activates o
   rerender(<RemoteMultiSelect {...props} onActivateValue={undefined}/>);
   expect(screen.queryByRole('button', { name: value[1].label })).toBeNull();
 });
+
+it.each(['activate','remove','clear'])('keeps controlled tag %s from accepting a pending focus-open',action=>{const close=vi.fn(),change=vi.fn(),activate=vi.fn(),choices=[{value:'a',label:'成员 A'}];function Host(){const[open,setOpen]=useState(false);return <RemoteMultiSelect label="受控标签" query="" onQueryChange={()=>{}} options={choices} value={choices} onValueChange={change} open={open} onOpenChange={setOpen} onClose={close} onActivateValue={activate}/>;}render(<Host/>);fireEvent.click(screen.getByRole('button',{name:action==='activate'?'成员 A':action==='remove'?'移除成员 A':'清空选择'}));expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded','false');expect(screen.queryByRole('listbox')).not.toBeInTheDocument();expect(close).not.toHaveBeenCalled();});

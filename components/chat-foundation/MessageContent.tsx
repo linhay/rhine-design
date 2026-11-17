@@ -5,7 +5,7 @@ export interface MessageContentProps extends HTMLAttributes<HTMLDivElement> {
   quote?: ReactNode;
 }
 
-/** Themeable message surface; the host owns text, Markdown and attachment rendering. */
+/** Themeable message surface. Optional RichText composes read-only Markdown; the host owns source and attachments. */
 export function MessageContent({ children, quote, className = '', ...props }: MessageContentProps) {
   return <div {...props} className={`rhine-chat-bubble ${className}`}>{children}{quote != null && <blockquote>{quote}</blockquote>}</div>;
 }

@@ -29,7 +29,7 @@ export function useFloatingSide(anchor: RefObject<HTMLSpanElement | null>, side:
 }
 
 /** Keep Radix's viewport coordinates unscaled while preserving the user's content zoom. */
-export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 'popover', maxHeight?: number) {
+export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 'popover', maxHeight?: number, maxWidth?:number) {
   const [content, setContent] = useState<HTMLDivElement | null>(null);
   const attach = useCallback((element: HTMLDivElement | null) => {
     if (ref) ref.current = element;
@@ -61,7 +61,7 @@ export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 
       wrapper.style.zoom = String(1 / scale);
       content.style.zoom = String(scale);
       const width = `calc((100vw - 24px) / ${scale})`;
-      content.style.maxWidth = kind === 'tooltip' ? `min(280px, ${width})` : width;
+      content.style.maxWidth = kind === 'tooltip' ? `min(${maxWidth??280}px, ${width})` : width;
       // Bounded suggestion lists retain their own height cap. Feeding Radix's
       // available-height variable back into their size can cause resize loops.
       content.style.maxHeight = maxHeight === undefined
@@ -95,6 +95,6 @@ export function useFloatingScale(ref?: RefObject<HTMLDivElement | null>, kind = 
       content.style.maxHeight = original.maxHeight;
       content.style.minWidth = original.minWidth;
     };
-  }, [content, kind, maxHeight]);
+  }, [content, kind, maxHeight, maxWidth]);
   return attach;
 }

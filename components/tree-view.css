@@ -1,0 +1,8 @@
+.rhine-tree__label { min-width:0; flex:1; overflow-wrap:anywhere; }
+.rhine-tree__row>.rhine-overlay-anchor { flex:none; }
+.rhine-tree__row[data-drop-position=before] { box-shadow:inset 0 3px var(--rhine-green); }
+.rhine-tree__row[data-drop-position=after] { box-shadow:inset 0 -3px var(--rhine-green); }
+.rhine-tree__row[data-drop-position=inside] { outline:2px dashed var(--rhine-green); outline-offset:-2px; }
+.rhine-tree:has([data-tree-move-handle]) { overflow-x:auto; }
+.rhine-tree:has([data-tree-move-handle]) .rhine-tree__row { min-width:240px; }
+.rhine-tree [role=tree]:focus { outline:2px solid var(--rhine-green); outline-offset:2px; }

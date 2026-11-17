@@ -6,7 +6,6 @@ import { Icon } from './Actions';
 import { useDismissFocus } from './focus-recovery';
 import { Combobox } from './Forms';
 import type { ProvidedFieldProps, QueryInputProps } from './field-support';
-import { TreeSelect, type TreeNode } from './AdvancedForms';
 import { Menu, Popover } from './Overlays';
 export { ConfigProvider, useConfig } from './config';
 
@@ -76,12 +75,8 @@ export function List({ label, items }: { label: string; items: readonly { id: st
 export function EventTimeline({ label, items }: { label: string; items: readonly { id: string; time: string; title: string }[] }) {
   return <ol className="rhine-events" aria-label={label}>{items.map(item => <li key={item.id}><time>{item.time}</time><span>{item.title}</span></li>)}</ol>;
 }
-export interface BrowseNode { id: string; label: string; children?: readonly BrowseNode[] }
-export function Tree({ label, nodes, selected, onSelect }: { label: string; nodes: readonly BrowseNode[]; selected?: string; onSelect: (id: string) => void }) {
-  const [expanded, setExpanded] = useState<string[]>([]);
-  const convert = (items: readonly BrowseNode[]): TreeNode[] => items.map(node => ({ ...node, children: node.children ? convert(node.children) : undefined }));
-  return <TreeSelect label={label} nodes={convert(nodes)} value={selected ? [selected] : []} onValueChange={values => { if (values[0]) onSelect(values[0]); }} expandedKeys={expanded} onExpandedChange={setExpanded} />;
-}
+export { Tree } from './Tree';
+export type { BrowseNode } from './Tree';
 export function Message({ title, children, onClose }: { title: string; children?: ReactNode; onClose?: () => void }) {
   const root = useRef<HTMLDivElement>(null), recovery = useDismissFocus(root);
   return <div ref={root} className="rhine-message" role="status" onFocusCapture={recovery.onFocusCapture}><Text as="strong" variant="label">{title}</Text>{children}{onClose && <Button variant="quiet" onClick={event => recovery.dismiss(event.currentTarget, onClose)}>关闭提示</Button>}</div>;
