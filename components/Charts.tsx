@@ -1,4 +1,4 @@
-import { useId, useState, type CSSProperties, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { DataTable } from './Data';
 import { EmptyState, Notice } from './components';
 
@@ -6,13 +6,16 @@ export interface ChartPoint { id: string; label: string; value: number | null }
 interface ChartContext { label: string; unit: string; rangeLabel: string; description: string; stale?: string; error?: string; loading?: boolean; valueFormatter?: (value: number | null) => string }
 export interface TrendChartProps extends ChartContext {
   points: ChartPoint[]; kind?: 'bar' | 'line';
+  density?: 'regular' | 'compact'; caption?: 'visible' | 'hidden'; showLegend?: boolean; dataTable?: 'collapsed' | 'expanded';
+  /** Formatter already returns a full value+unit; suppress appended units only. */
+  valueFormatterIncludesUnit?: boolean;
   activePointId?: string | null; defaultActivePointId?: string; onActivePointChange?: (id: string | null) => void;
 }
 const known = (value: number | null): value is number => value !== null && Number.isFinite(value);
 
-function ChartFrame({ label, unit, rangeLabel, description, stale, error, loading, children }: ChartContext & { children: ReactNode }) {
-  return <figure className="rhine-chart" aria-label={label} aria-busy={loading}>
-    <figcaption><strong>{label}</strong><span>{rangeLabel} · 单位：{unit}</span><p>{description}</p></figcaption>
+function ChartFrame({ label, unit, rangeLabel, description, stale, error, loading, children, density='regular', caption='visible', frameRef }: ChartContext & { children: ReactNode; density?: 'regular'|'compact'; caption?:'visible'|'hidden'; frameRef?:React.RefObject<HTMLElement|null> }) {
+  return <figure ref={frameRef} tabIndex={-1} data-density={density} className="rhine-chart" aria-label={label} aria-busy={loading}>
+    <figcaption className={caption==='hidden'?'rhine-sr-only':undefined}><strong>{label}</strong><span>{rangeLabel} · 单位：{unit}</span><p>{description}</p></figcaption>
     {error && <Notice title="图表读取失败" tone="error">{error} · 已有数据仅供参考。</Notice>}
     {stale && <Notice title="数据已陈旧" tone="warning">{stale}</Notice>}
     {loading && <p role="status">正在读取，保留已有数据。</p>}{children}
@@ -20,30 +23,38 @@ function ChartFrame({ label, unit, rangeLabel, description, stale, error, loadin
 }
 
 /** The host provides bucket order, timestamps, units, and aggregation semantics. */
-export function TrendChart({ points, kind = 'bar', activePointId, defaultActivePointId, onActivePointChange, ...context }: TrendChartProps) {
-  const id = useId(), finite = points.map(point => point.value).filter(known);
+export function TrendChart({ points, kind = 'bar', density='regular', caption='visible', showLegend=density!=='compact', dataTable='collapsed', valueFormatterIncludesUnit=false, activePointId, defaultActivePointId, onActivePointChange, ...context }: TrendChartProps) {
+  const id = useId(), finite = points.map(point => point.value).filter(known),compact=density==='compact';
+  const frame=useRef<HTMLElement>(null),plotFocus=useRef(false);
+  const [tableOpen,setTableOpen]=useState(dataTable==='expanded');
+  useLayoutEffect(()=>{if(plotFocus.current&&!finite.length&&document.activeElement===document.body){plotFocus.current=false;frame.current?.focus();}},[finite.length]);
   const [localActive, setLocalActive] = useState<string | null>(defaultActivePointId ?? null);
   const [focused, setFocused] = useState(false);
   const active = activePointId === undefined ? localActive : activePointId;
   const activeIndex = points.findIndex(point => point.id === active), activePoint = points[activeIndex];
   const select = (next: string | null) => { if (activePointId === undefined) setLocalActive(next); if (next !== active) onActivePointChange?.(next); };
   const format = (value: number | null) => context.valueFormatter ? context.valueFormatter(known(value) ? value : null) : known(value) ? String(value) : '未知';
+  const suffix = valueFormatterIncludesUnit ? '' : ` ${context.unit}`;
+  const display = (value:number|null) => format(value)+(known(value)?suffix:'');
+  const peak=points.reduce<ChartPoint|undefined>((best,point)=>known(point.value)&&(!best||!known(best.value)||point.value>best.value)?point:best,undefined),latest=points.at(-1);
   const minimum = finite.reduce((min, value) => Math.min(min, value), 0), maximum = finite.reduce((max, value) => Math.max(max, value), 0);
   // Normalize first so opposite finite extremes cannot overflow the coordinate span.
   const magnitude = Math.max(Math.abs(minimum), Math.abs(maximum), 1), span = (maximum / magnitude - minimum / magnitude) || 1;
   const x = (index: number) => (index + 0.5) * 600 / Math.max(1, points.length);
-  const y = (value: number) => 170 - (value / magnitude - minimum / magnitude) / span * 160;
+  const top=compact?8:10,bottom=compact?36:170,plotHeight=compact?44:180;
+  const y = (value: number) => bottom - (value / magnitude - minimum / magnitude) / span * (bottom-top);
   let connected = false;
   const path = points.map((point, index) => {
     if (!known(point.value)) { connected = false; return ''; }
     const command = connected ? 'L' : 'M'; connected = true;
     return `${command}${x(index)},${y(point.value)}`;
   }).join(' ');
-  return <ChartFrame {...context}>
+  return <ChartFrame {...context} density={density} caption={caption} frameRef={frame}>
+    {compact&&<p className="rhine-chart__summary">峰值：{peak?peak.label+'：'+display(peak.value):'未知'}；最近：{latest?latest.label+'：'+display(latest.value):'无采样'}；缺失{points.length-finite.length}个时段。</p>}
     {!finite.length ? <EmptyState title={points.length ? '所有采样值均未知' : '暂无采样'} description="缺失值不会补零。" /> : <>
-      <div className="rhine-chart__scale"><span>{format(maximum)} {context.unit}</span><span>{format(minimum)} {context.unit}</span></div>
-      <svg className="rhine-chart__plot" viewBox="0 0 600 180" preserveAspectRatio="none" role="img" aria-labelledby={`${id}-title ${id}-description`} aria-describedby={`${id}-inspection`} tabIndex={0}
-        onFocus={() => { setFocused(true); if (!activePoint) select(points[0]?.id ?? null); }} onBlur={() => setFocused(false)}
+      {!compact&&<div className="rhine-chart__scale"><span>{display(maximum)}</span><span>{display(minimum)}</span></div>}
+      <svg className="rhine-chart__plot" viewBox={'0 0 600 '+plotHeight} preserveAspectRatio="none" role="img" aria-labelledby={`${id}-title ${id}-description`} aria-describedby={`${id}-inspection`} tabIndex={0}
+        onFocus={() => { plotFocus.current=true;setFocused(true); if (!activePoint) select(points[0]?.id ?? null); }} onBlur={event => {if(event.relatedTarget)plotFocus.current=false;setFocused(false);}}
         onKeyDown={event => {
           if (event.altKey || event.ctrlKey || event.metaKey) return;
           const next = event.key === 'Home' ? 0 : event.key === 'End' ? points.length - 1 : event.key === 'ArrowLeft' ? Math.max(0, activeIndex - 1) : event.key === 'ArrowRight' ? Math.min(points.length - 1, activeIndex + 1) : undefined;
@@ -62,18 +73,18 @@ export function TrendChart({ points, kind = 'bar', activePointId, defaultActiveP
         }}>
         <title id={`${id}-title`}>{context.label} · {kind === 'bar' ? '柱形趋势' : '历史折线'}</title>
         <desc id={`${id}-description`}>{context.description}；{points.length} 个时段，{points.length - finite.length} 个未知值。完整标签与数值见下方数据表。</desc>
-        <path className="rhine-chart__grid" d={`M0,${y(0)}H600 M0,10H600 M0,170H600`} />
-        {activePoint && <rect className="rhine-chart__highlight" x={activeIndex * 600 / points.length} y={0} width={600 / points.length} height={180} />}
+        <path className="rhine-chart__grid" d={`M0,${y(0)}H600 M0,${top}H600 M0,${bottom}H600`} />
+        {activePoint && <rect className="rhine-chart__highlight" x={activeIndex * 600 / points.length} y={0} width={600 / points.length} height={plotHeight} />}
         {kind === 'line' && <path className="rhine-chart__line" d={path} vectorEffect="non-scaling-stroke" />}
-        {points.map((point, index) => !known(point.value) ? <path key={point.id} className="rhine-chart__missing" d={`M${x(index) - 3},174l6,6m0,-6l-6,6`} vectorEffect="non-scaling-stroke" /> : kind === 'bar' ?
-          <rect key={point.id} className="rhine-chart__bar" x={x(index) - 210 / points.length} y={Math.min(y(0), y(point.value))} width={420 / points.length} height={Math.abs(y(point.value) - y(0))}><title>{point.label}：{point.value} {context.unit}</title></rect> :
-          <circle key={point.id} className="rhine-chart__point" cx={x(index)} cy={y(point.value)} r={3}><title>{point.label}：{point.value} {context.unit}</title></circle>)}
+        {points.map((point, index) => !known(point.value) ? <path key={point.id} className="rhine-chart__missing" d={`M${x(index) - 3},${bottom+1}l6,6m0,-6l-6,6`} vectorEffect="non-scaling-stroke" /> : kind === 'bar' ?
+          <rect key={point.id} className="rhine-chart__bar" x={x(index) - 210 / points.length} y={Math.min(y(0), y(point.value))} width={420 / points.length} height={Math.abs(y(point.value) - y(0))}><title>采样 {point.label}：{display(point.value)}</title></rect> :
+          <circle key={point.id} className="rhine-chart__point" cx={x(index)} cy={y(point.value)} r={3}><title>采样 {point.label}：{display(point.value)}</title></circle>)}
       </svg>
-      <div className="rhine-chart__range"><span>{points[0]?.label}</span><span>{points.at(-1)?.label}</span></div>
-      <p className="rhine-chart__legend"><span aria-hidden="true" />{context.label} · × 表示缺失{kind === 'line' ? '；折线在缺失处断开。' : '；缺失时段不绘制柱形。'}</p>
-      <p id={`${id}-inspection`} className="rhine-chart__inspection" aria-live="polite" aria-atomic="true">{activePoint ? `${activePoint.label}：${format(activePoint.value)}${known(activePoint.value) ? ` ${context.unit}` : ''}` : '聚焦图形后用左右键、Home / End 查看采样；也可悬停或轻触。'}</p>
+      {!compact&&<div className="rhine-chart__range"><span>{points[0]?.label}</span><span>{points.at(-1)?.label}</span></div>}
+      {showLegend&&<p className="rhine-chart__legend"><span aria-hidden="true" />{context.label} · × 表示缺失{kind === 'line' ? '；折线在缺失处断开。' : '；缺失时段不绘制柱形。'}</p>}
+      <p id={`${id}-inspection`} className="rhine-chart__inspection" aria-live="polite" aria-atomic="true">{activePoint ? `${activePoint.label}：${display(activePoint.value)}` : '聚焦图形后用左右键、Home / End 查看采样；也可悬停或轻触。'}</p>
     </>}
-    <details className="rhine-chart__data"><summary>查看{context.label}数据表</summary><DataTable caption={`${context.label}原始采样`} rows={points} rowKey={point => point.id} columns={[
+    <details className="rhine-chart__data" open={tableOpen} onToggle={event=>setTableOpen(event.currentTarget.open)}><summary>查看{context.label}数据表</summary><DataTable caption={`${context.label}原始采样`} rows={points} rowKey={point => point.id} columns={[
       { key: 'label', header: '时段', render: point => point.label }, { key: 'value', header: `值（${context.unit}）`, render: point => known(point.value) ? point.value : '未知' },
     ]} /></details>
   </ChartFrame>;

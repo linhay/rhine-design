@@ -21,6 +21,8 @@ export type { ChartPoint, ChartPart, TrendChartProps, StackedBarProps } from './
 
 export { Logo } from './Logo';
 export type { LogoProps } from './Logo';
+export { RichText } from './RichText';
+export type { RichTextProps } from './RichText';
 export { Text } from './Typography';
 export type { TextProps, TextVariant } from './Typography';
 export { Select } from './Select';
@@ -28,8 +30,10 @@ export type { SelectProps } from './Select';
 export { Toolbar } from './Toolbar';
 export type { ToolbarProps } from './Toolbar';
 export { ListFilterBar, type ListFilterBarProps, type ListFilterField } from './ListFilterBar';
-export { Icon, IconButton, Link, ButtonLink, CopyButton } from './Actions';
-export type { IconName, ButtonLinkProps } from './Actions';
+export { Icon, IconButton, Link, ButtonLink, CopyButton, iconNames } from './Actions';
+export type { IconName, IconProps, ButtonLinkProps } from './Actions';
+export { PlatformMark } from './PlatformMark';
+export type { PlatformName, PlatformMarkProps } from './PlatformMark';
 export { Divider, Stack, Inline, Grid } from './Layout';
 export type { Spacing } from './Layout';
 export { Metric, KeyValue, DataTable, Pagination } from './Data';
@@ -37,7 +41,8 @@ export type { DataColumn, DataTableProps, TableSort, PaginationProps } from './D
 export { Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox } from './Forms';
 export type { ComboboxProps } from './Forms';
 export { Dialog, Drawer, ConfirmDialog, Popover, Menu, Tooltip } from './Overlays';
-export type { DialogProps, PopoverProps, MenuItem } from './Overlays';
+export type {SelectionChangeReason,SelectionOpenChange} from './selection-lifecycle';
+export type { DialogProps, DialogReturnFocus, ConfirmDialogProps, ConfirmResult, PopoverProps, MenuItem, TooltipProps, TooltipDetails } from './Overlays';
 export { Toast } from './Toast';
 export { SideNav, Breadcrumbs, Steps } from './Navigation';
 export type { NavAction, NavItem, NavGroup, SideNavProps, BreadcrumbItem, BreadcrumbsProps, StepItem, StepsProps } from './Navigation';
@@ -78,10 +83,14 @@ export type { Density } from './config';
 
 export type { VirtualListProps } from './VirtualList';
 
+export {RangeSlider} from './Sliders';
+export type {RangeSliderProps,SliderMark} from './Sliders';
 export type { RateProps, SliderProps, TimePickerProps, ColorPickerProps, UploadProps } from './provided';
 export type { CascaderProps, MentionsProps } from './provided-overlays';
 export type { TransferProps } from './provided-controls';
 export type { AutoCompleteProps, FormProps } from './parity';
+export type { TreeProps, BrowseNode } from './Tree';
+export type { TreeMoveProposal, TreeMovePosition, TreeRenderState } from './TreeView';
 export type { ProvidedFieldProps } from './field-support';
 
 export type { ImageProps } from './Image';

@@ -2,7 +2,7 @@
 
 ## Install and verify
 
-The checked-out package identifies itself as `@linhey/rhine-design` 0.14.0. Its npm scope differs from the `linhay/rhine-design` GitHub repository owner. Verify the installed manifest and lockfile before using its API. Use an exact version verified in the registry, or install a fixed local tarball and record its checksum when testing this checkout. A working tree can contain changes beyond a release with the same version number. The repository README targets 0.14.0; confirm registry availability before installing that version.
+The checked-out package identifies itself as `@linhey/rhine-design` 0.15.0. Its npm scope differs from the `linhay/rhine-design` GitHub repository owner. Verify the installed manifest and lockfile before using its API. Use an exact version verified in the registry, or install a fixed local tarball and record its checksum when testing this checkout. A working tree can contain changes beyond a release with the same version number. The repository README targets 0.15.0; confirm registry availability before installing that version.
 
 The manifest declares React and React DOM `^19.0.0`, and Node `^22.12.0 || ^24.0.0 || >=26.0.0`. Node 24 is the development baseline. The package ships TS/TSX, CSS and assets for a bundler. Use Vite for the verified build path. SSR, other bundlers and direct Node execution of the component entry need their own verification.
 

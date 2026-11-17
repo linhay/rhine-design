@@ -1,0 +1,2 @@
+.rhine-platform-mark { display:inline-block; flex:none; vertical-align:middle; fill:currentColor; }
+.rhine-platform-mark--unsupported { font:inherit; overflow-wrap:anywhere; color:var(--rhine-muted); }

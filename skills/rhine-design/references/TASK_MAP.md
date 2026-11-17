@@ -22,6 +22,11 @@ The source showcase in `preview/` demonstrates these combinations and interactio
 
 | Task | Start here | Decision or source example |
 | --- | --- | --- |
+| Structured tooltip, gated/triggerless dialogs, paired thresholds, one-close drafts or semantic row activation | `docs/INTERACTION_CONTRACTS.md` | `#tooltip`, `#modal`, `#slider`, `#remote-lifecycle`, `#tree-select`, `#table`; preserve host permissions/results, stable field identities and real table structure. Unpublished #224–#229. |
+| Management glyphs and desktop platform marks | `docs/ICONS.md`, `docs/PLATFORM_MARKS.md` | `#icon`; use same-source iconNames, distinguish actions from licensed platform identity. Unpublished #219/#220. |
+| Controlled organization browsing with move intent | `docs/TREE.md` | `#tree`; keep business permission/revision/confirmation outside Tree; one shared Tree/TreeSelect engine. Unpublished #221. |
+| Safe read-only Markdown, exact copy and search marking | `docs/RICH_TEXT.md` | `#rich-text`; finite syntax and budgets, no HTML/remote image execution; compose inside MessageContent. Unpublished #222. |
+| Compact resource history with full data access | `docs/COMPACT_TREND.md` | `#monitoring`; use public density/caption/legend, preserve unknown and full raw samples; never hide private SVG/table with host CSS. Unpublished #223. |
 | Chat workspace, independent message renderers, input and inspector | `docs/CHAT_FOUNDATION.md` | `#chat-foundation`, `preview/ChatFoundationGallery.tsx`. Use `ChatShell`, `ChatPane`, and `MessageList` for composition. Keep renderer component identity stable and use the optional `chatSessionReducer` for UI state only. |
 | Conversation history, member grouping or links, inline cards and tool observation | `docs/AGENT_CHAT.md` | `#agent-chat`, `preview/ChatGallery.tsx`. `ChatThread` and `ChatCard` display host-supplied events. Preserve history context and distinguish observed order, local stop, and confirmed backend outcomes. |
 | Workspace header, breadcrumbs, two sidebars and filter placement | `docs/APPLICATION_COMPONENTS.md` | `#app-shell`, `preview/ExtensionsGallery.tsx`. Preserve a named page, stable navigation and the main action when visible titles would duplicate. |

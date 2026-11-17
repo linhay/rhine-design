@@ -59,11 +59,8 @@ export function Rate({ label, value, onChange, max = 5, disabled = false, readOn
   })}<FieldFeedback id={id} hint={hint} error={error} />{readOnly&&<span id={`${id}-readonly`} className="rhine-sr-only">只读评分，不能修改。</span>}</fieldset>;
 }
 
-export interface SliderProps extends Omit<ProvidedFieldProps,'required'> { label:string; value:number; onChange:(value:number)=>void; min?:number; max?:number; step?:number }
-export function Slider({ label, value, onChange, min = 0, max = 100, step = 1, disabled = false, readOnly = false, id: suppliedId, name, form, hint, error, 'aria-describedby': extra }: SliderProps) {
-  const generated = useId(), id = suppliedId || generated;
-  return <div className="rhine-slider"><label htmlFor={id}>{label}</label><input id={id} name={name} form={form} type="range" min={min} max={max} step={step} value={value} disabled={disabled} aria-readonly={readOnly || undefined} aria-invalid={!!error || undefined} aria-describedby={fieldDescription(id,hint,error,extra)} onPointerDown={event => { if(readOnly)event.preventDefault(); }} onKeyDown={event => { if(readOnly && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(event.key))event.preventDefault(); }} onChange={event => { if(!readOnly && !event.currentTarget.matches(':disabled'))onChange(Number(event.target.value)); }} /><span>{value}</span><FieldFeedback id={id} hint={hint} error={error} /></div>;
-}
+export {Slider} from './Sliders';
+export type {SliderProps} from './Sliders';
 
 export interface TimePickerProps extends ProvidedFieldProps { label:string; value:string; onChange:(value:string)=>void; min?:string; max?:string; step?:number | 'any' }
 export function TimePicker({ label, value, onChange, disabled = false, readOnly = false, id: suppliedId, name, form, required, min, max, step, hint, error, 'aria-describedby': extra }: TimePickerProps) {

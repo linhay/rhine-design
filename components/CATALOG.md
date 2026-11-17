@@ -18,7 +18,9 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | --- | --- | --- | --- |
 | `Button` | 执行动作 | 跳转用 `Link` 或 `ButtonLink`；busy 只防止重复点击，不表示业务成功 | [动作](../docs/BUTTON_ACTIONS.md) |
 | `IconButton` | 有名称的图标动作 | 装饰图标用 `Icon`；不把名称只放在颜色里 | [常用契约](COMMON_COMPONENTS.md) |
-| `Icon` | 辅助识别 | 可操作时用 `IconButton`，并提供名称 | [常用契约](COMMON_COMPONENTS.md) |
+| `Icon` | 辅助识别或显式具名静态图形 | 动作用具名IconButton；未知name不静默降级 | [图标语义](../docs/ICONS.md) |
+| `iconNames` | 校验与枚举同源只读图标名称 | 不修改数组或伪造兼容别名 | [图标语义](../docs/ICONS.md) |
+| `PlatformMark` | macOS/Windows平台指示 | 不代替完整平台文字、不探测系统或执行下载 | [平台标记](../docs/PLATFORM_MARKS.md) |
 | `Text` | 表达文字层级、语气和数字 | 视觉层级不决定 HTML 语义，不截断或换算业务数值 | [字体](TYPOGRAPHY.md) |
 | `ResponsiveActions` | 容器变窄时收纳次要动作 | 不是另一个 Menu；宽容器仍直接显示主动作 | [自适应动作](../docs/RESPONSIVE_ACTIONS.md) |
 | `Logo` | 放置三角构架标志 | 不接收点击，不代替页面标题，变色不等于整套深色主题 | [品牌标志](README.md#品牌标志) |
@@ -88,8 +90,8 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | `RadioGroup` | 一组互斥选项 | 选项很少且要搜索时不用它代替 `Combobox` | [常用契约](COMMON_COMPONENTS.md) |
 | `Switch` | 立即生效的开关 | 不混同账号选择或表单提交 | [常用契约](COMMON_COMPONENTS.md) |
 | `SelectionCard` | 可取消的选择卡片 | 卡片内不再嵌按钮、链接或其他输入 | [组件入口](README.md) |
-| `TreeSelect` | 在树里选择节点 | 默认内联，presentation=dropdown 提供下拉；不把它当成文件服务 | [应用组件](../docs/APPLICATION_COMPONENTS.md) |
-| `RemoteMultiSelect` | 远程、可分页的多选 | 宿主拥有查询代次；完成选择只收起候选，不提交表单 | [远程分页](../docs/REMOTE_PAGINATION.md) |
+| `TreeSelect` | 在树里选择节点 | 默认内联，presentation=dropdown 提供下拉；不把它当成文件服务 | [应用组件](../docs/APPLICATION_COMPONENTS.md)  / [交互增量](../docs/INTERACTION_CONTRACTS.md) |
+| `RemoteMultiSelect` | 远程、可分页的多选 | 宿主拥有查询代次；完成选择只收起候选，不提交表单 | [远程分页](../docs/REMOTE_PAGINATION.md)  / [交互增量](../docs/INTERACTION_CONTRACTS.md) |
 | `Fieldset` | 给一组字段共同的名称 | 不代替逐字段错误 | [场景交互](../docs/INTERACTION_PATTERNS.md) |
 | `ErrorSummary` | 提交失败后的错误汇总 | 不清除字段上的错误，不把未知写成失败 | [场景交互](../docs/INTERACTION_PATTERNS.md) |
 | `ListFilterBar` | 列表的搜索、少量条件和更多筛选 | 不是通用表单；查询、权限和结果由宿主拥有 | [筛选栏](../docs/LIST_FILTER_BAR.md) |
@@ -99,7 +101,8 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | `ColorPicker` | 选择一个色值 | 不写入主题，不把颜色当作唯一状态 | [组件入口](README.md) |
 | `Mentions` | 在文本中插入一个提及 | 不发送消息，不查询人员服务 | [组件入口](README.md) |
 | `Rate` | 选择一个分数 | 不提交评价 | [组件入口](README.md) |
-| `Slider` | 在范围内调整一个数值 | 不保存，不代替时间轴拖动 | [组件入口](README.md) |
+| `Slider` | 在范围内调整一个数值，可配人类刻度 | 不保存或默默夹紧非法宿主值 | [范围契约](../docs/INTERACTION_CONTRACTS.md#slider与rangeslider) |
+| `RangeSlider` | 同轨道受控双阈值、间距及两端键盘操作 | 不代替宿主业务联动或服务端校验 | [范围契约](../docs/INTERACTION_CONTRACTS.md#slider与rangeslider) |
 | `TimePicker` | 选择当天时间 | 时区由宿主决定，不是日期 | [组件入口](README.md) |
 | `Transfer` | 在可选和已选之间移动项 | 不请求远程数据 | [组件入口](README.md) |
 | `Upload` | 选择本地文件并允许移除 | 不上传，不表示保存成功 | [组件入口](README.md) |
@@ -118,8 +121,8 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | `EmptyState` | 没有内容，或没有匹配 | 失败和权限不足用准确反馈，不用空态顶替 | [组件入口](README.md) |
 | `Metric` | 一个当前事实 | 不把未知显示成 0；比较口径由宿主提供 | [指标比较](../docs/METRIC_COMPARISON.md) |
 | `KeyValue` | 成对事实 | 不是历史；历史用时间轴 | [常用契约](COMMON_COMPONENTS.md) |
-| `DataTable` | 表格展示宿主给的行 | 不本地排序或切片来冒充服务端结果；不是电子表格 | [应用组件](../docs/APPLICATION_COMPONENTS.md) |
-| `TrendChart` | 一条趋势 | 不引入图表引擎，不替宿主计算业务指标 | [应用组件](../docs/APPLICATION_COMPONENTS.md) |
+| `DataTable` | 表格展示宿主给的行 | 不本地排序或切片来冒充服务端结果；不是电子表格 | [应用组件](../docs/APPLICATION_COMPONENTS.md)  / [交互增量](../docs/INTERACTION_CONTRACTS.md) |
+| `TrendChart` | 完整或公开紧凑趋势，保留原始采样入口 | 不引入图表引擎，不替宿主计算业务指标 | [应用组件](../docs/APPLICATION_COMPONENTS.md)、[紧凑趋势](../docs/COMPACT_TREND.md) |
 | `StackedBar` | 构成比例 | 单次失败不自动变成整段失败；阈值由宿主决定 | [应用组件](../docs/APPLICATION_COMPONENTS.md) |
 | `StatusTimeline` | 一段时间的状态证据 | 宿主提供判定和口径；组件不计健康分，也不改成事件轴 | [时间轴组合](../docs/TIMELINE_COMPOSITION.md) |
 | `TimelineLegend` | 说明时间轴颜色 | 颜色必须配文字；无参形式只兼容旧标签 | [时间轴组合](../docs/TIMELINE_COMPOSITION.md) |
@@ -127,7 +130,7 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | `MediaCard` | 媒体摘要 | 不解码或播放业务资产 | [应用组件](../docs/APPLICATION_COMPONENTS.md) |
 | `MediaViewer` | 查看一块媒体 | 不提供通用播放器或图片预览组 | [应用组件](../docs/APPLICATION_COMPONENTS.md) |
 | `Popover` | 短的可操作详情 | 关键长任务用 Dialog；纯说明且非关键才考虑 Tooltip | [浮层](../docs/FLOATING_OVERLAYS.md) |
-| `Tooltip` | 简短、非关键说明 | 触屏必须能从别处得到同一信息；链接和长内容不用它 | [浮层](../docs/FLOATING_OVERLAYS.md) |
+| `Tooltip` | 非关键的短文本或结构化只读数据行 | 触屏从常驻处取得同一信息；交互与长阅读使用Popover/Dialog | [浮层](../docs/FLOATING_OVERLAYS.md) |
 | `ChatThread` | 一条可滚动的会话 | 不解析工具协议，不拥有消息服务 | [聊天](../docs/AGENT_CHAT.md) |
 | `ChatCard` | 会话里的结构化卡片 | 大型可执行结果另开视图，不塞进卡片 | [聊天](../docs/AGENT_CHAT.md) |
 | `AgentList` | 受控的 Agent 列表 | 不提供团队计数或目录服务 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
@@ -136,7 +139,8 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | `MessageList` | 宿主给出的消息序列 | 稳定 id 由宿主提供；不在渲染期间新建消息组件类型 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
 | `MessageBubble` | 默认气泡 | 特殊类型用 `MessageRenderer`，不要复制一套气泡 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
 | `MessageMeta` | 作者和时间 | 不把元信息重复进正文 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
-| `MessageContent` | 消息正文 | 不执行其中的工具或链接 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
+| `MessageContent` | 消息正文表面 | 只读Markdown可组合RichText；不执行工具或代码 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
+| `RichText` | 有界只读Markdown、字面高亮与原文复制 | 不执行HTML/脚本、不拉远程图或全量消息 | [只读富文本](../docs/RICH_TEXT.md) |
 | `MessageActions` | 消息上的常驻动作 | 动作是否可用由宿主决定；不悬停才出现 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
 | `MessageStatus` | 加载、错误或未知 | 未知不是失败，也不要显示成成功 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
 | `MessageRenderer` | 按 agent 或 person 换呈现 | 未配置的类型回退默认气泡 | [Chat 基石](../docs/CHAT_FOUNDATION.md) |
@@ -157,7 +161,7 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | `Image` | 查看一张图片的预览 | 不解码业务资产 | [组件入口](README.md) |
 | `List` | 展示宿主给出的列表项 | 不请求、不排序 | [组件入口](README.md) |
 | `EventTimeline` | 按时间排列事件 | 不代替时段证据 `StatusTimeline` | [组件入口](README.md) |
-| `Tree` | 展开并选择树节点 | 不提供文件服务；下拉树选择仍用 `TreeSelect` | [组件入口](README.md) |
+| `Tree` | 受控展开/选择、只读节点槽及移动提案 | 不提供文件服务或持久化；下拉树选择用TreeSelect | [树交互](../docs/TREE.md) |
 | `CountBadge` | 在动作旁显示数量和文字 | 颜色不单独表达数量；短状态仍用 `Badge` | [组件入口](README.md) |
 
 ## 反馈
@@ -167,7 +171,7 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | 导出 | 何时用 | 何时不用 | 契约 |
 | --- | --- | --- | --- |
 | `Notice` | 留在页面上的状态说明 | 不把错误伪装成空数据 | [组件入口](README.md) |
-| `Dialog` | 必须完成或明确放弃的居中任务 | 需要旁边继续操作时用非模态结构，不把所有阅读改成 Dialog | [浮层](../docs/FLOATING_OVERLAYS.md) |
+| `Dialog` | 必须完成或明确放弃的居中任务 | 需要旁边继续操作时用非模态结构，不把所有阅读改成 Dialog | [浮层](../docs/FLOATING_OVERLAYS.md)  / [交互增量](../docs/INTERACTION_CONTRACTS.md) |
 | `Drawer` | 保留当前上下文的侧边任务 | 位置不同不改变模态语义；按任务选择，不按习惯互换 | [浮层](../docs/FLOATING_OVERLAYS.md) |
 | `ConfirmDialog` | 破坏性或难撤销动作的确认 | 不用于普通保存成功；也不是气泡确认 | [动作](../docs/BUTTON_ACTIONS.md) |
 | `Toast` | 一条短暂通知 | 不建全局队列；错误不靠自动消失才被人看见 | [场景交互](../docs/INTERACTION_PATTERNS.md) |

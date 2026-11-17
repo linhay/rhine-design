@@ -1,9 +1,10 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type SyntheticEvent } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { flushSync } from 'react-dom';
 import { Button, TextField, type Choice } from './components';
 import { Combobox, type ComboboxProps } from './Forms';
+import {SelectionTags} from './SelectionTags';
+import {useSelectionLifecycle,useNativeFieldDisabled,type SelectionChangeReason} from './selection-lifecycle';
 import './compact-forms.css';
-import { Popover } from './Overlays';
 
 export interface DateFieldProps {
   label: string; value: string; onValueChange: (value: string) => void;
@@ -190,6 +191,7 @@ export function NumberField({ label, value, onValueChange, min, max, step = 1, p
 }
 
 export interface RemoteMultiSelectProps {
+  closeReason?:Exclude<SelectionChangeReason,'open'>;focusOnOpen?:boolean;id?:string;inputProps?:ComboboxProps['inputProps'];open?:boolean;onOpenChange?:ComboboxProps['onOpenChange'];onClose?:(reason:SelectionChangeReason)=>void;cancelLabel?:string;maxSelected?:number;
   labelAction?: ComboboxProps['labelAction'];
   validationError?: ComboboxProps['validationError'];
   statusDisplay?: ComboboxProps['statusDisplay'];
@@ -205,133 +207,21 @@ export interface RemoteMultiSelectProps {
   activeValue?: string;
   onActivateValue?: (option: Choice) => void;
 }
-export function RemoteMultiSelect({ value, onValueChange, options, readOnly = false, clearable = true, closeOnSelect = false, clearQueryOnSelect = false, name, maxVisibleTags, tagDensity = 'default', activeValue, onActivateValue, ...props }: RemoteMultiSelectProps) {
-  const inputId = useId();
-  const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const limit = maxVisibleTags !== undefined && Number.isFinite(maxVisibleTags) ? Math.max(0, Math.floor(maxVisibleTags)) : undefined;
-  const collapsible = limit !== undefined && value.length > limit;
-  // Clearing or replacing the selection below the limit starts a new compact view.
-  if (expanded && !collapsible) setExpanded(false);
-  const shown = collapsible && !expanded ? value.slice(0, limit) : value;
-  const focusInput = (nextOpen = false) => { document.getElementById(inputId)?.focus(); setOpen(nextOpen); };
-  const remove = (key: string, nextOpen = false) => {
-    if (props.disabled || readOnly || value.find(item => item.value === key)?.disabled) return;
-    onValueChange(value.filter(item => item.value !== key)); focusInput(nextOpen);
-  };
-  return <div data-tag-density={tagDensity} className={`rhine-multi-select${limit !== undefined ? ' rhine-multi-select--compact' : ''}`}>
-    <Combobox {...props} id={inputId} open={open} onOpenChange={setOpen} readOnly={readOnly} selectedValues={value.map(item => item.value)} closeOnSelect={closeOnSelect} completionLabel={closeOnSelect ? undefined : '完成选择'} onEmptyBackspace={() => { const last = [...value].reverse().find(item => !item.disabled); if (last) remove(last.value, open); }} options={options.map(option => ({ ...option, disabled: option.disabled || value.some(item => item.value === option.value && item.disabled) }))} value={null} onValueChange={option => {
-      const original = options.find(item => item.value === option.value);
-      if (!original || original.disabled || props.disabled || readOnly) return;
-      const selected = value.find(item => item.value === original.value);
-      if (selected?.disabled) return;
-      onValueChange(selected ? value.filter(item => item.value !== original.value) : [...value, original]);
-      if (clearQueryOnSelect) props.onQueryChange('');
-    }} />
-    {name && value.map(item => <input key={item.value} type="hidden" name={name} value={item.value} disabled={props.disabled} />)}
-    <ul id={`${inputId}-tags`} className="rhine-multi-select__tags" aria-label={`${props.label}已选项`} data-expanded={collapsible && expanded || undefined}>{shown.map(item => <li key={item.value} data-active={Boolean(onActivateValue) && activeValue === item.value || undefined} data-activatable={Boolean(onActivateValue) || undefined}>
-      {onActivateValue ? <Button type="button" variant="quiet" className="rhine-multi-select__activate" disabled={props.disabled || item.disabled} aria-pressed={activeValue === item.value} onClick={() => { setOpen(false); onActivateValue(item); }}>{item.label}</Button> : <span>{item.label}</span>}
-      <Button variant="quiet" disabled={props.disabled || readOnly || item.disabled} aria-label={`移除${item.label}`} onClick={() => remove(item.value)}>×</Button>
-    </li>)}</ul>
-    <div className="rhine-multi-select__actions">
-      {limit !== undefined && <span className="rhine-text rhine-text--caption rhine-text--muted">已选 {value.length} 项</span>}
-      {collapsible && <Button variant="quiet" aria-expanded={expanded} aria-controls={`${inputId}-tags`} onClick={() => setExpanded(current => !current)}>{expanded ? '收起已选项' : '展开已选项'}</Button>}
-      {clearable && value.some(item => !item.disabled) && <Button type="button" variant="quiet" disabled={props.disabled || readOnly} onClick={() => { onValueChange(value.filter(item => item.disabled)); focusInput(); }}>清空选择</Button>}
-    </div>
-  </div>;
+export function RemoteMultiSelect({value,onValueChange,options,readOnly=false,clearable=true,closeOnSelect=false,clearQueryOnSelect=false,name,maxVisibleTags,tagDensity='default',activeValue,onActivateValue,id:suppliedId,open:controlledOpen,onOpenChange,onClose,closeReason,maxSelected,...props}:RemoteMultiSelectProps){
+ const generated=useId(),inputId=suppliedId||generated,nativeDisabled=useNativeFieldDisabled(inputId);const{open,request}=useSelectionLifecycle(controlledOpen,onOpenChange,onClose,Boolean(props.disabled||readOnly||nativeDisabled),closeReason);
+ const focusInput=(nextOpen=false)=>{document.getElementById(inputId)?.focus();request(nextOpen,{reason:nextOpen?'open':'selection'});};
+ const remove=(key:string,nextOpen=false)=>{if(props.disabled||nativeDisabled||readOnly||value.find(item=>item.value===key)?.disabled)return;onValueChange(value.filter(item=>item.value!==key));focusInput(nextOpen);};
+ const maximum=maxSelected!==undefined&&Number.isFinite(maxSelected)?Math.max(0,Math.floor(maxSelected)):undefined;
+ return <div data-tag-density={tagDensity} className={'rhine-multi-select'+(maxVisibleTags!==undefined?' rhine-multi-select--compact':'')}>
+ <Combobox {...props} id={inputId} open={open} onOpenChange={request} readOnly={readOnly} selectedValues={value.map(item=>item.value)} closeOnSelect={closeOnSelect} completionLabel={closeOnSelect?undefined:'完成选择'} onEmptyBackspace={()=>{const last=[...value].reverse().find(item=>!item.disabled);if(last)remove(last.value,open);}} options={options.map(option=>({...option,disabled:option.disabled||value.some(item=>item.value===option.value&&item.disabled)||(maximum!==undefined&&value.length>=maximum&&!value.some(item=>item.value===option.value))}))} value={null} onValueChange={option=>{
+ const original=options.find(item=>item.value===option.value);if(!original||original.disabled||props.disabled||readOnly)return;const selected=value.find(item=>item.value===original.value);if(selected?.disabled||(!selected&&maximum!==undefined&&value.length>=maximum))return;onValueChange(selected?value.filter(item=>item.value!==original.value):[...value,original]);if(clearQueryOnSelect)props.onQueryChange('');
+ }}/>
+ {name&&value.map(item=><input key={item.value} type="hidden" name={name} value={item.value} form={props.inputProps?.form} disabled={props.disabled}/>)}
+ <SelectionTags id={inputId} label={props.label} value={value} maxVisibleTags={maxVisibleTags} disabled={props.disabled||nativeDisabled} readOnly={readOnly} clearable={clearable} onRemove={key=>remove(key)} onClear={()=>{onValueChange(value.filter(item=>item.disabled));focusInput();}} activeValue={activeValue} onActivateValue={onActivateValue?item=>{request(false,{reason:'programmatic'});onActivateValue(item);}:undefined}/>
+ </div>;
 }
 
-export interface TreeNode { id: string; label: string; disabled?: boolean; selectable?: boolean; children?: TreeNode[] }
-export interface TreeSelectProps {
-  label: string; nodes: TreeNode[]; value: string[]; onValueChange: (value: string[]) => void;
-  expandedKeys: string[]; onExpandedChange: (keys: string[]) => void; multiple?: boolean;
-  disabled?: boolean; loading?: boolean; error?: string;
-  readOnly?: boolean; name?: string;
-  /** Existing inline presentation is the default; dropdown adds a dismissible popup. */
-  presentation?: 'inline' | 'dropdown';
-}
-function InlineTreeSelect({ label, nodes, value, onValueChange, expandedKeys, onExpandedChange, multiple = false, disabled = false, loading, error, readOnly = false, name, showLabel = true }: TreeSelectProps & { showLabel?: boolean }) {
-  const root = useRef<HTMLDivElement>(null), id = useId();
-  const [active, setActive] = useState<string>();
-  const hadFocus = useRef(false), typeahead = useRef({ text: '', time: 0 });
-  const visible: { node: TreeNode; parent?: string }[] = [];
-  const collect = (items: TreeNode[], parent?: string) => items.forEach(node => { visible.push({ node, parent }); if (expandedKeys.includes(node.id)) collect(node.children ?? [], node.id); });
-  collect(nodes);
-  const parents = new Map<string, string | undefined>();
-  const collectParents = (items: TreeNode[], parent?: string) => items.forEach(node => { parents.set(node.id, parent); collectParents(node.children ?? [], node.id); });
-  collectParents(nodes);
-  let ancestor = active;
-  while (ancestor && !visible.some(item => item.node.id === ancestor)) ancestor = parents.get(ancestor);
-  const current = ancestor || visible.find(item => value.includes(item.node.id))?.node.id || visible[0]?.node.id;
-  const itemId = (key: string) => `${id}-item-${encodeURIComponent(key)}`;
-  const focus = (key?: string) => { if (!key) return; setActive(key); document.getElementById(itemId(key))?.focus(); };
-  useLayoutEffect(() => {
-    if (hadFocus.current && active !== current && current) document.getElementById(itemId(current))?.focus();
-  }, [active, current, id]);
-  const expand = (node: TreeNode, next: boolean) => { if (!disabled) onExpandedChange(next ? [...new Set([...expandedKeys, node.id])] : expandedKeys.filter(key => key !== node.id)); };
-  const canChoose = (node: TreeNode) => !disabled && !readOnly && !loading && !error && !node.disabled && node.selectable !== false;
-  const choose = (node: TreeNode) => { if (!canChoose(node)) return; onValueChange(multiple ? value.includes(node.id) ? value.filter(key => key !== node.id) : [...value, node.id] : [node.id]); };
-  const keyDown = (event: KeyboardEvent, node: TreeNode) => {
-    if (event.nativeEvent.isComposing || event.keyCode === 229) return;
-    const index = visible.findIndex(item => item.node.id === node.id), expanded = expandedKeys.includes(node.id);
-    if (['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End',' ','Enter'].includes(event.key)) { event.preventDefault(); event.stopPropagation(); }
-    if (event.key === 'ArrowDown') focus(visible[Math.min(visible.length - 1, index + 1)]?.node.id);
-    if (event.key === 'ArrowUp') focus(visible[Math.max(0, index - 1)]?.node.id);
-    if (event.key === 'Home') focus(visible[0]?.node.id);
-    if (event.key === 'End') focus(visible.at(-1)?.node.id);
-    if (event.key === 'ArrowRight' && node.children?.length) { if (!expanded) expand(node, true); else focus(node.children[0].id); }
-    if (event.key === 'ArrowLeft') { if (expanded && node.children?.length) expand(node, false); else focus(visible[index]?.parent); }
-    if (event.key === ' ' || event.key === 'Enter') choose(node);
-    if (event.key === '*' && !disabled) { event.preventDefault(); event.stopPropagation(); onExpandedChange([...new Set([...expandedKeys, ...visible.filter(item => item.parent === visible[index]?.parent && item.node.children?.length).map(item => item.node.id)])]); }
-    if (multiple && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
-      event.preventDefault(); event.stopPropagation();
-      if (disabled || readOnly || loading || error) return;
-      const eligible = visible.filter(item => canChoose(item.node)).map(item => item.node.id);
-      onValueChange(eligible.every(key => value.includes(key)) ? value.filter(key => !eligible.includes(key)) : [...new Set([...value, ...eligible])]);
-    } else if (event.key.length === 1 && event.key !== ' ' && event.key !== '*' && !event.ctrlKey && !event.metaKey && !event.altKey) {
-      event.stopPropagation();
-      const now = Date.now();
-      const previous = now - typeahead.current.time < 500 ? typeahead.current.text : '';
-      const typed = previous + event.key.toLocaleLowerCase();
-      typeahead.current = { text: typed, time: now };
-      const search = [...typed].every(character => character === typed[0]) ? typed[0] : typed;
-      const ordered = [...visible.slice(index + 1), ...visible.slice(0, index + 1)];
-      const match = ordered.find(item => item.node.label.toLocaleLowerCase().startsWith(search));
-      if (match) { event.preventDefault(); event.stopPropagation(); focus(match.node.id); }
-    }
-  };
-  const renderNodes = (items: TreeNode[]) => items.map(node => {
-    const expanded = expandedKeys.includes(node.id);
-    return <div role="treeitem" key={node.id} id={itemId(node.id)} tabIndex={current === node.id ? 0 : -1} aria-label={node.label} aria-expanded={node.children?.length ? expanded : undefined} aria-selected={!multiple && node.selectable !== false ? value.includes(node.id) : undefined} aria-checked={multiple && node.selectable !== false ? value.includes(node.id) : undefined} aria-disabled={disabled || loading || !!error || node.disabled || undefined}
-      onFocus={event => { if (event.target === event.currentTarget) setActive(node.id); }} onKeyDown={event => keyDown(event, node)}>
-      <div className="rhine-tree__row" data-selected={value.includes(node.id)} onClick={() => { focus(node.id); choose(node); }}>
-        {node.children?.length ? <Button variant="quiet" tabIndex={-1} disabled={disabled} aria-label={`${expanded ? '收起' : '展开'}${node.label}`} onClick={event => { event.stopPropagation(); focus(node.id); expand(node, !expanded); }}>{expanded ? '−' : '+'}</Button> : <span className="rhine-tree__spacer" />}
-        {node.selectable !== false && <span aria-hidden="true">{value.includes(node.id) ? '✓' : '○'}</span>}<span>{node.label}</span>{node.disabled && <small>不可选</small>}
-      </div>{expanded && !!node.children?.length && <div role="group">{renderNodes(node.children)}</div>}
-    </div>;
-  });
-  return <div className="rhine-tree" ref={root} onFocusCapture={() => { hadFocus.current = true; }} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) hadFocus.current = false; }}>
-    {name && value.map(key => <input key={key} type="hidden" name={name} value={key} disabled={disabled} />)}
-    {showLabel && <span id={`${id}-label`} className="rhine-text rhine-text--label">{label}</span>}
-    <div role="tree" aria-labelledby={showLabel ? `${id}-label` : undefined} aria-label={showLabel ? undefined : label} aria-multiselectable={multiple || undefined} aria-readonly={readOnly || undefined} aria-busy={loading} aria-disabled={disabled || undefined}>{renderNodes(nodes)}</div>{(loading || error || !nodes.length) && <p role={error ? 'alert' : 'status'}>{loading ? '正在读取…' : error || '暂无节点'}</p>}</div>;
-}
+export type { TreeNode, TreeSelectProps } from './TreeView';
 
 
-export function TreeSelect(props: TreeSelectProps) {
-  return props.presentation === 'dropdown' ? <DropdownTreeSelect {...props} /> : <InlineTreeSelect {...props} />;
-}
-function DropdownTreeSelect(props: TreeSelectProps) {
-  const [open, setOpen] = useState(false);
-  useEffect(() => { if (props.disabled) setOpen(false); }, [props.disabled]);
-  const names = new Map<string, string>();
-  const collect = (nodes: TreeNode[]) => nodes.forEach(node => { names.set(node.id, node.label); collect(node.children ?? []); });
-  collect(props.nodes);
-  const summary = props.value.map(key => names.get(key) ?? key).join('、') || '未选择';
-  return <div className="rhine-tree-select">
-    {props.name && props.value.map(key => <input key={key} type="hidden" name={props.name} value={key} disabled={props.disabled} />)}
-    <Popover title={props.label} showHeader={false} open={open && !props.disabled} onOpenChange={setOpen} trigger={<Button variant="secondary" disabled={props.disabled}>{props.label}：{summary}</Button>}>
-      <InlineTreeSelect {...props} showLabel={false} name={undefined} onValueChange={next => { props.onValueChange(next); if (!props.multiple) setOpen(false); }} />
-      {props.multiple && <Button variant="secondary" onClick={() => setOpen(false)}>完成选择</Button>}
-    </Popover>
-  </div>;
-}
+export {TreeSelect} from './TreeSelect';

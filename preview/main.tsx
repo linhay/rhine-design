@@ -67,6 +67,8 @@ import { findAntdComponent, galleryView, isGapSection } from './antd-overview';
 import { ProvidedGallery, providedGalleryIds } from './ProvidedGallery';
 import { ParityGallery, parityGalleryIds } from './ParityGallery';
 import { FormIntegrationGallery } from './FormIntegrationGallery';
+import { RichTextGallery } from './RichTextGallery';
+import {StructuredTooltipGallery,DialogGateGallery,ThresholdSliderGallery,SelectionLifecycleGallery,DataRowGallery} from './InteractionContractsGallery';
 
 function Gallery() {
   const [motion, setMotion] = useState('system');
@@ -88,12 +90,14 @@ function Gallery() {
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => {
     const official = findAntdComponent(section);
     const view = galleryView(section);
+    if (['tooltip','modal','slider','remote-lifecycle','table','tree-select'].includes(section)) return <section className="ds-section"><Text as="h1" variant="section">{official?official.en+' '+official.zh:'远程多选生命周期'}</Text>{section==='tooltip'?<StructuredTooltipGallery/>:section==='modal'?<DialogGateGallery/>:section==='slider'?<ThresholdSliderGallery/>:section==='table'?<DataRowGallery/>:<SelectionLifecycleGallery tree={section==='tree-select'}/>}</section>;
     if (providedGalleryIds.includes(section as typeof providedGalleryIds[number])) return <section className="ds-section"><Text as="h1" variant="section">{official ? `${official.en} ${official.zh}` : section}</Text><ProvidedGallery id={section} /></section>;
     if (parityGalleryIds.includes(section as typeof parityGalleryIds[number])) return <section className="ds-section"><Text as="h1" variant="section">{official ? `${official.en} ${official.zh}` : section}</Text><ParityGallery id={section} /></section>;
     if (isGapSection(section) && official) return <GapPanel entry={official} />;
     return <>
     {official?.renders && official.renders !== section && <p className="ds-caption">{official.en} {official.zh} · {official.coverage === 'present' ? '已有' : '部分覆盖'}。{official.note}下面是现有展台，不是新的空组件。</p>}
     {view === 'form-integration' && <FormIntegrationGallery />}
+    {view === 'rich-text' && <RichTextGallery />}
     {view === 'metric-comparison' && <MetricComparisonGallery />}
     {view === 'periodic-report' && <PeriodicReportGallery />}
     {view === 'personal-notifications' && <NotificationGallery />}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CompactTrendGallery } from './CompactTrendGallery';
 import { StackedBarBoundaryGallery } from './StackedBarBoundaryGallery';
 import { TimelineCompositionGallery } from './TimelineCompositionGallery';
 import { TimelineListGallery } from './TimelineListGallery';
@@ -18,6 +19,7 @@ export function MonitoringGallery() {
   }));
   const feedback = { stale: state === 'stale' ? '最后采集于 20 分钟前，请核对来源。' : undefined, error: state === 'error' ? '本次读取失败，保留上次采样。' : undefined };
   return <section><div className="ds-section-title"><span>MONITORING</span><h2>看见证据，也看见缺口</h2></div>
+    <CompactTrendGallery />
     <StackedBarBoundaryGallery />
     <TimelineCompositionGallery />
     <TimelineListGallery />

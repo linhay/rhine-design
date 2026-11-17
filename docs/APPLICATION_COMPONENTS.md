@@ -227,6 +227,8 @@ StatusTimeline 通过 `activeId/defaultActiveId/onActiveChange` 按稳定时段 
 
 `StackedBar` 使用相同的 label/unit/rangeLabel/description/反馈字段，接收 `parts=[{id,label,value:number|null,tone?:1|2|3|4}]`。只在每项计数均已知、非负、有限且总和大于零时按传入计数绘制占比；任意未知值会停止归一化并显示“总量未知”，仍列出全部已知/未知计数。全零和负数各有说明。百分比是图例中对这组计数的数学占比，常规保留一位小数，不是健康分数或成功率。未发布修复（#158）：若一位小数会把非零/非全量写成 0.0% / 100.0%，改用两位小数；小于 0.01% / 大于 99.99% 的非边界值显示 `<0.01%` / `>99.99%`。真正零/全量仍为 0.0% / 100.0%，原始正值项决定是否全量。计数、色段权重不舍入、不设最小宽度；文字合计不保证 100%。图例为始终可读的静态列表，不额外加入 Tab 停靠点，键盘用户可滚动阅读。宿主必须提供互斥分类，不能把重叠统计相加当作总量。
 
+未发布#223另提供同一TrendChart的compact密度、可见说明/图例、数据表初始状态与完整单位控制，见[紧凑趋势契约](COMPACT_TREND.md)，registry0.14.0不包含这些新增参数；默认完整模式保留。
+
 两类图表新增 `valueFormatter(value:number|null)`；非有限值以 null 传入。TrendChart 刻度与逐点文字采用格式化，原始数据表保留原数值；StackedBar 格式化图例但不改变比例算法，零分段不占色带空间。TrendChart 可聚焦图形后用左右/Home/End，或悬停/轻触查看同一时段。`activePointId/defaultActivePointId/onActivePointChange` 支持受控高亮与多图联动；null 清除高亮，丢失 ID 不替代为别的样本。高亮值以 HTML 文字播报，缺失桶仍可查看。
 
 图表 `stale` 显示采集陈旧说明，`error` 显示错误并保留旧数据，loading 同样保留旧数据；空数组与全未知区分。图例逐项提供名称与数值，不只靠颜色。`--rhine-chart-series-1/2/3/4`、`--rhine-chart-grid`、`--rhine-chart-missing` 是语义 tokens；前两色跟随主题主色/信号色，后两色供独立分类使用。图形不闪烁、不扫光、不内置告警阈值。相关 API 自 0.5.0 提供，npm 0.4.0 不包含。

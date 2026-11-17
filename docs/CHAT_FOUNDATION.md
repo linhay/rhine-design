@@ -101,7 +101,7 @@ const renderers: MessageRenderers = { agent: ResearchMessage };
 
 - 组件只呈现宿主传入的状态；不请求数据、不搜索服务端、不创建线程、不写入消息。
 - `selected`、`working`、`offline`、`busy`、`error` 和 `unknown` 必须由宿主决定，视觉反馈不能提前表示业务成功。
-- 消息内容支持宿主传入的 React 内容或 Markdown 渲染结果；组件不内置 Agent 协议。
+- 消息内容支持宿主传入的 React 内容或 Markdown 渲染结果；组件不内置 Agent 协议。未发布#222另有可组合[RichText安全只读入口](RICH_TEXT.md)，原文/搜索/分页/附件仍归宿主，不将0.14.0已有MessageContent误称为自带Markdown渲染。
 - Agent 的身份、模型、权限、工作电脑和记忆是业务事实，Inspector 只负责呈现，不推断或修改。
 - Composer 的提交回调只表示用户提交了输入；它不表示消息已经投递、Agent 已接收或工作已完成。
 

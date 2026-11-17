@@ -1,11 +1,10 @@
 import { useState } from 'react';
+import { ManagementIconsGallery } from './ManagementIconsGallery';
+import { ControlledTreeGallery } from './ControlledTreeGallery';
 import { BoundaryExamples } from './BoundaryExamples';
 import { ImageResourceGallery } from './MediaGuideGallery';
-import { Icon, type IconName } from '../components';
-import { AutoComplete, Card, Column, Columns, ConfigProvider, CountBadge, Descriptions, Dropdown, EventTimeline, Flex, Form, Image, List, Message, Notification, Popconfirm, Tree } from '../components';
+import { AutoComplete, Card, Column, Columns, ConfigProvider, CountBadge, Descriptions, Dropdown, EventTimeline, Flex, Form, Image, List, Message, Notification, Popconfirm } from '../components';
 import { Button, Text, TextField, Select, Surface, Dialog, Cascader, Mentions, NavigationMenu, TreeSelect, Util } from '../components';
-
-const icons: IconName[] = ['settings', 'menu', 'close', 'search', 'info', 'check', 'copy', 'plus'];
 
 export const parityGalleryIds = ['icon', 'flex', 'grid', 'dropdown', 'auto-complete', 'form', 'badge', 'card', 'collapse', 'descriptions', 'image', 'list', 'timeline', 'tree', 'message', 'notification', 'popconfirm', 'config-provider', 'menu', 'tree-select', 'util'] as const;
 
@@ -13,7 +12,6 @@ export function ParityGallery({ id }: { id: string }) {
   const [picked, setPicked] = useState('未选择');
   const [nav, setNav] = useState('overview');
   const [treeValue, setTreeValue] = useState<string[]>([]);
-  const [treeSelected,setTreeSelected] = useState('root');
   const [expanded, setExpanded] = useState<string[]>(['root']);
   const [density, setDensity] = useState<'regular' | 'compact'>('compact');
   const [number, setNumber] = useState('120');
@@ -22,7 +20,7 @@ export function ParityGallery({ id }: { id: string }) {
   const [confirmed, setConfirmed] = useState('未确认');
   const [note, setNote] = useState(true);
   const [notice, setNotice] = useState(true);
-  if (id === 'icon') return <Flex wrap>{icons.map(name => <span key={name}><Icon name={name} /><Text variant="caption">{name}</Text></span>)}</Flex>;
+  if (id === 'icon') return <ManagementIconsGallery/>;
   if (id === 'flex') return <Flex wrap gap={3}><Button>第一项</Button><Button variant="secondary">第二项</Button><Button variant="quiet">窄容器可换行</Button></Flex>;
   if (id === 'grid') return <Columns><Column span={16}><Text>16 / 24</Text></Column><Column span={8}><Text>8 / 24</Text></Column></Columns>;
   if (id === 'dropdown') return <><Dropdown label="更多操作" items={[{ id: 'copy', label: '复制' }, { id: 'disabled', label: '不可用', disabled: true }]} onSelect={setPicked} /><Text>{picked}</Text><NestedOverlayExample /></>;
@@ -35,7 +33,7 @@ export function ParityGallery({ id }: { id: string }) {
   if (id === 'image') return <ImageResourceGallery />;
   if (id === 'list') return <List label="资源" items={[{ id: '1', title: '研究资源 A', description: '只读列表' }, { id: '2', title: '协作资源 B' }]} />;
   if (id === 'timeline') return <EventTimeline label="事件" items={[{ id: '1', time: '09:30', title: '创建' }, { id: '2', time: '10:15', title: '更新说明' }]} />;
-  if (id === 'tree') return <Tree label="示例树" nodes={[{ id: 'root', label: '研究', children: [{ id: 'a', label: '资料 A' }] }]} selected={treeSelected} onSelect={setTreeSelected} />;
+  if (id === 'tree') return <ControlledTreeGallery/>;
   if (id === 'message') return note ? <Message title="已保存演示" onClose={() => setNote(false)}>这不是全局队列。</Message> : <Text>提示已关闭。</Text>;
   if (id === 'notification') return notice ? <Notification title="有一条待查看事项" description="通知留在页面上，直到明确关闭。" onClose={() => setNotice(false)} /> : <Text>通知已关闭。</Text>;
   if (id === 'popconfirm') return <><Popconfirm label="移除示例" title="确认移除这项演示？" onConfirm={() => setConfirmed('已确认移除')} /><Text>{confirmed}</Text></>;

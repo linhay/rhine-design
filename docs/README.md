@@ -29,6 +29,8 @@ Web 与 iOS 分开。本导航不要求 UIKit 补齐同名控件或相同数量�
 | 做设置、筛选、阅读或聊天 | [组件目录](../components/CATALOG.md) 里的对应分类；聊天外壳在布局，消息在数据展示 |
 | 查一个已有导出的参数 | 目录中的契约链接，或 [API_MAP](../skills/rhine-design/references/API_MAP.md) |
 | 核对本地候选的消费与支持范围 | [固定制品与有限兼容验收](../components/PROVIDED_COMPONENTS.md#固定制品与有限兼容验收2026-11-16)，不把软件证据外推原生平台 |
+| 管理图标／平台标记、可移动树、只读Markdown或紧凑趋势 | [图标](ICONS.md)、[平台](PLATFORM_MARKS.md)、[Tree](TREE.md)、[只读内容](RICH_TEXT.md)、[紧凑趋势](COMPACT_TREND.md)；#219–#223是未发布候选 |
+| 结构化提示／关闭门禁／双阈值／关闭提交／行激活 | [交互增量契约](INTERACTION_CONTRACTS.md)；#224–#229为未发布候选 |
 | 看历史数量和发布范围 | [0.14.0发行记录](releases/0.14.0.md)、[CHANGELOG](../CHANGELOG.md)。历史组件数不代替当前契约 |
 
 展台章节由 [GalleryShell](../preview/GalleryShell.tsx) 注册，分组顺序与组件总览一致。展台不代替目录，也不把未提供写成已有导出。
