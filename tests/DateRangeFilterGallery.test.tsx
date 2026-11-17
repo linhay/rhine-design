@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { DateRangeFilterExample } from '../preview/DateRangeFilterGallery';
+import { DateRangeFilterExample, NestedDateFilterExample } from '../preview/DateRangeFilterGallery';
 
 function demo(props = {}) {
   render(<div className="rhine-theme"><DateRangeFilterExample {...props} /></div>);
@@ -12,6 +12,25 @@ async function open() {
 }
 
 describe('date range filtering composition', () => {
+  it('clears inside the nested filter without closing settings or discarding its draft', async () => {
+    render(<div className="rhine-theme"><NestedDateFilterExample /></div>);
+    fireEvent.click(screen.getByRole('button', { name: '打开日期筛选设置' }));
+    fireEvent.change(screen.getByLabelText('设置备注'), { target: { value: '尚未保存的修改' } });
+    fireEvent.click(screen.getByRole('button', { name: '更多筛选，已选 1 项' }));
+    const drawer = screen.getByRole('dialog', { name: '日期更多筛选' });
+    const clear = within(drawer).getByRole('button', { name: '清空日期' });
+    clear.focus(); fireEvent.click(clear);
+    const group = within(drawer).getByRole('group', { name: '筛选日期' });
+    expect(group).toHaveFocus();
+    expect(clear).toBeDisabled();
+    fireEvent.keyDown(group, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: '日期更多筛选' })).not.toBeInTheDocument());
+    expect(screen.getByRole('dialog', { name: '日期筛选设置' })).toBeVisible();
+    expect(screen.getByLabelText('设置备注')).toHaveValue('尚未保存的修改');
+    expect(screen.getByText(/回传次数：1/)).toHaveTextContent('范围：不限开始 — 不限结束；回传次数：1');
+    await waitFor(() => expect(screen.getByRole('button', { name: '更多筛选' })).toHaveFocus());
+  });
+
   it('applies a quick preset immediately and always displays its dates', () => {
     demo();
     fireEvent.click(screen.getByRole('radio', { name: '昨天' }));

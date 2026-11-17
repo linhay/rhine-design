@@ -66,6 +66,7 @@ export function DateRangePicker({ label, value, onValueChange, min, max, disable
   const id = useId();
   const [fieldErrors, setFieldErrors] = useState<{ start: string | null; end: string | null }>({ start: null, end: null });
   const [resetRevision, setResetRevision] = useState(0);
+  const group = useRef<HTMLFieldSetElement>(null);
   const rangeError = (range: DateRange) => dateError(range.start, min, max) || dateError(range.end, min, max) || (range.start && range.end && range.start > range.end ? '结束日期不能早于开始日期。' : undefined);
   const invalid = error || rangeError(value) || fieldErrors.start || fieldErrors.end || undefined;
   useDateValidation(invalid, onValidationChange);
@@ -75,14 +76,21 @@ export function DateRangePicker({ label, value, onValueChange, min, max, disable
     setResetRevision(revision => revision + 1);
     onValueChange(next);
   };
-  return <div className="rhine-date-range-container"><fieldset className={`rhine-date-range${compact ? ' rhine-date-range--compact' : ''}`} disabled={disabled} aria-describedby={[hint && `${id}-hint`, invalid && id].filter(Boolean).join(' ') || undefined}>
+  const clear = () => {
+    // Move before disabling the trigger or remounting date fragments. The named
+    // fieldset survives both; later host updates must not reclaim focus.
+    const target = group.current;
+    if (target?.contains(target.ownerDocument.activeElement)) target.focus();
+    replace({ start: '', end: '' });
+  };
+  return <div className="rhine-date-range-container"><fieldset ref={group} tabIndex={-1} className={`rhine-date-range${compact ? ' rhine-date-range--compact' : ''}`} disabled={disabled} aria-describedby={[hint && `${id}-hint`, invalid && id].filter(Boolean).join(' ') || undefined}>
     <legend>{label}</legend><div className="rhine-date-range__fields">
       <DateField key={`start-${resetRevision}`} label={startLabel} name={startName} value={value.start} min={min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={start => onValueChange({ ...value, start })} onValidationChange={message => fieldValidation('start', message)} />
       {compact && <span className="rhine-date-range__separator" aria-hidden="true">至</span>}
       <DateField key={`end-${resetRevision}`} label={endLabel} name={endName} value={value.end} min={value.start && (!min || value.start > min) ? value.start : min} max={max} readOnly={readOnly} required={required} disabled={disabled} onValueChange={end => onValueChange({ ...value, end })} onValidationChange={message => fieldValidation('end', message)} />
     </div>{(presets.length > 0 || clearable) && <div className="rhine-inline">
       {presets.map(preset => <Button key={preset.label} variant="secondary" disabled={disabled || readOnly || !!rangeError(preset.value) || !!(required && (!preset.value.start || !preset.value.end))} onClick={() => replace(preset.value)}>{preset.label}</Button>)}
-      {clearable && <Button variant="quiet" disabled={disabled || readOnly || (!value.start && !value.end && !fieldErrors.start && !fieldErrors.end)} onClick={() => replace({ start: '', end: '' })}>清空日期</Button>}
+      {clearable && <Button variant="quiet" disabled={disabled || readOnly || (!value.start && !value.end && !fieldErrors.start && !fieldErrors.end)} onClick={clear}>清空日期</Button>}
     </div>}{hint && <p id={`${id}-hint`} className="rhine-field__hint">{hint}</p>}{invalid && <p id={id} role="alert" className="rhine-field__error">{invalid}</p>}
   </fieldset></div>;
 }
