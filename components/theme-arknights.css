@@ -252,7 +252,7 @@
   clip-path: polygon(0 0, calc(100% - var(--ak-cut-sm)) 0, 100% var(--ak-cut-sm), 100% 100%, 0 100%);
 }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-skeleton>span[aria-hidden] { background: #22262c; }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-disclosure summary>span { color: var(--ak-accent); }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-disclosure > summary > .rhine-disclosure__indicator { color: var(--ak-accent); }
 
 /* ================= 浮层 / 对话框 ================= */
 .rhine-theme[data-rhine-theme="arknights"] .rhine-overlay { background: var(--rhine-backdrop-bg); }

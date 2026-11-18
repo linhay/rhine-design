@@ -1,6 +1,6 @@
 # API map
 
-All code paths are relative to the package root. Use `components/CATALOG.md` for the complete main-entry inventory and component selection. Use this map for related types, contracts and source locations. The exact signatures come from the resolved package's public entries and source. This map was checked against the `0.14.0` release candidate. `docs/releases/0.14.0.md` and registry readback distinguish a prepared candidate from an available release. Match installed exports and contracts before using them in a consumer.
+All code paths are relative to the package root. Use `components/CATALOG.md` for the complete main-entry inventory and component selection. Use this map for related types, contracts and source locations. The exact signatures come from the resolved package's public entries and source. This map covers the `0.16.0` release scope. `docs/releases/0.16.0.md`, the release artifact checksum, and registry readback distinguish source scope from availability. Match installed exports and contracts before using them in a consumer.
 
 ## Public entries
 
@@ -30,9 +30,9 @@ All code paths are relative to the package root. Use `components/CATALOG.md` for
 | `SideNav`, `Breadcrumbs`, `Steps`, `Toast` | `components/Navigation.tsx` and `components/Toast.tsx`. See `docs/SIDE_NAV_ACTIONS.md` for `NavItem.actions` / `NavAction`. Nested `NavItem.children` inherit ancestor disabled state and current-page indication uses the exact match. `docs/INTERACTION_PATTERNS.md` covers Steps back-navigation focus and host-initiated focus handoff. `Toast.eventId` changes visible lifetime with stable content and close-button identity. Repeated speech or a global queue is outside the contract. |
 | `MediaCard`, `MediaViewer`, `ThemePicker`, `ThemePreview` | `components/Media.tsx` and `components/ThemePicker.tsx`. Only the media canvas uses a neutral surface. See `docs/APPLICATION_COMPONENTS.md` and `docs/THEME_PICKER.md`. |
 
-## Unpublished management additions (#219–#223)
+## Management additions in 0.15.0 (#219–#223)
 
-These are source/fixed-candidate additions, absent from registry 0.14.0. Check the installed artifact before using them.
+These additions are absent from 0.14.0. Check the installed artifact before using them.
 
 | Exports or additions | Contract |
 | --- | --- |
@@ -42,6 +42,16 @@ These are source/fixed-candidate additions, absent from registry 0.14.0. Check t
 | `RichText`, `RichTextProps` | `docs/RICH_TEXT.md`; bounded source, execution-free Markdown, exact original copy, optional http(s) navigation; no whole-message requests. |
 | `TrendChartProps.density/caption/showLegend/dataTable/valueFormatterIncludesUnit` | `docs/COMPACT_TREND.md`; compact uses the same renderer and retains the full-data entry. |
 
+## Free input and compositions in 0.16.0 (#230–#232)
+
+These additions are not in v0.15.0. Read `docs/COMPOSITE_INPUTS.md` and match the installed artifact.
+
+| Exports | Source and decisions |
+| --- | --- |
+| `TagInput`, `TagInputProps` | `components/TagInput.tsx`; controlled string values and a separate draft, IME-safe explicit commit, optional separators/paste split/blur, bounded tags and optional suggestion buttons. A rejected host preserves draft; accepted values own form serialization. |
+| `DisclosureProps` | `components/components.tsx`; readonly rich summary, open/onOpenChange, and lazyMount after the first accepted open, retaining subsequent content state and old eager/motion defaults. |
+| `MenuProps`, `MenuEntry`, `MenuItem`, `MenuGroup`, `MenuSeparator`, `MenuRadioGroup`, `MenuRadioItem`, `MenuCheckboxItem` | `components/Overlays.tsx`; native Radix groups/separators/radio/checkbox, controlled selection and visible disabled reasons; old action arrays and real-trigger focus remain. |
+
 ## Overview additions in the working tree
 
 Use `components/PROVIDED_COMPONENTS.md` for interaction, defaults, form serialization and evidence boundaries. The overview's Ant Design labels help find Rhine components. Use the Rhine signatures and contracts when implementing them.
@@ -49,8 +59,8 @@ Use `components/PROVIDED_COMPONENTS.md` for interaction, defaults, form serializ
 | Exports | Source and decisions |
 | --- | --- |
 | `FloatButton`, `Masonry`, `Anchor`, `Avatar`, `Carousel`, `QRCode`, `Tag`, `Result`, `Spin`, `Watermark`, `Affix`, `App`, `BorderBeam` | `components/provided.tsx`. `Anchor.getHref` lets the host map heading IDs to fragments. `QRCode` accepts at most 78 UTF-8 bytes. `App` names a region. |
-| `Slider`, `RangeSlider`, `SliderProps`, `RangeSliderProps`, `SliderMark` | `components/Sliders.tsx`, `docs/INTERACTION_CONTRACTS.md`; one-track paired thresholds, strict gap/grid, native range semantics, dynamic limits and human marks. Unpublished #226, not registry0.14.0. |
-| `TooltipProps`, `TooltipDetails`, `DialogReturnFocus`, `ConfirmDialogProps`, `ConfirmResult`, `SelectionChangeReason`, `SelectionOpenChange` | `components/Overlays.tsx`, `components/selection-lifecycle.ts`, `docs/INTERACTION_CONTRACTS.md`; structured text-only tips, gated closing, explicit confirmation outcomes and accepted-close notifications. `RemoteMultiSelect` exposes id/inputProps; `TreeSelect` owns path filtering/tags. Unpublished #224–#229. |
+| `Slider`, `RangeSlider`, `SliderProps`, `RangeSliderProps`, `SliderMark` | `components/Sliders.tsx`, `docs/INTERACTION_CONTRACTS.md`; one-track paired thresholds, strict gap/grid, native range semantics, dynamic limits and human marks. Added in 0.15.0 (#226). |
+| `TooltipProps`, `TooltipDetails`, `DialogReturnFocus`, `ConfirmDialogProps`, `ConfirmResult`, `SelectionChangeReason`, `SelectionOpenChange` | `components/Overlays.tsx`, `components/selection-lifecycle.ts`, `docs/INTERACTION_CONTRACTS.md`; structured text-only tips, gated closing, explicit confirmation outcomes and accepted-close notifications. `RemoteMultiSelect` exposes id/inputProps; `TreeSelect` owns path filtering/tags. Added in 0.15.0 (#224–#229). |
 | `Rate`, `TimePicker`, `ColorPicker`, `Upload` | `components/provided.tsx` defines `RateProps`, `SliderProps`, `TimePickerProps`, `ColorPickerProps`, and `UploadProps`. The shared `ProvidedFieldProps` is in `components/field-support.tsx`. Check each field's supported native attributes. `Slider` omits `required`. Named `Upload` serializes accepted `File` objects through its owner's `formdata` event. Upload requests belong to the host. |
 | `Splitter`, `Transfer`, `Calendar`, `Cascader`, `Mentions` | `components/provided-controls.tsx` and `components/provided-overlays.tsx` re-exported through `components/provided.tsx`. `TransferProps`, `CascaderProps`, `CascadeOption`, and `MentionsProps` are importable from the main entry. `Cascader` and `Transfer` distinguish field `error` from `loadError` and report retry or expansion intent to the host. |
 | `Flex`, `Columns`, `Column`, `Dropdown`, `AutoComplete`, `Form`, `Card`, `Collapse`, `Descriptions`, `List`, `EventTimeline`, `Tree`, `Message`, `Notification`, `Popconfirm`, `CountBadge` | `components/parity.tsx`. `AutoCompleteProps` separates field `error` and candidate `optionsError`, and `FormProps` forwards the submit event to the host. Use `preview/FormIntegrationGallery.tsx` for the form composition. |

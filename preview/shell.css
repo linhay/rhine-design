@@ -3,7 +3,8 @@
 .ds-skip:focus { transform:none; }
 .ds-sidebar { display:flex; flex-direction:column; min-height:0; border-right:1px solid var(--rhine-line); background:var(--rhine-surface); }
 .ds-sidebar-brand { padding:28px 24px 24px; }
-.ds-sidebar-brand>a { display:flex; gap:12px; align-items:center; color:var(--rhine-ink); text-decoration:none; font-size:18px; font-weight:600; }
+.ds-sidebar-brand>a { min-width:0; max-width:100%; overflow-wrap:anywhere; display:flex; gap:12px; align-items:center; color:var(--rhine-ink); text-decoration:none; font-size:18px; font-weight:600; }
+.ds-sidebar-brand>a>span:last-child { min-width:0; overflow-wrap:anywhere; }
 .ds-sidebar-brand small { display:block; margin-top:2px; font:10px/16px var(--rhine-mono); letter-spacing:.08em; color:var(--rhine-muted); }
 .ds-sidebar-directory { display:flex; flex-direction:column; flex:1; min-height:0; }
 .ds-directory-search { flex:none; padding:8px 16px 12px; }
@@ -17,8 +18,8 @@
 .ds-menu-toggle { display:none; }
 .ds-workspace { min-width:0; min-height:0; overflow:auto; scrollbar-gutter:stable; }
 .ds-workspace:focus { outline:none; }
-.ds-workspace-head { min-height:80px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:16px 32px; border-bottom:1px solid var(--rhine-line); }
-.ds-head-controls { display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; }
+.ds-workspace-head { min-height:80px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px; padding:16px 32px; border-bottom:1px solid var(--rhine-line); }
+.ds-head-controls { min-width:0; max-width:100%; display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; }
 .ds-workspace-head>div:first-child { font-size:12px; }.ds-workspace-head>div:first-child>span { color:var(--rhine-muted); }
 .ds-page { max-width:1200px; margin:0 auto; padding:0 32px; animation:rhine-enter var(--rhine-duration-panel) var(--rhine-ease-standard); }
 .ds-sidebar-nav .rhine-side-nav__group>p:empty { display:none; }
@@ -41,7 +42,7 @@
 @media(max-width:760px) {
   .ds-shell { grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr); }
   .ds-sidebar { border-right:0; border-bottom:1px solid var(--rhine-line); }
-  .ds-sidebar-brand { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 20px; }
+  .ds-sidebar-brand { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding:12px 20px; }
   .ds-menu-toggle { display:inline-flex; }.ds-sidebar-foot { display:none; }
   .ds-sidebar-directory { display:none; flex:none; max-height:45dvh; }.ds-sidebar[data-open=true] .ds-sidebar-directory { display:flex; }
   .ds-workspace-head { min-height:0; padding:16px 20px; flex-wrap:wrap; gap:12px; }

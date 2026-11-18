@@ -29,7 +29,7 @@
   position: absolute;
   left: 32px;
   bottom: -1px;
-  width: 160px;
+  width: min(160px, calc(100% - 32px));
   height: 4px;
   background: var(--ak-hazard);
 }

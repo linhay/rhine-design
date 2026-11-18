@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactElement, type ReactNode } from 'react';
 import * as DialogBase from '@radix-ui/react-dialog';
 import * as AlertBase from '@radix-ui/react-alert-dialog';
 import * as PopoverBase from '@radix-ui/react-popover';
@@ -105,12 +105,124 @@ export function Popover({ trigger, title, children, open, onOpenChange, side, sh
   const floatingSide = useFloatingSide(ref, side, 300);
   return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={next=>{onOpenChange?.(next,{reason:next?'open':cause.current});if(next)cause.current='programmatic';}}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content onKeyDownCapture={event=>{if(event.key==='Tab'){tabExit.current=true;queueMicrotask(()=>{tabExit.current=false;});}}} onEscapeKeyDown={()=>{cause.current='escape';}} onInteractOutside={event=>{cause.current=event.detail.originalEvent.type==='pointerdown'?'outside':tabExit.current?'tab':'blur';}} onCloseAutoFocus={event => respectFocusHandoff(event, ref)} data-rhine-density={density} ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
 }
-export interface MenuItem { id: string; label: string; icon?: IconName; disabled?: boolean; danger?: boolean; onSelect: () => void }
-export function Menu({ trigger, label, items, open, onOpenChange, onCloseAutoFocus, side }: OverlayControl & { trigger: ReactElement; label: string; items: MenuItem[]; onCloseAutoFocus?: (event: Event) => void }) {
+interface MenuItemPresentation {
+  /** Stable and unique across this Menu, including groups and radio options. */
+  id: string;
+  label: string;
+  icon?: IconName;
+  disabled?: boolean;
+  /** Visible and described while disabled; never becomes part of the item name. */
+  disabledReason?: string;
+  danger?: boolean;
+}
+export interface MenuItem extends MenuItemPresentation { onSelect: () => void }
+export interface MenuSeparator { type: 'separator'; id: string }
+export interface MenuGroup { type: 'group'; id: string; label: string; items: readonly MenuEntry[] }
+export interface MenuRadioItem extends MenuItemPresentation { value: string }
+export interface MenuRadioGroup { type: 'radio-group'; id: string; label: string; value: string; onValueChange: (value: string) => void; items: readonly MenuRadioItem[] }
+export interface MenuCheckboxItem extends MenuItemPresentation { type: 'checkbox'; checked: boolean; onCheckedChange: (checked: boolean) => void }
+export type MenuEntry = MenuItem | MenuSeparator | MenuGroup | MenuRadioGroup | MenuCheckboxItem;
+export interface MenuProps extends OverlayControl { trigger: ReactElement; label: string; items: readonly MenuEntry[]; onCloseAutoFocus?: (event: Event) => void }
+
+function isMenuAction(entry: MenuEntry | MenuRadioItem): entry is MenuItem {
+  return 'onSelect' in entry;
+}
+
+function menuEntryIndex(items: readonly MenuEntry[]) {
+  const entries = new Map<string, MenuEntry | MenuRadioItem>();
+  const add = (entry: MenuEntry | MenuRadioItem, requireNonempty = true) => {
+    if (entries.has(entry.id)) throw new Error('Menu ids must be unique across all entries.');
+    if (requireNonempty && !entry.id.trim()) throw new Error('Structured menu ids must be nonempty.');
+    entries.set(entry.id, entry);
+  };
+  const visit = (list: readonly MenuEntry[]) => list.forEach(entry => {
+    // Legacy actions keep their own metadata and may use a unique blank key.
+    if (isMenuAction(entry)) { add(entry, false); return; }
+    add(entry);
+    if (entry.type === 'group' || entry.type === 'radio-group') {
+      if (!entry.label.trim()) throw new Error('Menu groups require a nonempty label.');
+      if (entry.type === 'group') visit(entry.items);
+      else {
+        const values = new Set<string>();
+        entry.items.forEach(item => {
+          add(item);
+          if (!item.value || values.has(item.value)) throw new Error('Menu radio values must be nonempty and unique within their group.');
+          values.add(item.value);
+        });
+      }
+    }
+  });
+  visit(items);
+  return entries;
+}
+
+export function Menu({ trigger, label, items, open, onOpenChange, onCloseAutoFocus, side }: MenuProps) {
   const { ref, container, density } = useScope();
-  const floatingRef = useFloatingScale(undefined, 'dropdown-menu');
+  const contentRef = useRef<HTMLDivElement>(null);
+  // Keep long-menu sizing independent of Radix's measured placement height.
+  const floatingRef = useFloatingScale(contentRef, 'dropdown-menu', 480);
   const floatingSide = useFloatingSide(ref, side, 180);
-  return <span className="rhine-overlay-anchor" ref={ref}><MenuBase.Root open={open} onOpenChange={onOpenChange}><MenuBase.Trigger asChild>{trigger}</MenuBase.Trigger><MenuBase.Portal container={container}><MenuBase.Content data-rhine-density={density} onCloseAutoFocus={event => { onCloseAutoFocus?.(event); respectFocusHandoff(event, ref); }} ref={floatingRef} className="rhine-menu" aria-label={label} side={floatingSide} sideOffset={8} collisionPadding={12}>{items.map(item => <MenuBase.Item key={item.id} disabled={item.disabled} onSelect={item.onSelect} className="rhine-menu__item" data-danger={item.danger}>{item.icon && <Icon name={item.icon} size={16} />}{item.label}</MenuBase.Item>)}</MenuBase.Content></MenuBase.Portal></MenuBase.Root></span>;
+  const prefix = useId();
+  const entries = menuEntryIndex(items);
+  const currentEntries = useRef(entries);
+  const focusedItem = useRef<{ node: HTMLElement; index: number } | null>(null);
+  useLayoutEffect(() => {
+    currentEntries.current = entries;
+    const content = contentRef.current, previous = focusedItem.current;
+    if (!content) { focusedItem.current = null; return; }
+    if (!previous) return;
+    const active = document.activeElement;
+    const nodes = Array.from(content.querySelectorAll<HTMLElement>('[data-rhine-menu-item]'));
+    if (previous.node.isConnected && previous.node.getAttribute('aria-disabled') !== 'true') {
+      if (active === previous.node) previous.index = nodes.indexOf(previous.node);
+      return;
+    }
+    if (active !== previous.node && !(active === document.body && !previous.node.isConnected) && active !== content) return;
+    const enabled = nodes.filter(node => node.getAttribute('aria-disabled') !== 'true');
+    const target = enabled.find(node => nodes.indexOf(node) >= previous.index) ?? enabled.at(-1);
+    focusedItem.current = null;
+    (target ?? content).focus();
+  });
+  const domId = (id: string, part: string) => `${prefix}-${encodeURIComponent(id)}-${part}`;
+  const itemProps = (item: MenuItemPresentation) => ({
+    'data-rhine-menu-item': item.id,
+    'aria-label': item.label,
+    'aria-describedby': item.disabled && item.disabledReason?.trim() ? domId(item.id, 'reason') : undefined,
+    disabled: item.disabled,
+    textValue: item.label,
+    className: 'rhine-menu__item',
+    'data-danger': item.danger,
+  });
+  const itemContent = (item: MenuItemPresentation, indicator = false) => <>
+    {indicator && <span className="rhine-menu__indicator" aria-hidden="true"><MenuBase.ItemIndicator><Icon name="check" size={16} /></MenuBase.ItemIndicator></span>}
+    {item.icon && <Icon name={item.icon} size={16} />}
+    <span className="rhine-menu__text"><span>{item.label}</span>{item.disabled && item.disabledReason?.trim() && <span className="rhine-menu__reason" id={domId(item.id, 'reason')}>{item.disabledReason}</span>}</span>
+  </>;
+  const renderEntries = (list: readonly MenuEntry[]): ReactNode => list.map(entry => {
+    if (isMenuAction(entry)) return <MenuBase.Item key={entry.id} {...itemProps(entry)} onSelect={event => {
+      const item = currentEntries.current.get(entry.id);
+      if (item && isMenuAction(item) && !item.disabled) item.onSelect();
+      else event.preventDefault();
+    }}>{itemContent(entry)}</MenuBase.Item>;
+    if (entry.type === 'separator') return <MenuBase.Separator key={entry.id} className="rhine-menu__separator" />;
+    if (entry.type === 'group' || entry.type === 'radio-group') {
+      const titleId = domId(entry.id, 'label');
+      const title = <MenuBase.Label id={titleId} className="rhine-menu__group-label">{entry.label}</MenuBase.Label>;
+      if (entry.type === 'group') return <MenuBase.Group key={entry.id} aria-labelledby={titleId}>{title}{renderEntries(entry.items)}</MenuBase.Group>;
+      return <MenuBase.RadioGroup key={entry.id} aria-labelledby={titleId} value={entry.value} onValueChange={value => {
+        const group = currentEntries.current.get(entry.id);
+        if (group && !isMenuAction(group) && 'type' in group && group.type === 'radio-group' && group.items.some(item => item.value === value && !item.disabled)) group.onValueChange(value);
+      }}>{title}{entry.items.map(item => <MenuBase.RadioItem key={item.id} {...itemProps(item)} value={item.value} onSelect={event => event.preventDefault()}>{itemContent(item, true)}</MenuBase.RadioItem>)}</MenuBase.RadioGroup>;
+    }
+    return <MenuBase.CheckboxItem key={entry.id} {...itemProps(entry)} checked={entry.checked} onSelect={event => event.preventDefault()} onCheckedChange={checked => {
+      const item = currentEntries.current.get(entry.id);
+      if (item && !isMenuAction(item) && 'type' in item && item.type === 'checkbox' && !item.disabled) item.onCheckedChange(checked === true);
+    }}>{itemContent(entry, true)}</MenuBase.CheckboxItem>;
+  });
+  return <span className="rhine-overlay-anchor" ref={ref}><MenuBase.Root open={open} onOpenChange={onOpenChange}><MenuBase.Trigger asChild>{trigger}</MenuBase.Trigger><MenuBase.Portal container={container}><MenuBase.Content data-rhine-density={density} onFocus={event => { if (event.target === event.currentTarget && !event.currentTarget.querySelector('[data-rhine-menu-item]:not([aria-disabled="true"])')) event.preventDefault(); }} onCloseAutoFocus={event => { onCloseAutoFocus?.(event); respectFocusHandoff(event, ref); }} onFocusCapture={event => {
+    const node = (event.target as HTMLElement).closest<HTMLElement>('[data-rhine-menu-item]');
+    if (node && contentRef.current?.contains(node)) focusedItem.current = { node, index: Array.from(contentRef.current.querySelectorAll('[data-rhine-menu-item]')).indexOf(node) };
+  }} ref={floatingRef} className="rhine-menu" aria-label={label} aria-labelledby={undefined} side={floatingSide} sideOffset={8} collisionPadding={12}>{renderEntries(items)}</MenuBase.Content></MenuBase.Portal></MenuBase.Root></span>;
 }
 export interface TooltipDetails { title?: string; rows: readonly {label:string;value:string}[]; description?: string }
 export interface TooltipProps extends OverlayControl { children:ReactElement; content:string|TooltipDetails; width?:number }

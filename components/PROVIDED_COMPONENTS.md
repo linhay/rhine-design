@@ -2,7 +2,7 @@
 
 本页约束 2026-11-14 总览对齐中新增的组件，以及本次交互补强。它们使用 Rhine 自身的命名、状态所有权与视觉，不是 Ant Design 的 API 兼容层。菜单“已有”表示存在以下范围内的实际能力，不代表上游每个模式都已复制。原有公开接口继续可用，安装版本以实际包为准。
 
-后续未发布#219–#223不属于上方0.14.0发行范围：[图标](../docs/ICONS.md)、[平台标记](../docs/PLATFORM_MARKS.md)、[受控Tree与移动提案](../docs/TREE.md)、[安全只读富文本](../docs/RICH_TEXT.md)、[紧凑趋势](../docs/COMPACT_TREND.md)分别按新契约核对。Tree与TreeSelect共用引擎，原调用保留；RichText为可选正文渲染，不改变MessageContent表面或宿主数据归属。
+0.15.0 的 #219–#223 不属于上方 0.14.0 发行范围：[图标](../docs/ICONS.md)、[平台标记](../docs/PLATFORM_MARKS.md)、[受控Tree与移动提案](../docs/TREE.md)、[安全只读富文本](../docs/RICH_TEXT.md)、[紧凑趋势](../docs/COMPACT_TREND.md)分别按新契约核对。Tree与TreeSelect共用引擎，原调用保留；RichText为可选正文渲染，不改变MessageContent表面或宿主数据归属。
 
 ## 浮层、焦点与键盘
 

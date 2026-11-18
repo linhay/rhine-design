@@ -1,5 +1,12 @@
 # 版本记录
 
+## 0.16.0（2026-11-18）
+
+- TagInput：受控自由字符串值、独立IME草稿、显式Enter/分隔/粘贴/blur策略、有界标签、字段和归焦。
+- Disclosure：保留原动效及eager默认，补只读富摘要、受控open/onOpenChange与首次接受展开lazyMount。
+- Menu：原动作项保留，补正式组/分隔、受控radio/checkbox和可读禁用原因，复用现有Radix。
+- 长菜单高度独立于浮层定位测量，窄视口可滚动到键盘末项。支持范围和渠道核对见[0.16.0 发行说明](docs/releases/0.16.0.md)；接口见[组合输入](docs/COMPOSITE_INPUTS.md)。
+
 ## 0.15.0（2026-11-18）
 
 本节记录本版本范围；正式渠道状态及支持边界见[0.15.0发行说明](docs/releases/0.15.0.md)。

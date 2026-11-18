@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react';
 
 export type Tone = 'neutral' | 'success' | 'warning' | 'error';
 const classes = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).join(' ');
@@ -121,58 +121,103 @@ export function Skeleton({ label = '正在加载', lines = 3 }: { label?: string
     {Array.from({ length: Math.max(1, Math.min(8, Math.floor(lines) || 1)) }, (_, index) => <span aria-hidden="true" key={index} />)}
   </div>;
 }
-export function Disclosure({ title, children, defaultOpen = false, ariaLabel }: { title: string; children: ReactNode; defaultOpen?: boolean; ariaLabel?: string }) {
+export interface DisclosureProps {
+  title: string;
+  children: ReactNode;
+  /** Display-only summary. Include meaningful counts/status in ariaLabel (or title). */
+  readonly summary?: ReactNode;
+  ariaLabel?: string;
+  defaultOpen?: boolean;
+  open?: boolean;
+  /** Requests a change; controlled visibility follows the accepted open prop. */
+  onOpenChange?: (open: boolean) => void;
+  /** Mount on the first accepted open, then retain content state. Defaults to eager. */
+  lazyMount?: boolean;
+}
+export function Disclosure({ title, summary, children, defaultOpen = false, open: controlledOpen, onOpenChange, lazyMount = false, ariaLabel }: DisclosureProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const expanded = controlledOpen ?? internalOpen;
+  const [hasOpened, setHasOpened] = useState(expanded);
+  // Layout effects own native open after initialization so an exit can stay painted.
+  const initialOpen = useRef(expanded);
   const node = useRef<HTMLDetailsElement>(null);
+  const summaryNode = useRef<HTMLElement>(null);
+  const contentNode = useRef<HTMLDivElement>(null);
+  const contentFocus = useRef<Element | null>(null);
   const animation = useRef<Animation | null>(null);
-  const intent = useRef(defaultOpen);
-  const [open, setOpen] = useState(defaultOpen);
+  const intent = useRef(expanded);
+
+  function settle() {
+    const current = animation.current;
+    animation.current = null;
+    current?.cancel();
+    if (node.current) node.current.open = intent.current;
+  }
   useEffect(() => {
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    const settle = () => {
-      if (!media?.matches || !animation.current || !node.current) return;
-      animation.current.cancel(); animation.current = null;
-      node.current.open = intent.current; setOpen(intent.current);
+    const settleReduced = () => {
+      if (!animation.current || !node.current) return;
+      if (media?.matches || parseFloat(getComputedStyle(node.current).getPropertyValue('--rhine-duration-notice')) === 0) settle();
     };
-    media?.addEventListener('change', settle);
-    return () => { animation.current?.cancel(); media?.removeEventListener('change', settle); };
+    media?.addEventListener('change', settleReduced);
+    // A host can change motion tokens without rerendering this component.
+    const observer = new MutationObserver(settleReduced);
+    for (let ancestor: Element | null = node.current; ancestor; ancestor = ancestor.parentElement) {
+      observer.observe(ancestor, { attributes: true, attributeFilter: ['style', 'class', 'data-rhine-motion', 'data-rhine-theme'] });
+    }
+    return () => { settle(); observer.disconnect(); media?.removeEventListener('change', settleReduced); };
   }, []);
-  useEffect(() => {
-    if (!animation.current || !node.current) return;
-    if (parseFloat(getComputedStyle(node.current).getPropertyValue('--rhine-duration-notice')) !== 0) return;
-    animation.current.cancel(); animation.current = null;
-    node.current.open = intent.current; setOpen(intent.current);
-  });
-  function toggle() {
-    const el = node.current;
-    if (!el) return;
+  useLayoutEffect(() => {
+    const el = node.current, content = contentNode.current, trigger = summaryNode.current;
+    if (!el || !content || !trigger) return;
+    if (expanded) setHasOpened(true);
+    if (intent.current === expanded) return;
     const from = el.getBoundingClientRect().height;
-    animation.current?.cancel();
-    intent.current = !intent.current;
-    const expanded = intent.current;
-    el.dataset.expanded = String(expanded);
-    const summary = el.querySelector('summary')!;
-    // Native details removes closed content from keyboard and accessibility navigation.
+    const previous = animation.current;
+    animation.current = null;
+    previous?.cancel();
+    intent.current = expanded;
+    if (!expanded) {
+      const active = document.activeElement;
+      const removedFocus = active === document.body && contentFocus.current && !contentFocus.current.isConnected;
+      if (content.contains(active) || removedFocus) trigger.focus();
+      contentFocus.current = null;
+    }
+    // Keep closing content painted for the height animation, while removing its actions.
+    content.toggleAttribute('inert', !expanded);
     el.open = true;
-    if (!expanded && el.contains(document.activeElement)) summary.focus();
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reduced || !el.animate) { el.open = expanded; setOpen(expanded); return; }
+    if (reduced || !el.animate) { el.open = expanded; return; }
     const style = getComputedStyle(el);
     // Production CSS may normalize 200ms to .2s; Web Animations always takes milliseconds.
     const durationValue = style.getPropertyValue('--rhine-duration-notice').trim();
     const parsedDuration = parseFloat(durationValue);
     const duration = Number.isFinite(parsedDuration) ? parsedDuration * (durationValue.endsWith('s') && !durationValue.endsWith('ms') ? 1000 : 1) : 200;
-    if (duration === 0) { el.open = expanded; setOpen(expanded); return; }
-    const to = expanded ? el.getBoundingClientRect().height : summary.getBoundingClientRect().height + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-    const next = el.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration, easing: style.getPropertyValue(expanded ? '--rhine-ease-standard' : '--rhine-ease-exit').trim() || 'ease' });
+    if (duration === 0) { el.open = expanded; return; }
+    const to = expanded ? el.getBoundingClientRect().height : trigger.getBoundingClientRect().height + (parseFloat(style.borderTopWidth) || 0) + (parseFloat(style.borderBottomWidth) || 0);
+    const next = el.animate([{ height: from + 'px' }, { height: to + 'px' }], { duration, easing: style.getPropertyValue(expanded ? '--rhine-ease-standard' : '--rhine-ease-exit').trim() || 'ease' });
     animation.current = next;
     next.onfinish = () => {
       if (animation.current !== next) return;
-      el.open = expanded; setOpen(expanded); animation.current = null;
+      animation.current = null;
+      el.open = expanded;
     };
-  }
-  return <details ref={node} open={open} data-expanded={open} className="rhine-disclosure">
-    <summary aria-label={ariaLabel} onClick={event => { event.preventDefault(); toggle(); }}>{title}<span aria-hidden="true">+</span></summary>
-    <div className="rhine-disclosure__content">{children}</div>
+  }, [expanded]);
+  useLayoutEffect(() => {
+    if (animation.current && node.current && parseFloat(getComputedStyle(node.current).getPropertyValue('--rhine-duration-notice')) === 0) settle();
+  });
+  return <details ref={node} open={initialOpen.current} data-expanded={expanded} className="rhine-disclosure">
+    <summary ref={summaryNode} aria-label={ariaLabel?.trim() || title} aria-expanded={expanded} onClick={event => {
+      event.preventDefault();
+      const next = !expanded;
+      if (controlledOpen === undefined) setInternalOpen(next);
+      onOpenChange?.(next);
+    }}>{summary !== undefined ? <span className="rhine-disclosure__summary" inert aria-hidden="true">{summary}</span> : title}<span className="rhine-disclosure__indicator" aria-hidden="true">+</span></summary>
+    <div ref={contentNode} className="rhine-disclosure__content" inert={!initialOpen.current}
+      onFocusCapture={event => { contentFocus.current = event.target; }}
+      onBlurCapture={event => { if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) contentFocus.current = null; }}>
+      {(!lazyMount || hasOpened || expanded) && children}
+    </div>
   </details>;
 }
 export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {

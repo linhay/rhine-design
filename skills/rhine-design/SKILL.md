@@ -2,7 +2,7 @@
 name: rhine-design
 description: Design, implement, review, or integrate React interfaces using Rhine Design components, themes, typography, and motion. Use when the project uses Rhine Design or the user requests its design language. Capture design feedback and submit it when authorized.
 metadata:
-  version: "0.15.0"
+  version: "0.16.0"
 ---
 
 # Rhine Design · 莱茵设计
@@ -13,7 +13,7 @@ Use the installed version's components and contracts to build consistent interfa
 
 ## Locate the matching source
 
-Package `@linhey/rhine-design` and GitHub repository `linhay/rhine-design` use different account spellings. This skill was checked against the release candidate identifying itself as `0.15.0`. Treat the actual installed artifact as the source of available features, including when two artifacts report the same version.
+Package `@linhey/rhine-design` and GitHub repository `linhay/rhine-design` use different account spellings. This skill was checked against the release candidate identifying itself as `0.16.0`. Treat the actual installed artifact as the source of available features, including when two artifacts report the same version.
 
 Find the installed package in the host's dependencies or identify the source checkout being maintained. Verify `package.json` for package identity and subpath exports, then check `components/index.ts` for root exports and the named component's contract and implementation. Read the installed types and source when using a different artifact. If the package is unavailable, use the task's supplied design sources and state which implementation evidence is missing.
 
