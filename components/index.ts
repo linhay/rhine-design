@@ -40,9 +40,11 @@ export { Metric, KeyValue, DataTable, Pagination } from './Data';
 export type { DataColumn, DataTableProps, TableSort, PaginationProps } from './Data';
 export { Checkbox, RadioGroup, Switch, Textarea, SearchField, Combobox } from './Forms';
 export type { ComboboxProps } from './Forms';
+export {TagInput} from './TagInput';
+export type {TagInputProps} from './TagInput';
 export { Dialog, Drawer, ConfirmDialog, Popover, Menu, Tooltip } from './Overlays';
 export type {SelectionChangeReason,SelectionOpenChange} from './selection-lifecycle';
-export type { DialogProps, DialogReturnFocus, ConfirmDialogProps, ConfirmResult, PopoverProps, MenuItem, TooltipProps, TooltipDetails } from './Overlays';
+export type { DialogProps, DialogReturnFocus, ConfirmDialogProps, ConfirmResult, PopoverProps, MenuProps, MenuEntry, MenuItem, MenuSeparator, MenuGroup, MenuRadioItem, MenuRadioGroup, MenuCheckboxItem, TooltipProps, TooltipDetails } from './Overlays';
 export { Toast } from './Toast';
 export { SideNav, Breadcrumbs, Steps } from './Navigation';
 export type { NavAction, NavItem, NavGroup, SideNavProps, BreadcrumbItem, BreadcrumbsProps, StepItem, StepsProps } from './Navigation';
@@ -50,7 +52,7 @@ export { Fieldset, ErrorSummary } from './FormWorkflow';
 export type { FieldsetProps, FieldError, ErrorSummaryProps } from './FormWorkflow';
 
 export { Button, Badge, Surface, SelectionCard, TextField, Tabs, SegmentedControl, Notice, Progress, Skeleton, Disclosure, EmptyState } from './components';
-export type { ButtonProps, TabsProps, SurfaceProps, Tone, Choice, TabItem } from './components';
+export type { ButtonProps, TabsProps, SurfaceProps, DisclosureProps, Tone, Choice, TabItem } from './components';
 
 export { ThemePicker, ThemePreview, type ThemePickerProps, type ThemePickerOption, type ThemePreviewProps } from './ThemePicker';
 

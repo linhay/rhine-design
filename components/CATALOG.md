@@ -61,7 +61,7 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | --- | --- | --- | --- |
 | `Breadcrumbs` | 当前位置 | 不代替侧栏，不承载主任务 | [场景交互](../docs/INTERACTION_PATTERNS.md) |
 | `SideNav` | 应用内导航 | 禁用祖先时后代不可用；当前项只标记精确匹配 | [场景交互](../docs/INTERACTION_PATTERNS.md) |
-| `Menu` | 一组命令 | 不替代表单选择，也不当作导航菜单 | [浮层](../docs/FLOATING_OVERLAYS.md) |
+| `Menu` | 分组命令、单选与复选状态 | 不当作导航菜单；保存归宿主 | [浮层](../docs/FLOATING_OVERLAYS.md) / [组合输入](../docs/COMPOSITE_INPUTS.md) |
 | `Steps` | 分步进度 | 回退焦点和校验由宿主按契约处理；组件不自动提交 | [场景交互](../docs/INTERACTION_PATTERNS.md) |
 | `Tabs` | 同一对象的几块内容 | 栏宽、等分和靠左分别判断，铺满不等于每项等宽 | [摘要页签](../docs/SUMMARY_TABS.md) |
 | `Pagination` | 报告页码并回传翻页意图 | 不拉取全量后再本地分页 | [应用组件](../docs/APPLICATION_COMPONENTS.md) |
@@ -91,6 +91,7 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | `Switch` | 立即生效的开关 | 不混同账号选择或表单提交 | [常用契约](COMMON_COMPONENTS.md) |
 | `SelectionCard` | 可取消的选择卡片 | 卡片内不再嵌按钮、链接或其他输入 | [组件入口](README.md) |
 | `TreeSelect` | 在树里选择节点 | 默认内联，presentation=dropdown 提供下拉；不把它当成文件服务 | [应用组件](../docs/APPLICATION_COMPONENTS.md)  / [交互增量](../docs/INTERACTION_CONTRACTS.md) |
+| `TagInput` | 自由字符串多值录入与有界已选检查 | 有限目录多选用RemoteMultiSelect；草稿不序列化 | [组合输入](../docs/COMPOSITE_INPUTS.md) |
 | `RemoteMultiSelect` | 远程、可分页的多选 | 宿主拥有查询代次；完成选择只收起候选，不提交表单 | [远程分页](../docs/REMOTE_PAGINATION.md)  / [交互增量](../docs/INTERACTION_CONTRACTS.md) |
 | `Fieldset` | 给一组字段共同的名称 | 不代替逐字段错误 | [场景交互](../docs/INTERACTION_PATTERNS.md) |
 | `ErrorSummary` | 提交失败后的错误汇总 | 不清除字段上的错误，不把未知写成失败 | [场景交互](../docs/INTERACTION_PATTERNS.md) |
@@ -117,7 +118,7 @@ Web 与 iOS 分开。本表不要求 UIKit 补齐同名控件。
 | --- | --- | --- | --- |
 | `Badge` | 只读短状态 | 不可点击；颜色必须配文字；不是计数徽标 | [组件入口](README.md) |
 | `SegmentedControl` | 少量互斥视图或密度 | 不是导航；长列表用 `Tabs` 或 `Select` | [组件入口](README.md) |
-| `Disclosure` | 就地展开补充内容 | 关闭内容退出键盘顺序；不是导航 | [组件入口](README.md) |
+| `Disclosure` | 富摘要受控展开、首次展示挂载 | 关闭内容退出键盘顺序；不是导航或请求器 | [组合输入](../docs/COMPOSITE_INPUTS.md) |
 | `EmptyState` | 没有内容，或没有匹配 | 失败和权限不足用准确反馈，不用空态顶替 | [组件入口](README.md) |
 | `Metric` | 一个当前事实 | 不把未知显示成 0；比较口径由宿主提供 | [指标比较](../docs/METRIC_COMPARISON.md) |
 | `KeyValue` | 成对事实 | 不是历史；历史用时间轴 | [常用契约](COMMON_COMPONENTS.md) |

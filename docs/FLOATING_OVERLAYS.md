@@ -2,7 +2,7 @@
 
 自 0.8.0 提供，对应 #16；旧版本不因此获得此能力。
 
-未发布#224/#225/#227/#229另见[交互增量契约](INTERACTION_CONTRACTS.md)：结构化只读Tooltip的公开宽度、保持键盘聚焦时不被自动滚动抹掉；Dialog关闭门禁/无trigger归焦；选择器按已接受关闭通知原因。原字段/层栈仍复用，registry0.14.0不包含这些新增能力。
+0.15.0 的 #224/#225/#227/#229 另见[交互增量契约](INTERACTION_CONTRACTS.md)：结构化只读Tooltip的公开宽度、保持键盘聚焦时不被自动滚动抹掉；Dialog关闭门禁/无trigger归焦；选择器按已接受关闭通知原因。原字段/层栈仍复用，registry0.14.0不包含这些新增能力。
 
 Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留在最近的 `.rhine-theme` 内，继承主题与减少动态偏好。所有这些浮层共用定位缩放修正，不需要消费方覆盖 Radix 包装层或库选择器。
 

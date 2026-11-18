@@ -28,7 +28,7 @@ import { ChatGallery } from './ChatGallery';
 import { BackgroundFiltersFixture } from './BackgroundFiltersFixture';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Badge, Button, Checkbox, Disclosure, EmptyState, Link, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
+import { Badge, Button, Checkbox, Link, Logo, Notice, Progress, SegmentedControl, Select, SelectionCard, Skeleton, Surface, Tabs, Text, TextField, Toolbar, type TextVariant } from '../components/index';
 import './preview.css';
 import { OverlayBoundsFixture, OverlayBoundsGallery } from './OverlayBoundsGallery';
 import { SettingsDialogGallery, SettingsDialogFixture } from './SettingsDialogGallery';
@@ -68,6 +68,7 @@ import { ProvidedGallery, providedGalleryIds } from './ProvidedGallery';
 import { ParityGallery, parityGalleryIds } from './ParityGallery';
 import { FormIntegrationGallery } from './FormIntegrationGallery';
 import { RichTextGallery } from './RichTextGallery';
+import {TagInputGallery,DisclosureCompositionGallery,MenuCompositionGallery} from './InputCompositionGallery';
 import {StructuredTooltipGallery,DialogGateGallery,ThresholdSliderGallery,SelectionLifecycleGallery,DataRowGallery} from './InteractionContractsGallery';
 
 function Gallery() {
@@ -90,6 +91,7 @@ function Gallery() {
   return <GalleryShell motion={motion} onMotionChange={setMotion}>{section => {
     const official = findAntdComponent(section);
     const view = galleryView(section);
+    if (section==='tag-input'||section==='menu-actions'||section==='disclosure')return <section className="ds-section"><Text as="h1" variant="section">{section==='tag-input'?'TagInput 自由标签':section==='menu-actions'?'Menu 分组与受控选择':'Disclosure 富摘要与首次展开'}</Text>{section==='tag-input'?<TagInputGallery/>:section==='menu-actions'?<MenuCompositionGallery/>:<DisclosureCompositionGallery/>}</section>;
     if (['tooltip','modal','slider','remote-lifecycle','table','tree-select'].includes(section)) return <section className="ds-section"><Text as="h1" variant="section">{official?official.en+' '+official.zh:'远程多选生命周期'}</Text>{section==='tooltip'?<StructuredTooltipGallery/>:section==='modal'?<DialogGateGallery/>:section==='slider'?<ThresholdSliderGallery/>:section==='table'?<DataRowGallery/>:<SelectionLifecycleGallery tree={section==='tree-select'}/>}</section>;
     if (providedGalleryIds.includes(section as typeof providedGalleryIds[number])) return <section className="ds-section"><Text as="h1" variant="section">{official ? `${official.en} ${official.zh}` : section}</Text><ProvidedGallery id={section} /></section>;
     if (parityGalleryIds.includes(section as typeof parityGalleryIds[number])) return <section className="ds-section"><Text as="h1" variant="section">{official ? `${official.en} ${official.zh}` : section}</Text><ParityGallery id={section} /></section>;
@@ -210,10 +212,7 @@ function Gallery() {
         <div className="ds-gap-top"><Notice tone="warning" title="状态文字始终可见">颜色和动画只增强反馈，不承担唯一的状态含义。</Notice></div>
       </section>}
 
-      {view === 'disclosure' && <section id="disclosure"><div className="ds-section-title"><span>05</span><h2>逐步展开，保持可读</h2></div>
-        <div className="ds-grid"><Surface><div className="ds-component-title"><h3>Disclosure</h3><span>实测高度 / 200ms</span></div><Disclosure title="查看组件动画规则"><p>展开和收起都支持中途反向。关闭后内容不参与 Tab 导航。</p><Button variant="secondary" onClick={()=>setNotice(true)}>内容内操作</Button><p>减少动态模式直接到达最终状态，信息不会丢失。</p></Disclosure><Disclosure title="相邻分组共用一条分隔线"><p>分组连续排列，不加组间 gap；相邻边框合并，展开和收起各自独立。</p></Disclosure></Surface>
-        <EmptyState title="暂无记录" description="用一句话说明当前状态，按业务需要提供一个下一步操作。" action={<Button variant="secondary" onClick={()=>setNotice(true)}>演示下一步</Button>} /></div>
-      </section>}
+
       {['data','forms','utilities','overlays'].includes(view) && <CommonGallery key={view} section={view} />}
     </>;
   }}</GalleryShell>;
