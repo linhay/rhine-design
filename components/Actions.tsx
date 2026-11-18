@@ -48,6 +48,10 @@ const paths = {
   warning: "m10 2 9 16H1zM10 7v5m0 3v.2",
   help: "M18 10a8 8 0 1 0-16 0 8 8 0 0 0 16 0M7 7a3 3 0 1 1 4 3c-1 .5-1 1-1 2m0 3v.1",
   question: "M18 10a8 8 0 1 0-16 0 8 8 0 0 0 16 0M7 7a3 3 0 1 1 4 3c-1 .5-1 1-1 2m0 3v.1",
+  robot: "M6 8h8v8H6zM8 8V5h4v3M4 11h2m10 0h2M8 12h.1M12 12h.1M8 15h4",
+  envelope: "M2 5h16v10H2zM2 6l8 6 8-6",
+  save: "M3 3h11l3 3v11H3zM6 3v5h7V3M6 17v-5h8v5",
+  verify: "M3 10h4l2-4 3 8 2-4h3",
 } as const;
 export type IconName = keyof typeof paths;
 export const iconNames: readonly IconName[] = Object.freeze(Object.keys(paths) as IconName[]);

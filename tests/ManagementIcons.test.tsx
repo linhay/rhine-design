@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { Icon, type IconName } from '../components';
-const names = ['download','delete','edit','send','filter','sortAscending','sortDescending','show','hide','export','move','swap','reset','person','users','organization','tree','document','folder','code','database','history','clock','key','lock','shield','warning','help','question'] as const;
+const names = ['download','delete','edit','send','filter','sortAscending','sortDescending','show','hide','export','move','swap','reset','person','users','organization','tree','document','folder','code','database','history','clock','key','lock','shield','warning','help','question','robot','envelope','save','verify'] as const;
 describe('management icon semantics', () => {
   it.each(names)('renders a concrete public path for %s', name => {
     const {container}=render(<Icon name={name as IconName}/>);

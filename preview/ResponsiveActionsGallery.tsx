@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Checkbox, ResponsiveActions, Select, Stack, Text, TextField, Toolbar, type ResponsiveAction } from '../components';
+import { Button, Checkbox, Dialog, ResponsiveActions, Select, Stack, Text, TextField, Toolbar, type ResponsiveAction } from '../components';
 import { ThemeProvider, type ThemeName } from '../components/theme';
 
 export function ResponsiveActionsGallery(){
@@ -37,5 +37,21 @@ export function ResponsiveActionsGallery(){
 export function ResponsiveActionsFixture(){
  const params=new URLSearchParams(location.search),zoom=Number(params.get('zoom'))||1;
  useEffect(()=>{document.documentElement.style.zoom=String(zoom);return()=>{document.documentElement.style.zoom='';};},[zoom]);
- return <ThemeProvider theme={(params.get('theme')||'rhine') as ThemeName} data-rhine-motion={params.get('motion')||'system'}><div dir={params.get('dir')==='rtl'?'rtl':'ltr'} style={{padding:12}}><ResponsiveActionsGallery/></div></ThemeProvider>;
+ return <ThemeProvider theme={(params.get('theme')||'rhine') as ThemeName} data-rhine-motion={params.get('motion')||'system'}><div dir={params.get('dir')==='rtl'?'rtl':'ltr'} style={{padding:12}}>{params.get('handoff')==='dialog'?<ResponsiveActionsDialogHandoff/>:<ResponsiveActionsGallery/>}</div></ThemeProvider>;
+}
+export function ResponsiveActionsDialogHandoff(){
+ const [open,setOpen]=useState(false),[locked,setLocked]=useState(false);
+ return <main aria-label="示例管理页" tabIndex={-1} style={{padding:64}}>
+  <div style={{width:48}}>
+   <ResponsiveActions label="示例操作" items={[
+    {id:'open',label:'打开设置',icon:'settings',onSelect:()=>setOpen(true)},
+    {id:'refresh',label:'刷新状态',icon:'refresh',onSelect:()=>{}},
+   ]}/>
+  </div>
+  <Dialog title="示例设置" open={open} onOpenChange={next=>{if(!next&&locked)return;setOpen(next);}} closingDisabled={locked} closeDisabledReason="正在保存，暂时不能关闭。" returnFocus={()=>document.querySelector('button[aria-label="更多操作"]')}>
+   <TextField label="显示名称" defaultValue="示例条目"/>
+   <Button onClick={()=>{if(!locked)setOpen(false);}}>关闭设置</Button>
+   <Checkbox label="暂时不能关闭" checked={locked} onChange={event=>setLocked(event.target.checked)}/>
+  </Dialog>
+ </main>;
 }

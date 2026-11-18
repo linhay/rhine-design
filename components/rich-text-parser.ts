@@ -14,9 +14,10 @@ export function parseInline(text:string,depth=0,budget={count:0}):InlineToken[] 
   if(text[index]==='\\'&&index+1<text.length){plain+=text[index+1];index+=2;continue;}
   if(text[index]==='!'&&text[index+1]==='['){const end=text.indexOf(')',index+2);if(end>=0){plain+=text.slice(index,end+1);index=end+1;continue;}}
   if(text[index]==='['){const middle=text.indexOf('](',index+1),end=middle<0?-1:text.indexOf(')',middle+2);if(middle>=0&&end>=0&&end-middle<=2048){flush();out.push({kind:'link',url:text.slice(middle+2,end),children:parseInline(text.slice(index+1,middle),depth+1,budget)});index=end+1;continue;}plain+=text.slice(index);break;}
-  const marker=text.startsWith('**',index)?'**':text.startsWith('~~',index)?'~~':text[index]==='*'?'*':undefined;
+  const underscore=text.startsWith('__',index)&&!/\w/.test(text[index-1]||'')?'__':text[index]==='_'&&!/\w/.test(text[index-1]||'')&&!/\w/.test(text[index+1]||'')?'_':undefined;
+  const marker=text.startsWith('**',index)?'**':text.startsWith('~~',index)?'~~':text[index]==='*'?'*':underscore;
   if(text[index]===tick){const end=text.indexOf(tick,index+1);if(end>index+1){flush();out.push({kind:'code',text:text.slice(index+1,end)});index=end+1;continue;}plain+=text.slice(index);break;}
-  if(marker){const end=text.indexOf(marker,index+marker.length);if(end>index+marker.length){flush();out.push({kind:marker==='**'?'strong':marker==='~~'?'strike':'emphasis',children:parseInline(text.slice(index+marker.length,end),depth+1,budget)});index=end+marker.length;continue;}plain+=text.slice(index);break;}
+  if(marker){const end=text.indexOf(marker,index+marker.length);if(end>index+marker.length){flush();out.push({kind:marker==='**'||marker==='__'?'strong':marker==='~~'?'strike':'emphasis',children:parseInline(text.slice(index+marker.length,end),depth+1,budget)});index=end+marker.length;continue;}plain+=text.slice(index);break;}
   plain+=text[index++];
  }
  flush();return out;
@@ -29,6 +30,7 @@ export function parseRichBlocks(source:string):RichBlock[] {
   if(line.length>16384){blocks.push({kind:'literal',raw:line});index++;continue;}
   const fence=/^```([A-Za-z0-9_+-]{0,32})\s*$/.exec(line);
   if(fence){let end=index+1;while(end<lines.length&&lines[end]!==tick.repeat(3))end++;if(end===lines.length){blocks.push({kind:'literal',raw:lines.slice(index).join('\n')});break;}blocks.push({kind:'code',language:fence[1],raw:lines.slice(index+1,end).join('\n')});index=end+1;continue;}
+  if(/^(?: {4}|\t)\S/.test(line)){const indented=[line.replace(/^(?: {4}|\t)/,'')];let cursor=index+1;while(cursor<lines.length&&(/^(?: {4}|\t)\S/.test(lines[cursor])||!lines[cursor].trim())){if(lines[cursor].trim())indented.push(lines[cursor].replace(/^(?: {4}|\t)/,''));cursor++;}blocks.push({kind:'code',language:'',raw:indented.join('\n')});index=cursor;continue;}
   const heading=/^(#{1,3}) +(.+)$/.exec(line);if(heading){blocks.push({kind:'heading',level:heading[1].length as 1|2|3,raw:heading[2]});index++;continue;}
   const bullet=/^([-+*]|\d{1,6}\.) +(.+)$/.exec(line);if(bullet){const blockStart=index,ordered=/^\d/.test(bullet[1]),items:string[]=[];while(index<lines.length){const item=/^([-+*]|\d{1,6}\.) +(.+)$/.exec(lines[index]);if(!item||/^\d/.test(item[1])!==ordered)break;items.push(item[2]);index++;}blocks.push(items.length<=200?{kind:'list',ordered,items}:{kind:'literal',raw:lines.slice(blockStart,index).join('\n')});continue;}
   if(line.includes('|')&&index+1<lines.length&&/^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[index+1])){

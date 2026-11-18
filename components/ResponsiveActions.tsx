@@ -32,6 +32,19 @@ export function ResponsiveActions({label,items,moreLabel='更多操作',classNam
   const closing=useRef(false),[moreHint,setMoreHint]=useState(false);
   const pendingFocus=useRef<HTMLElement|null>(null),blurFrame=useRef<number|null>(null);
   const ownedFocus=useRef<HTMLElement|null>(null),menuNode=useRef<HTMLElement|null>(null),fallback=useRef<HTMLElement|null>(null),focusIndex=useRef(0);
+  const releaseMoreHint=()=>{
+    const button=more.current;
+    if(!button)return;
+    const active=document.activeElement;
+    if(active===button || button.contains(active) || button.matches(':hover'))return;
+    setMoreHint(false);
+  };
+  const releaseMoreHintRef=useRef(releaseMoreHint);releaseMoreHintRef.current=releaseMoreHint;
+  useLayoutEffect(()=>{
+    const onFocus=()=>releaseMoreHintRef.current();
+    document.addEventListener('focusin',onFocus);
+    return()=>document.removeEventListener('focusin',onFocus);
+  },[]);
   const visible=items.filter(item=>!item.hidden);
   const signature=JSON.stringify(visible.map(({id,label,icon,disabled,busy,variant})=>[id,label,icon,disabled,busy,variant]));
   const apply=()=>{
@@ -100,7 +113,7 @@ export function ResponsiveActions({label,items,moreLabel='更多操作',classNam
       </Tooltip>)}
     </div>
     <span className="rhine-responsive-actions__menu" hidden={mode!=='menu'}>
-      <Tooltip content={moreLabel} open={mode==='menu' && !open && moreHint} onOpenChange={setMoreHint}><span><Menu label={`${label}菜单`} open={open} onOpenChange={next=>{if(next && more.current)rememberFocus(more.current);closing.current=!next;openRef.current=next;setOpen(next);}} onCloseAutoFocus={()=>{closing.current=false;settle();}}
+      <Tooltip content={moreLabel} open={mode==='menu' && !open && moreHint} onOpenChange={next=>{if(next && (openRef.current || closing.current || more.current && document.activeElement!==more.current && !more.current.matches(':hover')))return;setMoreHint(next);}}><span><Menu label={`${label}菜单`} open={open} onOpenChange={next=>{if(next && more.current)rememberFocus(more.current);if(!next)setMoreHint(false);closing.current=!next;openRef.current=next;setOpen(next);}} onCloseAutoFocus={()=>{closing.current=false;settle();requestAnimationFrame(()=>releaseMoreHintRef.current());}}
         trigger={<IconButton ref={more} label={moreLabel} icon="moreVertical"/>}
         items={visible.map(item=>({id:item.id,label:item.busy?`${item.label}（处理中）`:item.label,disabled:item.disabled || item.busy,danger:item.variant==='danger',onSelect:()=>run(item)}))}/></span></Tooltip>
     </span>

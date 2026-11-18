@@ -10,7 +10,7 @@ TooltipProps.content保留string，也接受TooltipDetails：可选title、必�
 
 ## Dialog：关闭门禁与归焦
 
-Dialog/Drawer新增closingDisabled、closeDisabledReason。门禁作用于库拥有的关闭按钮、Escape、外点与嵌套关闭委托，关闭按钮禁用，理由持续可读，内容aria-busy。它不修改宿主open状态、不取消后台请求，也不能拦截宿主直接把open置false或卸载；宿主导航、footer和自定义headerActions须使用同一门禁。成功/失败/未知、请求代次与草稿仍归宿主。
+Dialog/Drawer新增closingDisabled、closeDisabledReason。门禁作用于库拥有的关闭按钮、Escape、外点与嵌套关闭委托，关闭按钮禁用，理由持续可读，内容aria-busy。outsideDismiss默认true，保持点击背景可关闭；设为false时只拦截背景和外点，Escape、标题栏关闭和宿主页脚关闭仍可用，直到closingDisabled统一阻断。它不修改宿主open状态、不取消后台请求，也不能拦截宿主直接把open置false或卸载；宿主导航、footer和自定义headerActions须使用同一门禁。成功/失败/未知、请求代次与草稿仍归宿主。
 
 trigger现在可选；没有trigger时须受控open。returnFocus接受HTMLElement或返回当前稳定目标的获取器。真实trigger优先；无trigger时先尊重已经发生的主动交焦，再用显式目标或保存的打开前调用者/存活祖先。失效、hidden/inert、禁用目标不作可用焦点；鼠标调用者未取得焦点且显式目标失效时，退到组件所在的存活main/父Dialog或具名region；需要时祖先临时加入tabIndex=-1，在失焦恢复原属性，不添加假隐藏触发器。调用者可能被删除时，宿主宜用获取器返回现存具名上下文。onCloseAutoFocus仍先执行，可preventDefault接管。
 
@@ -40,7 +40,7 @@ TreeSelect的maxVisibleTags默认3，和RemoteMultiSelect复用同一标签渲�
 
 DataTable.rowAction提供label(row)、onActivate(row)、可选isDisabled(row)及id(row)。表格仍保留table/row/cell，额外具名44px原生按钮提供Enter/Space键盘入口；普通单元格可点击激活同一行。链接、按钮、表单控件、标签、summary、contenteditable、带tabIndex/交互角色或data-row-interactive的内部交互不激活行，文本选择和第二次连击不重复激活。不要把勾选当激活。onActivate始终按当前可见稳定id解析最新行；业务权限与版本检查归宿主。
 
-rowPresentation(row)给tone（neutral/success/warning/error/match）及status文字；匹配不设置aria-selected或checkbox，颜色外保留状态文字。selection/expansion/sticky功能继续独立，loading或isDisabled阻止行激活。刷新移除持焦行控件后，如果没有主动交焦，回到原具名表格滚动区域；宿主详情可通过rowAction.id与Dialog.returnFocus返回稳定行，失效时返回具名上下文。
+selection.mixedKeys由调用方给出半选行，库只渲染aria-checked=mixed，不替调用方级联、排除隐藏后代或决定导出。expansion.rowToggle为true时，非交互正文点击只切换展开，选择框和行命令不串到展开。selection/expansion/sticky功能继续独立，loading或isDisabled阻止行激活。刷新移除持焦行控件后，如果没有主动交焦，回到原具名表格滚动区域；宿主详情可通过rowAction.id与Dialog.returnFocus返回稳定行，失效时返回具名上下文。
 
 DataColumn.header仍是string，作为精确列名；headerDescription提供关联且可见的简短说明（不让绝对定位的隐藏节点扩展主区），headerHelp接Tooltip字符串或TooltipDetails，并生成独立44px“关于…”按钮。帮助不嵌在排序按钮里，排序目标、方向及列名保持明确。列内容槽不要求消费覆盖内部th或把帮助藏入无关联页脚。
 
