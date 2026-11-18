@@ -50,7 +50,7 @@ MenuItem保留id/label/icon/disabled/danger/onSelect及旧扁平数组。icon已
 
 | 条目 | 公开数据与语义 |
 | --- | --- |
-| item（type可省略） | 原普通动作，选择后关闭；真实trigger或宿主显式交焦继续可用 |
+| 普通动作 | 原 `MenuItem` 不新增判别字段；以 `onSelect` 识别，宿主的 `type` 元数据不参与分组或选择判别。选择后关闭，真实 trigger 或宿主显式交焦继续可用 |
 | separator | type/id，真实非执行分隔 |
 | group | type/id/label/items，具名组，可含结构化子项 |
 | radio-group | type/id/label/value/onValueChange/items；RadioItem有id/value/label/icon等，使用Radix radio与aria-checked |

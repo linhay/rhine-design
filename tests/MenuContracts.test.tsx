@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Button } from '../components/components';
-import { Menu, type MenuCheckboxItem, type MenuEntry, type MenuItem, type MenuRadioGroup } from '../components/Overlays';
+import { Menu, type MenuCheckboxItem, type MenuEntry, type MenuRadioGroup } from '../components/Overlays';
+import type { MenuItem } from '../components';
 import { ConfigProvider } from '../components/config';
 
 const trigger = () => screen.getByRole('button', { name: 'Open actions' });
@@ -48,6 +49,19 @@ describe('Menu structured entry contracts', () => {
     await waitFor(() => expect(item).toHaveFocus());
     fireEvent.keyDown(item, { key: 'Enter' });
     expect(select).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(trigger()).toHaveFocus());
+  });
+
+  it.each(['command', 'group'] as const)('ignores legacy host type metadata %s', async type => {
+    interface HostItem extends MenuItem { type: 'command' | 'group' }
+    const legacy: HostItem = { id: 'legacy', type, label: 'Legacy host command', onSelect: vi.fn() };
+    const items: readonly MenuItem[] = [legacy];
+    render(<Fixture items={items} />);
+    openMenu();
+    const item = screen.getByRole('menuitem', { name: legacy.label });
+    await waitFor(() => expect(item).toHaveFocus());
+    fireEvent.keyDown(item, { key: 'Enter' });
+    expect(legacy.onSelect).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(trigger()).toHaveFocus());
   });
 

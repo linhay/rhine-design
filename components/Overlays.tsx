@@ -115,7 +115,7 @@ interface MenuItemPresentation {
   disabledReason?: string;
   danger?: boolean;
 }
-export interface MenuItem extends MenuItemPresentation { type?: 'item'; onSelect: () => void }
+export interface MenuItem extends MenuItemPresentation { onSelect: () => void }
 export interface MenuSeparator { type: 'separator'; id: string }
 export interface MenuGroup { type: 'group'; id: string; label: string; items: readonly MenuEntry[] }
 export interface MenuRadioItem extends MenuItemPresentation { value: string }
@@ -123,6 +123,10 @@ export interface MenuRadioGroup { type: 'radio-group'; id: string; label: string
 export interface MenuCheckboxItem extends MenuItemPresentation { type: 'checkbox'; checked: boolean; onCheckedChange: (checked: boolean) => void }
 export type MenuEntry = MenuItem | MenuSeparator | MenuGroup | MenuRadioGroup | MenuCheckboxItem;
 export interface MenuProps extends OverlayControl { trigger: ReactElement; label: string; items: readonly MenuEntry[]; onCloseAutoFocus?: (event: Event) => void }
+
+function isMenuAction(entry: MenuEntry | MenuRadioItem): entry is MenuItem {
+  return 'onSelect' in entry;
+}
 
 function menuEntryIndex(items: readonly MenuEntry[]) {
   const entries = new Map<string, MenuEntry | MenuRadioItem>();
@@ -132,8 +136,9 @@ function menuEntryIndex(items: readonly MenuEntry[]) {
     entries.set(entry.id, entry);
   };
   const visit = (list: readonly MenuEntry[]) => list.forEach(entry => {
-    // Legacy actions accepted any unique string as a React key, including a blank id.
-    add(entry, entry.type !== undefined && entry.type !== 'item');
+    // Legacy actions keep their own metadata and may use a unique blank key.
+    if (isMenuAction(entry)) { add(entry, false); return; }
+    add(entry);
     if (entry.type === 'group' || entry.type === 'radio-group') {
       if (!entry.label.trim()) throw new Error('Menu groups require a nonempty label.');
       if (entry.type === 'group') visit(entry.items);
@@ -194,6 +199,11 @@ export function Menu({ trigger, label, items, open, onOpenChange, onCloseAutoFoc
     <span className="rhine-menu__text"><span>{item.label}</span>{item.disabled && item.disabledReason?.trim() && <span className="rhine-menu__reason" id={domId(item.id, 'reason')}>{item.disabledReason}</span>}</span>
   </>;
   const renderEntries = (list: readonly MenuEntry[]): ReactNode => list.map(entry => {
+    if (isMenuAction(entry)) return <MenuBase.Item key={entry.id} {...itemProps(entry)} onSelect={event => {
+      const item = currentEntries.current.get(entry.id);
+      if (item && isMenuAction(item) && !item.disabled) item.onSelect();
+      else event.preventDefault();
+    }}>{itemContent(entry)}</MenuBase.Item>;
     if (entry.type === 'separator') return <MenuBase.Separator key={entry.id} className="rhine-menu__separator" />;
     if (entry.type === 'group' || entry.type === 'radio-group') {
       const titleId = domId(entry.id, 'label');
@@ -201,18 +211,13 @@ export function Menu({ trigger, label, items, open, onOpenChange, onCloseAutoFoc
       if (entry.type === 'group') return <MenuBase.Group key={entry.id} aria-labelledby={titleId}>{title}{renderEntries(entry.items)}</MenuBase.Group>;
       return <MenuBase.RadioGroup key={entry.id} aria-labelledby={titleId} value={entry.value} onValueChange={value => {
         const group = currentEntries.current.get(entry.id);
-        if (group && 'type' in group && group.type === 'radio-group' && group.items.some(item => item.value === value && !item.disabled)) group.onValueChange(value);
+        if (group && !isMenuAction(group) && 'type' in group && group.type === 'radio-group' && group.items.some(item => item.value === value && !item.disabled)) group.onValueChange(value);
       }}>{title}{entry.items.map(item => <MenuBase.RadioItem key={item.id} {...itemProps(item)} value={item.value} onSelect={event => event.preventDefault()}>{itemContent(item, true)}</MenuBase.RadioItem>)}</MenuBase.RadioGroup>;
     }
-    if (entry.type === 'checkbox') return <MenuBase.CheckboxItem key={entry.id} {...itemProps(entry)} checked={entry.checked} onSelect={event => event.preventDefault()} onCheckedChange={checked => {
+    return <MenuBase.CheckboxItem key={entry.id} {...itemProps(entry)} checked={entry.checked} onSelect={event => event.preventDefault()} onCheckedChange={checked => {
       const item = currentEntries.current.get(entry.id);
-      if (item && 'type' in item && item.type === 'checkbox' && !item.disabled) item.onCheckedChange(checked === true);
+      if (item && !isMenuAction(item) && 'type' in item && item.type === 'checkbox' && !item.disabled) item.onCheckedChange(checked === true);
     }}>{itemContent(entry, true)}</MenuBase.CheckboxItem>;
-    return <MenuBase.Item key={entry.id} {...itemProps(entry)} onSelect={event => {
-      const item = currentEntries.current.get(entry.id);
-      if (item && 'onSelect' in item && !item.disabled) item.onSelect();
-      else event.preventDefault();
-    }}>{itemContent(entry)}</MenuBase.Item>;
   });
   return <span className="rhine-overlay-anchor" ref={ref}><MenuBase.Root open={open} onOpenChange={onOpenChange}><MenuBase.Trigger asChild>{trigger}</MenuBase.Trigger><MenuBase.Portal container={container}><MenuBase.Content data-rhine-density={density} onFocus={event => { if (event.target === event.currentTarget && !event.currentTarget.querySelector('[data-rhine-menu-item]:not([aria-disabled="true"])')) event.preventDefault(); }} onCloseAutoFocus={event => { onCloseAutoFocus?.(event); respectFocusHandoff(event, ref); }} onFocusCapture={event => {
     const node = (event.target as HTMLElement).closest<HTMLElement>('[data-rhine-menu-item]');
