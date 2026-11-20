@@ -1,5 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, ConfirmDialog, Inline, Select, Stack, Surface, Text, Toolbar } from '../components';
+import { Button, Checkbox, ConfirmDialog, Form, IconButton, Inline, Select, Stack, Surface, Text, Toolbar } from '../components';
+
+function IconAvailabilityExample() {
+  const [unavailable,setUnavailable]=useState(true), [activations,setActivations]=useState(0), [submissions,setSubmissions]=useState(0);
+  return <Surface><Stack gap={3}>
+    <Text as="h3" variant="heading">图标动作与表单提交</Text>
+    <Checkbox label="图标动作暂不可用" checked={unavailable} onChange={event=>setUnavailable(event.target.checked)}/>
+    <Form label="图标动作表单" onSubmit={()=>setSubmissions(value=>value+1)}>
+      <IconButton label="图标提交示例" icon="check" type="submit" aria-disabled={unavailable} onClick={()=>setActivations(value=>value+1)} />
+    </Form>
+    <Text role="status">动作 {activations} 次；表单提交 {submissions} 次（合成演示）。</Text>
+  </Stack></Surface>;
+}
 
 export function ButtonActionsGallery() {
   const [width,setWidth]=useState('520'),[state,setState]=useState('normal');
@@ -20,6 +32,7 @@ export function ButtonActionsGallery() {
       </Inline><Text variant="caption">{size==='standard'?'14/22，至少44px，横内距16px':'16/24，至少52px，横内距24px'}。退出/断开可恢复，不自动使用危险色；删除明确提示不可恢复。</Text></Stack></Surface>)}
       <Surface><Stack gap={3}><Text as="h3" variant="heading">窄表单的独立全宽动作</Text><Button size="large" style={{width:'100%'}} onClick={()=>run('全宽退出')} busy={busy==='全宽退出'}>退出登录</Button><Text variant="caption">使用原生width，长文自然换行；不要给所有工具栏动作铺满宽度。</Text></Stack></Surface>
       <Text role="status">{result}</Text>
+      <IconAvailabilityExample />
     </Stack></div>
   </Stack></section>;
 }

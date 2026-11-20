@@ -63,7 +63,8 @@ export function Icon({ name, size = 20, label }: IconProps) {
   return <svg className="rhine-icon" width={size} height={size} viewBox="0 0 20 20" role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true} focusable="false"><path d={paths[name]} /></svg>;
 }
 export const IconButton = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { label: string; icon: IconName; busy?: boolean }>(function IconButton({ label, icon, busy = false, disabled, onClick, className = '', type = 'button', ...props }, ref) {
-  return <button {...props} ref={ref} type={type} disabled={disabled} aria-label={label} aria-disabled={busy || disabled || props['aria-disabled']} aria-busy={busy || props['aria-busy']} className={`rhine-button rhine-button--quiet rhine-icon-button ${className}`} onClick={event => { if (busy) { event.preventDefault(); return; } onClick?.(event); }}>
+  const unavailable = busy || disabled || props['aria-disabled'] === true || props['aria-disabled'] === 'true';
+  return <button {...props} ref={ref} type={type} disabled={disabled} aria-label={label} aria-disabled={unavailable || props['aria-disabled']} aria-busy={busy || props['aria-busy']} className={`rhine-button rhine-button--quiet rhine-icon-button ${className}`} onClick={event => { if (unavailable) { event.preventDefault(); return; } onClick?.(event); }}>
     {busy ? <><span className="rhine-button__ghost"><Icon name={icon} /></span><span className="rhine-button__busy"><span className="rhine-spinner" aria-hidden="true" /></span></> : <Icon name={icon} />}
   </button>;
 });
