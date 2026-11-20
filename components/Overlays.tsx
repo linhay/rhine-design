@@ -100,10 +100,14 @@ interface OverlayControl { open?: boolean; onOpenChange?: (open: boolean) => voi
 export interface PopoverProps extends Omit<OverlayControl,'onOpenChange'> { onOpenChange?:(open:boolean,detail:SelectionOpenChange)=>void; trigger: ReactElement; title: string; children: ReactNode; showHeader?: boolean }
 export function Popover({ trigger, title, children, open, onOpenChange, side, showHeader = true }: PopoverProps) {
   const { ref, container, density } = useScope();
-  const cause=useRef<SelectionChangeReason>('programmatic'),tabExit=useRef(false);
+  const cause=useRef<{reason:SelectionChangeReason} | null>(null),tabExit=useRef(false);
+  const markCause = (reason: SelectionChangeReason) => {
+    const request = {reason}; cause.current=request;
+    queueMicrotask(()=>{if(cause.current===request)cause.current=null;});
+  };
   const floatingRef = useFloatingScale(undefined, 'popover');
   const floatingSide = useFloatingSide(ref, side, 300);
-  return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={next=>{onOpenChange?.(next,{reason:next?'open':cause.current});if(next)cause.current='programmatic';}}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content onKeyDownCapture={event=>{if(event.key==='Tab'){tabExit.current=true;queueMicrotask(()=>{tabExit.current=false;});}}} onEscapeKeyDown={()=>{cause.current='escape';}} onInteractOutside={event=>{cause.current=event.detail.originalEvent.type==='pointerdown'?'outside':tabExit.current?'tab':'blur';}} onCloseAutoFocus={event => respectFocusHandoff(event, ref)} data-rhine-density={density} ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
+  return <span className="rhine-overlay-anchor" ref={ref}><PopoverBase.Root open={open} onOpenChange={next=>{const reason=next?'open':cause.current?.reason??'programmatic';cause.current=null;onOpenChange?.(next,{reason});}}><PopoverBase.Trigger asChild>{trigger}</PopoverBase.Trigger><PopoverBase.Portal container={container}><PopoverBase.Content onKeyDownCapture={event=>{if(event.key==='Tab'){tabExit.current=true;queueMicrotask(()=>{tabExit.current=false;});}}} onEscapeKeyDown={()=>markCause('escape')} onInteractOutside={event=>markCause(event.detail.originalEvent.type==='pointerdown'?'outside':tabExit.current?'tab':'blur')} onCloseAutoFocus={event => respectFocusHandoff(event, ref)} data-rhine-density={density} ref={floatingRef} className="rhine-popover" aria-label={title} side={floatingSide} sideOffset={8} collisionPadding={12}>{showHeader && <div className="rhine-dialog__head"><strong>{title}</strong><PopoverBase.Close asChild><IconButton label="关闭详情" icon="close" /></PopoverBase.Close></div>}{children}</PopoverBase.Content></PopoverBase.Portal></PopoverBase.Root></span>;
 }
 interface MenuItemPresentation {
   /** Stable and unique across this Menu, including groups and radio options. */

@@ -30,6 +30,8 @@ Popover、Menu、Tooltip、StatusTimeline 与 TimelineLegend 的 Portal 保留�
 
 多选的标签和清空按钮属于同一交互区域：pointerdown/焦点转移不提前销毁浮层，等按钮click完成后收起。否则窄屏缩放时滚动布局可能在按下与抬起之间移动，让click落在公共祖先而丢失清空动作；浏览器用真实指针路径验证。
 
+Popover 的 `onOpenChange` 原因仅描述本次请求。宿主拒绝关闭时，下一个独立操作不会沿用上次原因；例如第一次 Escape 被拒绝，再点关闭按钮仍按按钮处理。
+
 ## 可选可见Popover头部（#56，未发布）
 
 `showHeader={false}` 省略可见标题和关闭按钮整行，但必填title继续命名浮层；默认true兼容现有内容。保持图标切换、外点/Escape关闭和键盘归焦。账号与用量的组合、稳定反馈及宿主状态职责见[托盘用量](TRAY_USAGE.md)。

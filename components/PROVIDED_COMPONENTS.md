@@ -11,9 +11,9 @@
 | 组件 | 输入与所有权 | 交互边界 |
 | --- | --- | --- |
 | Dropdown | label、items（id/label/disabled）、onSelect | 复用命令 Menu；方向键/Home/End/typeahead 跳过禁用项，选择或 Escape 关闭并归焦。不是导航、远程搜索或保存。 |
-| AutoComplete | label、受控 value/onChange、字符串 options、可选 onSelect | 复用 Combobox，保留任意自定义文本；方向键/Enter 选择，Escape 只收起候选，Tab 离开。不发远程请求；输入法组合保护沿用 Combobox。 |
-| Cascader | label、options、受控 value/onChange、disabled | 节点为 value/label/disabled/children；任意深度逐层进入、返回上级；只在叶子回传完整路径，展开中间节点不提交。上下/Home/End 移焦，右键进入、左键返回；Escape/外部点击退出不改值。 |
-| Mentions | label、受控 value/onChange、options、disabled | 光标前的空白或行首 @ 查询本地候选；首次下键从首项、首次上键从末项开始，之后循环移焦；Enter 插入并保留其余文本，组合输入期间不提交候选，Escape/Tab 退出保留草稿。光标和插入点属于文本输入；不发送消息或识别账号权限。 |
+| AutoComplete | label、受控 value/onChange、字符串 options、可选 onSelect | 复用 Combobox，保留任意自定义文本；方向键/Enter 选择，Escape 只收起候选，Tab 离开。不发远程请求；输入法组合保护沿用 Combobox。显式 maxLength 也约束组件代填，候选超限可见但不可选择。 |
+| Cascader | label、options、受控 value/onChange、disabled | 节点为 value/label/disabled/children；任意深度逐层进入、返回上级；只在叶子回传完整路径，展开中间节点不提交；已选标记按浏览分支与已提交路径的共同前缀匹配。上下/Home/End 移焦，右键进入、左键返回；Escape/外部点击退出不改值。 |
+| Mentions | label、受控 value/onChange、options、disabled | 光标前的空白或行首 @ 查询本地候选；首次下键从首项、首次上键从末项开始，之后循环移焦；Enter 插入并保留其余文本，组合输入期间不提交候选，Escape/Tab 退出保留草稿。高亮按候选字符串保留，移除时清空高亮；显式 maxLength 同样约束候选插入，超限保留完整正文和焦点并提示。光标和插入点属于文本输入；不发送消息或识别账号权限。 |
 | Image | alt、可选 src/caption | 原生按钮打开实际图片 Dialog；无 src 明确说明未提供，不伪装已加载。复用模态焦点约束、关闭按钮和 Escape；关闭返回触发按钮。不是资产解码器、图片组或编辑器。 |
 | Popconfirm | label、title、onConfirm | 复用非模态 Popover，初始焦点在取消；确认才回调，取消/外部点击/Escape 不执行。仅同步意图；需要异步失败/忙态锁定的破坏性流程使用既有 ConfirmDialog。 |
 | Tour | title/description、受控 step/total、onNext/onPrevious/onClose | 非模态说明层，下一步/上一步不保存业务；关闭、完成或 Escape 退出并在原入口仍存在且宿主未主动移交焦点时返回。不会限制宿主必须读完。 |

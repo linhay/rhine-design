@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { AutoComplete, Button, Cascader, Checkbox, ColorPicker, ErrorSummary, Fieldset, Form, Inline, Mentions, Rate, Select, Slider, Stack, Text, TimePicker, Transfer, Upload, type CascadeOption, type FieldError } from '../components';
+import { CindySelectionExamples } from './CindyControlFollowups';
 
 function ExternalUploadExample() {
   const formId=useId();
@@ -66,5 +67,6 @@ export function FormIntegrationGallery() {
     </Form>
     {snapshot&&<Stack gap={2}><Text role="status">本地提交快照已生成，未保存业务数据。</Text><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere',maxWidth:'100%'}}>{JSON.stringify(snapshot,null,2)}</pre></Stack>}
     <ExternalUploadExample />
+    <CindySelectionExamples />
   </Stack></section>;
 }
