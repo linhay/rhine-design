@@ -14,7 +14,7 @@ Dialog/Drawer新增closingDisabled、closeDisabledReason。门禁作用于库拥
 
 trigger现在可选；没有trigger时须受控open。returnFocus接受HTMLElement或返回当前稳定目标的获取器。真实trigger优先；无trigger时先尊重已经发生的主动交焦，再用显式目标或保存的打开前调用者/存活祖先。失效、hidden/inert、禁用目标不作可用焦点；鼠标调用者未取得焦点且显式目标失效时，退到组件所在的存活main/父Dialog或具名region；需要时祖先临时加入tabIndex=-1，在失焦恢复原属性，不添加假隐藏触发器。调用者可能被删除时，宿主宜用获取器返回现存具名上下文。onCloseAutoFocus仍先执行，可preventDefault接管。
 
-ConfirmDialog同样可受控open、无trigger及配置returnFocus、closingDisabled。内部Promise在途门禁与外部门禁合并，重复激活不重放。旧默认resultMode=legacy保留resolved void视为完成；新业务使用explicit：仅true或{status:'success'}关闭，false/error保持失败，undefined/unknown保持未知，异常保持失败。不要捕获异常后无返回再把legacy误称为验证成功。外部关闭/卸载或重开会使旧响应代次失效，迟到结果不能关闭新一轮确认；不自动重试业务写入。
+ConfirmDialog同样可受控open、无trigger及配置returnFocus、closingDisabled。内部Promise在途门禁与外部门禁合并，重复激活不重放。旧默认resultMode=legacy保留resolved void视为完成；新业务使用explicit：仅true或{status:'success'}关闭，false/error保持失败，undefined/unknown保持未知，异常保持失败。不要捕获异常后无返回再把legacy误称为验证成功。外部关闭/卸载或重开会使旧响应代次失效，迟到结果不能关闭新一轮确认；受控关闭后重新打开时也不显示上一轮已返回的失败或未知提示。不自动重试业务写入。
 
 ## Slider与RangeSlider
 
@@ -22,7 +22,7 @@ Slider原number/value/onChange调用继续可用，新增marks:SliderMark[]与ge
 
 RangeSlider是同一条轨道上的两个原生range输入。value为只读[number,number]，onChange给出新的成对提案；thumbLabels分别命名，getValueText(value,index)提供单位文字。min/max/step必须有限且合法，minGap默认step且必须正数。值须在范围内、落在相对min的步长格点、严格有序且至少相差minGap；非法外部值只显示错误与原值，不发修正提案。
 
-拖动/点击选择较近游标，44px高操作区和44px游标，禁止跨越且不推挤另一端；键盘方向键一格、Page十格、Home/End到该端合法边界。受控拒绝保持宿主旧值。readOnly保留可读值与原生表单序列化但阻止编辑，disabled排除提交；祖先fieldset禁用在指针开始、拖动提案和键盘/变更时按真实输入的:disabled检查，保留first legend例外。names为两端字段名，form可外关联。type=range无文本IME草稿，数字联动使用现有NumberField的IME/无效草稿契约。动态上限由宿主提供，720分钟内600现值保持可见；若宿主降到240，明确报告非法，不能静默改成240。
+拖动/点击选择较近游标，44px高操作区和44px游标，禁止跨越且不推挤另一端；键盘方向键一格、Page十格、Home/End到该端合法边界。横向方向键和指针都沿显示轴：RTL 最小值在物理右端，Right 减小、Left 增大；上下、Page 与 Home/End 保留数值语义。游标和刻度随同一轴。受控拒绝保持宿主旧值。readOnly保留可读值与原生表单序列化但阻止编辑，disabled排除提交；祖先fieldset禁用在指针开始、拖动提案和键盘/变更时按真实输入的:disabled检查，保留first legend例外。names为两端字段名，form可外关联。type=range无文本IME草稿，数字联动使用现有NumberField的IME/无效草稿契约。动态上限由宿主提供，720分钟内600现值保持可见；若宿主降到240，明确报告非法，不能静默改成240。
 
 ## RemoteMultiSelect与TreeSelect生命周期
 

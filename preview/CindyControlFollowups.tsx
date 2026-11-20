@@ -1,5 +1,25 @@
 import {useRef,useState} from 'react';
-import {AutoComplete,Button,Cascader,Checkbox,Form,Inline,Mentions,Popover,Stack,Surface,Text} from '../components';
+import {AutoComplete,Button,Cascader,Checkbox,ConfirmDialog,Form,Inline,Mentions,Popover,RangeSlider,Select,Stack,Surface,Text} from '../components';
+
+export function CindyRecoveryExamples(){
+ const [subject,setSubject]=useState('甲'),[open,setOpen]=useState(false);
+ const [dir,setDir]=useState<'ltr'|'rtl'>('ltr'),[pair,setPair]=useState<[number,number]>([20,80]);
+ const launch=(name:string)=>{setSubject(name);setOpen(true);};
+ return <section aria-label="确认和范围方向回归"><Stack gap={4}>
+  <Surface><Stack gap={3}>
+   <Text as="h2" variant="section">受控确认重新打开</Text>
+   <Inline gap={2}><Button onClick={()=>launch('甲')}>打开对象甲</Button><Button onClick={()=>launch('乙')}>打开对象乙</Button></Inline>
+   <ConfirmDialog title={'确认对象'+subject} description="仅演示反馈，不修改数据。" open={open} onOpenChange={setOpen} resultMode="explicit" onConfirm={()=>({status:'error',message:'对象'+subject+'的合成失败'})}/>
+  </Stack></Surface>
+  <Surface><Stack gap={3}>
+   <Select label="阈值方向" value={dir} onChange={event=>{setDir(event.target.value==='rtl'?'rtl':'ltr');setPair([20,80]);}}>
+    <option value="ltr">从左向右</option><option value="rtl">从右向左</option>
+   </Select>
+   <div dir={dir}><RangeSlider label="方向阈值演示" value={pair} onChange={setPair} minGap={5} thumbLabels={['最低方向阈值','最高方向阈值']} marks={[{value:0,label:'最小值'},{value:50,label:'中间值'},{value:100,label:'最大值'}]}/></div>
+   <Text role="status">方向阈值：{pair.join(' / ')}</Text>
+  </Stack></Surface>
+ </Stack></section>;
+}
 
 const initialMentions=['Alpha','Beta','Gamma'];
 const branches=[{value:'east',label:'东区',children:[{value:'shared',label:'东区资料'}]},{value:'west',label:'西区',children:[{value:'shared',label:'西区资料'}]}];
