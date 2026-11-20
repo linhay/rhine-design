@@ -33,6 +33,12 @@ busy沿用原内容占位与spinner，尺寸不跳变，保留焦点且拒绝重
 
 独立获取目录/数据使用 secondary 的明确边界；标题附属轻量模板切换可用 quiet。字段标题动作插槽不改变动作层级，不因同处设置页而一律 quiet。
 
+## 按压反馈和命中区
+
+按压 Button 及共享按钮样式时，按钮、文字、焦点环与命中区保持原位；只有不接收指针事件的反馈层改变。新粗野主题仍用硬阴影收起表现按压，战术主题不移动反馈层。系统或手动减少动态时，只保留即时静态反馈。禁用及忙碌不出现可执行的按压反馈，聊天常驻小文字操作继续保持无底板。
+
+生产展台 `#button-actions` 的「按压反馈与点击边界」可手动比较；用 `scripts/check-button-press.js` 从该展台实测中心和四边按住、同点释放、键盘焦点、各主题及减少动态。在 Playwright CLI 使用 `run-code --filename` 后读取 `body.dataset.pressVerification` 的 `pass`；以 true 为通过，退出码不代表行为通过。
+
 ## 容器自适应动作
 
 空间不足时，完整文字+图标→整组图标→竖点菜单逐级收纳，保持宿主顺序、权限、busy/disabled和至少44px目标；按实际容器与内容测量，不仅按viewport。更新日期等元信息放内容区。最小公开组合与焦点连续性见[ResponsiveActions](RESPONSIVE_ACTIONS.md)。

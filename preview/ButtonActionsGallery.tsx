@@ -13,6 +13,17 @@ function IconAvailabilityExample() {
   </Stack></Surface>;
 }
 
+function PressBoundaryExample() {
+  const [count,setCount]=useState(0), [disabled,setDisabled]=useState(false);
+  return <section aria-label="按钮按压回归"><Surface><Stack gap={3}>
+    <Text as="h3" variant="heading">按压反馈与点击边界</Text>
+    <Text tone="muted">可在按钮边缘按住后原位松开，也可用键盘激活；这里只计本地动作。</Text>
+    <Checkbox label="禁用按压示例" checked={disabled} onChange={event=>setDisabled(event.target.checked)}/>
+    <Inline><Button aria-disabled={disabled} onClick={()=>setCount(value=>value+1)}>按压边界示例</Button></Inline>
+    <Text role="status">已激活 {count} 次。</Text>
+  </Stack></Surface></section>;
+}
+
 export function ButtonActionsGallery() {
   const [width,setWidth]=useState('520'),[state,setState]=useState('normal');
   const [busy,setBusy]=useState<string|null>(null),[result,setResult]=useState('');
@@ -33,6 +44,7 @@ export function ButtonActionsGallery() {
       <Surface><Stack gap={3}><Text as="h3" variant="heading">窄表单的独立全宽动作</Text><Button size="large" style={{width:'100%'}} onClick={()=>run('全宽退出')} busy={busy==='全宽退出'}>退出登录</Button><Text variant="caption">使用原生width，长文自然换行；不要给所有工具栏动作铺满宽度。</Text></Stack></Surface>
       <Text role="status">{result}</Text>
       <IconAvailabilityExample />
+      <PressBoundaryExample />
     </Stack></div>
   </Stack></section>;
 }

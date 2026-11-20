@@ -132,7 +132,7 @@
 }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger { background: var(--rhine-error); border-color: var(--rhine-error); color: var(--ak-accent-ink); }
 .rhine-theme[data-rhine-theme="arknights"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #e74b40; border-color: #e74b40; }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform:none; }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-button { --rhine-button-press-inset:0px; }
 
 /* 图标按钮保持方形小切角 */
 .rhine-theme[data-rhine-theme="arknights"] .rhine-icon-button {
