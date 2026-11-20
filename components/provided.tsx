@@ -87,17 +87,19 @@ export function Upload({ label, files, onChange, disabled = false, readOnly = fa
   const generated = useId(), id = suppliedId || generated;
   const picker = useRef<HTMLInputElement>(null), eligibility = useRef<HTMLInputElement>(null), root = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    const input = picker.current, owner = input?.form;
-    if(!input || !owner || !name)return;
-    // The reset native picker is not a named field. Serialize the host-owned
-    // File[] through the platform formdata event, never fake filename strings.
+    const input = picker.current;
+    if (!input || !name || disabled) return;
+    // The reset picker has no submitted name. Capture at its tree root and
+    // resolve the native form owner at dispatch, including same-id replacements.
+    const tree = input.getRootNode();
     const append = (event: Event) => {
-      if(disabled || input.form !== owner || eligibility.current?.matches(':disabled'))return;
+      if (event.target !== input.form || eligibility.current?.matches(':disabled')) return;
       const data = (event as FormDataEvent).formData;
-      if(data)files.forEach(file => data.append(name,file,file.name));
+      if (data) files.forEach(file => data.append(name, file, file.name));
     };
-    owner.addEventListener('formdata',append);return () => owner.removeEventListener('formdata',append);
-  },[files,name,form,disabled]);
+    tree.addEventListener('formdata', append, true);
+    return () => tree.removeEventListener('formdata', append, true);
+  }, [files, name, disabled]);
   const remove = (index: number, trigger: HTMLButtonElement) => {
     if (disabled || readOnly || trigger.matches(':disabled')) return;
     const hadFocus = document.activeElement === trigger;
@@ -107,7 +109,14 @@ export function Upload({ label, files, onChange, disabled = false, readOnly = fa
       (picker.current?.disabled ? root.current : picker.current)?.focus({ preventScroll:true });
     });
   };
-  return <div ref={root} className="rhine-upload" role="group" aria-label={`${label}操作`} tabIndex={-1} data-readonly={readOnly || undefined}><label htmlFor={id}>{label}</label><input ref={picker} id={id} form={form} type="file" accept={accept} multiple={multiple} required={!!required && files.length === 0} disabled={disabled || readOnly} aria-invalid={!!error || undefined} aria-describedby={fieldDescription(id,hint,error,[extra,readOnly&&`${id}-readonly`].filter(Boolean).join(' ')||undefined)} onChange={event => { if (readOnly || event.currentTarget.matches(':disabled')) return; onChange(multiple ? [...files, ...Array.from(event.target.files ?? [])] : Array.from(event.target.files ?? []).slice(0,1)); event.target.value = ''; }} /><input ref={eligibility} type="hidden" form={form} disabled={disabled} /><ul>{files.map((file, index) => <li key={`${file.name}-${index}`}>{file.name}<Button variant="quiet" disabled={disabled || readOnly} onClick={event => remove(index,event.currentTarget)}>移除</Button></li>)}</ul><FieldFeedback id={id} hint={hint} error={error} />{readOnly&&<span id={`${id}-readonly`} className="rhine-sr-only">只读文件列表，不能选择或移除。</span>}<p>只记录本地文件名，不会上传。</p></div>;
+  const counts = new Map<string, number>(), seen = new Map<string, number>();
+  for (const file of files) counts.set(file.name, (counts.get(file.name) ?? 0) + 1);
+  const removeLabels = files.map(file => {
+    const ordinal = (seen.get(file.name) ?? 0) + 1;
+    seen.set(file.name, ordinal);
+    return (counts.get(file.name) ?? 0) > 1 ? `移除 ${file.name}（第 ${ordinal} 个）` : `移除 ${file.name}`;
+  });
+  return <div ref={root} className="rhine-upload" role="group" aria-label={`${label}操作`} tabIndex={-1} data-readonly={readOnly || undefined}><label htmlFor={id}>{label}</label><input ref={picker} id={id} form={form} type="file" accept={accept} multiple={multiple} required={!!required && files.length === 0} disabled={disabled || readOnly} aria-invalid={!!error || undefined} aria-describedby={fieldDescription(id,hint,error,[extra,readOnly&&`${id}-readonly`].filter(Boolean).join(' ')||undefined)} onChange={event => { if (readOnly || event.currentTarget.matches(':disabled')) return; onChange(multiple ? [...files, ...Array.from(event.target.files ?? [])] : Array.from(event.target.files ?? []).slice(0,1)); event.target.value = ''; }} /><input ref={eligibility} type="hidden" form={form} disabled={disabled} /><ul>{files.map((file, index) => <li key={`${file.name}-${index}`}>{file.name}<Button variant="quiet" aria-label={removeLabels[index]} disabled={disabled || readOnly} onClick={event => remove(index,event.currentTarget)}>移除</Button></li>)}</ul><FieldFeedback id={id} hint={hint} error={error} />{readOnly&&<span id={`${id}-readonly`} className="rhine-sr-only">只读文件列表，不能选择或移除。</span>}<p>只记录本地文件名，不会上传。</p></div>;
 }
 
 export function Avatar({ name, src }: { name: string; src?: string }) {

@@ -40,7 +40,7 @@ TreeSelect的maxVisibleTags默认3，和RemoteMultiSelect复用同一标签渲�
 
 DataTable.rowAction提供label(row)、onActivate(row)、可选isDisabled(row)及id(row)。表格仍保留table/row/cell，额外具名44px原生按钮提供Enter/Space键盘入口；普通单元格可点击激活同一行。链接、按钮、表单控件、标签、summary、contenteditable、带tabIndex/交互角色或data-row-interactive的内部交互不激活行，文本选择和第二次连击不重复激活。不要把勾选当激活。onActivate始终按当前可见稳定id解析最新行；业务权限与版本检查归宿主。
 
-selection.mixedKeys由调用方给出半选行，库只渲染aria-checked=mixed，不替调用方级联、排除隐藏后代或决定导出。expansion.rowToggle为true时，非交互正文点击只切换展开，选择框和行命令不串到展开。selection/expansion/sticky功能继续独立，loading或isDisabled阻止行激活。刷新移除持焦行控件后，如果没有主动交焦，回到原具名表格滚动区域；宿主详情可通过rowAction.id与Dialog.returnFocus返回稳定行，失效时返回具名上下文。
+selection.mixedKeys 由调用方给出半选行；对可见且可选的行，表头把已有半选视为部分选择，即使同一键也在 keys 中。只有这些行都完全勾选时才提出清空，否则提出补足，保留不可选及跨页键。宿主收到提案后仍负责重算 mixedKeys；库不级联、排除隐藏后代或决定导出。expansion.rowToggle为true时，非交互正文点击只切换展开，选择框和行命令不串到展开。selection/expansion/sticky功能继续独立，loading或isDisabled阻止行激活。刷新移除持焦行控件后，如果没有主动交焦，回到原具名表格滚动区域；宿主详情可通过rowAction.id与Dialog.returnFocus返回稳定行，失效时返回具名上下文。
 
 DataColumn.header仍是string，作为精确列名；headerDescription提供关联且可见的简短说明（不让绝对定位的隐藏节点扩展主区），headerHelp接Tooltip字符串或TooltipDetails，并生成独立44px“关于…”按钮。帮助不嵌在排序按钮里，排序目标、方向及列名保持明确。列内容槽不要求消费覆盖内部th或把帮助藏入无关联页脚。
 

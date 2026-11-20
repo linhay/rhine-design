@@ -181,7 +181,7 @@ RemoteMultiSelect 复用 Combobox 的方向键、Enter、Escape 和 IME 防误�
 
 `selection.mode` 默认 multiple，可选 single 使用原生 radio（读取 keys 第一项）；新选择回传单个 key，替换旧单选。`hideSelectAll` 保留单行操作但不显示全选。`DataColumn.rowHeader` 输出 th scope=row；`onSortReset` 提供显式取消排序，宿主清空 sort 后生效。canExpand=false 同时阻止旧展开 key 渲染子行/详情，详情 ID 按行 key 稳定。
 
-Pagination 新增 `disabled/label/showFirstButton/showLastButton`；首末页按钮默认不显示，未知总量时末页不可操作。负数与非有限 total 视作未知；总量缩小导致当前页超界时明确标注，上一页返回已知末页，不自动发请求。翻页到边界时焦点移至相邻可用按钮，页码摘要有状态播报。
+Pagination 新增 `disabled/label/showFirstButton/showLastButton`；首末页按钮默认不显示，未知总量时末页不可操作。负数与非有限 total 视作未知；总量缩小导致当前页超界时明确标注，上一页返回已知末页，不自动发请求。异步翻页加载期间，已聚焦的分页按钮保留焦点，但不可重复激活；中间页重新可用后可继续按 Enter。翻页到边界时焦点移至相邻可用按钮，主动移出不抢回；页码摘要有状态播报。
 
 ## 媒体
 
