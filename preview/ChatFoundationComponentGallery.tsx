@@ -23,6 +23,21 @@ export function ChatFoundationComponentGallery({ componentId }: { componentId: C
   const [fail, setFail] = useState(false);
   const [custom, setCustom] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [asyncSend, setAsyncSend] = useState(false), [candidate, setCandidate] = useState(false);
+  const sendTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => {
+    if (componentId !== 'chat-foundation-composer') setBusy(false);
+    return () => { clearTimeout(sendTimer.current); sendTimer.current = undefined; };
+  }, [componentId]);
+  const send = (value: string) => {
+    const finish = () => {
+      if (fail) { setSendError('演示提交失败，草稿已保留。'); return; }
+      setSubmitted(value); setDraft(''); setSendError('');
+    };
+    if (!asyncSend) { finish(); return; }
+    setBusy(true); setSendError('');
+    sendTimer.current = setTimeout(() => { sendTimer.current = undefined; setBusy(false); finish(); }, 400);
+  };
   const selected = agents.find(agent => agent.id === selectedId) ?? agents[0];
   useEffect(() => {
     if (!inspectorOpen) root.current?.querySelector<HTMLButtonElement>('[data-chat-demo-inspector-toggle]')?.focus();
@@ -65,8 +80,12 @@ export function ChatFoundationComponentGallery({ componentId }: { componentId: C
       {componentId === 'chat-foundation-message-status' && <><MessageStatus state="empty">暂无消息</MessageStatus><MessageStatus state="loading">正在读取历史消息</MessageStatus><MessageStatus state="error">暂时无法读取消息</MessageStatus><MessageStatus state="unknown">消息状态未知</MessageStatus><MessageStatus state="working">Research 正在准备回复</MessageStatus></>}
       {componentId === 'chat-foundation-message-renderer' && <><Button variant="secondary" aria-pressed={custom} onClick={() => setCustom(value => !value)}>{custom ? '使用默认渲染器' : '使用自定义 Agent 渲染器'}</Button><MessageList messages={demoMessages.slice(0, 2)} renderers={custom ? customRenderers : undefined} /></>}
       {componentId === 'chat-foundation-composer' && <>
-        <div className="rhine-chat-component-controls"><Button variant="secondary" aria-pressed={fail} onClick={() => { setFail(value => !value); setSendError(''); }}>{fail ? '取消模拟失败' : '模拟失败'}</Button><Button variant="secondary" aria-pressed={busy} onClick={() => setBusy(value => !value)}>{busy ? '结束忙碌' : '模拟忙碌'}</Button></div>
-        <Composer value={draft} onChange={event => { setDraft(event.target.value); setSendError(''); }} busy={busy} error={sendError} hint={submitted ? `本地演示：已提交“${submitted}”` : 'Enter 发送 · Shift+Enter 换行'} onSubmit={value => { if (fail) { setSendError('演示提交失败，草稿已保留。'); return; } setSubmitted(value); setDraft(''); setSendError(''); }} placeholder="输入消息，试试 Enter 或 Shift+Enter…" />
+        <div className="rhine-chat-component-controls"><Button variant="secondary" aria-pressed={fail} onClick={() => { setFail(value => !value); setSendError(''); }}>{fail ? '取消模拟失败' : '模拟失败'}</Button><Button variant="secondary" aria-pressed={busy} disabled={busy && sendTimer.current !== undefined} onClick={() => setBusy(value => !value)}>{busy ? '结束忙碌' : '模拟忙碌'}</Button><Button variant="secondary" aria-pressed={asyncSend} onClick={() => setAsyncSend(value => !value)}>模拟异步提交</Button><Button variant="secondary" aria-pressed={candidate} onClick={() => setCandidate(value => !value)}>模拟引用候选</Button></div>
+        <Composer value={draft} onChange={event => { setDraft(event.target.value); setSendError(''); }} busy={busy} error={sendError} hint={submitted ? `本地演示：已提交“${submitted}”` : 'Enter 发送 · Shift+Enter 换行'} onKeyDown={event => {
+          if (!busy && candidate && event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+            event.preventDefault(); setDraft(value => value + ' @参考资料'); setCandidate(false);
+          }
+        }} onSubmit={send} placeholder="输入消息，试试 Enter 或 Shift+Enter…" />
       </>}
       {componentId === 'chat-foundation-inspector' && <div className="rhine-chat-component-narrow">{inspectorOpen ? inspector : <Button variant="secondary" data-chat-demo-inspector-toggle onClick={() => setInspectorOpen(true)}>显示详情</Button>}</div>}
     </div>

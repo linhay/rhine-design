@@ -13,8 +13,9 @@ describe('isolated Chat Foundation showcases', () => {
     expect(input).toHaveValue('合成草稿');
     expect(within(input.closest('form')!).getByRole('alert')).toHaveTextContent('草稿已保留');
     fireEvent.click(screen.getByRole('button',{name:'模拟忙碌'}));
-    expect(input).toBeDisabled();
-    expect(screen.getByRole('button',{name:'发送消息'})).toBeDisabled();
+    expect(input).not.toBeDisabled();
+    expect(input).toHaveAttribute('readonly');
+    expect(screen.getByRole('button',{name:'发送消息'})).toHaveAttribute('aria-disabled','true');
   });
   it('selects filtered Agents and exposes empty results', () => {
     render(<ChatFoundationComponentGallery componentId="chat-foundation-agent-list" />);

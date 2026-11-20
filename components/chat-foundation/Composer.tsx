@@ -17,7 +17,7 @@ export interface ComposerProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
 }
 
 /** Controlled composer with native Enter/Shift+Enter behavior and host owned submission. */
-export function Composer({ value, onChange, onSubmit, label = '消息', submitLabel = '发送消息', busy = false, busyLabel = '正在发送', attachments, hint, error, actions, onKeyDown, rows = 2, disabled, ...props }: ComposerProps) {
+export function Composer({ value, onChange, onSubmit, label = '消息', submitLabel = '发送消息', busy = false, busyLabel = '正在发送', attachments, hint, error, actions, onKeyDown, rows = 2, disabled, readOnly, ...props }: ComposerProps) {
   const fieldId = useId();
   const showHint = !error && hint !== undefined && hint !== null && hint !== false && hint !== '';
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -25,16 +25,16 @@ export function Composer({ value, onChange, onSubmit, label = '消息', submitLa
     if (!disabled && !busy && value.trim()) onSubmit(value, event);
   };
   return <form className="rhine-chat-composer" onSubmit={submit}>
-    <Textarea {...props} id={fieldId} label={label} value={value} onChange={onChange} rows={rows} disabled={disabled || busy} error={error} aria-describedby={[props['aria-describedby'], showHint && `${fieldId}-hint`].filter(Boolean).join(' ') || undefined} onKeyDown={event => {
-      if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-        event.preventDefault();
-        event.currentTarget.form?.requestSubmit();
-      }
+    <Textarea {...props} id={fieldId} label={label} value={value} onChange={onChange} rows={rows} disabled={disabled} readOnly={readOnly || busy} error={error} aria-describedby={[props['aria-describedby'], showHint && `${fieldId}-hint`].filter(Boolean).join(' ') || undefined} onKeyDown={event => {
       onKeyDown?.(event);
+      if (!event.defaultPrevented && event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+        event.preventDefault();
+        if (!busy && !disabled) event.currentTarget.form?.requestSubmit();
+      }
     }} />
     <div className="rhine-chat-composer__footer">
       {showHint && <span id={`${fieldId}-hint`} className="rhine-chat-composer__hint">{hint}</span>}
-      <div className="rhine-chat-composer-actions">{attachments}{actions}<Button type="submit" aria-label={submitLabel} busy={busy} busyLabel={busyLabel} disabled={disabled || busy || !value.trim()}>↑</Button></div>
+      <div className="rhine-chat-composer-actions">{attachments}{actions}<Button type="submit" aria-label={submitLabel} busy={busy} busyLabel={busyLabel} disabled={disabled || (!busy && !value.trim())}>↑</Button></div>
     </div>
   </form>;
 }
