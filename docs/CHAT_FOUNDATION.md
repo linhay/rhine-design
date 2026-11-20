@@ -118,6 +118,12 @@ const renderers: MessageRenderers = { agent: ResearchMessage };
 
 在 `data-rhine-motion="reduced"` 或系统减少动态设置下，详情面板不使用过渡，消息操作保持可见，状态文本与布局仍然保留。验证计划覆盖 400、520、880、1200px 和 200% 缩放；本轮真实浏览器已检查前四种视口，200% 浏览器缩放因当前 CLI 会话未提供可复现的原生缩放通道而 SKIPPED，不将其记为通过。该展台的合成状态不代表真实 Agent、消息服务或运行时行为。
 
+## 工作区配方：会话草稿与共同引用
+
+完整展台把新任务和已有会话作为独立草稿键。每个键分别保存文字、引用附件、本次错误、待确认和已提交反馈；切换只换当前键。模拟异步结果只更新原会话和请求代次，不影响新选中的会话，也不在库内持久化。
+
+「＋」和在词边界键入「@」打开同一个具名 Dialog，搜索和候选数据只由展台宿主维护。候选确认在原位置填入引用并补充引用附件，不提交；Escape 保留草稿并返回对应入口。键盘从搜索可用方向键进入按钮，Enter 只选择候选。使用原有 Composer、Dialog、TextField 和 Button，无新公共 API，不读文件、不上传或发送消息。此处复验的是 Web 合成组合，不是系统输入法或实际 Agent 服务。
+
 ## 设计系统拆解顺序
 
 1. 先从现有 `AppShell`、`SideNav`、`Text`、`Badge`、`Divider`、`Textarea`、`Button`、`IconButton`、`Notice` 和 `Surface` 确定组合契约。

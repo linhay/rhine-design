@@ -10,6 +10,8 @@
 .rhine-chat-avatar--large { width:38px; height:38px; }
 .rhine-chat-inspector-identity { display:grid; min-width:0; gap:4px; overflow-wrap:anywhere; }
 .rhine-chat-list-line { display:block; }
+.rhine-chat-demo-compose { min-width:0; }
+.rhine-chat-demo-compose form { min-width:0; }
 .rhine-chat-mobile-picker { display:none; }
 .rhine-chat-component-stage { min-width:0; padding:20px; border:1px solid var(--rhine-line); border-radius:var(--rhine-radius-card); background:var(--rhine-surface); }
 .rhine-chat-component-narrow { width:min(100%,360px); }

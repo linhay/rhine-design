@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { ChatFoundationGallery } from '../preview/ChatFoundationGallery';
 import { ChatFoundationComponentGallery } from '../preview/ChatFoundationComponentGallery';
 
@@ -46,10 +46,56 @@ it('uses host session state across Agent selection, failed submission and inspec
   fireEvent.keyDown(input, { key:'Enter' });
   expect(within(input.closest('form')!).getByRole('alert')).toHaveTextContent('草稿已保留');
   fireEvent.click(screen.getByRole('button', { name:/WWriter/ }));
-  expect(input).toHaveValue('保留的合成草稿');
+  expect(input).toHaveValue('');
+  expect(within(input.closest('form')!).queryByRole('alert')).not.toBeInTheDocument();
   expect(input).toHaveAttribute('placeholder', '给 Writer 发消息…');
+  fireEvent.click(screen.getByRole('button', {name:/Chief of Staff/}));
+  expect(input).toHaveValue('保留的合成草稿');
+  expect(within(input.closest('form')!).getByRole('alert')).toHaveTextContent('草稿已保留');
   fireEvent.click(screen.getByRole('button', { name:'关闭详情' }));
   expect(screen.getByRole('button', { name:'显示详情' })).toHaveFocus();
+});
+
+it('uses the same reference panel from plus and @, adding without submission', async () => {
+  render(<ChatFoundationGallery/>);
+  const draft=screen.getByRole('textbox',{name:'消息'});
+  fireEvent.click(screen.getByRole('button',{name:'添加引用'}));
+  let dialog=await screen.findByRole('dialog',{name:'添加引用'});
+  const query=within(dialog).getByRole('textbox',{name:'搜索引用'});
+  fireEvent.change(query,{target:{value:'会议'}});
+  fireEvent.keyDown(query,{key:'Enter'});
+  expect(draft).toHaveValue('@会议纪要 ');
+  expect(screen.getByRole('button',{name:'移除引用：会议纪要'})).toBeInTheDocument();
+  expect(screen.queryByText(/未发送给 Agent/)).not.toBeInTheDocument();
+  fireEvent.change(draft,{target:{value:'核对 @ ',selectionStart:4}});
+  dialog=await screen.findByRole('dialog',{name:'添加引用'});
+  fireEvent.click(within(dialog).getByRole('button',{name:'引用：资料 v2'}));
+  expect(draft).toHaveValue('核对 @资料 v2 ');
+  expect(screen.queryByText(/未发送给 Agent/)).not.toBeInTheDocument();
+});
+
+it('does not let an earlier response clear the active conversation or its references', async () => {
+  vi.useFakeTimers();
+  try {
+    render(<ChatFoundationGallery/>);
+    const draft=screen.getByRole('textbox',{name:'消息'});
+    fireEvent.change(draft,{target:{value:'甲内容'}});
+    fireEvent.click(screen.getByRole('button',{name:'模拟异步'}));fireEvent.keyDown(draft,{key:'Enter'});
+    fireEvent.click(screen.getByRole('button',{name:/WWriter/}));
+    fireEvent.change(draft,{target:{value:'乙内容'}});
+    fireEvent.click(screen.getByRole('button',{name:'添加引用'}));
+    fireEvent.click(within(screen.getByRole('dialog',{name:'添加引用'})).getByRole('button',{name:'引用：资料 v2'}));
+    await act(async()=>vi.advanceTimersByTime(450));
+    expect(draft).toHaveValue('乙内容 @资料 v2 ');
+    expect(screen.getByRole('button',{name:'移除引用：资料 v2'})).toBeInTheDocument();
+    expect(screen.queryByText(/未发送给 Agent/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'新任务'}));
+    expect(draft).toHaveValue('');expect(screen.queryByRole('button',{name:'移除引用：资料 v2'})).not.toBeInTheDocument();
+    fireEvent.change(draft,{target:{value:'新任务草稿'}});
+    fireEvent.click(screen.getByRole('button',{name:/WWriter/}));
+    expect(draft).toHaveValue('乙内容 @资料 v2 ');
+    fireEvent.click(screen.getByRole('button',{name:'新任务'}));expect(draft).toHaveValue('新任务草稿');
+  } finally {vi.useRealTimers();}
 });
 
 it('replaces only the requested message type in the renderer showcase', () => {
