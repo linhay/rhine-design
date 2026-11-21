@@ -83,7 +83,7 @@ export function ChatFoundationComponentGallery({ componentId }: { componentId: C
         <div className="rhine-chat-component-controls"><Button variant="secondary" aria-pressed={fail} onClick={() => { setFail(value => !value); setSendError(''); }}>{fail ? '取消模拟失败' : '模拟失败'}</Button><Button variant="secondary" aria-pressed={busy} disabled={busy && sendTimer.current !== undefined} onClick={() => setBusy(value => !value)}>{busy ? '结束忙碌' : '模拟忙碌'}</Button><Button variant="secondary" aria-pressed={asyncSend} onClick={() => setAsyncSend(value => !value)}>模拟异步提交</Button><Button variant="secondary" aria-pressed={candidate} onClick={() => setCandidate(value => !value)}>模拟引用候选</Button></div>
         <Composer value={draft} onChange={event => { setDraft(event.target.value); setSendError(''); }} busy={busy} error={sendError} hint={submitted ? `本地演示：已提交“${submitted}”` : 'Enter 发送 · Shift+Enter 换行'} onKeyDown={event => {
           if (!busy && candidate && event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-            event.preventDefault(); setDraft(value => value + ' @参考资料'); setCandidate(false);
+            event.preventDefault(); setDraft(value => value + ' @参考资料'); setSendError(''); setCandidate(false);
           }
         }} onSubmit={send} placeholder="输入消息，试试 Enter 或 Shift+Enter…" />
       </>}

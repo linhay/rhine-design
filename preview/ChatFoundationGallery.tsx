@@ -34,10 +34,15 @@ export function ChatFoundationGallery(){
   },400));
  };
  const [picker,setPicker]=useState<ReferenceSession|null>(null);
+ const pickerOpen=picker!==null;
  const composerRoot=useRef<HTMLDivElement>(null), addButton=useRef<HTMLButtonElement>(null), results=useRef<HTMLDivElement>(null);
  const closeTarget=useRef<'editor'|'button'>('button'), caret=useRef<number|null>(null), inspectorTrigger=useRef<HTMLDivElement>(null);
  const editor=()=>composerRoot.current?.querySelector('textarea')??null;
- useLayoutEffect(()=>{if(caret.current!==null){editor()?.setSelectionRange(caret.current,caret.current);caret.current=null;}},[draft.text]);
+ useLayoutEffect(()=>{
+  if(pickerOpen||caret.current===null)return;
+  editor()?.setSelectionRange(caret.current,caret.current);
+  caret.current=null;
+ },[pickerOpen,draft.text]);
  const navigate=(id:string)=>{setPicker(null);dispatch({type:'agent/select',agentId:id});};
  const setInspector=(value:boolean)=>dispatch({type:'inspector/set',open:value});
  useEffect(()=>{if(!inspector)inspectorTrigger.current?.querySelector('button')?.focus();},[inspector]);
@@ -78,7 +83,7 @@ export function ChatFoundationGallery(){
    attachments={draft.attachments.length>0&&<Inline gap={1}>
     {draft.attachments.map(item=><Button key={item.id} variant="quiet" aria-label={'移除引用：'+item.title} disabled={draft.pending!==undefined} onClick={()=>update(scope,current=>({...current,attachments:current.attachments.filter(ref=>ref.id!==item.id)}))}>{item.title} ×</Button>)}
    </Inline>}
-   actions={<IconButton ref={addButton} icon="plus" label="添加引用" title="添加引用，也可输入 @" aria-haspopup="dialog" aria-expanded={picker!==null} disabled={draft.pending!==undefined} onClick={()=>{
+   actions={<IconButton ref={addButton} icon="plus" label="添加引用" title="添加引用，也可输入 @" aria-haspopup="dialog" aria-expanded={pickerOpen} disabled={draft.pending!==undefined} onClick={()=>{
     const node=editor();if(!node)return;openReference('button',draft.text,node.selectionEnd,node.selectionStart);
    }}/>}/>
   <Inline gap={1}><Button variant="quiet" onClick={()=>{setSimulateFailure(value=>!value);update(scope,current=>({...current,error:''}));}}>{simulateFailure?'模拟成功':'模拟失败'}</Button><Button variant="quiet" aria-pressed={simulateAsync} onClick={()=>setSimulateAsync(value=>!value)}>模拟异步</Button></Inline>
@@ -87,7 +92,7 @@ export function ChatFoundationGallery(){
  return <section className="rhine-chat-foundation" aria-label="Chat Foundation 基石提案">
   <div className="rhine-chat-foundation-intro"><Text variant="overline">APPLICATION PATTERN / CHAT FOUNDATION</Text><Text as="h2" variant="title">Agent Chat 工作区</Text><Text tone="muted">各会话独立保留草稿、引用和提交反馈。所有操作仅使用本地合成数据。</Text><div className="rhine-chat-foundation-tags"><Badge>本地演示</Badge><Badge tone="neutral">可插拔状态</Badge><Badge tone="success">键盘友好</Badge></div></div>
   <ChatShell className="rhine-chat-demo" rail={rail} sidebar={sidebar} content={content} inspector={inspectorPanel} inspectorOpen={inspector&&!isNew} />
-  <Dialog title="添加引用" description="选择只填入当前草稿，不发送消息。" open={picker!==null} onOpenChange={next=>{if(!next)setPicker(null);}} returnFocus={()=>closeTarget.current==='editor'?editor():addButton.current}>
+  <Dialog title="添加引用" description="选择只填入当前草稿，不发送消息。" open={pickerOpen} onOpenChange={next=>{if(!next)setPicker(null);}} returnFocus={()=>closeTarget.current==='editor'?editor():addButton.current}>
    <Stack gap={3}>
     <TextField label="搜索引用" value={picker?.query??''} onChange={event=>{const query=event.target.value;setPicker(current=>current?{...current,query}:null);}} onKeyDown={event=>{
       if(event.nativeEvent.isComposing)return;

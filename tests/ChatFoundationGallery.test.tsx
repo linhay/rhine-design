@@ -17,6 +17,19 @@ describe('isolated Chat Foundation showcases', () => {
     expect(input).toHaveAttribute('readonly');
     expect(screen.getByRole('button',{name:'发送消息'})).toHaveAttribute('aria-disabled','true');
   });
+  it('clears the old send error when choosing a reference without sending', () => {
+    render(<ChatFoundationComponentGallery componentId="chat-foundation-composer" />);
+    const input=screen.getByRole('textbox',{name:'消息'}), form=within(input.closest('form')!);
+    fireEvent.change(input,{target:{value:'合成草稿'}});
+    fireEvent.click(screen.getByRole('button',{name:'模拟失败'}));
+    fireEvent.keyDown(input,{key:'Enter'});
+    expect(form.getByRole('alert')).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'模拟引用候选'}));
+    fireEvent.keyDown(input,{key:'Enter'});
+    expect(input).toHaveValue('合成草稿 @参考资料');
+    expect(form.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByText(/本地演示：已提交/)).not.toBeInTheDocument();
+  });
   it('selects filtered Agents and exposes empty results', () => {
     render(<ChatFoundationComponentGallery componentId="chat-foundation-agent-list" />);
     const search=screen.getByRole('textbox',{name:'搜索 Agent'});
@@ -104,6 +117,21 @@ it('keeps a literal non-trigger @ when using the plus button',async()=>{
   fireEvent.click(screen.getByRole('button',{name:'添加引用'}));
   fireEvent.click(within(await screen.findByRole('dialog',{name:'添加引用'})).getByRole('button',{name:'引用：会议纪要'}));
   expect(draft).toHaveValue('alice@ @会议纪要 ');
+});
+
+it('consumes the reference caret when selection does not change the text', async () => {
+  render(<ChatFoundationGallery/>);
+  const input=screen.getByRole('textbox',{name:'消息'}) as HTMLTextAreaElement;
+  const original='@会议纪要 ';
+  fireEvent.change(input,{target:{value:original}});
+  act(()=>{input.focus();input.setSelectionRange(0,original.length);});
+  fireEvent.click(screen.getByRole('button',{name:'添加引用'}));
+  fireEvent.click(within(await screen.findByRole('dialog',{name:'添加引用'})).getByRole('button',{name:'引用：会议纪要'}));
+  expect(input).toHaveValue(original);
+  act(()=>input.setSelectionRange(0,0));
+  fireEvent.change(input,{target:{value:'重'+original,selectionStart:1,selectionEnd:1}});
+  expect(input).toHaveValue('重'+original);
+  expect([input.selectionStart,input.selectionEnd]).toEqual([1,1]);
 });
 
 it('does not let an earlier response clear the active conversation or its references', async () => {

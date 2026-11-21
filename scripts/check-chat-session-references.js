@@ -19,5 +19,15 @@ async page => {
   await b('模拟成功').click();await b('模拟异步').click();await f.press('Enter');await to('writer');await b('新任务').click();await f.fill('新任务独立草稿');await to('chief');await main().getByText(/未发送给 Agent/).waitFor();check(await f.inputValue()===''&&await b('移除引用：会议纪要').count()===0,'A result clears only its completed draft '+width);await to('writer');check((await f.inputValue()).includes('@资料 v2')&&await b('移除引用：资料 v2').count()===1,'late A result leaves B intact '+width);await b('新任务').click();check(await f.inputValue()==='新任务独立草稿','new task stays separate '+width);
   const send=b('发送消息');await send.scrollIntoViewIfNeeded();const geometry=await send.evaluate(node=>{const r=node.getBoundingClientRect();return {ok:r.width>=43.5&&r.left>=0&&r.right<=innerWidth,hit:node.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))};});check(geometry.ok&&geometry.hit,'send remains reachable '+width);
  }
+ await go();const inspector=b('关闭详情');if(await inspector.isVisible())await inspector.click();
+ const same='@会议纪要 ', input=field();await input.fill(same);await input.evaluate(n=>n.setSelectionRange(0,n.value.length));
+ await b('添加引用').click();await dialog().getByRole('button',{name:'引用：会议纪要'}).click();await dialog().waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.tagName==='TEXTAREA');
+ check(await input.inputValue()===same&&await input.evaluate(n=>n.selectionStart===n.value.length&&n.selectionEnd===n.value.length),'unchanged reference collapses the selection immediately');
+ await input.evaluate(n=>n.setSelectionRange(0,0));await page.keyboard.insertText('重');
+ check(await input.inputValue()==='重'+same&&await input.evaluate(n=>n.selectionStart===1&&n.selectionEnd===1),'next edit is not repositioned by the old reference caret');
+ await page.goto(base+'/?review=clear-old-error#chat-foundation-composer');const composer=page.getByRole('region',{name:'Composer 组件展台'}), draft=composer.getByRole('textbox',{name:'消息'});
+ await draft.fill('合成草稿');await composer.getByRole('button',{name:'模拟失败',exact:true}).click();await draft.press('Enter');await composer.getByRole('alert').waitFor();
+ await composer.getByRole('button',{name:'模拟引用候选',exact:true}).click();await draft.press('Enter');
+ check(await draft.inputValue()==='合成草稿 @参考资料'&&await composer.getByRole('alert').count()===0&&await composer.getByText(/本地演示：已提交/).count()===0,'choosing a reference clears the prior error without submitting');
  check(errors.length===0,errors.join('; ')||'no page errors');await page.locator('body').evaluate((b,v)=>b.dataset.chatProof=JSON.stringify(v),checks);
 }
