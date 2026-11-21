@@ -8,7 +8,7 @@ async page => {
       ['rhine', 520, 'system', 1], ['rhine', 520, 'manual', 1],
       ['neo-brutalism', 520, 'system', 1], ['neo-brutalism', 520, 'manual', 1],
     ];
-  const failures = [], results = [], errors = [];
+  const failures = [], results = [], errors = [], dangerContrast = [];
   const onError = error => errors.push(error.message);
   page.on('pageerror', onError);
   const closeTo = (a, b) => a.every((value, i) => Math.abs(value - b[i]) < .25);
@@ -34,7 +34,18 @@ async page => {
       const settle = () => button.evaluate(node => Promise.all(node.getAnimations({subtree:true}).map(a=>a.finished.catch(()=>{}))));
       const edges = {};
       for (const edge of ['top', 'right', 'bottom', 'left', 'center']) {
-        await button.scrollIntoViewIfNeeded();
+        await button.evaluate(async node => {
+          node.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});
+          // Let the engine finish its scroll placement before choosing the
+          // edge in viewport coordinates; measure the press only after that.
+          let previous = '', stable = 0;
+          for (let frame = 0; frame < 30 && stable < 3; frame++) {
+            await new Promise(resolve=>requestAnimationFrame(resolve));
+            const rect=node.getBoundingClientRect(), key=[rect.x,rect.y,rect.width,rect.height].join();
+            stable=key===previous?stable+1:0;previous=key;
+          }
+          if (stable < 3) throw Error('button position did not settle before the edge sample');
+        });
         const pt = await button.evaluate((node, side) => {
           const r = node.getBoundingClientRect(), x = Math.round(r.x + r.width / 2), y = Math.round(r.y + r.height / 2);
           const candidates = {top:[x,Math.ceil(r.y),0,1],right:[Math.floor(r.right-1),y,-1,0],bottom:[x,Math.floor(r.bottom-1),0,-1],left:[Math.ceil(r.x),y,1,0],center:[x,y,0,0]};
@@ -74,7 +85,45 @@ async page => {
       expect(await button.getAttribute('aria-disabled')==='true' && disabled.focus && await count()===beforeDisabled, 'disabled action changes focus or activates');
       results.push({theme,width,motion,zoom,tabKey,edges});
     }
+    if (!context.baseline) {
+      for (const motion of ['normal','system','manual']) {
+        await page.setViewportSize({width:880,height:860});
+        await page.emulateMedia({reducedMotion: motion==='system'?'reduce':'no-preference'});
+        await page.goto(context.origin+'/?theme=arknights&dangerContrast='+motion+'#button-actions');
+        if(motion==='manual')await page.getByRole('radio',{name:'减少动态',exact:true}).check();
+        const button=page.locator('#button-actions').getByRole('button',{name:'删除记录',exact:true}).first();
+        await button.hover();
+        const settle=()=>button.evaluate(node=>Promise.all(node.getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{}))));
+        await settle();
+        const rect=await button.boundingBox();
+        const clip={x:Math.round(rect.x+rect.width/2)-2,y:Math.round(rect.y)+6,width:4,height:4};
+        const readContrast=async()=>{
+          const png=(await page.screenshot({clip,scale:'css'})).toString('base64');
+          return button.evaluate(async (node,png)=>{
+            // Sample the real composited face above the label, not just its CSS base color.
+            const image=new Image();image.src='data:image/png;base64,'+png;await image.decode();
+            const canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height;
+            const ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
+            const background=[...ctx.getImageData(1,1,1,1).data].slice(0,3);
+            ctx.fillStyle=getComputedStyle(node).color;ctx.fillRect(0,0,1,1);
+            const foreground=[...ctx.getImageData(0,0,1,1).data].slice(0,3);
+            const luminance=rgb=>rgb.map(channel=>channel/255).reduce((sum,s,index)=>sum+[.2126,.7152,.0722][index]*(s<=.04045?s/12.92:((s+.055)/1.055)**2.4),0);
+            const levels=[luminance(foreground),luminance(background)];
+            return {background,foreground,ratio:(Math.max(...levels)+.05)/(Math.min(...levels)+.05)};
+          },png);
+        };
+        const hover=await readContrast();
+        await page.mouse.move(rect.x+rect.width/2,rect.y+rect.height/2);await page.mouse.down();
+        let held;
+        try {await settle();held=await readContrast();}
+        finally {await page.mouse.move(rect.x-24,rect.y-24);await page.mouse.up();}
+        if (hover.ratio<4.5 || held.ratio<4.5 || hover.background.join()===held.background.join()) {
+          failures.push('arknights danger '+motion+': expected visible press feedback and 4.5:1 in both states, got '+hover.ratio.toFixed(2)+' / '+held.ratio.toFixed(2));
+        }
+        dangerContrast.push({motion,hover,held});
+      }
+    }
   } finally {page.off('pageerror', onError);}
-  const result = {pass: !failures.length && !errors.length, cases:results.length, samples:results.length*5, failures, errors, results};
+  const result = {pass: !failures.length && !errors.length, cases:results.length, samples:results.length*5, failures, errors, results, dangerContrast};
   await page.locator('body').evaluate((body,value)=>{body.dataset.pressVerification=JSON.stringify(value);}, result);
 }

@@ -22,7 +22,7 @@ Slider原number/value/onChange调用继续可用，新增marks:SliderMark[]与ge
 
 RangeSlider是同一条轨道上的两个原生range输入。value为只读[number,number]，onChange给出新的成对提案；thumbLabels分别命名，getValueText(value,index)提供单位文字。min/max/step必须有限且合法，minGap默认step且必须正数。值须在范围内、落在相对min的步长格点、严格有序且至少相差minGap；非法外部值只显示错误与原值，不发修正提案。
 
-拖动/点击选择较近游标，44px高操作区和44px游标，禁止跨越且不推挤另一端；键盘方向键一格、Page十格、Home/End到该端合法边界。横向方向键和指针都沿显示轴：RTL 最小值在物理右端，Right 减小、Left 增大；上下、Page 与 Home/End 保留数值语义。游标和刻度随同一轴。受控拒绝保持宿主旧值。readOnly保留可读值与原生表单序列化但阻止编辑，disabled排除提交；祖先fieldset禁用在指针开始、拖动提案和键盘/变更时按真实输入的:disabled检查，保留first legend例外。names为两端字段名，form可外关联。type=range无文本IME草稿，数字联动使用现有NumberField的IME/无效草稿契约。动态上限由宿主提供，720分钟内600现值保持可见；若宿主降到240，明确报告非法，不能静默改成240。
+拖动/点击选择较近游标，44px高操作区和44px游标，禁止跨越且不推挤另一端；键盘方向键一格、Page十格、Home/End到该端合法边界。横向方向键和指针都沿显示轴：RTL 最小值在物理右端，Right 减小、Left 增大；上下、Page 与 Home/End 保留数值语义。游标和刻度随同一轴，刻度按实际排版方向而非页面语种对齐；两端标签向轨道内侧伸展。受控拒绝保持宿主旧值。readOnly保留可读值与原生表单序列化但阻止编辑，disabled排除提交；祖先fieldset禁用在指针开始、拖动提案和键盘/变更时按真实输入的:disabled检查，保留first legend例外。names为两端字段名，form可外关联。type=range无文本IME草稿，数字联动使用现有NumberField的IME/无效草稿契约。动态上限由宿主提供，720分钟内600现值保持可见；若宿主降到240，明确报告非法，不能静默改成240。
 
 ## RemoteMultiSelect与TreeSelect生命周期
 

@@ -9,6 +9,7 @@ type Reference=(typeof references)[number];
 type Draft={text:string; attachments:Reference[]; error:string; submitted:string; pending?:number};
 const emptyDraft:Draft={text:'',attachments:[],error:'',submitted:''};
 type ReferenceSession={scope:string; text:string; start:number; end:number; query:string};
+const hasReferenceTrigger=(text:string,position:number)=>position>0&&text[position-1]==='@'&&(position===1||/\s/.test(text[position-2]));
 
 export function ChatFoundationGallery(){
  const [session,dispatch]=useReducer(chatSessionReducer,{...initialChatSessionState,phase:'ready',selectedAgentId:'chief',inspectorOpen:true});
@@ -42,7 +43,10 @@ export function ChatFoundationGallery(){
  useEffect(()=>{if(!inspector)inspectorTrigger.current?.querySelector('button')?.focus();},[inspector]);
  const openReference=(entry:'editor'|'button',text:string,end:number,start:number)=>{
   if(draft.pending!==undefined)return;
-  closeTarget.current=entry;setPicker({scope,text,start,end,query:''});
+  // When reopening via + at a collapsed caret, consume the same pending
+  // token as the typed entry. Do not strip an @ inside ordinary text.
+  const replaceFrom=start===end&&hasReferenceTrigger(text,start)?start-1:start;
+  closeTarget.current=entry;setPicker({scope,text,start:replaceFrom,end,query:''});
  };
  const visibleReferences=references.filter(item=>item.title.toLowerCase().includes(picker?.query.trim().toLowerCase()??''));
  const choose=(item:Reference)=>{
@@ -66,7 +70,7 @@ export function ChatFoundationGallery(){
   <Composer label="消息" value={draft.text} onChange={event=>{
     const node=event.currentTarget,text=node.value,end=node.selectionStart, native=event.nativeEvent as InputEvent;
     // A typed @ at a token boundary opens the same host picker as the button.
-    const token=end>0&&text[end-1]==='@'&&(end===1||/\s/.test(text[end-2]));
+    const token=hasReferenceTrigger(text,end);
     update(scope,current=>({...current,text,error:''}));
     if(token&&!native.isComposing&&!native.inputType?.startsWith('delete')&&native.inputType!=='insertFromPaste'&&native.inputType!=='insertFromDrop'&&(native.data==='@'||draft.text[end-1]!=='@'))openReference('editor',text,end,end-1);
   }} onSubmit={send} busy={draft.pending!==undefined} error={draft.error||undefined}

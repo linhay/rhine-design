@@ -74,6 +74,38 @@ it('uses the same reference panel from plus and @, adding without submission', a
   expect(screen.queryByText(/未发送给 Agent/)).not.toBeInTheDocument();
 });
 
+it.each([
+  ['@ 后文',1,'@会议纪要 后文'],
+  ['前文 @ 后文',4,'前文 @会议纪要 后文'],
+])('reuses a pending @ when switching to the plus button: %s',async (text,position,expected)=>{
+  render(<ChatFoundationGallery/>);
+  const draft=screen.getByRole('textbox',{name:'消息'}) as HTMLTextAreaElement;
+  act(()=>draft.focus());
+  fireEvent.change(draft,{target:{value:text,selectionStart:position,selectionEnd:position}});
+  const original=await screen.findByRole('dialog',{name:'添加引用'});
+  fireEvent.keyDown(within(original).getByRole('textbox',{name:'搜索引用'}),{key:'Escape'});
+  expect(draft).toHaveValue(text);
+  expect(draft.selectionStart).toBe(position);
+  expect(draft.selectionEnd).toBe(position);
+  fireEvent.click(screen.getByRole('button',{name:'添加引用'}));
+  const reopened=await screen.findByRole('dialog',{name:'添加引用'});
+  fireEvent.click(within(reopened).getByRole('button',{name:'引用：会议纪要'}));
+  expect(draft).toHaveValue(expected);
+  expect(draft.selectionStart).toBe(expected.indexOf(' 后文'));
+  expect(screen.getByRole('button',{name:'移除引用：会议纪要'})).toBeInTheDocument();
+  expect(screen.queryByText(/未发送给 Agent/)).not.toBeInTheDocument();
+});
+
+it('keeps a literal non-trigger @ when using the plus button',async()=>{
+  render(<ChatFoundationGallery/>);
+  const draft=screen.getByRole('textbox',{name:'消息'});
+  fireEvent.change(draft,{target:{value:'alice@'}});
+  expect(screen.queryByRole('dialog',{name:'添加引用'})).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button',{name:'添加引用'}));
+  fireEvent.click(within(await screen.findByRole('dialog',{name:'添加引用'})).getByRole('button',{name:'引用：会议纪要'}));
+  expect(draft).toHaveValue('alice@ @会议纪要 ');
+});
+
 it('does not let an earlier response clear the active conversation or its references', async () => {
   vi.useFakeTimers();
   try {

@@ -12,6 +12,28 @@ await go('cascade');await root().getByRole('button',{name:/同键分支/}).click
 await go('popover');await root().getByRole('button',{name:'打开退出原因对照'}).click();const pop=page.getByRole('dialog',{name:'退出原因对照'});await pop.waitFor();await page.keyboard.press('Escape');expect(await pop.isVisible(),'vetoed Escape stays open');await pop.getByRole('button',{name:'关闭详情'}).click();await root().getByText('关闭请求：escape / programmatic').waitFor();expect(await pop.isHidden(),'header closes with a fresh reason');
 await go('auto');const field=root().getByRole('combobox',{name:'限长名称'});await field.focus();const oversized=page.getByRole('option',{name:/阿尔法长名称/});await oversized.scrollIntoViewIfNeeded();const rect=await oversized.boundingBox();await page.mouse.click(rect.x+rect.width/2,rect.y+rect.height/2);expect(await field.inputValue()==='阿'&&await oversized.getAttribute('aria-disabled')==='true','oversize auto option cannot be picked');await field.press('ArrowDown');await field.press('Enter');await root().getByRole('button',{name:'读取补全快照'}).click();await root().getByText('收到名称：阿尔法组').waitFor();expect(true,'exact length item submitted unchanged');
 await go('confirm');const block=recover();await block.getByRole('button',{name:'打开对象甲'}).click();const da=page.getByRole('alertdialog',{name:'确认对象甲'});await da.getByRole('button',{name:'确认操作'}).click();await da.getByText('对象甲的合成失败').waitFor();await da.getByRole('button',{name:'取消'}).click();await da.waitFor({state:'hidden'});await block.getByRole('button',{name:'打开对象乙'}).click();const db=page.getByRole('alertdialog',{name:'确认对象乙'});await db.waitFor();expect(await db.getByRole('alert').count()===0,'reopened confirmation has no old error');await db.getByRole('button',{name:'确认操作'}).click();await db.getByText('对象乙的合成失败').waitFor();await db.getByRole('button',{name:'取消'}).click();
-for(const width of [880,400]){await page.setViewportSize({width,height:800});await go('axis'+width);const dir=recover().getByRole('combobox',{name:'阈值方向'}), low=recover().getByRole('slider',{name:'最低方向阈值'});for(const mode of ['ltr','rtl']){await dir.selectOption(mode);await low.press('ArrowRight');expect(await low.inputValue()===(mode==='rtl'?'19':'21'),'right arrow follows '+mode+' '+width);const track=recover().locator('.rhine-range-slider__track');await track.scrollIntoViewIfNeeded();const rect=await track.boundingBox(), marks=recover().getByRole('list',{name:'范围刻度'});const min=await marks.getByText('最小值',{exact:true}).boundingBox(),max=await marks.getByText('最大值',{exact:true}).boundingBox();expect(min.x>=rect.x-1&&max.x+max.width<=rect.x+rect.width+1&&(mode==='rtl'?min.x>max.x:min.x<max.x),'marks stay on axis '+mode+' '+width);await page.mouse.click(rect.x+rect.width-6,rect.y+rect.height/2);await recover().getByText(mode==='rtl'?'方向阈值：0 / 80':'方向阈值：21 / 100',{exact:true}).waitFor();expect(true,'physical right pointer aligns with axis '+mode+' '+width);}}
+for(const width of [880,400]){
+ await page.setViewportSize({width,height:800});await go('axis'+width);
+ const region=recover(), dir=region.getByRole('combobox',{name:'阈值方向'}), low=region.getByRole('slider',{name:'最低方向阈值'});
+ const track=region.locator('.rhine-range-slider__track'), marks=region.getByRole('list',{name:'范围刻度'});
+ const checkMarks=async (mode,label)=>{
+  const trackRect=await track.boundingBox(), min=await marks.getByText('最小值',{exact:true}).boundingBox(), mid=await marks.getByText('中间值',{exact:true}).boundingBox(), max=await marks.getByText('最大值',{exact:true}).boundingBox();
+  const fits=mark=>mark.x>=trackRect.x-1&&mark.x+mark.width<=trackRect.x+trackRect.width+1;
+  expect([min,mid,max].every(fits)&&(mode==='rtl'?min.x>mid.x&&mid.x>max.x:min.x<mid.x&&mid.x<max.x), 'all mark labels stay inside the track and follow '+label);
+  const logicalStart=mode==='rtl'?min.x+min.width:min.x, logicalEnd=mode==='rtl'?max.x:max.x+max.width;
+  const rulerStart=mode==='rtl'?trackRect.x+trackRect.width-22:trackRect.x+22, rulerEnd=mode==='rtl'?trackRect.x+22:trackRect.x+trackRect.width-22;
+  expect(Math.abs(logicalStart-rulerStart)<=1&&Math.abs(logicalEnd-rulerEnd)<=1, 'end labels align to the ruler anchors '+label);
+  expect(Math.abs(mid.x+mid.width/2-(trackRect.x+trackRect.width/2))<=1, 'middle mark stays centered '+label);
+ };
+ for(const mode of ['ltr','rtl']){
+  await dir.selectOption(mode);await low.press('ArrowRight');expect(await low.inputValue()===(mode==='rtl'?'19':'21'),'right arrow follows '+mode+' '+width);
+  await track.scrollIntoViewIfNeeded();await checkMarks(mode,mode+' '+width);
+  const rect=await track.boundingBox();await page.mouse.click(rect.x+rect.width-6,rect.y+rect.height/2);
+  await region.getByText(mode==='rtl'?'方向阈值：0 / 80':'方向阈值：21 / 100',{exact:true}).waitFor();expect(true,'physical right pointer aligns with axis '+mode+' '+width);
+ }
+ const host=region.locator('.rhine-range-slider').locator('..');
+ await host.evaluate(el=>{el.removeAttribute('dir');el.style.direction='rtl';});
+ await checkMarks('rtl','CSS direction rtl '+width);
+}
 expect(!errors.length,errors.join('; ')||'no page errors');await page.locator('body').evaluate((n,data)=>n.dataset.cindyProof=JSON.stringify(data),checks);
 }
