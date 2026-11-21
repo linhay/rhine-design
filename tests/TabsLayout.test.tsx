@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { Tabs } from '../components';
+import { Tabs, type TabsProps } from '../components';
 
 const items = [
   { value: 'a', label: '当前对象', content: <input aria-label="独立草稿" defaultValue="" /> },
@@ -26,6 +26,32 @@ describe('full-width content tabs', () => {
     rerender(<Tabs label="范围" fullWidth value="a" onValueChange={changed} items={items} />);
     expect(screen.getByLabelText('独立草稿')).toBeVisible();
     expect(screen.getByLabelText('独立草稿')).toHaveValue('合成草稿');
+  });
+
+  it('leaves keyboard entry at an enabled tab when the controlled selection is disabled, removed, or restored', () => {
+    const changed = vi.fn();
+    const view = (options: TabsProps['items']) => <><button>栏外操作</button><Tabs label="范围" value="a" onValueChange={changed} items={options} /></>;
+    const {rerender} = render(view(items));
+    const outside = screen.getByRole('button', {name:'栏外操作'});
+    outside.focus();
+    const entry = () => screen.getAllByRole('tab').filter(tab => tab.tabIndex === 0);
+    const first = screen.getByRole('tab', {name:'当前对象'}), alternative = screen.getByRole('tab', {name:'自定义范围与跨部门协作'});
+    expect(entry()).toEqual([first]);
+    rerender(view(items.map(item => item.value === 'a' ? {...item, disabled:true} : item)));
+    expect(entry()).toEqual([alternative]);
+    expect(alternative).toHaveAttribute('aria-selected','false');
+    expect(outside).toHaveFocus();
+    rerender(view(items.filter(item => item.value !== 'a')));
+    expect(entry()).toEqual([alternative]);
+    expect(screen.queryByRole('tabpanel')).not.toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+    alternative.focus();
+    fireEvent.keyDown(alternative, {key:'End'});
+    expect(changed).toHaveBeenCalledExactlyOnceWith('b');
+    rerender(view(items.map(item => ({...item, disabled:true}))));
+    expect(entry()).toEqual([]);
+    rerender(view(items));
+    expect(entry()).toEqual([screen.getByRole('tab', {name:'当前对象'})]);
   });
 
   it('skips disabled items in both directions and wraps with Home and End available', () => {

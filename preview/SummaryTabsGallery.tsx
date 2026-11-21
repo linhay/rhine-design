@@ -1,6 +1,20 @@
 import { useState } from 'react';
 import { Badge, Button, Dialog, IconButton, Inline, KeyValue, Select, Stack, Surface, Tabs, Text, TextField, Toolbar } from '../components';
 
+function TabEntryExample() {
+  const [state,setState]=useState('normal'), [value,setValue]=useState('primary');
+  const initial={value:'primary',label:'原栏目',content:<Text>当前已选的内容</Text>,disabled:state==='disabled'||state==='all'};
+  const alternatives=[{value:'backup',label:'备用栏目',content:<Text>备用内容</Text>,disabled:state==='all'}, {value:'history',label:'历史栏目',content:<Text>历史内容</Text>,disabled:state==='all'}];
+  return <Surface><Stack gap={3}>
+    <Text as="h2" variant="heading">当前页签失效时的键盘入口</Text>
+    <Select label="页签入口状态" value={state} onChange={event=>setState(event.target.value)}>
+      <option value="normal">正常</option><option value="disabled">禁用原栏目</option><option value="removed">移除原栏目</option><option value="all">全部禁用</option>
+    </Select>
+    <Tabs label="动态栏目" value={value} onValueChange={setValue} items={state==='removed'?alternatives:[initial,...alternatives]} />
+    <Text role="status">宿主值：{value}。切换开关不重置这个值。</Text>
+  </Stack></Surface>;
+}
+
 export function SummaryTabsGallery() {
   const [layout, setLayout] = useState<'content' | 'full' | 'fill'>('content');
   const [single, setSingle] = useState(false);
@@ -47,6 +61,7 @@ export function SummaryTabsGallery() {
         ]}/>
       </div>
     </Stack></Surface>
+    <TabEntryExample />
     <Surface><Stack gap={4}><Text as="h2" variant="heading">尺寸与层级</Text><KeyValue items={[
       {key:'title',label:'名称',value:'14 / 22 · 600'}, {key:'description',label:'身份摘要',value:'12 / 18 · 400'},
       {key:'padding',label:'上下内距',value:'12px / 12px'}, {key:'status',label:'名称到状态',value:'8px'},

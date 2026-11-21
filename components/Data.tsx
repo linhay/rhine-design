@@ -88,7 +88,10 @@ export function DataTable<T>({ caption, captionVisibility = 'visible', columns, 
   liveRows.current=new Map(visible.map(item=>[rowKey(item.row),item.row]));
   const activate=(key:string)=>{const current=liveRows.current.get(key);if(current!==undefined&&!loading&&!rowAction?.isDisabled?.(current))rowAction?.onActivate(current);};
   const eligible = visible.filter(({ row }) => !selection?.isDisabled?.(row)).map(({ row }) => rowKey(row));
-  const selectedCount = eligible.filter(key => selection?.keys.includes(key)).length;
+  const mixedKeys = new Set(selection?.mode === 'single' ? [] : selection?.mixedKeys);
+  const selectedCount = eligible.filter(key => selection?.keys.includes(key) && !mixedKeys.has(key)).length;
+  const allSelected = eligible.length > 0 && selectedCount === eligible.length;
+  const partiallySelected = !allSelected && (selectedCount > 0 || eligible.some(key => mixedKeys.has(key)));
   const toggle = (keys: string[], key: string) => keys.includes(key) ? keys.filter(item => item !== key) : [...keys, key];
   const columnStyle = (column: DataColumn<T>): CSSProperties => ({ width: column.width, minWidth: column.width, [column.sticky ?? 'left']: pinColumns && column.sticky ? offsets[column.key] : undefined });
   return <div className="rhine-data" aria-busy={loading} data-density={density}>
@@ -107,7 +110,7 @@ export function DataTable<T>({ caption, captionVisibility = 'visible', columns, 
       }
     }} style={{ maxHeight, scrollPaddingLeft: pinColumns ? bands.left : undefined, scrollPaddingRight: pinColumns ? bands.right : undefined }}>
       <table ref={table} className="rhine-table" data-sticky-header={stickyHeader}><caption className={captionVisibility === 'hidden' ? 'rhine-sr-only' : undefined}>{caption}</caption><thead><tr>
-        {selection && <th scope="col" className="rhine-table__selection">{selection.mode === 'single' || selection.hideSelectAll ? '选择' : <Checkbox label="选择当前可见行" checked={!!eligible.length && selectedCount === eligible.length} indeterminate={selectedCount > 0 && selectedCount < eligible.length} disabled={loading || !eligible.length} onChange={() => selection.onChange(selectedCount === eligible.length ? selection.keys.filter(key => !eligible.includes(key)) : [...new Set([...selection.keys, ...eligible])])} />}</th>}
+        {selection && <th scope="col" className="rhine-table__selection">{selection.mode === 'single' || selection.hideSelectAll ? '选择' : <Checkbox label="选择当前可见行" checked={allSelected} indeterminate={partiallySelected} disabled={loading || !eligible.length} onChange={() => selection.onChange(allSelected ? selection.keys.filter(key => !eligible.includes(key)) : [...new Set([...selection.keys, ...eligible])])} />}</th>}
         {expansion && <th scope="col">层级 / 详情</th>}{rowAction&&<th scope="col">操作</th>}
         {columns.map(column => <th scope="col" key={column.key} aria-label={column.header} aria-describedby={column.headerDescription?`${id}-header-${column.key}`:undefined} data-column-key={column.key} data-align={column.align} data-sticky={pinColumns ? column.sticky : undefined} style={columnStyle(column)} aria-sort={column.sortable ? sort?.key === column.key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none' : undefined}>{column.sortable && onSortChange ? <button type="button" disabled={loading} title={`按${sort?.key === column.key && sort.direction === 'asc' ? '降' : '升'}序排列${column.header}`} onClick={() => onSortChange({ key: column.key, direction: sort?.key === column.key && sort.direction === 'asc' ? 'desc' : 'asc' })}>{column.header}<span aria-hidden="true">{sort?.key === column.key ? sort.direction === 'asc' ? ' ↑' : ' ↓' : ' ↕'}</span></button> : column.header}{column.headerHelp&&<Tooltip content={column.headerHelp}><IconButton label={'关于'+column.header} icon="help"/></Tooltip>}{column.headerDescription&&<span className="rhine-table__header-description" id={`${id}-header-${column.key}`}>{column.headerDescription}</span>}</th>)}</tr></thead>
       <tbody>{visible.map(({ row, depth, expandable }) => {
@@ -116,7 +119,7 @@ export function DataTable<T>({ caption, captionVisibility = 'visible', columns, 
         const detailId = `${id}-detail-${encodeURIComponent(key)}`;
         const detail = expanded ? expansion?.renderDetail?.(row) : null;
         const hasDetail = detail !== null && detail !== undefined && typeof detail !== 'boolean';
-        const mixed=selection?.mode!=='single'&&!!selection?.mixedKeys?.includes(key);
+        const mixed = mixedKeys.has(key);
         return <Fragment key={key}><tr data-row-key={key} data-tone={presentation?.tone} data-selected={selection?.mode === 'single' ? selection.keys[0] === key : !mixed && selection?.keys.includes(key)} onClick={event=>{if(event.defaultPrevented||event.detail>1||!(event.target instanceof Element)||event.currentTarget.contains(event.target.closest('a,button,input,select,textarea,label,summary,[role=button],[role=link],[tabindex],[contenteditable=true],[data-row-interactive]'))||window.getSelection()?.isCollapsed===false)return;if(expansion?.rowToggle&&expandable){expansion.onChange(toggle(expansion.keys,key));return;}if(rowAction)activate(key);}}>
           {selection && <td className="rhine-table__selection">{selection.mode === 'single' ? <label className="rhine-table__radio"><input type="radio" name={`${id}-selection`} checked={selection.keys[0] === key} disabled={loading || selection.isDisabled?.(row)} onChange={() => selection.onChange([key])} /><span>{`选择${rowLabel(row)}`}</span></label> : <Checkbox label={`选择${rowLabel(row)}`} checked={!mixed&&selection.keys.includes(key)} indeterminate={mixed} disabled={loading || selection.isDisabled?.(row)} onChange={() => selection.onChange(toggle(selection.keys, key))} />}</td>}
           {expansion && <td><span className="rhine-table__depth">第 {depth + 1} 层</span>{expandable && <Button variant="quiet" aria-label={`${expanded ? '收起' : '展开'}${rowLabel(row)}`} aria-expanded={!!expanded} aria-controls={hasDetail ? detailId : undefined} onClick={() => expansion.onChange(toggle(expansion.keys, key))}>{expanded ? '−' : '+'}</Button>}</td>}
@@ -134,12 +137,19 @@ export interface PaginationProps {
 }
 export function Pagination({ page, pageSize, total, hasNext = false, loading = false, disabled = false, onPageChange, layout = 'wrap', pageSizeLabelVisibility = 'visible', pageSizeOptions = [10, 25, 50], onPageSizeChange, showFirstButton = false, showLastButton = false, label = '分页' }: PaginationProps) {
   const root = useRef<HTMLElement>(null), focusedAction = useRef<HTMLButtonElement | null>(null);
+  const [focusedKey, setFocusedKey] = useState<string>();
   const size = Number.isFinite(pageSize) ? Math.max(1, Math.floor(pageSize)) : 1;
   const count = total === undefined || !Number.isFinite(total) || total < 0 ? undefined : Math.floor(total);
   const pages = count === undefined ? undefined : Math.max(1, Math.ceil(count / size));
   const current = Number.isFinite(page) ? Math.max(1, Math.floor(page)) : 1;
   const next = pages === undefined ? hasNext : current < pages;
   const unavailable = loading || disabled;
+  const actionAvailability = (key: string, atBoundary: boolean) => {
+    // Native disabled removes focus. Keep only the action in use focusable
+    // while loading; the shared Button still rejects click and keyboard activation.
+    const retain = loading && !disabled && focusedKey === key;
+    return { disabled: !retain && (unavailable || atBoundary), 'aria-disabled': retain || undefined };
+  };
   useLayoutEffect(() => {
     const focused = focusedAction.current;
     if (!root.current || !focused || !focused.disabled || !root.current.contains(focused)) return;
@@ -149,12 +159,21 @@ export function Pagination({ page, pageSize, total, hasNext = false, loading = f
     const fallback = actions.slice(index + 1).find(action => !action.disabled) ?? actions.slice(0, index).reverse().find(action => !action.disabled);
     fallback?.focus();
   }, [current, pages, next, unavailable, showFirstButton, showLastButton]);
-  return <nav ref={root} className={`rhine-pagination${layout === 'inline' ? ' rhine-pagination--inline' : ''}`} aria-label={label} aria-busy={loading} onFocusCapture={event => { focusedAction.current = event.target instanceof HTMLButtonElement && event.target.hasAttribute('data-pagination-action') ? event.target : null; }} onBlurCapture={event => { if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) focusedAction.current = null; }}>
+  return <nav ref={root} className={`rhine-pagination${layout === 'inline' ? ' rhine-pagination--inline' : ''}`} aria-label={label} aria-busy={loading} onFocusCapture={event => {
+    const target = event.target;
+    focusedAction.current = target instanceof HTMLButtonElement && target.hasAttribute('data-pagination-action') ? target : null;
+    setFocusedKey(focusedAction.current?.dataset.paginationAction);
+  }} onBlurCapture={event => {
+    if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) {
+      focusedAction.current = null;
+      setFocusedKey(undefined);
+    }
+  }}>
     <span className="rhine-text rhine-text--caption rhine-text--numeric" role="status">{count === undefined ? `第 ${current} 页` : current > pages! ? `第 ${current} 页（已超出 ${pages} 页） · 共 ${count} 条` : `第 ${current} / ${pages} 页 · 共 ${count} 条`}</span>
     {onPageSizeChange && <Select label="每页条数" labelVisibility={pageSizeLabelVisibility} value={size} disabled={unavailable} onChange={event => onPageSizeChange(Number(event.target.value))}>{[...new Set([size, ...pageSizeOptions.filter(value => Number.isInteger(value) && value > 0)])].sort((a, b) => a - b).map(value => <option value={value} key={value}>{value} 条</option>)}</Select>}
-    {showFirstButton && <Button variant="secondary" data-pagination-action="first" disabled={unavailable || current <= 1} onClick={() => onPageChange(1)}>首页</Button>}
-    <Button variant="secondary" data-pagination-action="previous" disabled={unavailable || current <= 1} onClick={() => onPageChange(Math.min(current - 1, pages ?? current - 1))}>上一页</Button>
-    <Button variant="secondary" data-pagination-action="next" disabled={unavailable || !next} onClick={() => onPageChange(current + 1)}>下一页</Button>
-    {showLastButton && <Button variant="secondary" data-pagination-action="last" disabled={unavailable || pages === undefined || current === pages} onClick={() => { if (pages !== undefined) onPageChange(pages); }}>末页</Button>}
+    {showFirstButton && <Button variant="secondary" data-pagination-action="first" {...actionAvailability('first', current <= 1)} onClick={() => onPageChange(1)}>首页</Button>}
+    <Button variant="secondary" data-pagination-action="previous" {...actionAvailability('previous', current <= 1)} onClick={() => onPageChange(Math.min(current - 1, pages ?? current - 1))}>上一页</Button>
+    <Button variant="secondary" data-pagination-action="next" {...actionAvailability('next', !next)} onClick={() => onPageChange(current + 1)}>下一页</Button>
+    {showLastButton && <Button variant="secondary" data-pagination-action="last" {...actionAvailability('last', pages === undefined || current === pages)} onClick={() => { if (pages !== undefined) onPageChange(pages); }}>末页</Button>}
   </nav>;
 }

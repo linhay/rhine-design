@@ -5,7 +5,7 @@ import { Stack } from './Layout';
 import { Icon } from './Actions';
 import { useDismissFocus } from './focus-recovery';
 import { Combobox } from './Forms';
-import type { ProvidedFieldProps, QueryInputProps } from './field-support';
+import { exceedsTextLimit, type ProvidedFieldProps, type QueryInputProps } from './field-support';
 import { Menu, Popover } from './Overlays';
 export { ConfigProvider, useConfig } from './config';
 
@@ -29,7 +29,10 @@ export interface AutoCompleteProps extends ProvidedFieldProps, QueryInputProps {
   loading?:boolean; optionsError?:string; onRetry?:()=>void; placeholder?:string;
 }
 export function AutoComplete({ label, value, onChange, options, onSelect, id, name, form, required, disabled, readOnly, hint, error, loading, optionsError, onRetry, placeholder, minLength, maxLength, pattern, autoComplete, inputMode, 'aria-describedby': describedBy }: AutoCompleteProps) {
-  return <Combobox id={id} label={label} query={value} onQueryChange={onChange} value={options.includes(value) ? value : null} options={[...new Set(options)].filter(option => option.includes(value)).map(option => ({ value: option, label: option }))} disabled={disabled} readOnly={readOnly} hint={hint} validationError={error} loading={loading} error={optionsError} onRetry={onRetry} placeholder={placeholder} inputProps={{name,form,required,minLength,maxLength,pattern,autoComplete,inputMode,'aria-describedby':describedBy}} onValueChange={option => { onChange(option.value); onSelect?.(option.value); }} />;
+  return <Combobox id={id} label={label} query={value} onQueryChange={onChange} value={options.includes(value) ? value : null} options={[...new Set(options)].filter(option => option.includes(value)).map(option => {
+    const oversized = exceedsTextLimit(option, maxLength);
+    return { value: option, label: oversized ? option + '（超过字数上限）' : option, disabled: oversized };
+  })} disabled={disabled} readOnly={readOnly} hint={hint} validationError={error} loading={loading} error={optionsError} onRetry={onRetry} placeholder={placeholder} inputProps={{name,form,required,minLength,maxLength,pattern,autoComplete,inputMode,'aria-describedby':describedBy}} onValueChange={option => { if (!exceedsTextLimit(option.value, maxLength)) { onChange(option.value); onSelect?.(option.value); } }} />;
 }
 
 export interface FormProps extends Omit<FormHTMLAttributes<HTMLFormElement>,'onSubmit'|'children'> { label:string; children:ReactNode; onSubmit:(event:FormEvent<HTMLFormElement>)=>void }

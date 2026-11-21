@@ -68,6 +68,8 @@ export function Tabs({ label, items, value, onValueChange, layout = 'content', f
   const id = useId();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const hasActions = actions != null && actions !== false;
+  const selectedEntry = items.findIndex(item => item.value === value && !item.disabled);
+  const entry = selectedEntry < 0 ? items.findIndex(item => !item.disabled) : selectedEntry;
   const tablist = <div role="tablist" aria-label={label} className={classes('rhine-tabs__list', `rhine-tabs__list--${layout}`, fullWidth && 'rhine-tabs__list--full-width', items.some(item => item.description || item.status) && 'rhine-tabs__list--detailed')} onKeyDown={event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       const available = items.map((item, index) => ({ ...item, index })).filter(item => !item.disabled);
@@ -80,7 +82,7 @@ export function Tabs({ label, items, value, onValueChange, layout = 'content', f
       {items.map((item, index) => <button key={item.value} ref={node => { buttons.current[index] = node; }}
         type="button" role="tab" disabled={item.disabled} id={`${id}-tab-${index}`} aria-controls={`${id}-panel-${index}`}
         aria-label={item.label} aria-describedby={[item.description && `${id}-description-${index}`, item.status && `${id}-status-${index}`].filter(Boolean).join(' ') || undefined}
-        aria-selected={value === item.value} tabIndex={value === item.value ? 0 : -1} onClick={() => onValueChange(item.value)}>
+        aria-selected={value === item.value} tabIndex={index === entry ? 0 : -1} onClick={() => onValueChange(item.value)}>
         {item.description || item.status ? <><span className="rhine-tabs__title">{item.label}{item.status && <span id={`${id}-status-${index}`} className="rhine-tabs__status">{item.status}</span>}</span>
           {item.description && <span id={`${id}-description-${index}`} className="rhine-tabs__description">{item.description}</span>}</> : item.label}
       </button>)}

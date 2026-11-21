@@ -1,5 +1,21 @@
 import { useId, useState } from 'react';
 import { AutoComplete, Button, Cascader, Checkbox, ColorPicker, ErrorSummary, Fieldset, Form, Inline, Mentions, Rate, Select, Slider, Stack, Text, TimePicker, Transfer, Upload, type CascadeOption, type FieldError } from '../components';
+import { CindyRecoveryExamples, CindySelectionExamples } from './CindyControlFollowups';
+
+function ExternalUploadExample() {
+  const formId=useId();
+  const [generation,setGeneration]=useState(0), [files,setFiles]=useState<File[]>([]), [count,setCount]=useState<number>();
+  return <Stack gap={3}>
+    <Text as="h2" variant="section">外置表单与受控附件</Text>
+    <Text tone="muted">选择文件后可重建同 ID 表单，附件继续交给当前表单；这里只生成本地快照。</Text>
+    <Upload label="外置附件" form={formId} name="files" files={files} onChange={setFiles} required />
+    <Button variant="secondary" onClick={()=>{setGeneration(value=>value+1);setCount(undefined);}}>重建外置表单</Button>
+    <Form key={generation} id={formId} label="外置附件表单" onSubmit={event=>setCount(new FormData(event.currentTarget).getAll('files').filter(value=>value instanceof File).length)}>
+      <Button type="submit">读取附件快照</Button>
+    </Form>
+    {count!==undefined&&<Text role="status">外置表单收到 {count} 个文件</Text>}
+  </Stack>;
+}
 
 const people=[{id:'a',label:'研究组'},{id:'b',label:'协作组'}];
 export function FormIntegrationGallery() {
@@ -50,5 +66,8 @@ export function FormIntegrationGallery() {
       </Stack>
     </Form>
     {snapshot&&<Stack gap={2}><Text role="status">本地提交快照已生成，未保存业务数据。</Text><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere',maxWidth:'100%'}}>{JSON.stringify(snapshot,null,2)}</pre></Stack>}
+    <ExternalUploadExample />
+    <CindySelectionExamples />
+    <CindyRecoveryExamples />
   </Stack></section>;
 }

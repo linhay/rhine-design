@@ -37,8 +37,8 @@ describe('provided component boundary regressions', () => {
   it('Upload disables every change entry point', () => {
     const change=vi.fn();render(<Upload label="附件" files={[new File(['demo'],'synthetic.txt')]} onChange={change} disabled/>);
     expect(screen.getByLabelText('附件')).toBeDisabled();
-    expect(screen.getByRole('button',{name:'移除'})).toBeDisabled();
-    fireEvent.click(screen.getByRole('button',{name:'移除'}));expect(change).not.toHaveBeenCalled();
+    expect(screen.getByRole('button',{name:/^移除 /})).toBeDisabled();
+    fireEvent.click(screen.getByRole('button',{name:/^移除 /}));expect(change).not.toHaveBeenCalled();
   });
   it('Rate isolates same-label instances', () => {
     function Demo(){const[a,setA]=useState(1),[b,setB]=useState(2);return <><Rate label="评分" value={a} onChange={setA}/><Rate label="评分" value={b} onChange={setB}/></>;}
@@ -181,12 +181,12 @@ describe('related controlled-state and lifecycle boundaries', () => {
 describe('upload removal focus ownership', () => {
   it('returns lost removal focus to the native picker after acceptance', async () => {
     function Demo(){const[files,setFiles]=useState([new File(['demo'],'example.txt')]);return <Upload label="可移除文件" files={files} onChange={setFiles}/>;}
-    render(<Demo/>);const button=screen.getByRole('button',{name:'移除'});act(()=>button.focus());fireEvent.click(button);
+    render(<Demo/>);const button=screen.getByRole('button',{name:/^移除 /});act(()=>button.focus());fireEvent.click(button);
     await waitFor(()=>expect(screen.getByLabelText('可移除文件',{selector:'input'})).toHaveFocus());
   });
   it('does not restore a rejected or a host-transferred removal', async () => {
     function Demo(){const[files,setFiles]=useState([new File(['demo'],'example.txt')]);return <><Upload label="主控交接" files={files} onChange={next=>{setFiles(next);screen.getByRole('textbox',{name:'主控目标'}).focus();}}/><input aria-label="主控目标"/></>;}
-    render(<Demo/>);const button=screen.getByRole('button',{name:'移除'});act(()=>button.focus());fireEvent.click(button);
+    render(<Demo/>);const button=screen.getByRole('button',{name:/^移除 /});act(()=>button.focus());fireEvent.click(button);
     await act(async()=>{await Promise.resolve();});expect(screen.getByRole('textbox',{name:'主控目标'})).toHaveFocus();
   });
 });

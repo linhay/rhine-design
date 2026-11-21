@@ -49,6 +49,39 @@ describe('provided form interoperability', () => {
     const dispatch=()=>{const data=new FormData(),event=new Event('formdata');Object.defineProperty(event,'formData',{value:data});form.dispatchEvent(event);return data;};
     expect(screen.getByLabelText('文件')).toHaveAttribute('accept','.txt');expect(screen.getByLabelText('文件')).not.toHaveAttribute('multiple');expect(screen.getByLabelText('文件')).toBeDisabled();const stored=dispatch().get('attachments') as File;expect(stored).toBeInstanceOf(File);expect(stored.name).toBe('safe.txt');expect(stored.type).toBe('text/plain');expect(stored.size).toBe(file.size);const content=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsText(stored);});expect(content).toBe('safe');unmount();expect(dispatch().has('attachments')).toBe(false);form.remove();
   });
+  it('serializes each file once to its current external form after same-id replacement', () => {
+    const files = [new File(['safe'], 'safe.txt')];
+    const formId = 'replaceable-file-form';
+    const view = (generation: number) => <><form id={formId} key={generation} aria-label="当前附件表单"/><form aria-label="其他表单"/><Upload label="附件" name="files" form={formId} files={files} onChange={() => {}} required /></>;
+    const { rerender, unmount } = render(view(0));
+    const old = screen.getByRole('form', { name: '当前附件表单' });
+    const submit = (target: HTMLElement) => {
+      const event = new Event('formdata'), data = new FormData();
+      Object.defineProperty(event, 'formData', { value: data });
+      target.dispatchEvent(event);
+      return data.getAll('files');
+    };
+    expect(submit(old)).toEqual(files);
+    rerender(view(1));
+    const current = screen.getByRole('form', { name: '当前附件表单' });
+    expect(current).not.toBe(old);
+    expect((screen.getByLabelText('附件') as HTMLInputElement).form).toBe(current);
+    expect(submit(current)).toEqual(files);
+    expect(submit(old)).toEqual([]);
+    expect(submit(screen.getByRole('form', { name: '其他表单' }))).toEqual([]);
+    unmount();
+    document.body.append(current);
+    expect(submit(current)).toEqual([]);
+    current.remove();
+  });
+  it('names removal by file and only removes the named file', () => {
+    const first = new File(['one'], '设计稿.txt'), second = new File(['two'], '会议纪要.txt');
+    const change = vi.fn();
+    render(<Upload label="附件" files={[first, second]} onChange={change} />);
+    expect(screen.getByRole('button', {name: '移除 设计稿.txt'})).toHaveTextContent('移除');
+    fireEvent.click(screen.getByRole('button', {name: '移除 会议纪要.txt'}));
+    expect(change).toHaveBeenCalledExactlyOnceWith([first]);
+  });
   it('does not serialize disabled controlled files and bases required on the controlled list', () => {
     const file=new File(['safe'],'safe.txt');const props={label:'必选文件',name:'files',files:[file],onChange:()=>undefined,required:true};const{rerender}=render(<form aria-label="文件表单"><Upload {...props} disabled/></form>);
     expect(screen.getByLabelText('必选文件')).not.toHaveAttribute('required');const owner=screen.getByRole('form'),data=new FormData(),event=new Event('formdata');Object.defineProperty(event,'formData',{value:data});owner.dispatchEvent(event);expect(data.has('files')).toBe(false);rerender(<form aria-label="文件表单"><Upload {...props} files={[]}/></form>);expect(screen.getByLabelText('必选文件')).toHaveAttribute('required');

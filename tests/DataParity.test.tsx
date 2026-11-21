@@ -8,6 +8,16 @@ const columns = [{ key: 'id', header: '标识', render: (row: { id: string }) =>
 const base = { caption: '记录', rows, columns, rowKey: (row: { id: string }) => row.id };
 
 describe('DataTable framework parity', () => {
+  it.each([['b', 'a', 'off-page', 'locked'], ['off-page', 'locked']])('summarizes visible mixed rows without clearing eligible or unrelated keys (%j)', (...keys) => {
+    const change = vi.fn();
+    render(<DataTable {...base} selection={{ keys, mixedKeys: ['b'], isDisabled: row => row.id === 'locked', onChange: change }} />);
+    const bulk = screen.getByRole('checkbox', { name: '选择当前可见行' });
+    expect(screen.getByRole('checkbox', { name: '选择b' })).toBePartiallyChecked();
+    expect(bulk).toBePartiallyChecked();
+    expect(bulk).not.toBeChecked();
+    fireEvent.click(bulk);
+    expect(new Set(change.mock.calls[0][0])).toEqual(new Set(['b', 'a', 'off-page', 'locked']));
+  });
   it.each(['multiple', 'single'] as const)('retains full %s row names, native labels and disabled state beside ordinary visible labels', mode => {
     const name = '跨区域协作资料'.repeat(12) + 'WorkspaceArchiveABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     render(<><Checkbox label="普通表单标签" /><DataTable {...base} rowLabel={row => row.id === 'b' ? name : row.id}
@@ -246,6 +256,30 @@ describe('Pagination framework parity', () => {
     expect(within(nav).getAllByRole('button').every(button => button.hasAttribute('disabled'))).toBe(true);
     expect(screen.getByLabelText('每页条数')).toBeDisabled();
     expect(nav).toHaveAttribute('aria-busy', 'false');
+  });
+
+  it('keeps the active action focused through loading without repeating its request or stealing focus', () => {
+    const change = vi.fn();
+    const view = (page: number, loading: boolean) => <><button>外部操作</button><Pagination page={page} pageSize={10} total={40} loading={loading} onPageChange={change} /></>;
+    const { rerender } = render(view(1, false));
+    const next = screen.getByRole('button', { name: '下一页' });
+    act(() => next.focus());
+    fireEvent.click(next);
+    rerender(view(1, true));
+    expect(next).toHaveFocus();
+    expect(next).not.toBeDisabled();
+    expect(next).toHaveAttribute('aria-disabled', 'true');
+    fireEvent.click(next);
+    expect(change).toHaveBeenCalledTimes(1);
+    rerender(view(2, false));
+    expect(next).toHaveFocus();
+    fireEvent.click(next);
+    expect(change.mock.calls).toEqual([[2], [3]]);
+    rerender(view(2, true));
+    const outside = screen.getByRole('button', { name: '外部操作' });
+    act(() => outside.focus());
+    rerender(view(3, false));
+    expect(outside).toHaveFocus();
   });
 
   it('moves focus to the nearest enabled action at a boundary without stealing focus from elsewhere', () => {

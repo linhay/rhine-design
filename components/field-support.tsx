@@ -6,6 +6,10 @@ export interface ProvidedFieldProps {
   hint?: string; error?: string; required?: boolean; 'aria-describedby'?: string;
 }
 export type QueryInputProps = Pick<InputHTMLAttributes<HTMLInputElement>, 'name' | 'form' | 'required' | 'minLength' | 'maxLength' | 'pattern' | 'autoComplete' | 'inputMode' | 'aria-describedby'>;
+/** Match the native field's explicit UTF-16 length limit for programmatic inserts. */
+export function exceedsTextLimit(value: string, maxLength?: number) {
+  return maxLength !== undefined && Number.isInteger(maxLength) && maxLength >= 0 && value.length > maxLength;
+}
 export function fieldDescription(id: string, hint?: string, error?: string, extra?: string) {
   return [extra, hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
 }

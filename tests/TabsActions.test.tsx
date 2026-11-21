@@ -69,6 +69,26 @@ describe('Tabs header actions', () => {
     expect(screen.queryByRole('group')).not.toBeInTheDocument();
   });
 
+  it.each([
+    ['button', true], ['button', 'true'], ['submit', true], ['submit', 'true'],
+  ] as const)('blocks an aria-disabled icon action and its default %s behavior (%s)', (type, inactive) => {
+    const click = vi.fn(), submit = vi.fn();
+    const view = (value: boolean | 'true') => <form onSubmit={event => {event.preventDefault(); submit();}}><IconButton label="确认示例" icon="check" type={type} aria-disabled={value} onClick={click} /></form>;
+    const {rerender} = render(view(inactive));
+    const button = screen.getByRole('button', {name:'确认示例'});
+    button.focus();
+    expect(button).toHaveFocus();
+    expect(button).not.toBeDisabled();
+    expect(fireEvent.click(button)).toBe(false);
+    expect(click).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+    rerender(view(false));
+    expect(button).toHaveFocus();
+    fireEvent.click(button);
+    expect(click).toHaveBeenCalledOnce();
+    expect(submit).toHaveBeenCalledTimes(type === 'submit' ? 1 : 0);
+  });
+
   it('keeps an icon action focusable and inert while busy, with its ref and label intact', () => {
     const click = vi.fn();
     const ref = { current: null as HTMLButtonElement | null };

@@ -44,7 +44,7 @@
   color: var(--rhine-ink);
   box-shadow: 3px 3px 0 var(--rhine-ink);
   font-weight: 700;
-  transition: background-color 120ms, transform 80ms, box-shadow 80ms;
+  transition: background-color 120ms, box-shadow 80ms;
 }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--secondary { background: #fff; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--quiet { background: transparent; border-color: transparent; box-shadow: none; }
@@ -52,7 +52,7 @@
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:hover:not(:disabled):not([aria-disabled=true]) { background: #ffb16e; border-color: var(--rhine-ink); }
 .rhine-theme[data-rhine-theme="neo-brutalism"] :is(.rhine-button--secondary, .rhine-button--quiet):hover:not(:disabled):not([aria-disabled=true]) { background: var(--rhine-selected); }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button--danger:hover:not(:disabled):not([aria-disabled=true]) { background: #81262d; }
-.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: translate(3px, 3px); box-shadow: none; }
+.rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { box-shadow: none; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:is(:disabled,[data-disabled=true],[aria-disabled=true]:not([aria-busy=true])) { background: #e1e5e8; color: var(--rhine-muted); border-color: #89929a; box-shadow: none; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button[aria-busy=true] { box-shadow: none; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] :is(button, input, select, textarea, summary, a, [tabindex]):focus-visible { outline: 3px solid var(--rhine-ink); outline-offset: 4px; }
@@ -85,7 +85,3 @@
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-progress__track { height: 10px; border: 1.5px solid var(--rhine-ink); border-radius: 6px; background: #e7ebee; }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-progress__track>span { background: var(--rhine-signal); }
 .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-side-nav a[aria-current=page] { color: var(--rhine-ink); border: 2px solid var(--rhine-ink); background: var(--rhine-selected); font-weight: 700; }
-@media(prefers-reduced-motion:reduce) {
-  .rhine-theme[data-rhine-theme="neo-brutalism"] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: none; }
-}
-.rhine-theme[data-rhine-theme="neo-brutalism"][data-rhine-motion=reduced] .rhine-button:active:not(:disabled):not([aria-disabled=true]) { transform: none; }

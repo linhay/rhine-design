@@ -11,9 +11,9 @@
 | 组件 | 输入与所有权 | 交互边界 |
 | --- | --- | --- |
 | Dropdown | label、items（id/label/disabled）、onSelect | 复用命令 Menu；方向键/Home/End/typeahead 跳过禁用项，选择或 Escape 关闭并归焦。不是导航、远程搜索或保存。 |
-| AutoComplete | label、受控 value/onChange、字符串 options、可选 onSelect | 复用 Combobox，保留任意自定义文本；方向键/Enter 选择，Escape 只收起候选，Tab 离开。不发远程请求；输入法组合保护沿用 Combobox。 |
-| Cascader | label、options、受控 value/onChange、disabled | 节点为 value/label/disabled/children；任意深度逐层进入、返回上级；只在叶子回传完整路径，展开中间节点不提交。上下/Home/End 移焦，右键进入、左键返回；Escape/外部点击退出不改值。 |
-| Mentions | label、受控 value/onChange、options、disabled | 光标前的空白或行首 @ 查询本地候选；首次下键从首项、首次上键从末项开始，之后循环移焦；Enter 插入并保留其余文本，组合输入期间不提交候选，Escape/Tab 退出保留草稿。光标和插入点属于文本输入；不发送消息或识别账号权限。 |
+| AutoComplete | label、受控 value/onChange、字符串 options、可选 onSelect | 复用 Combobox，保留任意自定义文本；方向键/Enter 选择，Escape 只收起候选，Tab 离开。不发远程请求；输入法组合保护沿用 Combobox。显式 maxLength 也约束组件代填，候选超限可见但不可选择。 |
+| Cascader | label、options、受控 value/onChange、disabled | 节点为 value/label/disabled/children；任意深度逐层进入、返回上级；只在叶子回传完整路径，展开中间节点不提交；已选标记按浏览分支与已提交路径的共同前缀匹配。上下/Home/End 移焦，右键进入、左键返回；Escape/外部点击退出不改值。 |
+| Mentions | label、受控 value/onChange、options、disabled | 光标前的空白或行首 @ 查询本地候选；首次下键从首项、首次上键从末项开始，之后循环移焦；Enter 插入并保留其余文本，组合输入期间不提交候选，Escape/Tab 退出保留草稿。高亮按候选字符串保留，移除时清空高亮；显式 maxLength 同样约束候选插入，超限保留完整正文和焦点并提示。光标和插入点属于文本输入；不发送消息或识别账号权限。 |
 | Image | alt、可选 src/caption | 原生按钮打开实际图片 Dialog；无 src 明确说明未提供，不伪装已加载。复用模态焦点约束、关闭按钮和 Escape；关闭返回触发按钮。不是资产解码器、图片组或编辑器。 |
 | Popconfirm | label、title、onConfirm | 复用非模态 Popover，初始焦点在取消；确认才回调，取消/外部点击/Escape 不执行。仅同步意图；需要异步失败/忙态锁定的破坏性流程使用既有 ConfirmDialog。 |
 | Tour | title/description、受控 step/total、onNext/onPrevious/onClose | 非模态说明层，下一步/上一步不保存业务；关闭、完成或 Escape 退出并在原入口仍存在且宿主未主动移交焦点时返回。不会限制宿主必须读完。 |
@@ -82,7 +82,7 @@
 - Rate、Slider、TimePicker、ColorPicker、Mentions新增可选消费方id/name/form、readOnly与hint/error；原默认调用保留。Rate使用显式name时遵循原生分组，独立组应给不同name；未提供name仍按实例分组。Slider只读由事件守卫和aria-readonly表达，不假装HTML range支持原生readonly/required。TimePicker透传min/max/step/required，时区和业务解释归宿主。ColorPicker的消费方id指向可填写/可复制的十六进制文本，色盘使用内部id；只读时色盘禁用、文本保持原生只读并可序列化。
 - AutoComplete透传底层Combobox的关键禁用/只读与读取状态；error表示字段校验，optionsError表示候选读取失败，后者才阻断候选并提供onRetry。name/form/required及长度/pattern等通过受限query-input属性传到真实输入，不用选中标签假装用户正文。基础Combobox新增inputProps只表达原生查询输入属性，默认不改变原选项序列化责任。
 - Form支持原生表单属性（如id/noValidate）并把提交事件传给宿主，仍阻止默认网络提交；原零参数回调继续可用。ErrorSummary可使用消费方id定位，业务校验、保存和快照归宿主。
-- Upload支持id/name/form、accept/multiple、readOnly、hint/error与按受控File[]判断的required。输入选择后仍清空picker以允许再选同一文件；不以清空后的原生picker冒充已有文件。提供name时通过所属form的标准formdata事件追加受控File对象，不追加假路径或仅文件名；只读值保留，禁用/fieldset禁用值排除。固定tarball生产消费者已在Chromium/WebKit验证真实File字节与只读/禁用排除；JSDOM仍只验证事件处理，不宣称它自动实现formdata事件。组件不发送上传请求。
+- Upload支持id/name/form、accept/multiple、readOnly、hint/error与按受控File[]判断的required。输入选择后仍清空picker以允许再选同一文件；不以清空后的原生picker冒充已有文件。提供 name 时通过当前原生所属 form 的 formdata 事件追加真实 File；同 ID 外置表单换实例也不会漏掉已有文件。只读值保留，禁用或 fieldset 禁用值排除。移除按钮保留可见文字，可访问名称包含文件名，同名按次序区分。固定tarball生产消费者已在Chromium/WebKit验证真实File字节与只读/禁用排除；JSDOM仍只验证事件处理，不宣称它自动实现formdata事件。组件不发送上传请求。
 - Cascader支持id/name/form、readOnly、hint/字段error；name按路径顺序重复序列化片段，必选/业务有效性仍由宿主校验。loading/loadError/onRetry与字段error分开；节点可声明isLeaf=false、loading/loadError，进入未提供子项的节点只发onExpand意图而不提前提交。动态选项失效时回退到仍有效的导航路径，受控已选原值保留并提示。数据请求/版本及过期响应判断归宿主，没有内置请求或缓存。
 - Transfer支持id/name/form、readOnly、hint/字段error及loading/loadError/onRetry/emptyText。name只重复序列化已选id，不提交临时勾选。加载/失败不清空已有勾选，不把未知可选数显示成确定0；值已知但详情缺失时明确提示。读取不可用时阻止变更，重试只发意图；首次读取、缓存数据、部分接受和迟到值依旧由宿主管理。
 - Masonry把每个直接子节点包成listitem（复杂复合节点仍由宿主定义条目边界），不改视觉列序；Tree默认展台已接入实际受控选择，不再用未声明的空回调伪装可操作。
