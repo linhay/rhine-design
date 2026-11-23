@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button, DataTable, Grid, Inline, Notice, SegmentedControl, Select, Stack, Surface, Text, type Spacing } from '../components';
 import './spacing.css';
+import { SpacingDensityComparison } from './SpacingDensityComparison';
 
 const scale: Spacing[] = [1, 2, 3, 4, 6, 8, 12];
 export function SpacingGallery() {
@@ -11,6 +12,7 @@ export function SpacingGallery() {
     <div className="ds-section-title"><span>SPACE</span><h2>间距与组合 · 让关系可见</h2></div>
     <Stack gap={6}>
       <Text tone="muted">同组紧、组间松。间距使用已有 token；gap 的数字是后缀，例如 gap=4 对应16px。</Text>
+      <SpacingDensityComparison />
       <Surface><Stack gap={4}>{scale.map(space => <div className="ds-spacing-scale" key={space}><Text variant="code">space-{space}</Text><span className="ds-spacing-bar" style={{width:`var(--rhine-space-${space})`}} aria-hidden="true"/><Text numeric variant="caption">{space * 4}px</Text></div>)}</Stack></Surface>
       <Select label="卡片内容状态" value={state} onChange={event=>setState(event.target.value)}><option value="normal">默认</option><option value="loading">检查中</option><option value="error">读取失败</option><option value="long">长文案</option></Select>
       <Surface><Stack gap={4}>

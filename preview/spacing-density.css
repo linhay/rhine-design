@@ -1,0 +1,5 @@
+/* Only the synthetic baseline has a second frame. The candidate uses the
+   same named sections, with groups separated by the existing Stack gap. */
+.ds-density-setting-group[data-boxed=true] { padding:var(--rhine-space-6); border:1px solid var(--rhine-line); border-radius:var(--rhine-radius-card); }
+.ds-density-filter { align-items:end; }
+.ds-density-filter > * { min-inline-size:0; max-inline-size:100%; }
