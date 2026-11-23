@@ -1,0 +1,5 @@
+.ds-reading-comparison__lane { min-width:0; }
+.ds-report-measure { max-inline-size:34rem; min-inline-size:0; margin-inline:auto; }
+/* Opt in only for paragraphs and lists in the host's long-report region.
+   Do not scale headings, fenced code, tables, or the action bar. */
+.ds-long-report-prose :is(p, ul, ol) { font-size:16px; line-height:28px; }

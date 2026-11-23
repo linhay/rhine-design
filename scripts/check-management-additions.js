@@ -26,7 +26,7 @@ async (page,{quick=false}={})=>{
     const badIcons=icons.filter(n=>{const p=n.querySelector('path');return !p?.getAttribute('d')||getComputedStyle(n).stroke!==getComputedStyle(n).color||!Number.isFinite(p.getBBox().width)||(p.getBBox().width<=0&&p.getBBox().height<=0);}).length;
     const platforms=[...main.querySelectorAll('.rhine-platform-mark')];
     const badPlatforms=platforms.filter(n=>getComputedStyle(n).fill!==getComputedStyle(n).color||!n.querySelector('path')?.getAttribute('d')).length;
-    const content=main.querySelector('.rhine-rich-text__blocks');
+    const content=main.querySelector('[aria-label="只读报告正文"] .rhine-rich-text__blocks');
     const line=main.querySelector('.rhine-chart[data-density=compact] .rhine-chart__line');
     const plot=main.querySelector('.rhine-chart[data-density=compact] .rhine-chart__plot');
     return {theme:theme.dataset.rhineTheme,mainOverflow:main.scrollWidth>main.clientWidth+2,rootOverflow:document.documentElement.scrollWidth>innerWidth+2,small,badIcons,badPlatforms,icons:icons.length,platforms:platforms.length,inertTargets:main.querySelectorAll('[inert] button').length,

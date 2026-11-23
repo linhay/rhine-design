@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Button, Notice } from './components';
 import { CopyButton } from './Actions';
 import { parseRichBlocks, parseInline, inlineText, safeRichUrl, type InlineToken, type RichBlock } from './rich-text-parser';
@@ -24,9 +24,9 @@ function formatted(raw:string,query:string,links:'source'|'navigate',insensitive
  return render(tokens);
 }
 function renderBlock(block:RichBlock,index:number,query:string,links:'source'|'navigate',insensitive=false):ReactNode {
- if(block.kind==='paragraph')return <p key={index}>{formatted(block.raw,query,links,insensitive)}</p>;
- if(block.kind==='heading'){const Heading=block.level===1?'h2':block.level===2?'h3':'h4';return <Heading key={index}>{formatted(block.raw,query,links,insensitive)}</Heading>;}
- if(block.kind==='list'){const List=block.ordered?'ol':'ul';return <List key={index}>{block.items.map((item,key)=><li key={key}>{formatted(item,query,links,insensitive)}</li>)}</List>;}
+ if(block.kind==='paragraph')return <p key={index} tabIndex={-1}>{formatted(block.raw,query,links,insensitive)}</p>;
+ if(block.kind==='heading'){const Heading=block.level===1?'h2':block.level===2?'h3':'h4';return <Heading key={index} tabIndex={-1}>{formatted(block.raw,query,links,insensitive)}</Heading>;}
+ if(block.kind==='list'){const List=block.ordered?'ol':'ul';return <List key={index} tabIndex={-1}>{block.items.map((item,key)=><li key={key}>{formatted(item,query,links,insensitive)}</li>)}</List>;}
  if(block.kind==='code'||block.kind==='literal')return <pre key={index} tabIndex={0} aria-label={block.kind==='code'?'只读代码'+(block.language?'：'+block.language:''):'未格式化原文'}><code data-language={block.kind==='code'?block.language:undefined}>{marked(block.raw,0,matches(block.raw,query,insensitive))}</code></pre>;
  return <div key={index} className="rhine-rich-text__table" tabIndex={0} role="region" aria-label="只读内容表格"><table><caption className="rhine-sr-only">原文表格</caption><thead><tr>{block.headers.map((cell,key)=><th key={key} scope="col">{formatted(cell,query,links,insensitive)}</th>)}</tr></thead><tbody>{block.rows.map((row,key)=><tr key={key}>{row.map((cell,column)=><td key={column}>{formatted(cell,query,links,insensitive)}</td>)}</tr>)}</tbody></table></div>;
 }
@@ -35,15 +35,33 @@ export function RichText({source,label,highlight='',highlightCase='sensitive',li
  if(!label.trim())throw new TypeError('RichText requires a nonempty label.');
  const id=useId(),root=useRef<HTMLDivElement>(null),step=Math.max(1,Math.min(100,Number.isFinite(initialBlocks)?Math.floor(initialBlocks):40));
  const [paging,setPaging]=useState({source,count:step});
+ const pendingReveal=useRef<{source:string; first:number; active:Element|null; trigger:HTMLButtonElement}|null>(null);
  if(paging.source!==source)setPaging({source,count:step});
  const tooLarge=source.length>131072;
  const blocks=useMemo(()=>tooLarge?[]:parseRichBlocks(source),[source,tooLarge]);
  const count=paging.source===source?paging.count:step,visible=blocks.slice(0,count),remaining=blocks.length-visible.length;
+ useLayoutEffect(()=>{
+  const request=pendingReveal.current;
+  if(!request)return;
+  pendingReveal.current=null;
+  const target=root.current?.children.item(request.first);
+  if(request.source!==source||!(target instanceof HTMLElement))return;
+  const doc=target.ownerDocument, active=doc.activeElement;
+  // A removed final trigger normally hands focus back to the document. A
+  // new explicit focus destination belongs to the host, not to the reader.
+  if(active!==request.active&&!(active===doc.body&&request.active===request.trigger&&!request.trigger.isConnected))return;
+  target.focus({preventScroll:true});
+  target.scrollIntoView?.({block:'nearest',inline:'nearest',behavior:'instant'});
+ },[source,count]);
  return <div className="rhine-rich-text" role="region" aria-label={label}>
   <div ref={root} id={id} className="rhine-rich-text__blocks" tabIndex={-1}>
    {tooLarge?<Notice title="内容超出单次呈现上限" tone="warning">当前原文超过131072个UTF-16码元，未解析或截断为成功内容。原文仍可复制；请由宿主分页或分块提供。</Notice>:!source.trim()?<p role="status">暂无只读内容</p>:visible.map((block,index)=>renderBlock(block,index,highlight,links,highlightCase==='insensitive'))}
   </div>
-  {interactive&&<div className="rhine-rich-text__actions"><CopyButton key={source} value={source} label="复制原文" copy={copy}/>{remaining>0&&<Button variant="secondary" aria-controls={id} onClick={()=>{root.current?.focus();setPaging({source,count:count+step});}}>继续显示（剩余{remaining}块）</Button>}</div>}
+  {interactive&&<div className="rhine-rich-text__actions"><CopyButton key={source} value={source} label="复制原文" copy={copy}/>{remaining>0&&<Button variant="secondary" aria-controls={id} onClick={event=>{
+    const trigger=event.currentTarget;
+    pendingReveal.current={source,first:visible.length,active:trigger.ownerDocument.activeElement,trigger};
+    setPaging({source,count:count+step});
+   }}>继续显示（剩余{remaining}块）</Button>}</div>}
   {highlight.length>256&&<p role="status">搜索词超过256个UTF-16码元，未高亮；原文保持不变。</p>}
  </div>;
 }
