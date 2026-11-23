@@ -164,6 +164,20 @@ skill 会被单独复制安装，Markdown 相对链接必须留在 `skills/rhine
 
 展台包版本由 `preview/packageInfo.ts` 从 `package.json` 读取。新增值导出时在 [组件目录](components/CATALOG.md) 增加恰好一行，并运行 `node scripts/check-component-catalog.mjs`；不要在 README 或展台再维护一个组件总数。能组合现有组件时写成配方，不新增导出。发布后的源码新增能力写入 CHANGELOG 的“未发布”部分，并在相关契约标明旧包不包含；不要因为源码仍使用同一版本字段，就将新能力归入已发布版本。历史版本介绍与验收记录保留原时点。
 
+## npm Trusted Publishing（维护者）
+
+GitHub Release 是固定制品的独立交付渠道；npm 失败不重打包、不回退 GitHub Release 或 Pages。`publish-npm.yml` 只在 `linhay/rhine-design` 的 `main` 手动运行，不从 PR 或 push 自动发包。
+
+配置一次 [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)：在 `@linhey/rhine-design` 的包设置中绑定 GitHub Actions，仓库 `linhay/rhine-design`、文件名 `publish-npm.yml`（不填目录）、环境 `npm-publish`，明确允许直接 `npm publish`。该 GitHub 环境只允许 `main` 分支。已有其他发布者时先核对，不撤销无关配置。不要添加长期 token。
+
+```sh
+gh workflow run publish-npm.yml --ref main -f tag="$TAG" -f sha256="$SHA256" -f publish=false
+```
+
+将 `TAG` 和 `SHA256` 从已验收的发行记录读入。预核对会验证签名标签、主线祖先关系、Release 资产、包身份和 registry 状态；不申请 OIDC 权限，不写 registry。在已有发布授权时把 `publish` 改为 `true`，由单独的 GitHub 托管 job 对同一 SHA-256 重新核对并发布。已存在且字节/SRI 一致则不重发；不同则停止。新版本必须高于 `latest`。只写一次发布请求，结果不明确时先回读 registry 再决定是否重试。
+
+不要用 `npm whoami` 推断 GitHub runner 的 OIDC 权限；预核对通过也不代表 npm 端已经绑定。发行签名公钥绝不能与私钥混淆；换签名者时需单独 review 新指纹。
+
 ## 提交 Pull Request
 
 说明解决的问题、变更后的行为，以及已执行的验证。涉及视觉或动效时附上截图或录屏；涉及破坏性 API 变更时提供迁移说明并更新 [CHANGELOG](CHANGELOG.md)。
