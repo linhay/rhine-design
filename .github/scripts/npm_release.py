@@ -46,6 +46,8 @@ def run(*args, env=None, cwd=None):
 def verify_tag(tag, scratch):
     ref = f"refs/tags/{tag}"
     require(run("git", "cat-file", "-t", ref).strip() == "tag", "Release tag must be annotated and signed.")
+    header = run("git", "cat-file", "-p", ref).split(chr(10) * 2, 1)[0].splitlines()
+    require(f"tag {tag}" in header and "type commit" in header, "Signed tag name or target type does not match the release.")
     home = scratch / "gpg"
     home.mkdir(mode=0o700)
     env = {**os.environ, "GNUPGHOME": str(home)}
@@ -77,13 +79,17 @@ def package_metadata(tarball):
     metadata = None
     total = 0
     count = 0
+    seen = set()
     with tarfile.open(tarball, "r:gz") as archive:
         for entry in archive:
             count += 1
             total += entry.size
             require(count <= 4000 and total <= 128 * 1024 * 1024, "Package exceeds archive limits.")
-            parts = PurePosixPath(entry.name).parts
-            require(parts and parts[0] == "package" and ".." not in parts and (entry.isfile() or entry.isdir()), "Unexpected archive member.")
+            path = PurePosixPath(entry.name)
+            parts = path.parts
+            require(parts and parts[0] == "package" and ".." not in parts and chr(92) not in entry.name and path.as_posix() == entry.name and (entry.isfile() or entry.isdir()), "Expected canonical package archive paths.")
+            require(path not in seen, "Duplicate archive destination.")
+            seen.add(path)
             if entry.name == "package/package.json":
                 require(metadata is None and entry.isfile() and entry.size <= 120_000, "Invalid package.json archive member.")
                 with archive.extractfile(entry) as source:

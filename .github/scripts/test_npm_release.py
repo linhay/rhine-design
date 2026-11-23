@@ -51,7 +51,7 @@ class ReleaseGuards(unittest.TestCase):
             gate.check_package(gate.package_metadata(tar), MANIFEST, "0.18.1")
             with self.assertRaises(ValueError):
                 gate.check_package({**MANIFEST, "scripts":{"postinstall":"false"}}, MANIFEST, "0.18.1")
-            for bad in ("../package/package.json", "package/package.json"):
+            for bad in ("../package/package.json", "package/package.json", "package/./package.json", "package//package.json"):
                 archive("package/package.json", bad)
                 with self.assertRaises(ValueError):
                     gate.package_metadata(tar)
