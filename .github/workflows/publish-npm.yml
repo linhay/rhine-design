@@ -1,0 +1,63 @@
+name: Publish npm from verified GitHub Release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Signed release tag (vMAJOR.MINOR.PATCH)
+        type: string
+        required: true
+      sha256:
+        description: SHA-256 of the independently verified release tarball
+        type: string
+        required: true
+      publish:
+        description: Publish to npm (false only validates the immutable input)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: rhine-npm-release
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.repository == 'linhay/rhine-design' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Test release guards
+        run: python3 -B -m unittest discover -s .github/scripts -p 'test_npm_release.py'
+      - name: Verify signature, asset, package identity and registry
+        run: python3 -B .github/scripts/npm_release.py verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_SHA256: ${{ inputs.sha256 }}
+  publish:
+    needs: verify
+    if: github.repository == 'linhay/rhine-design' && github.ref == 'refs/heads/main' && inputs.publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Reverify and publish the exact tarball via npm OIDC
+        run: python3 -B .github/scripts/npm_release.py publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_SHA256: ${{ inputs.sha256 }}
