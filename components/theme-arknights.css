@@ -198,6 +198,12 @@
 .rhine-theme[data-rhine-theme="arknights"] .rhine-combobox__list [role=option][aria-selected=true],
 .rhine-theme[data-rhine-theme="arknights"] .rhine-menu__item[data-highlighted] {
   background: rgba(255, 212, 0, .12);
+}
+.rhine-theme[data-rhine-theme="arknights"] .rhine-menu__item[data-danger=true][data-highlighted]:not([data-disabled]) {
+  background: var(--rhine-error-bg);
+}
+.rhine-theme[data-rhine-theme="arknights"] .rhine-combobox__list [role=option][data-active=true]:not([aria-disabled=true]),
+.rhine-theme[data-rhine-theme="arknights"] .rhine-menu__item[data-highlighted] {
   box-shadow: inset 3px 0 0 var(--ak-accent);
 }
 

@@ -6,6 +6,7 @@ async page => {
   const probe = await page.evaluate(() => new URLSearchParams(location.search).get('roleProbe'));
   const quick = await page.evaluate(() => new URLSearchParams(location.search).has('roleQuick'));
   const compoundOnly = await page.evaluate(() => new URLSearchParams(location.search).has('roleCompound'));
+  const optionStates = await page.evaluate(() => new URLSearchParams(location.search).has('roleOptions'));
   const samples = [], failures = [], errors = [], scenarios = [];
   const onError = error => errors.push(String(error));
   page.on('pageerror', onError);
@@ -70,7 +71,7 @@ async page => {
       if (Number(css.opacity) !== 1) opacityIssues.push('measured opacity: ' + css.opacity);
       unsupported.push(...opacityIssues);
       const disabled = el.matches(':disabled,[aria-disabled=true]');
-      const raw = kind === 'boundary' ? css.borderTopColor : kind === 'focus' ? (insetFocus ? shadowColor : css.outlineColor) : kind === 'indicator' ? css.backgroundColor : css.color;
+      const raw = kind === 'glyph' ? css.stroke : kind === 'boundary' ? css.borderTopColor : kind === 'focus' ? (insetFocus ? shadowColor : css.outlineColor) : kind === 'indicator' ? css.backgroundColor : kind === 'active-ring' ? shadowColor ?? 'transparent' : css.color;
       const foregrounds = backgrounds.map(bg => {
         let fg = over(rgba(raw), bg);
         if (disabled && Number(css.opacity) !== 1) fg = over([...fg.slice(0,3), Number(css.opacity)], bg);
@@ -85,7 +86,8 @@ async page => {
       const large = parseFloat(css.fontSize) >= 24 || (parseFloat(css.fontSize) >= 56 / 3 && parseFloat(css.fontWeight) >= 700);
       const threshold = kind === 'text' ? (large ? 3 : 4.5) : 3;
       const visible = !!el.getClientRects().length && css.visibility === 'visible' && css.display !== 'none';
-      const drawn = kind === 'focus' ? (insetFocus || (css.outlineStyle !== 'none' && parseFloat(css.outlineWidth) > 0)) && el.matches(':focus-visible') : kind === 'indicator' ? css.content !== 'none' && css.transform !== 'matrix(0, 0, 0, 1, 0, 0)' : kind === 'boundary' ? boundaryFillRatio >= 3 || (css.borderTopStyle !== 'none' && parseFloat(css.borderTopWidth) > 0) : true;
+      const insetMarker = !!shadowColor && /^(?:0px 0px 0px [1-9][\d.]*px|[1-9][\d.]*px 0px 0px(?: 0px)?) inset$/.test(shadowGeometry);
+      const drawn = kind === 'glyph' ? css.stroke !== 'none' && !!el.querySelector('path[d]') : kind === 'active-ring' ? insetMarker : kind === 'focus' ? (insetFocus || (css.outlineStyle !== 'none' && parseFloat(css.outlineWidth) > 0)) && el.matches(':focus-visible') : kind === 'indicator' ? css.content !== 'none' && css.transform !== 'matrix(0, 0, 0, 1, 0, 0)' : kind === 'boundary' ? boundaryFillRatio >= 3 || (css.borderTopStyle !== 'none' && parseFloat(css.borderTopWidth) > 0) : true;
       return { measuredOpacity: css.opacity, measuredDisplay: css.display, raw, foreground: fg, background: bg, ratio, boundaryFillRatio, ratioBound: backgrounds.length > 1, backgroundLuminanceRange: luminanceRange(backgrounds), foregroundLuminanceRange: luminanceRange(foregrounds), backgrounds, insetFocus, threshold, disabled, visible, drawn, unsupported, chain, fontSize: css.fontSize, fontWeight: css.fontWeight, text: (el.value || el.textContent || '').trim().slice(0, 90) };
     }, { kind, pseudo });
     if (probeControlOpacity) await locator.evaluate(e=>e.style.removeProperty('opacity'));
@@ -109,7 +111,7 @@ async page => {
   const themes = allThemes.includes(themeFilter) ? [themeFilter] : probe || quick ? ['rhine'] : allThemes;
   const cases = probe || quick ? [{width:880,zoom:1,motion:'normal'}] : [400,520,880].flatMap(width => [1,2].map(zoom => ({width,zoom,motion:'normal'}))).concat(['system','manual'].map(motion => ({width:880,zoom:1,motion})));
   const compoundCases = [{width:880,zoom:1,motion:'normal'}, {width:400,zoom:1,motion:'system'}, {width:520,zoom:2,motion:'manual'}];
-  for (const theme of themes) for (const scenario of compoundOnly ? (quick ? compoundCases.slice(0,1) : compoundCases) : cases) {
+  for (const theme of themes) for (const scenario of (compoundOnly || optionStates) ? (quick ? compoundCases.slice(0,1) : compoundCases) : cases) {
     context = {theme,...scenario}; const {width,zoom,motion} = scenario;
     await page.setViewportSize({width,height:1000});
     await page.emulateMedia({reducedMotion:motion === 'system' ? 'reduce' : 'no-preference'});
@@ -119,6 +121,66 @@ async page => {
       await page.mouse.move(0,0); await settle();
     };
     try {
+      if (optionStates) {
+        const belongs = locator => locator.evaluate((el,theme)=>el.closest('.rhine-theme')?.dataset.rhineTheme===theme,theme);
+        const ring = locator => locator.evaluate(e=>getComputedStyle(e).boxShadow);
+        await goto('#menu-actions');
+        const trigger=page.getByRole('button',{name:'打开端点菜单',exact:true});
+        await trigger.press('Enter');
+        const menu=page.getByRole('menu',{name:'端点操作',exact:true});await menu.waitFor();
+        check(await belongs(menu),{...context,role:'Menu/state portal theme'});
+        const checked=menu.getByRole('menuitemradio',{name:'最近更新',exact:true});
+        const danger=menu.getByRole('menuitem',{name:'删除合成临时端点',exact:true});
+        const highlighted=page.locator('[data-highlighted]');
+        await page.keyboard.press('End');await danger.and(highlighted).waitFor();await settle();
+        await measure(danger,'Menu/danger keyboard label');await measure(danger,'Menu/danger keyboard marker','active-ring');
+        const glyph=danger.locator('svg').first();await measure(glyph,'Menu/danger keyboard icon','glyph');
+        await checked.hover();await checked.and(highlighted).waitFor();await settle();
+        check(await checked.getAttribute('aria-checked')==='true',{...context,role:'Menu/hover preserves checked choice'});
+        await measure(checked,'Menu/checked and highlighted label');
+        await measure(checked.locator('.rhine-menu__indicator svg'),'Menu/checked indicator','glyph');
+        await measure(checked,'Menu/checked highlight marker','active-ring');
+        await danger.hover();await danger.and(highlighted).waitFor();await settle();
+        await measure(danger,'Menu/danger pointer label');
+        check(await checked.getAttribute('aria-checked')==='true',{...context,role:'Menu/highlighting danger preserves the radio value'});
+        await page.keyboard.press('Escape');await menu.waitFor({state:'detached'});
+        await page.waitForFunction(()=>document.activeElement?.textContent?.trim()==='打开端点菜单');
+        check(await page.getByLabel('菜单确认状态').textContent()==='排序 recent；仅未读 false；动作 0 次',{...context,role:'Menu/inspection does not activate actions'});
+
+        await goto('&fixture=parameter-config&combobox=states');
+        const input=page.getByRole('combobox',{name:'紧凑多选',exact:true});
+        await input.press('ArrowDown');
+        const list=page.getByRole('listbox',{name:'紧凑多选',exact:true});await list.waitFor();
+        const first=list.getByRole('option',{name:'12.10.0',exact:true}), second=list.getByRole('option',{name:'12.4.0',exact:true});
+        const isActive=async option=>await input.getAttribute('aria-activedescendant')===await option.getAttribute('id');
+        check(await belongs(list)&&await isActive(first),{...context,role:'Combobox/active descendant and portal theme'});
+        await input.press('Enter');await first.and(page.locator('[aria-selected=true]')).waitFor();
+        await input.press('Home');await settle();
+        check(await isActive(first)&&await first.getAttribute('aria-selected')==='true',{...context,role:'Combobox/first option selected and active'});
+        await measure(first,'Combobox/active selected label');await measure(first,'Combobox/active selected marker','active-ring');
+        await input.press('ArrowDown');await settle();
+        check(await isActive(second)&&await first.getAttribute('aria-selected')==='true'&&await first.getAttribute('data-active')==='false',{...context,role:'Combobox/arrow moves active without accepting another selection'});
+        check(await ring(first)==='none'&&await ring(second)!=='none',{...context,role:'Combobox/active marker differs from selected',selected:await ring(first),active:await ring(second)});
+        check((await first.locator('.rhine-combobox__check').textContent())?.trim()==='✓',{...context,role:'Combobox/selected check is visible in option'});
+        await measure(first.locator('.rhine-combobox__check'),'Combobox/selected check','state');
+        await measure(second,'Combobox/active unselected label');await measure(second,'Combobox/active unselected marker','active-ring');
+        await input.press('Escape');await list.waitFor({state:'detached'});
+        check(await input.evaluate(el=>el===document.activeElement)&&await input.getAttribute('aria-activedescendant')===null,{...context,role:'Combobox/Escape clears active and keeps editor focus'});
+
+        const single=page.getByRole('combobox',{name:'默认状态呈现',exact:true});
+        const options=page.getByRole('listbox',{name:'默认状态呈现',exact:true});
+        await single.press('ArrowDown');await options.waitFor();
+        await single.press('Enter');await options.waitFor({state:'detached'});
+        check(await single.inputValue()==='12.10.0',{...context,role:'Combobox/single commits only on selection'});
+        await single.press('ArrowDown');await options.waitFor();
+        const saved=options.getByRole('option',{name:'12.10.0',exact:true}), pointer=options.getByRole('option',{name:'12.4.0',exact:true});
+        await pointer.hover();await pointer.and(page.locator('[data-active=true]')).waitFor();await settle();
+        check(await single.getAttribute('aria-activedescendant')===await pointer.getAttribute('id')&&await saved.getAttribute('aria-selected')==='true'&&await ring(saved)==='none'&&await single.inputValue()==='12.10.0',{...context,role:'Combobox/single pointer highlights without replacing the selection'});
+        await measure(pointer,'Combobox/single pointer active marker','active-ring');
+        await single.press('Escape');await options.waitFor({state:'detached'});
+        scenarios.push({...context,status:'COMPLETED'});
+        continue;
+      }
       if (compoundOnly) {
         await goto('#selection');
         const card = page.locator('.rhine-selection');
@@ -284,5 +346,5 @@ async page => {
   }
   await page.emulateMedia({reducedMotion:'no-preference'});
   page.off('pageerror',onError);
-  return {pass:!failures.length&&!errors.length,probe:probe||null,compound:compoundOnly,scenarios,failures,errors,samples,limits:['Representative components, not whole-library WCAG certification','Known default grid/dot/sweep bounds include all alpha intersections; other images/gradients unmeasured, not pixel certification','CSS zoom 2 is not native browser zoom','Disabled contrast is observed without a normative threshold; no new product readability target','Decorative separators, button outlines not needed for identification, modal backdrop contrast: N/A','No APCA substitution; no services, consumer package, or UIKit claims']};
+  return {pass:!failures.length&&!errors.length,probe:probe||null,compound:compoundOnly,optionStates,scenarios,failures,errors,samples,limits:['Representative components, not whole-library WCAG certification','Known default grid/dot/sweep bounds include all alpha intersections; other images/gradients unmeasured, not pixel certification','CSS zoom 2 is not native browser zoom','Disabled contrast is observed without a normative threshold; no new product readability target','Decorative separators, button outlines not needed for identification, modal backdrop contrast: N/A','No APCA substitution; no services, consumer package, or UIKit claims']};
 }
