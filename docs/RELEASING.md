@@ -11,7 +11,9 @@
 
 ## 发布与验证
 
-先执行 `npm whoami --registry=https://registry.npmjs.org/` 确认认证。失效时使用 `npm login --auth-type=web`，密码与验证码只在官方页面输入；不在聊天、脚本参数或仓库中保存 token。
+常规使用 [GitHub Actions Trusted Publishing](../CONTRIBUTING.md)，仅发布已验收的同一 tarball。若 npm 已接受但工作流提示 `npm_accepted_registry_pending`，仅等待公开 registry 回读，不重新发布或修改 `latest`。
+
+以下是维护者手工应急路径；只有确认之前没有写入且已有发布授权时使用。先执行 `npm whoami --registry=https://registry.npmjs.org/` 确认认证。失效时使用 `npm login --auth-type=web`，密码与验证码只在官方页面输入；不在聊天、脚本参数或仓库中保存 token。
 
 ```sh
 npm publish <已验证的tgz> --access public --tag latest --registry=https://registry.npmjs.org/

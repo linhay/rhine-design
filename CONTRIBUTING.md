@@ -174,7 +174,7 @@ GitHub Release 是固定制品的独立交付渠道；npm 失败不重打包、�
 gh workflow run publish-npm.yml --ref main -f tag="$TAG" -f sha256="$SHA256" -f publish=false
 ```
 
-将 `TAG` 和 `SHA256` 从已验收的发行记录读入。预核对会验证签名标签、主线祖先关系、Release 资产、包身份和 registry 状态；不申请 OIDC 权限，不写 registry。在已有发布授权时把 `publish` 改为 `true`，由单独的 GitHub 托管 job 对同一 SHA-256 重新核对并发布。已存在且字节/SRI 一致则不重发；不同则停止。新版本必须高于 `latest`。只写一次发布请求，结果不明确时先回读 registry 再决定是否重试。
+将 `TAG` 和 `SHA256` 从已验收的发行记录读入。预核对会验证签名标签、主线祖先关系、Release 资产、包身份和 registry 状态；不申请 OIDC 权限，不写 registry。在已有发布授权时把 `publish` 改为 `true`，由单独的 GitHub 托管 job 对同一 SHA-256 重新核对并发布。已存在且字节/SRI 一致则不重发；不同则停止。新版本必须高于 `latest`。只写一次发布请求。npm 确认接受后，如果公开版本、tarball 或 `latest` 在有限时间内仍未同步，工作流会发出 `npm_accepted_registry_pending` 警告；不是发包失败，也不是回读通过。不要重发：用 `publish=false` 核对制品；`already_exists_identical_no_write` 只证明版本字节一致，不证明 `latest` 已同步。另执行匿名 `npm view @linhey/rhine-design dist-tags --registry=https://registry.npmjs.org/ --prefer-online --json` 核对 `latest`。明确的身份、摘要或内容不一致仍会失败。
 
 不要用 `npm whoami` 推断 GitHub runner 的 OIDC 权限；预核对通过也不代表 npm 端已经绑定。发行签名公钥绝不能与私钥混淆；换签名者时需单独 review 新指纹。
 
