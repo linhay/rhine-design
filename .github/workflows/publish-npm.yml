@@ -55,7 +55,7 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - name: Reverify and publish the exact tarball via npm OIDC
+      - name: Publish verified tarball and report public registry visibility
         run: python3 -B .github/scripts/npm_release.py publish
         env:
           GH_TOKEN: ${{ github.token }}

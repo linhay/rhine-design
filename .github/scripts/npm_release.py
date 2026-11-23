@@ -10,7 +10,7 @@ import sys
 import tarfile
 import tempfile
 import time
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 REPO = "linhay/rhine-design"
@@ -118,6 +118,7 @@ def registry_get(path, limit, missing_ok=False):
             require(response.status == 200, "Unexpected registry response.")
             data = response.read(limit + 1)
     except HTTPError as error:
+        error.close()
         if missing_ok and error.code == 404:
             return None
         raise
@@ -125,7 +126,7 @@ def registry_get(path, limit, missing_ok=False):
     return data
 
 
-def registry_state(version, expected):
+def registry_state(version, expected, *, accepted_integrity=None):
     payload = registry_get(f"/{ENCODED_PACKAGE}/{version}", 512_000, missing_ok=True)
     if payload is None:
         return "missing"
@@ -133,7 +134,13 @@ def registry_state(version, expected):
     require(info.get("name") == PACKAGE and info.get("version") == version, "Unexpected registry package identity.")
     path = f"/{PACKAGE}/-/rhine-design-{version}.tgz"
     require(info["dist"]["tarball"] == REGISTRY + path, "Unexpected registry tarball URL.")
-    data = registry_get(path, MAX_ASSET)
+    if accepted_integrity is not None:
+        require(info["dist"]["integrity"] == accepted_integrity, "Public npm metadata reports a different package integrity.")
+    # Only after npm confirms a write can a visible manifest with a missing
+    # tarball be treated as propagation. Preflight still fails closed.
+    data = registry_get(path, MAX_ASSET, missing_ok=accepted_integrity is not None)
+    if data is None:
+        return "pending_tarball"
     sri = "sha512-" + base64.b64encode(hashlib.sha512(data).digest()).decode("ascii")
     require(hashlib.sha256(data).hexdigest() == expected and info["dist"]["integrity"] == sri, "Existing npm version has different bytes; refusing to overwrite or retag.")
     return "identical"
@@ -157,6 +164,44 @@ def prepare(tag, version, expected, scratch):
     return tarball
 
 
+def confirm_publication(version, expected, integrity):
+    """After acknowledgement, only retry anonymous reads. Mismatches still fail."""
+    deadline = time.monotonic() + 180
+    reason = "exact version metadata is not visible yet"
+    for attempt in range(13):
+        if attempt and time.monotonic() >= deadline:
+            break
+        try:
+            state = registry_state(version, expected, accepted_integrity=integrity)
+            if state == "identical":
+                current = latest()
+                if current == version:
+                    return "published_and_read_back"
+                require(version_tuple(current) < version_tuple(version), "The published artifact matches but latest is already on a newer version; refusing to retag.")
+                reason = "latest still shows an older version"
+            elif state == "pending_tarball":
+                reason = "version metadata is visible but the tarball is not yet available"
+            elif state == "missing":
+                reason = "exact version metadata is not visible yet"
+            else:
+                raise ValueError("Unexpected registry visibility state.")
+        except HTTPError as error:
+            if error.code != 429 and not 500 <= error.code < 600:
+                raise
+            reason = f"public registry returned HTTP {error.code}"
+        except URLError as error:
+            if not isinstance(error.reason, (TimeoutError, ConnectionError)):
+                raise
+            reason = "public registry connection timed out or was interrupted"
+        except (TimeoutError, ConnectionError):
+            reason = "public registry connection timed out or was interrupted"
+        remaining = deadline - time.monotonic()
+        if attempt < 12 and remaining > 0:
+            time.sleep(min(15, remaining))
+    print(f"::warning title=npm accepted; registry readback pending::{PACKAGE}@{version}: {reason}. Do not republish. Check npm later or use publish=false to verify the same artifact.", flush=True)
+    return "npm_accepted_registry_pending"
+
+
 def publish(tarball, version, expected):
     require(os.environ.get("GITHUB_ACTIONS") == "true" and os.environ.get("GITHUB_REPOSITORY") == REPO and os.environ.get("GITHUB_REF") == "refs/heads/main" and os.environ.get("ACTIONS_ID_TOKEN_REQUEST_URL"), "Publish is only available to the GitHub main OIDC job.")
     require(version_tuple(version) > version_tuple(latest()), "Refusing to move latest to an older or equal version.")
@@ -167,14 +212,11 @@ def publish(tarball, version, expected):
     system = tarball.parent / "npmrc-global"
     user.touch(exist_ok=False)
     system.touch(exist_ok=False)
+    integrity = "sha512-" + base64.b64encode(hashlib.sha512(tarball.read_bytes()).digest()).decode("ascii")
     # Do not invoke scripts in the downloaded package or retry a publish request.
     subprocess.run(["npm", "publish", str(tarball), "--access=public", "--tag=latest", f"--registry={REGISTRY}/", "--ignore-scripts", f"--userconfig={user}", f"--globalconfig={system}", "--fetch-retries=0"], env=env, cwd=tarball.parent, check=True, timeout=120)
-    for attempt in range(13):
-        if registry_state(version, expected) == "identical" and latest() == version:
-            return "published_and_read_back"
-        if attempt < 12:
-            time.sleep(15)
-    raise ValueError("npm accepted publish but public artifact/latest did not converge; check registry before any retry.")
+    print(f"npm accepted {PACKAGE}@{version}; checking public registry without any further writes.", flush=True)
+    return confirm_publication(version, expected, integrity)
 
 
 def main():
