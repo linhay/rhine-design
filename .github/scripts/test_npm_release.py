@@ -3,6 +3,7 @@ import hashlib
 import io
 import json
 import os
+import socket
 import subprocess
 from pathlib import Path
 import tarfile
@@ -105,11 +106,11 @@ class ReleaseGuards(unittest.TestCase):
     def test_post_publish_retries_transient_read_errors_and_stale_latest(self):
         transient = HTTPError(gate.REGISTRY, 503, "temporary", None, None)
         self.addCleanup(transient.close)
-        with (patch.object(gate, "registry_state", side_effect=[transient, URLError(TimeoutError()), "pending_tarball", "identical", "identical"]) as registry,
+        with (patch.object(gate, "registry_state", side_effect=[transient, URLError(TimeoutError()), URLError(socket.gaierror(socket.EAI_AGAIN, "temporary DNS")), "pending_tarball", "identical", "identical"]) as registry,
               patch.object(gate, "latest", side_effect=["0.18.0", "0.18.1"]),
               patch.object(gate.time, "sleep"), patch("builtins.print") as output):
             self.assertEqual(gate.confirm_publication("0.18.1", DIGEST, SRI), "published_and_read_back")
-            self.assertEqual(registry.call_count, 5)
+            self.assertEqual(registry.call_count, 6)
             output.assert_not_called()
 
     def test_manifest_can_propagate_before_tarball_but_only_after_acceptance(self):
@@ -134,7 +135,7 @@ class ReleaseGuards(unittest.TestCase):
     def test_real_readback_contradictions_and_nontransient_errors_still_fail(self):
         denied = HTTPError(gate.REGISTRY, 403, "denied", None, None)
         self.addCleanup(denied.close)
-        for error in (ValueError("different bytes"), denied):
+        for error in (ValueError("different bytes"), denied, URLError(socket.gaierror(socket.EAI_NONAME, "permanent DNS"))):
             with patch.object(gate, "registry_state", side_effect=error) as registry:
                 with self.assertRaises(type(error)):
                     gate.confirm_publication("0.18.1", DIGEST, SRI)

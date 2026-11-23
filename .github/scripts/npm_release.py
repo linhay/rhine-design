@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import socket
 import subprocess
 import sys
 import tarfile
@@ -189,16 +190,18 @@ def confirm_publication(version, expected, integrity):
             if error.code != 429 and not 500 <= error.code < 600:
                 raise
             reason = f"public registry returned HTTP {error.code}"
-        except URLError as error:
-            if not isinstance(error.reason, (TimeoutError, ConnectionError)):
+        except (URLError, TimeoutError, ConnectionError, socket.gaierror) as error:
+            cause = error.reason if isinstance(error, URLError) else error
+            if isinstance(cause, socket.gaierror) and cause.errno == socket.EAI_AGAIN:
+                reason = "public registry DNS lookup failed temporarily"
+            elif isinstance(cause, (TimeoutError, ConnectionError)):
+                reason = "public registry connection timed out or was interrupted"
+            else:
                 raise
-            reason = "public registry connection timed out or was interrupted"
-        except (TimeoutError, ConnectionError):
-            reason = "public registry connection timed out or was interrupted"
         remaining = deadline - time.monotonic()
         if attempt < 12 and remaining > 0:
             time.sleep(min(15, remaining))
-    print(f"::warning title=npm accepted; registry readback pending::{PACKAGE}@{version}: {reason}. Do not republish. Check npm later or use publish=false to verify the same artifact.", flush=True)
+    print(f"::warning title=npm accepted; registry readback pending::{PACKAGE}@{version}: {reason}. Do not republish. Use publish=false to verify artifact identity and check latest separately with npm view {PACKAGE} dist-tags --prefer-online.", flush=True)
     return "npm_accepted_registry_pending"
 
 
