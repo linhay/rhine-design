@@ -38,7 +38,7 @@
   background: #ffc0b9;
   border-color: #ffc0b9;
 }
-.rhine-theme[data-rhine-theme="graphite"] .rhine-selection:hover:not([data-disabled=true]) { background: var(--rhine-selected); }
+.rhine-theme[data-rhine-theme="graphite"] .rhine-selection:hover:not([data-selected=true]):not([data-disabled=true]) { background: var(--rhine-selected); }
 .rhine-theme[data-rhine-theme="graphite"] :is(.rhine-dialog,.rhine-popover,.rhine-menu,.rhine-combobox__list) {
   border-radius: var(--rhine-radius-card);
   box-shadow: 0 16px 48px #00000040;

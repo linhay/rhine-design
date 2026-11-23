@@ -5,6 +5,7 @@ async page => {
   const base = await page.evaluate(() => location.origin);
   const probe = await page.evaluate(() => new URLSearchParams(location.search).get('roleProbe'));
   const quick = await page.evaluate(() => new URLSearchParams(location.search).has('roleQuick'));
+  const compoundOnly = await page.evaluate(() => new URLSearchParams(location.search).has('roleCompound'));
   const samples = [], failures = [], errors = [], scenarios = [];
   const onError = error => errors.push(String(error));
   page.on('pageerror', onError);
@@ -93,15 +94,22 @@ async page => {
     check(sample.status === 'PASS' || sample.status === 'EXEMPT', { ...context, role, kind, status: sample.status, ratio: value.ratio, threshold: value.threshold, unsupported: value.unsupported });
     return sample;
   };
+  const compoundFocus = async locator => {
+    await locator.blur(); await page.keyboard.press('Shift'); await locator.focus(); await settle();
+  };
   const keyboardFocus = async (locator, role) => {
     await locator.focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Shift+Tab'); await settle();
+    // WebKit on macOS can skip links and push buttons in the default Tab policy.
+    // This color check still requires visible focus on the exact target.
+    if (!await locator.evaluate(e=>e===document.activeElement && e.matches(':focus-visible'))) await compoundFocus(locator);
     await measure(locator, role, 'focus');
   };
   const themeFilter = await page.evaluate(() => new URLSearchParams(location.search).get('roleTheme'));
   const allThemes = ['rhine', 'arknights', 'neo-brutalism', 'neutral', 'graphite'];
   const themes = allThemes.includes(themeFilter) ? [themeFilter] : probe || quick ? ['rhine'] : allThemes;
   const cases = probe || quick ? [{width:880,zoom:1,motion:'normal'}] : [400,520,880].flatMap(width => [1,2].map(zoom => ({width,zoom,motion:'normal'}))).concat(['system','manual'].map(motion => ({width:880,zoom:1,motion})));
-  for (const theme of themes) for (const scenario of cases) {
+  const compoundCases = [{width:880,zoom:1,motion:'normal'}, {width:400,zoom:1,motion:'system'}, {width:520,zoom:2,motion:'manual'}];
+  for (const theme of themes) for (const scenario of compoundOnly ? (quick ? compoundCases.slice(0,1) : compoundCases) : cases) {
     context = {theme,...scenario}; const {width,zoom,motion} = scenario;
     await page.setViewportSize({width,height:1000});
     await page.emulateMedia({reducedMotion:motion === 'system' ? 'reduce' : 'no-preference'});
@@ -111,6 +119,61 @@ async page => {
       await page.mouse.move(0,0); await settle();
     };
     try {
+      if (compoundOnly) {
+        await goto('#selection');
+        const card = page.locator('.rhine-selection');
+        const checkbox = card.getByRole('checkbox');
+        const bg = () => card.evaluate(e=>getComputedStyle(e).backgroundColor);
+        await card.hover(); await settle();
+        const unselectedHover = await bg();
+        check(!await checkbox.isChecked(), {...context,role:'SelectionCard/hover does not select'});
+        await checkbox.press('Space'); await page.mouse.move(0,0); await settle();
+        const selected = await bg();
+        await card.hover(); await settle();
+        const selectedHover = await bg();
+        check(await checkbox.isChecked() && selectedHover===selected, {...context,role:'SelectionCard/selected fill survives hover',selected,selectedHover,unselectedHover});
+        await measure(card.locator('strong'),'SelectionCard/selected hover title');
+        await measure(card.locator('.ds-caption'),'SelectionCard/selected hover description');
+        await measure(card.getByText('已选择',{exact:true}),'SelectionCard/selected hover badge');
+
+        await goto('#forms');
+        const field = page.getByRole('textbox',{name:'校验失败示例',exact:true});
+        await field.fill('需要保留的草稿');
+        const border = () => field.evaluate(e=>getComputedStyle(e).borderTopColor);
+        await field.blur();await settle();const invalidBorder=await border();
+        await compoundFocus(field); await measure(field,'Textarea/invalid keyboard focus','focus');
+        check(await field.getAttribute('aria-invalid')==='true' && await field.inputValue()==='需要保留的草稿' && await border()===invalidBorder,{...context,role:'Textarea/focus preserves error cue and draft',invalidBorder,focusedBorder:await border()});
+        await measure(field,'Textarea/invalid focused value');
+        await measure(field,'Textarea/invalid focused boundary','boundary');
+        await measure(page.getByText('请填写说明后继续。',{exact:true}),'Textarea/invalid focused explanation');
+
+        await goto('#overlays');
+        const trigger=page.getByRole('button',{name:'查看详情',exact:true});
+        await trigger.focus();await trigger.press('Enter');
+        const pop=page.getByRole('dialog',{name:'工作区详情',exact:true});await pop.waitFor();
+        const belongs = locator=>locator.evaluate((el,theme)=>el.closest('.rhine-theme')?.dataset.rhineTheme===theme,theme);
+        check(await belongs(pop),{...context,role:'Popover/compound portal theme'});
+        const link = pop.getByRole('link');
+        await link.hover();await settle();
+        await measure(link,'Popover/hovered link');
+        check(await link.evaluate(e=>getComputedStyle(e).textDecorationLine.includes('underline')),{...context,role:'Popover/link retains non-color cue'});
+        await compoundFocus(link); await measure(link,'Popover/link keyboard focus','focus');
+        await measure(pop.getByText('气泡用于补充内容，不阻断页面。',{exact:true}),'Popover/body hint');
+        await page.keyboard.press('Escape');await pop.waitFor({state:'detached'});
+        await page.waitForFunction(()=>document.activeElement?.textContent?.trim()==='查看详情');
+        const tipTrigger=page.getByRole('button',{name:'额度说明',exact:true});
+        await tipTrigger.hover();const tip=page.locator('.rhine-tooltip');await tip.waitFor();
+        check(await belongs(tip),{...context,role:'Tooltip/hover portal theme'});
+        await measure(tip,'Tooltip/hovered hint');
+        await page.keyboard.press('Escape');await tip.waitFor({state:'detached'});
+        await page.mouse.move(0,0);await compoundFocus(tipTrigger);await tip.waitFor();
+        check(await belongs(tip)&&await tipTrigger.evaluate(e=>document.activeElement===e&&e.matches(':focus-visible')),{...context,role:'Tooltip/keyboard trigger and theme'});
+        await measure(tip,'Tooltip/keyboard hint');
+        await page.keyboard.press('Escape');await tip.waitFor({state:'detached'});
+        check(await tipTrigger.evaluate(e=>document.activeElement===e),{...context,role:'Tooltip/Escape retains trigger focus'});
+        scenarios.push({...context,status:'COMPLETED'});
+        continue;
+      }
       await goto('&fixture=neutral');
       const field = page.getByRole('textbox',{name:'记录名称',exact:true});
       await field.fill('颜色验收 · 保留的合成草稿');
@@ -140,7 +203,7 @@ async page => {
       await edit.click(); await settle();
       check(await field.inputValue() === '颜色验收 · 保留的合成草稿',{...context,role:'Tabs/draft retention'});
       const trigger = page.getByRole('button',{name:'打开外观设置',exact:true});
-      await measure(trigger,'Button/secondary'); await trigger.click(); await settle();
+      await measure(trigger,'Button/secondary'); await trigger.press('Enter'); await settle();
       const dialog = page.getByRole('dialog');
       check(await dialog.evaluate((e,theme)=>e.closest('.rhine-theme')?.dataset.rhineTheme===theme,theme),{...context,role:'Dialog/portal theme'});
       await measure(dialog.getByRole('heading',{name:'外观设置'}),'Dialog/title');
@@ -148,8 +211,16 @@ async page => {
       await measure(dialog.getByRole('textbox'),'Dialog/input');
       const link = dialog.getByRole('link');
       if(probe === 'alpha') await link.evaluate(e=>e.style.color='rgba(66, 92, 75, 0.08)');
-      await measure(link,'Link/overlay'); await link.hover(); await settle(); await measure(link,'Link/hover');
-      await keyboardFocus(link,'Link/focus');
+      await measure(link,'Link/overlay');
+      // The Dialog entered via Enter. Sample keyboard focus before pointer hover
+      // so WebKit does not carry its pointer modality into the focus sample.
+      await link.focus();
+      if (!await link.evaluate(e=>e===document.activeElement&&e.matches(':focus-visible'))) {
+        // WebKit's full keyboard navigation option includes anchors on Option+Tab.
+        await dialog.getByRole('button').last().focus(); await page.keyboard.press('Alt+Tab');
+      }
+      await settle(); await measure(link,'Link/focus','focus');
+      await link.hover(); await settle(); await measure(link,'Link/hover');
       await page.keyboard.press('Escape'); await dialog.waitFor({state:'detached'}); await settle();
       check(await trigger.evaluate(e=>document.activeElement===e),{...context,role:'Dialog/return focus'});
       await goto('#actions');
@@ -213,5 +284,5 @@ async page => {
   }
   await page.emulateMedia({reducedMotion:'no-preference'});
   page.off('pageerror',onError);
-  return {pass:!failures.length&&!errors.length,probe:probe||null,scenarios,failures,errors,samples,limits:['Representative components, not whole-library WCAG certification','Known default grid/dot/sweep bounds include all alpha intersections; other images/gradients unmeasured, not pixel certification','CSS zoom 2 is not native browser zoom','Disabled contrast is observed without a normative threshold; no new product readability target','Decorative separators, button outlines not needed for identification, modal backdrop contrast: N/A','No APCA substitution; no services, consumer package, or UIKit claims']};
+  return {pass:!failures.length&&!errors.length,probe:probe||null,compound:compoundOnly,scenarios,failures,errors,samples,limits:['Representative components, not whole-library WCAG certification','Known default grid/dot/sweep bounds include all alpha intersections; other images/gradients unmeasured, not pixel certification','CSS zoom 2 is not native browser zoom','Disabled contrast is observed without a normative threshold; no new product readability target','Decorative separators, button outlines not needed for identification, modal backdrop contrast: N/A','No APCA substitution; no services, consumer package, or UIKit claims']};
 }
