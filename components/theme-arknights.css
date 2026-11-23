@@ -206,7 +206,7 @@
   background: var(--ak-panel);
   clip-path: polygon(0 0, calc(100% - var(--ak-cut)) 0, 100% var(--ak-cut), 100% 100%, 0 100%);
 }
-.rhine-theme[data-rhine-theme="arknights"] .rhine-selection:hover:not([data-disabled=true]) {
+.rhine-theme[data-rhine-theme="arknights"] .rhine-selection:hover:not([data-selected=true]):not([data-disabled=true]) {
   background: var(--ak-panel-hi);
   border-color: var(--ak-accent);
 }
