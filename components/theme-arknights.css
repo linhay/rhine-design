@@ -232,6 +232,13 @@
   font-weight: 600;
   clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
 }
+/* The selected visual has a clip-path, which clips its own outline. */
+.rhine-theme[data-rhine-theme="arknights"] .rhine-segmented input:checked:focus-visible+span { outline: none; }
+.rhine-theme[data-rhine-theme="arknights"] .rhine-segmented__option:has(> input:checked:focus-visible) {
+  z-index: 1;
+  outline: 2px solid var(--ak-accent);
+  outline-offset: 2px;
+}
 
 /* ================= 数据组件 ================= */
 .rhine-theme[data-rhine-theme="arknights"] .rhine-table th {
