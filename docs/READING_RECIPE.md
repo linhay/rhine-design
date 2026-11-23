@@ -1,8 +1,12 @@
 # 局部长文排版配方
 
-[#150](https://github.com/linhay/rhine-design/issues/150) 的书卷方向本轮采用现有纸面主题与局部正文配方，不新增 ThemeName、Reader、Prose 或可调阅读器。当前公开导出没有 `Reader` / `Prose`；[对象阅读](OBJECT_READING.md)由 Dialog、Tabs、Text 和宿主状态组合。这里的排版可用于普通文章或既有 Dialog 正文，不改变工具栏、页签与操作控件，不扩大 Dialog 的 480px 最大宽度。
+[#150](https://github.com/linhay/rhine-design/issues/150) 的书卷方向本轮采用现有纸面主题与局部正文配方，不新增 ThemeName、Reader、Prose 或可调阅读器。当前公开导出没有 `Reader` / `Prose`；[对象阅读](OBJECT_READING.md)由 Dialog、Tabs、Text 和宿主状态组合。不改变普通文章、聊天、工具栏、页签与操作控件，也不扩大既有 Dialog 的 480px 最大宽度。
 
 本页收录可独立核验的组合，不宣称新字体更舒适、阅读更快或真人偏好已确认。继续使用系统字体和既有纸面配色；不引入远端字体、语言过滤、摘要引擎或内容持久化服务。以下数值是局部样例，不是全库默认，也不代表 npm 新增能力。
+
+## 长报告正文（2026-11-23，未发布）
+
+同文对照后确认：Web 长报告的段落和列表采用 **16px／28px**，单独限宽；其余场景不随之切换。`#rich-text` 保留 14/22 与 16/28 对照，并在「长报告」场景实际应用。代码、表格、标题和操作保持原字号与行高。
 
 ## 组合
 
@@ -21,22 +25,19 @@ import { Text } from '@linhey/rhine-design';
 ```css
 /* 应用自己的局部配方；不覆盖组件私有选择器。 */
 .rhine-reading-example {
-  --rhine-text-body: 16px;
-  --rhine-leading-body: 28px;
-  font-size: 16px;
-  line-height: 1.75;
-  max-inline-size: 34em;
+  max-inline-size: 34rem;
   min-inline-size: 0;
   margin-inline: auto;
   overflow-wrap: anywhere;
   text-align: start;
 }
+.rhine-reading-example :is(p, ul, ol) { font-size: 16px; line-height: 28px; }
 .rhine-reading-example > * + * { margin-block-start: 1em; }
 ```
 
 正文中的独立代码块、必要二维表格用宿主有名称、可键盘到达的局部横滚区；正文和长链接仍换行。表格单元格不能因表格可横滚就任意裁切。图片提前提供正确宽高或比例，避免加载后推走正文。不要在正文外层加入固定高度与隐藏溢出来掩盖问题。
 
-配方作用于正文子树；放在这里的按钮仍使用其原有控件契约。若把额外控件放进正文，需检查它们是否继承了局部文字变量；工具栏与页签应留在正文之外。
+仅在宿主确认的长报告正文容器启用字号和行高；不要改主题根的字号变量。工具栏与页签应留在正文之外，交互控件沿用原契约。
 
 ## 行长是容器结果
 

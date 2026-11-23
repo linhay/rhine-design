@@ -9,7 +9,26 @@ describe('safe bounded read-only content',()=>{
  it('treats HTML and remote images as text without execution or fetch surfaces',()=>{const {container}=render(<RichText label="安全" source={'<script>alert(1)</script>\n<img src="https://example.com/a" onerror="alert(1)">\n![图](https://example.com/x.png)'}/>);expect(container.querySelector('.rhine-rich-text__blocks')?.querySelector('script,img,iframe,video,svg')).toBeNull();expect(container).toHaveTextContent('<script>alert(1)</script>');});
  it('defaults to sources; navigation explicitly opts into http(s)',()=>{const {container,rerender}=render(<RichText label="来源" source="[参考](https://example.com/docs)"/>);expect(container.querySelector('a')).toBeNull();expect(container).toHaveTextContent('https://example.com/docs');rerender(<RichText label="来源" source="[参考](https://example.com/docs)" links="navigate"/>);expect(screen.getByRole('link',{name:/参考/})).toHaveAttribute('rel','noopener noreferrer');});
  it('copies original bytes despite highlight and recovers after copy failure',async()=>{const copy=vi.fn().mockRejectedValueOnce(new Error('synthetic')).mockResolvedValue(undefined);const {rerender}=render(<RichText label="报告" source={source} highlight="报告" copy={copy}/>);fireEvent.click(screen.getByRole('button',{name:'复制原文'}));await screen.findByRole('alert');expect(copy).toHaveBeenLastCalledWith(source);fireEvent.click(screen.getByRole('button',{name:'复制原文'}));await screen.findByText('已复制');expect(copy).toHaveBeenLastCalledWith(source);rerender(<RichText label="报告" source="新原文" copy={copy}/>);expect(screen.queryByText('已复制')).toBeNull();});
- it('bounds the batch and hands off focus before removing final expand button',()=>{const many=Array.from({length:5},(_,i)=>'段落'+i).join('\n\n');const {container}=render(<RichText label="长内容" source={many} initialBlocks={2}/>);expect(container.querySelectorAll('.rhine-rich-text__blocks>p')).toHaveLength(2);const more=screen.getByRole('button',{name:/继续显示/});more.focus();fireEvent.click(more);fireEvent.click(screen.getByRole('button',{name:/继续显示/}));expect(screen.queryByRole('button',{name:/继续显示/})).toBeNull();expect(container.querySelector('.rhine-rich-text__blocks')).toHaveFocus();});
+ it('moves focus to the first newly displayed block on middle and final batches without adding Tab stops',()=>{
+  const many=Array.from({length:5},(_,i)=>'段落'+i).join('\n\n');
+  const {container}=render(<RichText label="长内容" source={many} initialBlocks={2}/>);
+  const rows=()=>container.querySelectorAll('.rhine-rich-text__blocks>p');
+  const more=()=>screen.getByRole('button',{name:/继续显示/});
+  expect(rows()).toHaveLength(2);
+  act(()=>more().focus());fireEvent.click(more());
+  expect(rows()).toHaveLength(4);expect(rows()[2]).toHaveFocus();
+  expect(rows()[2]).toHaveAttribute('tabindex','-1');
+  act(()=>more().focus());fireEvent.click(more());
+  expect(screen.queryByRole('button',{name:/继续显示/})).toBeNull();
+  expect(rows()[4]).toHaveFocus();expect(rows()[4]).toHaveTextContent('段落4');
+ });
+ it('leaves focus at a host target selected during expansion',()=>{
+  const many='前一段\n\n新增第一段\n\n末段';
+  render(<><button id="host-target">宿主操作</button><section onClick={()=>document.getElementById('host-target')!.focus()}><RichText label="长内容" source={many} initialBlocks={1}/></section></>);
+  const more=screen.getByRole('button',{name:/继续显示/});
+  act(()=>more.focus());fireEvent.click(more);
+  expect(screen.getByText('新增第一段')).toBeVisible();expect(screen.getByRole('button',{name:'宿主操作'})).toHaveFocus();
+ });
  it('does not parse oversized sources or lose original copy text',async()=>{const copy=vi.fn().mockResolvedValue(undefined),large='x'.repeat(131073);render(<RichText label="超长" source={large} copy={copy}/>);expect(screen.getByText('内容超出单次呈现上限')).toBeVisible();expect(document.querySelector('pre')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'复制原文'}));await waitFor(()=>expect(copy).toHaveBeenCalledWith(large));});
  it('falls back to literal text for malformed fences',()=>{const {container}=render(<RichText label="坏格式" source={tick.repeat(3)+'txt\n未闭合'}/>);expect(container.querySelector('pre')?.textContent).toBe(tick.repeat(3)+'txt\n未闭合');});
  it('resets the display budget for every new source, including a previous source',()=>{const a='一\n\n二\n\n三';const {container,rerender}=render(<RichText label="内容" source={a} initialBlocks={1}/>);fireEvent.click(screen.getByRole('button',{name:/继续显示/}));expect(container.querySelectorAll('.rhine-rich-text__blocks>p')).toHaveLength(2);rerender(<RichText label="内容" source="新段落" initialBlocks={1}/>);rerender(<RichText label="内容" source={a} initialBlocks={1}/>);expect(container.querySelectorAll('.rhine-rich-text__blocks>p')).toHaveLength(1);});
