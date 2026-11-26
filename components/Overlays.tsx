@@ -73,7 +73,8 @@ function DialogFrame({ trigger, title, description, children, open, onOpenChange
     <DialogBase.Overlay className="rhine-overlay" /><DialogBase.Content data-rhine-density={density} ref={setContent} onEscapeKeyDown={escape} onCloseAutoFocus={closeAutoFocus} aria-busy={closingDisabled || undefined} aria-description={closingDisabled ? closeDisabledReason : undefined} onPointerDownOutside={event=>{if(closingDisabled||!outsideDismiss)event.preventDefault();}} onInteractOutside={event=>{if(closingDisabled||!outsideDismiss)event.preventDefault();}} {...(!hasDescription ? { 'aria-describedby': undefined } : {})} data-side={drawer ? side : undefined}
       style={height == null && width == null ? undefined : { ...(height != null ? { '--rhine-dialog-height': typeof height === 'number' ? `${height}px` : height } : {}), ...(width != null ? { width: typeof width === 'number' ? `${width}px` : width, maxWidth: 'calc(100% - 32px)' } : {}) } as CSSProperties}
       className={`rhine-dialog${drawer ? ' rhine-drawer' : ''}${settings ? ' rhine-dialog--settings' : ''}${sidePanel ? ' rhine-dialog--split' : ''}${sideNavigation ? ' rhine-dialog--side-navigation' : ''}${bounded ? ' rhine-dialog--bounded' : ''}`}>
-      {bounded ? <div className="rhine-dialog__scroll">{panes}</div> : panes}
+      {/* Keep the panes mounted when the footer changes the scroll layout. */}
+      <div className="rhine-dialog__scroll">{panes}</div>
       {hasFooter && <div className="rhine-dialog__footer">{footer}</div>}
     </DialogBase.Content>
   </DialogBase.Portal></DialogBase.Root></span>;

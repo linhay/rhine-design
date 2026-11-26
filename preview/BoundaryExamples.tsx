@@ -39,8 +39,26 @@ function VirtualListExample() {
   return <Stack gap={4}><Inline gap={2}><Button variant="secondary" onClick={swap}>交换前两行</Button><Button variant="secondary" onClick={() => setLimited(value => !value)}>{limited ? '显示全部行' : '仅显示两行'}</Button></Inline><Text>在输入框按 Enter 交换前两行；Shift+Enter 把当前行移到末尾。行内草稿随稳定身份移动；被真正卸载的草稿仍应由宿主持有。</Text><VirtualList label="可编辑虚拟列表" items={limited ? rows.slice(0,2) : rows} itemHeight={96} height={288} getItemKey={item => item.id} renderItem={item => <div className="rhine-field" style={{height:'100%',padding:8}}><label htmlFor={`virtual-draft-${item.id}`}>{item.title}草稿</label><div style={{display:'flex',gap:8,minWidth:0}}><input id={`virtual-draft-${item.id}`} defaultValue={item.title} style={{flex:1,width:0}} onKeyDown={event => { if(event.key === 'Enter' && !event.nativeEvent.isComposing) { event.preventDefault(); if(event.shiftKey) moveToEnd(item.id); else swap(); } }} /><IconButton label={`移除${item.title}`} icon="close" onClick={() => setRows(current => current.filter(row => row.id !== item.id))} /></div></div>} /><Text>当前条目：{limited ? Math.min(2,rows.length) : rows.length}，只渲染窗口和当前持焦行。</Text></Stack>;
 }
 function UploadExample() {
-  const [files, setFiles] = useState(() => [new File(['synthetic'],'example.txt',{type:'text/plain'})]), [disabled,setDisabled] = useState(false);
-  return <Stack gap={4}><Checkbox label="禁用本地文件操作" checked={disabled} onChange={event => setDisabled(event.target.checked)} /><Upload label="选择本地文件" files={files} onChange={setFiles} disabled={disabled} /><Text>当前文件数：{files.length}。示例不上传，也不请求业务服务。</Text></Stack>;
+  const [files, setFiles] = useState(() => [new File(['synthetic'], 'example.txt', { type: 'text/plain' })]);
+  const [disabled, setDisabled] = useState(false);
+  const [showHint, setShowHint] = useState(true);
+  const [result, setResult] = useState('');
+  return <Stack gap={4}>
+    <Checkbox label="禁用本地文件操作" checked={disabled} onChange={event => setDisabled(event.target.checked)} />
+    <Checkbox label="显示附件说明" checked={showHint} onChange={event => setShowHint(event.target.checked)} />
+    <form aria-label="附件提交示例" onSubmit={event => {
+      event.preventDefault();
+      const attachments = new FormData(event.currentTarget).getAll('attachments');
+      setResult(`表单收到 ${attachments.length} 个文件${attachments.length ? `：${attachments.map(file => (file as File).name).join('、')}` : ''}`);
+    }}>
+      <Stack gap={3}>
+        <Upload label="选择本地文件" name="attachments" files={files} onChange={setFiles} disabled={disabled}
+          hint={showHint ? '附件随表单保存。本示例只预览表单内容。' : undefined} />
+        <Button type="submit">预览表单附件</Button>
+        <Text role="status">{result}</Text>
+      </Stack>
+    </form>
+  </Stack>;
 }
 function CollapseExample() {
   const [accordion,setAccordion] = useState(false), [a,setA] = useState('第一组草稿'), [b,setB] = useState('第二组草稿');

@@ -40,7 +40,7 @@ describe('newly provided components', () => {
     const file = new File(['demo'], 'notes.txt', { type: 'text/plain' });
     fireEvent.change(screen.getByLabelText('选择本地文件'), { target: { files: [file] } });
     expect(screen.getByText('notes.txt')).toBeInTheDocument();
-    expect(screen.getByText('只记录本地文件名，不会上传。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '移除 notes.txt' })).toBeEnabled();
   });
 
   it('keeps loading and result text visible', () => {
