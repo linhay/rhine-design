@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { SettingsDialogGallery } from '../preview/SettingsDialogGallery';
@@ -127,6 +128,34 @@ it('cleans pending host requests and ignores an obsolete async section', () => {
   for (const id of hostTimers) expect(clear).toHaveBeenCalledWith(id);
 });
 
+
+it('keeps body controls mounted and focused when an optional footer appears or disappears', () => {
+  function SearchDialog() {
+    const [query, setQuery] = useState('');
+    return <Dialog open title="Filter" footer={query ? <Button onClick={() => setQuery('')}>Reset</Button> : undefined}>
+      <input aria-label="Search" value={query} onChange={event => setQuery(event.target.value)} />
+      <input aria-label="Draft" defaultValue="" />
+    </Dialog>;
+  }
+
+  render(<SearchDialog />);
+  const search = screen.getByRole('textbox', { name: 'Search' });
+  const draft = screen.getByRole('textbox', { name: 'Draft' });
+  fireEvent.change(draft, { target: { value: 'unsaved' } });
+  search.focus();
+
+  fireEvent.change(search, { target: { value: 'a' } });
+  expect(screen.getByRole('button', { name: 'Reset' })).toBeVisible();
+  expect(screen.getByRole('textbox', { name: 'Search' })).toBe(search);
+  expect(search).toHaveFocus();
+
+  fireEvent.change(search, { target: { value: '' } });
+  expect(screen.queryByRole('button', { name: 'Reset' })).not.toBeInTheDocument();
+  expect(screen.getByRole('textbox', { name: 'Search' })).toBe(search);
+  expect(search).toHaveFocus();
+  expect(screen.getByRole('textbox', { name: 'Draft' })).toBe(draft);
+  expect(draft).toHaveValue('unsaved');
+});
 
 it('gives only the actual bounded body a named keyboard entry', () => {
   const props = {trigger:<Button>Open</Button>, title:'Read', height:400, open:true, onOpenChange:() => {}};

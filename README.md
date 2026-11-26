@@ -35,14 +35,14 @@ Rhine Design 是面向 React 应用的开源设计系统，适合桌面工具、
 
 需要 **React 19 / React DOM 19**。已验证的构建环境为 **Vite**，建议使用 **Node 24**。包提供 TS/TSX、CSS 和 SVG 源码，构建器需要支持 CSS 导入和 Vite 的 SVG `?no-inline` 引用；其他构建器及 SSR 尚未验证。
 
-在现有 React 项目目录中安装。以下示例固定以 **0.18.1** 为接入目标，安装前先核对 npm registry 是否提供该精确版本；支持范围与制品身份见[发行记录](docs/releases/0.18.1.md)：
+在现有 React 项目目录中安装。以下示例固定以 **0.18.2** 为接入目标，安装前先核对 npm registry 是否提供该精确版本；支持范围与制品身份见[发行记录](docs/releases/0.18.2.md)：
 
 ```sh
-npm view @linhey/rhine-design@0.18.1 version
-npm install --save-exact @linhey/rhine-design@0.18.1
+npm view @linhey/rhine-design@0.18.2 version
+npm install --save-exact @linhey/rhine-design@0.18.2
 ```
 
-如果精确版本尚不可用，不要把在线展台当作已安装版本；按[发行说明](docs/releases/0.18.1.md)核对实际制品与 SHA-256。
+如果精确版本尚不可用，不要把在线展台当作已安装版本；按[发行说明](docs/releases/0.18.2.md)核对实际制品与 SHA-256。
 
 将下面的组件放入你的页面：
 
@@ -82,8 +82,8 @@ export default function App() {
 
 1. 阅读项目规则、package.json 和 lockfile，确认应用目录、包管理器、React/React DOM、Node 和构建器版本。保留现有修改；monorepo 安装到实际使用组件的应用，不随意写入根包。
 
-2. 安装 npm 包 @linhey/rhine-design，本文接入目标为 0.18.1，先核对 registry 可读后安装。使用 npm 的项目在应用目录执行：
-   npm install --save-exact @linhey/rhine-design@0.18.1
+2. 安装 npm 包 @linhey/rhine-design，本文接入目标为 0.18.2，先核对 registry 可读后安装。使用 npm 的项目在应用目录执行：
+   npm install --save-exact @linhey/rhine-design@0.18.2
    若已有 pnpm、yarn 或 bun，则使用现有包管理器的等价精确版本命令，保持原 lockfile 类型。若已安装更新版本，核对兼容性后保留，不自动降级。
    该基线需要 React 19 / React DOM 19；已验证 Vite，建议 Node 24。遇到不兼容，说明具体差异，不强行升级框架、不用 --force 或 --legacy-peer-deps 绕过检查。
 
@@ -105,7 +105,7 @@ export default function App() {
 
 ## 版本与兼容
 
-- 本页安装与代码示例对应 **0.18.1**；能力以该版本实际导出和契约为准，不用总数代替兼容承诺。发布状态与证据见 [0.18.1 发行记录](docs/releases/0.18.1.md)。
+- 本页安装与代码示例对应 **0.18.2**；能力以该版本实际导出和契约为准，不用总数代替兼容承诺。发布状态与证据见 [0.18.2 发行记录](docs/releases/0.18.2.md)。
 - 从旧版本升级时，若穷举 `ThemeName`，需补齐 `neutral` 与 `graphite` 分支。其他变化见 [CHANGELOG](CHANGELOG.md)，升级时同步精确依赖与 lockfile。
 - 包内 `docs/`、`components/` 和 `skills/` 可从 `node_modules/@linhey/rhine-design/` 查阅。Skill 自身的版本说明可能早于 npm 包，使用 API 时核对实际导出、类型与实现。
 - #215字段、资源/目标状态和固定制品验证见[对应能力契约](components/PROVIDED_COMPONENTS.md)。Chromium/WebKit自动化不代表所有浏览器或原生Safari；Firefox为N/A。本地tarball与registry正式发行分别确认。

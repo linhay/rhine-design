@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Button, Checkbox, Dialog, Drawer, EmptyState, Notice, RemoteMultiSelect, Select, SideNav, Skeleton, Stack, Text, TextField, type Choice } from '../components';
 import { ThemeProvider, themes, useTheme, type ThemeName } from '../components/theme';
 import './settings-dialog-gallery.css';
@@ -64,6 +64,7 @@ export function SettingsDialogGallery() {
     <Dialog title="有界普通表单" height={640} trigger={<Button variant="secondary">有界普通表单示例</Button>} footer={<Button>确认</Button>}><Stack>{Array.from({length:30}, (_,i)=><TextField key={i} label={`表单字段 ${i+1}`} />)}</Stack></Dialog>
     <Dialog title="自动高度操作区" trigger={<Button variant="secondary">自动高度操作区示例</Button>} footer={<>{Array.from({length:20}, (_,i)=><Button key={i}>长操作 {i+1}</Button>)}</>}><Text>短正文仍然可读。</Text></Dialog>
     <Dialog title="纯文本长正文" height={400} trigger={<Button variant="secondary">纯文本长正文示例</Button>} footer={<Button>阅读完成</Button>}><Stack>{Array.from({length:30}, (_,i)=><Text key={i}>合成说明第 {i+1} 段，仅用于键盘滚动验证。</Text>)}</Stack></Dialog>
+    <OptionalFooterExample />
     <EmbeddedWorkspaceGallery />
     <ObjectSettingsGallery />
     <Dialog title="短对话框" trigger={<Button variant="secondary">普通短弹窗</Button>}><TextField label="简短输入" /></Dialog>
@@ -75,6 +76,21 @@ export function SettingsDialogFixture() {
   const zoom = Number(params.get('zoom')) || 1;
   useEffect(() => { document.documentElement.style.zoom = String(zoom); return () => { document.documentElement.style.zoom = ''; }; }, [zoom]);
   return <ThemeProvider defaultTheme={(params.get('theme') || 'rhine') as ThemeName} data-rhine-motion={params.get('motion') || 'reduced'}><div style={{padding:16}}>{params.get('object') === '1' ? <ObjectSettingsGallery /> : <SettingsDialogGallery />}</div></ThemeProvider>;
+}
+
+function OptionalFooterExample() {
+  const [query, setQuery] = useState('');
+  const searchId = useId();
+  return <Dialog title="筛选记录" trigger={<Button variant="secondary">可选操作区示例</Button>}
+    footer={query ? <Button variant="secondary" onClick={() => {
+      document.getElementById(searchId)?.focus();
+      setQuery('');
+    }}>重置筛选</Button> : undefined}>
+    <Stack gap={3}>
+      <TextField id={searchId} label="筛选词" value={query} onChange={event => setQuery(event.target.value)} />
+      <TextField label="筛选备注" />
+    </Stack>
+  </Dialog>;
 }
 
 // Layout example only: template ownership and persistence remain in the host.

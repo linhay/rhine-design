@@ -11,7 +11,8 @@
 /* Opt-in stable outer frame; footer never participates in content scrolling. */
 .rhine-dialog.rhine-dialog--bounded { container-type:inline-size; display:flex; flex-direction:column; gap:0; height:var(--rhine-dialog-height,auto); max-height:calc(100% - 32px); overflow:hidden; }
 .rhine-dialog.rhine-dialog--bounded.rhine-dialog--split { width:min(960px,calc(100% - 32px)); }
-.rhine-dialog__scroll { min-height:0; min-width:0; overflow:auto; flex:1 1 auto; display:grid; grid-template-columns:minmax(0,1fr); }
+.rhine-dialog:not(.rhine-dialog--bounded) > .rhine-dialog__scroll { display:contents; }
+.rhine-dialog--bounded > .rhine-dialog__scroll { min-height:0; min-width:0; overflow:auto; flex:1 1 auto; display:grid; grid-template-columns:minmax(0,1fr); }
 .rhine-dialog--bounded .rhine-dialog__main { min-height:0; }
 .rhine-dialog--bounded .rhine-dialog__head { position:sticky; top:0; z-index:1; background:var(--rhine-overlay-bg); }
 .rhine-dialog--bounded .rhine-dialog__head>.rhine-icon-button { position:static; flex:none; }

@@ -1,4 +1,5 @@
 import { StepsGallery } from './StepsGallery';
+import { CredentialInstructionsExample, ExternalAppHandoffExample, MixedSettingsCardsExample } from './IssuePatternExamples';
 import { useId, useState } from 'react';
 import { Dialog, Link, Inline, StatusTimeline, TimelineLegend, Badge, Breadcrumbs, Button, Drawer, ErrorSummary, Fieldset, KeyValue, Metric, Notice, Select, SideNav, Stack, Surface, Text, TextField, type FieldError } from '../components';
 import './patterns.css';
@@ -18,6 +19,9 @@ export const scenarios = [
   ['overlay', '局部说明与次级操作', 'Tooltip / Popover / Menu', 'Tooltip 是非必要补充；Popover 放可交互详情；Menu 提供命令。都应有键盘入口和关闭路径。', '160ms / 3px，按实际放置方向进入。', '必要说明常驻；不要把表单放进 Tooltip。'],
   ['empty', '空白、无结果、无权限', 'EmptyState / Notice', '区分尚未创建、筛选无结果、读取失败与无权限；提供对应的创建、清除筛选或重试动作。', '静态为主，状态替换 180ms。', '失败不是空列表；无权限不能提供无效创建按钮。'],
   ['monitor', '监控数据与告警', 'Metric + Badge + DataTable + Notice', '值、单位、时间范围和最后更新时间一起展示。告警须有文字、级别和处理入口，过期数据标明陈旧。', '更新值原位替换，不滚动数字、不闪烁告警。', '未知值显示 —；不要用 0 掩盖采集失败或只靠红绿色。'],
+  ['credential-instructions', '分客户端接入凭据', 'Dialog + Disclosure + CopyButton', '按客户端展开说明和模板。签发结果单独呈现。', '展开沿用 Disclosure 的动效。', '配置模板只引用环境变量名。'],
+  ['mixed-settings-cards', '身份卡片与交互列表', 'Stack + Grid + Surface', '当前账号和交互列表各占整行。独立卡片在下方响应可用宽度。', '按容器宽度自然换列。', '卡片按任务分组，视觉顺序与 DOM 顺序一致。'],
+  ['external-handoff', '交接到外部客户端', 'Button + Text + Disclosure', '就地确认打开尝试。手工配置由用户显式展开。', '主操作保留焦点，提示原位更新。', '成功状态需要应用或服务端的明确确认。'],
   ['motion', '品牌与日常交互', 'Logo / 启动编排 / 基础过渡', '品牌动画只在启动或明确重播时出现；业务界面用几何边界和稳定位置建立识别。', '日常 120–240ms；品牌独立编排，减少动态直接到最终态。', '不把 Logo 当加载器，不因动画阻塞可用页面。'],
 ] as const;
 
@@ -47,6 +51,9 @@ export function PatternGallery({ section }: { section: string }) {
   </section>;
   if (section !== 'patterns') return null;
   return <section id="patterns"><div className="ds-section-title"><span>PLAYBOOK</span><h2>先选交互，再选组件。</h2></div><p className="ds-caption">{scenarios.length} 个常见场景。按任务、信息持续时间和是否需要打断来选择，动效只解释状态变化。</p><Surface><Select label="我正在设计什么场景" value={choice} onChange={event=>setChoice(event.target.value)}>{scenarios.map(item=><option key={item[0]} value={item[0]}>{item[1]}</option>)}</Select><div className="ds-pattern-detail" key={choice}><Text variant="overline">推荐组合</Text><h3>{scenario[2]}</h3><dl><dt>交互规则</dt><dd>{scenario[3]}</dd><dt>动效规则</dt><dd>{scenario[4]}</dd><dt>避免误用</dt><dd>{scenario[5]}</dd></dl></div></Surface>
+    {choice === 'credential-instructions' && <CredentialInstructionsExample />}
+    {choice === 'mixed-settings-cards' && <MixedSettingsCardsExample />}
+    {choice === 'external-handoff' && <ExternalAppHandoffExample />}
     {choice==='reading' && <Link href="#object-reading">打开工作空间阅读展台</Link>}
     {choice==='monitor' && <Surface className="ds-gap-top"><Stack><Text variant="section">健康记录时间轴</Text><Text variant="caption">合成数据；键盘方向键、Home / End 或指针查看时段。更新不播放装饰动画。</Text><StatusTimeline label="示例历史时段" startLabel="昨天 15:30" endLabel="今天 15:30" segments={Array.from({length:96},(_,i)=>({id:String(i),label:`时段 ${i+1}`,status:monitor==='unknown'?'unknown':i%23===0?'failed':i%17===0?'degraded':i%11===0?'recovered':i%7===0?'unknown':'healthy'}))}/><TimelineLegend/><Dialog trigger={<Button variant="secondary">左右分栏预览</Button>} title="选择范围" description="左侧操作，右侧查看选择对应的证据。此演示不保存更改。" sidePanel={closeButton => <Stack><Inline role="group" aria-label="预览导航" style={{justifyContent:'space-between'}}><Text as="h3" variant="body">{previewScope==='primary'?'主要资源':'备用资源'} · 健康记录</Text>{closeButton}</Inline><StatusTimeline compact label="范围历史时段" startLabel="昨天" endLabel="今天" segments={Array.from({length:96},(_,i)=>({id:String(i),label:`时段 ${i+1}`,status:previewScope==='primary'?'healthy':'unknown'}))}/><TimelineLegend/></Stack>}><Select label="范围" value={previewScope} onChange={event=>setPreviewScope(event.target.value)}><option value="primary">主要资源</option><option value="backup">备用资源</option></Select></Dialog></Stack></Surface>}
     {choice==='monitor' && <Surface className="ds-gap-top"><Stack><Select label="监控状态演示" value={monitor} onChange={event=>setMonitor(event.target.value)}><option value="normal">正常</option><option value="stale">数据陈旧</option><option value="unknown">首次采集失败</option></Select><div className="ds-row"><Metric label="请求成功率" value={monitor==='unknown'?null:'99.2'} unit="%" description="最近 5 分钟 · 合成数据"/><Badge tone={monitor==='normal'?'success':monitor==='stale'?'warning':'error'}>{monitor==='normal'?'采集正常':monitor==='stale'?'数据已过期':'暂无有效数据'}</Badge></div><KeyValue items={[{key:'time',label:'最后成功采集',value:monitor==='unknown'?null:'14:32:00 · 上海时区（示例）'},{key:'rule',label:'新鲜度规则',value:'超过 60 秒未成功采集即标为陈旧'}]}/>{monitor!=='normal' && <Notice tone={monitor==='stale'?'warning':'error'} title={monitor==='stale'?'显示上次结果，不代表当前状态':'未能获取指标'} action={<Drawer trigger={<Button variant="secondary">查看处理建议</Button>} title="采集恢复建议" description="这是一段监控交互示例，不连接真实系统。"><Text>检查采集器状态与数据源连接，恢复后重新读取。不要把未知值重置为零。</Text></Drawer>}>{monitor==='stale'?'本例模拟超过 60 秒未更新，请检查采集状态。':'首次读取失败，因此数值显示 —。'}</Notice>}</Stack></Surface>}

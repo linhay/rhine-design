@@ -43,6 +43,16 @@ describe('provided form interoperability', () => {
   it('serializes mention text and never edits readonly mention content', () => {
     const change=vi.fn();render(<form aria-label="提及表单"><Mentions id="mention" name="notes" label="备注" value="请 @" options={['林可']} onChange={change} readOnly required hint="正文说明"/></form>);const input=screen.getByRole('combobox');act(()=>input.focus());fireEvent.change(input,{target:{value:'修改'}});expect(change).not.toHaveBeenCalled();expect(screen.queryByRole('listbox')).not.toBeInTheDocument();expect(new FormData(screen.getByRole('form') as HTMLFormElement).get('notes')).toBe('请 @');
   });
+  it('shows only the upload hint supplied by the host', () => {
+    const props = { label: '附件', files: [], onChange: () => undefined };
+    const { rerender } = render(<Upload {...props} hint="随表单保存。" />);
+    const input = screen.getByLabelText('附件');
+    expect(input).toHaveAccessibleDescription('随表单保存。');
+    expect(screen.queryByText('只记录本地文件名，不会上传。')).not.toBeInTheDocument();
+    rerender(<Upload {...props} />);
+    expect(input).not.toHaveAttribute('aria-describedby');
+    expect(screen.queryByText('随表单保存。')).not.toBeInTheDocument();
+  });
   it('keeps controlled files in a scoped platform formdata listener and detaches it on unmount', async () => {
     const file=new File(['safe'],'safe.txt',{type:'text/plain'});const form=document.createElement('form');form.id='file-owner';document.body.append(form);
     const{unmount}=render(<Upload id="file-control" name="attachments" form="file-owner" label="文件" files={[file]} onChange={()=>undefined} readOnly required accept=".txt" multiple={false}/>);
